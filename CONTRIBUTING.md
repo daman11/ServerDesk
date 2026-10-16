@@ -2,7 +2,11 @@
 
 ServerDesk is licensed under MIT. Contributions should retain the applicable copyright and third-party notices.
 
-Install Git, PowerShell 7 and the .NET SDK specified in `global.json`. A clean checkout does not need the maintainer's `.tools` or `artifacts` directories. Run:
+Install Git, PowerShell 7 and the .NET SDK specified in `global.json`. A clean checkout does not need the maintainer's `.tools` or `artifacts` directories.
+
+For small changes, use an incremental build of the affected project and only relevant checks. The maintainer tests application changes directly from a development folder; provide the executable path. Prefer `artifacts/dev-harness` when stopped, or another development folder if the current app is running. Do not interrupt active sessions. Small changes do not require the full test matrix, version bumps, installers or release tags; keep focused local commits. Documentation-only changes need content/link/diff checks rather than an application build.
+
+For larger changes, clean-checkout verification and release preparation, run:
 
 ```powershell
 ./scripts/check-repository.ps1
@@ -11,7 +15,7 @@ dotnet build ServerDesk.sln -c Release --no-restore -m:1
 dotnet test tests/ServerDesk.Tests -c Release --no-build
 ```
 
-For UI changes build and run the isolated headless harness:
+When UI verification is needed, build the isolated headless harness and select the scenario relevant to the change. For example:
 
 ```powershell
 dotnet build tools/ServerDesk.UiSmoke -c Release -m:1 -p:RestoreLockedMode=true -o artifacts/ci-harness

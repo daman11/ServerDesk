@@ -6,7 +6,9 @@ Choose **Layout → Three panels (1 + 2)** or **Four panels (2 × 2)**. Spare do
 
 **Settings → Workspace** controls startup layout, where new tabs open (active/first/fewest tabs), tab-strip height, separator width and panel numbers. Sizes preview live; Cancel restores them. The startup layout applies on the next launch without connecting automatically. [Release notes](releases/release-0.35.0.md).
 
-In SFTP, use Back/Forward or Alt+Left/Right, Alt+Up for the parent directory and Alt+Home for home. Ctrl+L selects the path; Enter opens it and Escape restores the open directory. Each panel has its own history, cleared on reconnect.
+In SFTP, use Back/Forward or Alt+Left/Right, Alt+Up for the parent directory and Alt+Home for home. Ctrl+L selects the path; Enter opens it and Escape restores the open directory. Each panel has its own history, cleared when the whole SSH session reconnects.
+
+**Development builds after 0.36.2:** if only the file connection breaks, choose **Refresh / F5** or reopen SFTP. A detected broken browser connection is restored while keeping directories, filters and history, without restarting the terminal. Host trust is checked again. This only reloads directory listings; it does not repeat transfers, deletions or renames. If the entire SSH session is lost, reconnect that session first.
 
 Free, open-source software under MIT. **Public beta**; see [known-issues.md](known-issues.md) for tested platforms and limitations. Polski: [getting-started.md](getting-started.md).
 

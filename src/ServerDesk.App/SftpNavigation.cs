@@ -43,7 +43,7 @@ internal sealed partial class SessionPane
     private Task NavigateFilesAsync(bool remote,string path,DirectoryNavigationTarget? target=null)
     {
         if(remote)remoteNavigationTarget=target; else localNavigationTarget=target;
-        (remote?remotePath:localPath).Text=path; return RefreshAsync();
+        (remote?remotePath:localPath).Text=path; return RefreshFilesAsync();
     }
     private Task NavigateFileHistoryAsync(bool remote,bool forward)
     {

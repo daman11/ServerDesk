@@ -9,6 +9,10 @@ public sealed partial class SftpSession(SftpClient client) : IDisposable,IAsyncD
     private readonly SemaphoreSlim gate = new(1);
     private readonly ConnectionInfo connectionInfo=client.ConnectionInfo;
     private int disposed;
+    public bool IsConnected
+    {
+        get { try { return Volatile.Read(ref disposed)==0 && client.IsConnected; } catch(ObjectDisposedException) { return false; } }
+    }
     public string WorkingDirectory => client.WorkingDirectory;
     private async Task<T> Run<T>(Func<T> action, CancellationToken ct)
     {

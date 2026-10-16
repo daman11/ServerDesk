@@ -2,6 +2,8 @@
 
 ## Unreleased
 
+- Let explicit SFTP Refresh/F5 and reopening the file panel replace a detected broken browser connection while retaining the live SSH terminal, paths, filters, selections and navigation history.
+- Serialize browser recovery, revalidate SSH host trust and cancel pending recovery when the tab closes. Post-transfer refresh still does not reconnect or repeat file operations automatically.
 - Release SFTP connections and global transfer slots before refreshing directory listings, so stalled browsing cannot block queued copies. Preserve successful transfer results when refresh fails.
 - Keep transfer retry buttons in sync with SSH loss/reconnect and share their enabled state with the Transfers overview. Add a real loopback regression for stalled refresh, queued cancellation and retry to the original destination.
 - Add verified SQLite snapshots before migrating existing databases and a manual backup action under Settings → Security, with Polish/English feedback.

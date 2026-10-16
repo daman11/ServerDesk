@@ -54,7 +54,7 @@ internal sealed partial class SessionPane
         {
             if(!files.IsVisible)return;
             if(fileRefreshes>0 && e.KeyModifiers==KeyModifiers.Alt && e.Key is Key.Left or Key.Right or Key.Up or Key.Home) { e.Handled=true; return; }
-            if(e.Key==Key.F5) { e.Handled=true; _=owner.Safe(RefreshAsync); }
+            if(e.Key==Key.F5) { e.Handled=true; _=owner.Safe(RefreshFilesAsync); }
             else if(e.Key==Key.Delete && e.KeyModifiers==KeyModifiers.None && (localList.IsKeyboardFocusWithin || remoteList.IsKeyboardFocusWithin))
             { e.Handled=true; _=owner.Safe(DeleteFileAsync); }
             else if(e.Key==Key.A && e.KeyModifiers==KeyModifiers.Control && (localList.IsKeyboardFocusWithin || remoteList.IsKeyboardFocusWithin))

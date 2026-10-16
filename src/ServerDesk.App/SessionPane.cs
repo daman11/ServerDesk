@@ -263,15 +263,7 @@ internal sealed partial class SessionPane : WorkspacePane
         ct.ThrowIfCancellationRequested(); terminal.IsVisible=panel==0; files.IsVisible=panel==1; info.IsVisible=panel==2; infoActive=panel==2; SelectPanel(panel);
         if(panel==1)
         {
-            if(sftp==null)
-            {
-                var defaults=await repository.PreferencesAsync(ct);
-                var startup=fileDefaultsApplied?null:await FileBrowserStartup.ResolveAsync(defaults,Environment.GetFolderPath(Environment.SpecialFolder.UserProfile),ct);
-                var client=await factory.SftpAsync(Profile,secret,ct); if(ct.IsCancellationRequested) { client.Dispose(); return; }
-                sftp=new SftpSession(client); remoteHome=sftp.WorkingDirectory; remotePath.Text=remoteHome;
-                if(startup!=null)ApplyFileDefaults(defaults,startup);
-            }
-            await RefreshAsync();
+            await RefreshFilesCoreAsync(ct);
         }
         if(panel==2 && monitor==null)
         {
@@ -282,7 +274,7 @@ internal sealed partial class SessionPane : WorkspacePane
     private void BuildFiles()
     {
         var bar=new WrapPanel { Orientation=Orientation.Horizontal,Margin=new Thickness(8,6) }; Grid.SetColumnSpan(bar,3); files.Children.Add(bar);
-        bar.Children.Add(Button("Odśwież",RefreshAsync)); bar.Children.Add(hidden); bar.Children.Add(fileTarget); hidden.IsCheckedChanged+=(_,_)=>FilterFiles();
+        bar.Children.Add(Button("Odśwież",RefreshFilesAsync)); bar.Children.Add(hidden); bar.Children.Add(fileTarget); hidden.IsCheckedChanged+=(_,_)=>FilterFiles();
         uploadSelection=Button("Wyślij",UploadAsync); downloadSelection=Button("Pobierz",DownloadAsync);
         bar.Children.Add(uploadSelection); bar.Children.Add(downloadSelection); var operations=new Button { Content=DeskIcons.Labelled("more",L.T("Operacje")),Tag="Operacje" }; Avalonia.Automation.AutomationProperties.SetName(operations,L.T("Operacje")); operations.ContextMenu=new ContextMenu { ItemsSource=new[]{OperationMenu("Nowy katalog",MkdirAsync),SingleFileMenu(null,"Zmień nazwę",RenameAsync),SingleFileMenu(null,"Przenieś do katalogu",MoveFileAsync),LinkFileMenu(null),SingleFileMenu(true,"Utwórz zdalne dowiązanie…",CreateRemoteLinkAsync),SingleFileMenu(true,"Uprawnienia chmod (zdalny)",ChmodAsync),SingleFileMenu(null,"Szczegóły",FileDetailsAsync),DeleteSelectionMenu(null)} }; operations.Click+=(_,_)=> { UpdateFileSelection(); operations.ContextMenu.Open(operations); }; bar.Children.Add(operations);
         foreach(var control in bar.Children)control.Margin=new Thickness(0,2,6,2);

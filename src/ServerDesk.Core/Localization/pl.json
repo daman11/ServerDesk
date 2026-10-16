@@ -1352,5 +1352,6 @@
   "Nie można otworzyć lub zapisać bazy danych. Sprawdź wolne miejsce i uprawnienia katalogu danych.": "Nie można otworzyć lub zapisać bazy danych. Sprawdź wolne miejsce i uprawnienia katalogu danych.",
   "Nie można uruchomić ServerDesk": "Nie można uruchomić ServerDesk",
   "Oryginalne dane nie zostaną usunięte ani zastąpione pustą bazą. Po zamknięciu aplikacji możesz zabezpieczyć katalog danych i przywrócić sprawdzoną kopię. Instrukcja: docs/database-backups.md.": "Oryginalne dane nie zostaną usunięte ani zastąpione pustą bazą. Po zamknięciu aplikacji możesz zabezpieczyć katalog danych i przywrócić sprawdzoną kopię. Instrukcja: docs/database-backups.md.",
-  "Katalog kopii bazy:": "Katalog kopii bazy:"
+  "Katalog kopii bazy:": "Katalog kopii bazy:",
+  "Przywracanie połączenia SFTP…": "Przywracanie połączenia SFTP…"
 }

@@ -6,7 +6,9 @@ W menu **Układ** wybierz **Trzy panele (1 + 2)** albo **Cztery panele (2 × 2)*
 
 **Ustawienia → Obszar pracy**: wybierz układ startowy, miejsce nowych kart (aktywny/pierwszy/najmniej kart), wysokość zakładek, szerokość separatorów i numery paneli. Rozmiary mają podgląd; Anuluj go cofa. Układ startowy działa przy kolejnym uruchomieniu i nie łączy sesji automatycznie. [Opis wydania](releases/release-0.35.0.md).
 
-W panelu SFTP użyj Wstecz/Dalej lub Alt+←/→, Alt+↑ dla katalogu nadrzędnego i Alt+Home dla domowego. Ctrl+L wybiera ścieżkę, Enter ją otwiera, a Escape przywraca poprzednio otwarty katalog. Historia jest osobna dla obu paneli i znika przy ponownym połączeniu.
+W panelu SFTP użyj Wstecz/Dalej lub Alt+←/→, Alt+↑ dla katalogu nadrzędnego i Alt+Home dla domowego. Ctrl+L wybiera ścieżkę, Enter ją otwiera, a Escape przywraca poprzednio otwarty katalog. Historia jest osobna dla obu paneli i znika przy ponownym połączeniu całej sesji SSH.
+
+**W wersji rozwojowej po 0.36.2:** jeżeli zerwało się tylko połączenie plikowe, wybierz **Odśwież / F5** lub ponownie otwórz SFTP. Program odtworzy wykryte zerwane połączenie z zachowaniem katalogów, filtrów i historii, bez restartowania terminala. Klucz hosta jest ponownie weryfikowany. Ta czynność odczytuje listę plików; nie ponawia transferów, usuwania ani zmiany nazw. Przy utracie całego SSH najpierw połącz sesję ponownie.
 
 Bezpłatna aplikacja open source na licencji MIT. **Publiczna beta**; zakres testów i ograniczenia: [known-issues.md](known-issues.md). English: [getting-started.en.md](getting-started.en.md).
 

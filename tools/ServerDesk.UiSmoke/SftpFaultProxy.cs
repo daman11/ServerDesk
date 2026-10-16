@@ -43,6 +43,7 @@ internal sealed class SftpFaultProxy : IDisposable
     private readonly string host; private readonly int port;
     private TaskCompletionSource<Connection>? armed;
     internal int Port=>((IPEndPoint)listener.LocalEndpoint).Port;
+    internal int ConnectionCount { get { lock(connections)return connections.Count; } }
     internal Task Loop { get; }
     internal SftpFaultProxy(string host,int port) { this.host=host; this.port=port; listener.Start(); Loop=Task.Run(Run); }
     internal Task<Connection> ArmNext()

@@ -1,8 +1,10 @@
 # ServerDesk
 
-Natywny klient administracyjny C# / .NET 10 / Avalonia 12 dla Windows i Linux. Wersja 0.33.0 Public Beta; [status MVP](mvp-status.md), [ograniczenia](known-issues.md) i [zmiany tego wydania](releases/release-0.33.0.md).
+Natywny klient administracyjny C# / .NET 10 / Avalonia 12 dla Windows i Linux. Wersja 0.34.0 Public Beta; [status MVP](mvp-status.md), [ograniczenia](known-issues.md) i [zmiany tego wydania](releases/release-0.34.0.md).
 
 ## Uruchomienie
+
+**Personalizacja od 0.34.0:** Ustawienia mają sześć kategorii z wyszukiwaniem Ctrl+F. **Terminal → Kursor i historia**: kreska/blok/podkreślenie i miganie z podglądem; Anuluj cofa wybór. Historia 0–100 000 wierszy obowiązuje przy kolejnym połączeniu SSH/Serial; 0 ją wyłącza, bieżący bufor pozostaje. **SFTP**: lokalny folder startowy, ukryte pliki, aktywna strona i niezależne sortowanie/kierunki. Te domyślne stosowane są przy pierwszym SFTP w karcie; zapis/reconnect nie resetuje wyborów otwartej przeglądarki. Niedostępny folder zastępuje domowy z komunikatem. [Szczegóły](releases/release-0.34.0.md).
 
 Od wersji 0.32.0: w terminalu SSH lub Serial użyj lupy albo **Ctrl+Shift+F**, aby przeszukać dostępną historię. **Enter / Shift+Enter** w polu wyszukiwania oraz **F3 / Shift+F3** przy otwartym pasku przechodzą między wynikami; **Escape** w pasku zamyka go i oddaje fokus terminalowi. Dostępne są wielkość liter i całe słowa. Szukanie jest dosłowne, bez wyrażeń regularnych. Trafienie przez miękkie zawinięcie liczy się raz. Nowe wyjście oznacza wyniki jako wymagające odświeżenia; wybierz przycisk odświeżania lub przejdź do następnego wyniku. Strzałka w prawo wraca do bieżącego tekstu. Zwykłe Ctrl+F pozostaje skrótem zdalnego programu. Zapytanie jest tylko w danej karcie, bez zapisu na dysku; nowe połączenie i zamknięcie karty je czyszczą. Wyszukiwanie nie obejmuje historii usuniętej już z bufora.
 
@@ -10,7 +12,7 @@ Od wersji 0.32.0: **Menu → Ustawienia → Bezpieczeństwo → Zaufane klucze S
 
 Windows: rozpakuj całe archiwum wydania Windows i uruchom `ServerDesk.App.exe`. Nie przenoś samego EXE — wydanie zawiera biblioteki natywne. Nie wymaga instalacji .NET. Wersja przenośna domyślnie zapisuje konfigurację w `%APPDATA%\ServerDesk`.
 
-Linux: rozpakuj archiwum, wykonaj `chmod +x ServerDesk.App` i `./ServerDesk.App`. Alternatywnie zainstaluj DEB: `sudo apt install ./serverdesk_0.33.0_amd64.deb`. Na Fedora użyj archiwum. Wymagane są biblioteki X11/fontconfig (szczegóły w dokumentacji). WSLg służył do części testów; nie zastępuje testów na fizycznym Kubuntu/Fedora.
+Linux: rozpakuj archiwum, wykonaj `chmod +x ServerDesk.App` i `./ServerDesk.App`. Alternatywnie zainstaluj DEB: `sudo apt install ./serverdesk_0.34.0_amd64.deb`. Na Fedora użyj archiwum. Wymagane są biblioteki X11/fontconfig (szczegóły w dokumentacji). WSLg służył do części testów; nie zastępuje testów na fizycznym Kubuntu/Fedora.
 
 Okno zapamiętuje normalny rozmiar i maksymalizację, a przy starcie mieści się w obszarze roboczym monitora. Po odłączeniu monitora wraca na ekran główny. Nie trzeba usuwać zapisanej konfiguracji.
 

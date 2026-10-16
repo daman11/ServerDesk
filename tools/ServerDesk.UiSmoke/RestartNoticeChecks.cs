@@ -49,7 +49,7 @@ internal static class RestartNoticeChecks
         {
             DesignSystem.ApplyPreferences(main.CurrentPreferences with { InterfaceFontSize=16,Density=InterfaceDensity.Comfortable }); DesignSystem.Apply(theme);
             w.Width=size.Width; w.Height=size.Height;
-            foreach(var index in Enumerable.Range(0,4))
+            foreach(var index in Enumerable.Range(0,6))
             {
                 tabs.SelectedIndex=index; RedesignChecks.Frames(3); Inside(pending,w); Inside(Action(w,"Zapisz"),w); Inside(Action(w,"Anuluj"),w); Inside(tabs,w);
                 if(Bounds(tabs,w).Bottom>Bounds(pending,w).Top+1)throw new Exception("Settings content overlaps restart notice");
@@ -61,11 +61,13 @@ internal static class RestartNoticeChecks
                     { var clip=Bounds(ancestor,w); if(text.Left<clip.Left-1 || text.Right>clip.Right+1)throw new Exception("Settings header text escapes clipping ancestor: "+label.Text+" / "+ancestor.GetType().Name); }
                 }
                 var page=(ScrollViewer)((TabItem)tabs.SelectedItem!).Content!; Inside(page,w);
+                var navigation=Named<ScrollViewer>(w,"SettingsNavigationScroll"); var selectedBounds=Bounds((TabItem)tabs.SelectedItem!,w); var navigationBounds=Bounds(navigation,w);
+                if(selectedBounds.Top<navigationBounds.Top-1 || selectedBounds.Bottom>navigationBounds.Bottom+1 || navigation.Bounds.Width>(size.Width<820?85:220))throw new Exception("Settings category is hidden or wrapped instead of scrolling");
                 if(Bounds((TabItem)tabs.SelectedItem!,w).Right>Bounds(page,w).Left+1)throw new Exception("Settings sidebar overlaps content page");
                 w.CaptureRenderedFrame()!.Save(Path.Combine(root,$"settings-{running}-{theme}-{(int)size.Width}-{index}.png"));
             }
         }
-        var first=tabs.Items.OfType<TabItem>().First(); var position=first.TranslatePoint(new Point(first.Bounds.Width/2,first.Bounds.Height/2),w)!.Value;
+        var first=tabs.Items.OfType<TabItem>().First(); first.BringIntoView(); RedesignChecks.Frames(3); var position=first.TranslatePoint(new Point(first.Bounds.Width/2,first.Bounds.Height/2),w)!.Value;
         w.MouseMove(position,RawInputModifiers.None); w.MouseDown(position,MouseButton.Left,RawInputModifiers.None); w.MouseUp(position,MouseButton.Left,RawInputModifiers.None); RedesignChecks.Frames();
         if(tabs.SelectedIndex!=0)throw new Exception("Settings sidebar pointer selection failed");
         first.Focus(); w.KeyPress(Key.Down,RawInputModifiers.None,PhysicalKey.ArrowDown," "); w.KeyRelease(Key.Down,RawInputModifiers.None,PhysicalKey.ArrowDown," "); RedesignChecks.Frames();

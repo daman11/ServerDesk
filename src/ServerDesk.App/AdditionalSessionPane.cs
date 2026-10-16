@@ -49,8 +49,9 @@ internal sealed partial class SessionPane
         { terminal.IsVisible=false; vncSession=await VncSession.ConnectAsync(Profile,secret,ct); ct.ThrowIfCancellationRequested(); vncSurface!.Attach(vncSession); vncSurface.Focus(); completion=vncSession.Completion; observed=vncSession; }
         else
         {
+            var preferences=await repository.PreferencesAsync(ct);
             serialSession=await SerialTerminalSession.OpenAsync(Profile.Serial,ct); ct.ThrowIfCancellationRequested();
-            terminal.IsVisible=true; terminal.ApplyTemplate(); terminalSearch?.Reset(); terminal.Terminal.Reset(); terminal.AttachConnection(serialSession); terminal.Focus(); completion=serialSession.Completion; observed=serialSession;
+            terminal.IsVisible=true; terminal.ApplyTemplate(); terminalSearch?.Reset(); terminal.Terminal.Reset(); ApplyTerminalConnectionPreferences(preferences); terminal.AttachConnection(serialSession); terminal.Focus(); completion=serialSession.Completion; observed=serialSession;
         }
         if(additionalNotice!=null)additionalNotice.IsVisible=false;
         connectionStarted=Stopwatch.GetTimestamp(); SetStatus(L.F($"{Profile.Protocol} · {Profile.Endpoint} · połączono"),"●");

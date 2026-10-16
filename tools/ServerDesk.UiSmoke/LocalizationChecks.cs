@@ -29,7 +29,7 @@ internal static class LocalizationChecks
         edit=Dialogs.Settings(english,repo,()=>Task.CompletedTask); RedesignChecks.Frames(); w=english.OwnedWindows.Single();
         if(w.Title!="ServerDesk settings" || Field<ComboBox>(w,"ApplicationLanguage").SelectedIndex!=1 || !Text(w,"The language change takes effect after restarting ServerDesk."))throw new Exception("English language settings or restart notice missing");
         var categories=Field<TabControl>(w,"SettingsCategories");
-        foreach(var index in Enumerable.Range(0,4))
+        foreach(var index in Enumerable.Range(0,6))
         {
             categories.SelectedIndex=index; RedesignChecks.Frames();
             w.CaptureRenderedFrame()!.Save(Path.Combine(root,"settings-en-"+index+".png"));

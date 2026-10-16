@@ -68,8 +68,8 @@ internal static class DesignRefreshChecks
         var search=Named<TextBox>(window,"SettingsSearch"); var categories=Named<TabControl>(window,"SettingsCategories"); var tabs=categories.Items.OfType<TabItem>().ToArray();
         categories.SelectedIndex=1; RedesignChecks.Frames(); var font=Setting<NumericUpDown>(window,"Rozmiar czcionki terminala"); font.Value=19;
         categories.SelectedIndex=0; RedesignChecks.Frames(); Setting<NumericUpDown>(window,"Rozmiar tekstu interfejsu").Value=16;
-        search.Text="cpu"; RedesignChecks.Frames(); if(categories.SelectedIndex!=3 || tabs.Count(t=>t.IsVisible)!=1 || !Setting<CheckBox>(window,"CPU").IsEffectivelyVisible)throw new Exception("Search did not expose matching monitoring category");
-        search.Text="polaczen"; RedesignChecks.Frames(); if(categories.SelectedIndex!=2 || !Setting<NumericUpDown>(window,"Szerokość panelu połączeń").IsEffectivelyVisible)throw new Exception("Settings search does not ignore Polish diacritics");
+        search.Text="cpu"; RedesignChecks.Frames(); if(categories.SelectedIndex!=4 || tabs.Count(t=>t.IsVisible)!=1 || !Setting<CheckBox>(window,"CPU").IsEffectivelyVisible)throw new Exception("Search did not expose matching monitoring category");
+        search.Text="polaczen"; RedesignChecks.Frames(); if(categories.SelectedIndex!=3 || !Setting<NumericUpDown>(window,"Szerokość panelu połączeń").IsEffectivelyVisible)throw new Exception("Settings search does not ignore Polish diacritics");
         search.Text="terminal font"; RedesignChecks.Frames(); if(language=="en" && (!font.IsEffectivelyVisible || font.Value!=19))throw new Exception("English multi-term search or draft retention failed");
         search.Text="qwerty-no-match"; RedesignChecks.Frames(); if(categories.IsVisible || !Named<TextBlock>(window,"SettingsSearchEmpty").IsVisible)throw new Exception("Settings empty search state missing");
         search.Focus(); window.KeyPress(Key.Escape,RawInputModifiers.None,PhysicalKey.Escape,"\u001b"); window.KeyRelease(Key.Escape,RawInputModifiers.None,PhysicalKey.Escape,"\u001b"); RedesignChecks.Frames();

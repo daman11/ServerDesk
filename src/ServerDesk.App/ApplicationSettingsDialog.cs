@@ -4,6 +4,7 @@ using Avalonia.Controls;
 using Avalonia.Layout;
 using Avalonia.Controls.Templates;
 using Avalonia.Media;
+using Avalonia.Platform.Storage;
 using ServerDesk.Core;
 using ServerDesk.Infrastructure;
 
@@ -19,6 +20,7 @@ internal static partial class Dialogs
         Action preview=()=>{};
         var searchIndex=new SettingsSearchIndex();
         var flags=new Dictionary<string,CheckBox>();
+        var flagDefaults=new Dictionary<string,bool>();
         var error=DesignSystem.Label("",true,12); DesignSystem.Resource(error,TextBlock.ForegroundProperty,"Danger"); error.TextWrapping=TextWrapping.Wrap; error.IsVisible=false;
         error.PropertyChanged+=(_,e)=> { if(e.Property==TextBlock.TextProperty)error.IsVisible=!string.IsNullOrEmpty(error.Text); };
         StackPanel Page(string icon,string title,string detail)
@@ -54,14 +56,15 @@ internal static partial class Dialogs
             var input=new NumericUpDown { Minimum=min,Maximum=max,Value=value,FormatString="0",HorizontalAlignment=HorizontalAlignment.Stretch };
             Label(panel,label,input); input.ValueChanged+=(_,_)=>preview(); return input;
         }
-        CheckBox Flag(StackPanel panel,string key,string label,bool value)
+        CheckBox Flag(StackPanel panel,string key,string label,bool value,bool defaultValue=true)
         {
             var originalLabel=label; label=L.T(label);
             var input=new CheckBox { Content=new TextBlock { Text=label,TextWrapping=TextWrapping.Wrap },IsChecked=value,HorizontalAlignment=HorizontalAlignment.Stretch }; AutomationProperties.SetName(input,label);
-            flags[key]=input; panel.Children.Add(input); searchIndex.Field(panel,input,originalLabel+" "+label); input.IsCheckedChanged+=(_,_)=>preview(); return input;
+            flags[key]=input; flagDefaults[key]=defaultValue; panel.Children.Add(input); searchIndex.Field(panel,input,originalLabel+" "+label); input.IsCheckedChanged+=(_,_)=>preview(); return input;
         }
         var appearancePage=Page("settings","Wygląd","Motyw, język i czytelność interfejsu.");
-        var terminalPage=Page("ssh","Terminal","Kolory i czcionka sesji terminalowych.");
+        var terminalPage=Page("ssh","Terminal","Kolory, czcionka, kursor i historia sesji SSH oraz Serial.");
+        var sftpPage=Page("folder","SFTP","Domyślny widok plików i lokalny katalog startowy.");
         var workspacePage=Page("layers","Obszar pracy","Panele, karty i zachowanie przy uruchamianiu.");
         var monitoringPage=Page("chart-no-axes-combined","Monitoring","Parametry serwera i informacje na pasku statusu.");
         var securityPage=Page("key","Bezpieczeństwo","Tożsamość serwerów i zapisane zaufanie SSH.");
@@ -100,6 +103,37 @@ internal static partial class Dialogs
         var family=new ComboBox { ItemsSource=ApplicationPreferences.TerminalFonts,SelectedItem=p.TerminalFontFamily,HorizontalAlignment=HorizontalAlignment.Stretch,ItemTemplate=new FuncDataTemplate<string>((name,_)=>DesignSystem.Label(L.T(name??""))) }; Label(terminal,"Krój czcionki terminala",family);
         terminal.Children.Add(Text(L.T("Paleta terminala jest niezależna od motywu aplikacji. Jeśli wybranej czcionki nie ma w systemie, terminal użyje czcionki monospace."),12));
         Flag(terminal,"sessionStatus","Pokaż status pod panelem sesji",p.ShowSessionStatus);
+        terminal=Section(terminalPage,"square-terminal","Kursor i historia");
+        var cursor=new ComboBox { ItemsSource=new[]{L.T("Kreska"),L.T("Blok"),L.T("Podkreślenie")},SelectedIndex=(int)p.TerminalCursor,HorizontalAlignment=HorizontalAlignment.Stretch }; Label(terminal,"Kształt kursora",cursor); cursor.Name="TerminalCursor";
+        Flag(terminal,"blink","Migający kursor",p.TerminalCursorBlink);
+        var scrollback=Number(terminal,"Wiersze historii terminala",p.TerminalScrollbackLines,0,100000); scrollback.Name="TerminalScrollbackLines";
+        terminal.Children.Add(Text(L.T("Kursor ma podgląd na żywo. Programy zdalne mogą zmieniać jego wygląd. Limit historii obowiązuje przy następnym połączeniu SSH lub Serial; 0 wyłącza historię. Bieżący bufor pozostaje zachowany."),12));
+        var fileSettings=Section(sftpPage,"folder","Otwieranie przeglądarki plików");
+        var localDirectory=new TextBox { Name="SftpLocalDirectory",Text=p.SftpLocalDirectory,MaxLength=4096,PlaceholderText=L.T("Puste: katalog domowy"),HorizontalAlignment=HorizontalAlignment.Stretch };
+        var browse=DeskIcons.Button("folder","Wybierz katalog startowy SFTP",async()=>
+        {
+            if(settingsOwner==null)return;
+            try
+            {
+                var selected=await settingsOwner.StorageProvider.OpenFolderPickerAsync(new() { Title=L.T("Wybierz katalog startowy SFTP"),AllowMultiple=false });
+                if(selected.FirstOrDefault()?.TryGetLocalPath() is {} path)localDirectory.Text=path;
+            }
+            catch(Exception ex) { Serilog.Log.Warning("Wybór katalogu ustawień typu {Type}",ex.GetType().Name); error.Text=L.T("Nie udało się otworzyć wyboru katalogu. Wpisz pełną ścieżkę ręcznie."); }
+        },28);
+        browse.Name="BrowseSftpLocalDirectory"; localDirectory.InnerRightContent=browse;
+        Label(fileSettings,"Lokalny katalog startowy",localDirectory);
+        var startSide=new ComboBox { Name="SftpStartSide",ItemsSource=new[]{L.T("Lokalny"),L.T("Zdalny")},SelectedIndex=p.SftpStartRemote?1:0,HorizontalAlignment=HorizontalAlignment.Stretch }; Label(fileSettings,"Początkowo aktywny panel",startSide);
+        Flag(fileSettings,"hidden","Pokaż ukryte pliki po otwarciu SFTP",p.SftpShowHidden,false);
+        fileSettings.Children.Add(Text(L.T("Te opcje są stosowane przy pierwszym otwarciu SFTP w karcie. Otwarta przeglądarka zachowuje bieżący katalog, filtry i sortowanie. Niedostępny katalog startowy zastąpi katalog domowy z powiadomieniem."),12));
+        fileSettings=Section(sftpPage,"transfers","Domyślne sortowanie plików");
+        ComboBox Sort(string label,FileSort value)
+        {
+            var input=new ComboBox { ItemsSource=new[]{L.T("Nazwa"),L.T("Rozmiar"),L.T("Zmodyfikowano"),L.T("Typ")},SelectedIndex=(int)value,HorizontalAlignment=HorizontalAlignment.Stretch }; Label(fileSettings,label,input); return input;
+        }
+        var localFileSort=Sort("Sortowanie lokalnego panelu",p.SftpLocalSort); localFileSort.Name="SftpLocalSort";
+        Flag(fileSettings,"localDescending","Sortuj lokalne pliki malejąco",p.SftpLocalDescending,false);
+        var remoteFileSort=Sort("Sortowanie zdalnego panelu",p.SftpRemoteSort); remoteFileSort.Name="SftpRemoteSort";
+        Flag(fileSettings,"remoteDescending","Sortuj zdalne pliki malejąco",p.SftpRemoteDescending,false);
         var workspace=Section(workspacePage,"layers","Panele i karty");
         var sidebarWidth=Number(workspace,"Szerokość panelu połączeń",p.SidebarWidth,220,500);
         var sidebarStart=new ComboBox { ItemsSource=new[]{L.T("Zapamiętaj ostatni stan"),L.T("Zawsze pokaż"),L.T("Zawsze ukryj")},SelectedIndex=(int)p.SidebarOnStartup,HorizontalAlignment=HorizontalAlignment.Stretch }; Label(workspace,"Panel połączeń przy uruchomieniu",sidebarStart);
@@ -122,16 +156,23 @@ internal static partial class Dialogs
         {
             Language=language.SelectedIndex==1?"en":"pl",
             InterfaceFontSize=(int)(uiFont.Value??13),Density=(InterfaceDensity)Math.Max(0,density.SelectedIndex),AccentColor=accent.Text?.Trim()??"",TerminalFontFamily=family.SelectedItem as string??"Domyślna",
+            TerminalScrollbackLines=(int)(scrollback.Value??10000),TerminalCursor=(TerminalCursorShape)Math.Max(0,cursor.SelectedIndex),TerminalCursorBlink=On("blink"),
+            SftpLocalDirectory=localDirectory.Text??"",SftpShowHidden=On("hidden"),SftpLocalSort=(FileSort)Math.Max(0,localFileSort.SelectedIndex),SftpRemoteSort=(FileSort)Math.Max(0,remoteFileSort.SelectedIndex),SftpLocalDescending=On("localDescending"),SftpRemoteDescending=On("remoteDescending"),SftpStartRemote=startSide.SelectedIndex==1,
             SidebarWidth=(int)(sidebarWidth.Value??272),SidebarOnStartup=(SidebarStartup)Math.Max(0,sidebarStart.SelectedIndex),TabLabelWidth=(int)(tabWidth.Value??220),ShowProtocolBadges=On("protocols"),ShowSessionStatus=On("sessionStatus"),
             ShowStatusBar=On("status"),ShowMetrics=On("metrics"),ShowTransferCount=On("transfers"),MetricCpu=On("cpu"),MetricMemory=On("ram"),MetricNetwork=On("network"),MetricUptime=On("uptime"),MetricDisk=On("disk"),MetricSystem=On("system"),MetricClock=On("clock")
         };
         preview=()=>
         {
             if(resetting)return;
-            try { var draft=Draft(); draft.Validate(); if(main!=null)main.PreviewPreferences(draft); else DesignSystem.ApplyPreferences(draft); DesignSystem.Apply(theme.SelectedIndex==5?"system":DesignSystem.Themes[Math.Max(0,theme.SelectedIndex)].Id); error.Text=""; accent.Classes.Remove("error"); }
-            catch(ArgumentException ex) { error.Text=ex.Message; accent.Classes.Add("error"); }
+            try { var draft=Draft(); draft.Validate(); if(main!=null)main.PreviewPreferences(draft); else DesignSystem.ApplyPreferences(draft); DesignSystem.Apply(theme.SelectedIndex==5?"system":DesignSystem.Themes[Math.Max(0,theme.SelectedIndex)].Id); error.Text=""; accent.Classes.Remove("error"); localDirectory.Classes.Remove("error"); }
+            catch(ArgumentException ex) { ShowValidation(ex); }
         };
+        void ShowValidation(ArgumentException ex)
+        {
+            error.Text=ex.Message; accent.Classes.Set("error",ex.ParamName==nameof(ApplicationPreferences.AccentColor)); localDirectory.Classes.Set("error",ex.ParamName==nameof(ApplicationPreferences.SftpLocalDirectory));
+        }
         theme.SelectionChanged+=(_,_)=>preview(); density.SelectionChanged+=(_,_)=>preview(); family.SelectionChanged+=(_,_)=>preview(); sidebarStart.SelectionChanged+=(_,_)=>preview(); accent.TextChanged+=(_,_)=>preview();
+        cursor.SelectionChanged+=(_,_)=>preview(); localDirectory.TextChanged+=(_,_)=>preview(); localFileSort.SelectionChanged+=(_,_)=>preview(); remoteFileSort.SelectionChanged+=(_,_)=>preview(); startSide.SelectionChanged+=(_,_)=>preview();
         TabItem Category(string glyph,string title,StackPanel page)
         {
             var scroll=new ScrollViewer { Content=page,HorizontalScrollBarVisibility=Avalonia.Controls.Primitives.ScrollBarVisibility.Disabled };
@@ -139,8 +180,9 @@ internal static partial class Dialogs
             return new TabItem { Classes={"page-navigation","settings-category"},Header=DeskIcons.Labelled(glyph,L.T(title)),Content=scroll };
         }
         var categories=new TabControl { Name="SettingsCategories",TabStripPlacement=Dock.Left,Padding=new Thickness(0),ItemsSource=new[] {
-            Category("settings","Wygląd",appearancePage),Category("ssh","Terminal",terminalPage),Category("layers","Obszar pracy",workspacePage),Category("chart-no-axes-combined","Monitoring",monitoringPage),Category("key","Bezpieczeństwo",securityPage)
+            Category("settings","Wygląd",appearancePage),Category("ssh","Terminal",terminalPage),Category("folder","SFTP",sftpPage),Category("layers","Obszar pracy",workspacePage),Category("chart-no-axes-combined","Monitoring",monitoringPage),Category("key","Bezpieczeństwo",securityPage)
         },SelectedIndex=0 };
+        SettingsNavigation.Configure(categories);
         DesignSystem.Resource(categories,TabControl.BackgroundProperty,"BackgroundSecondary");
         AutomationProperties.SetName(categories,L.T("Kategorie ustawień"));
         var actions=new Grid { ColumnDefinitions=new ColumnDefinitions("*,Auto,Auto"),ColumnSpacing=8 };
@@ -177,7 +219,7 @@ internal static partial class Dialogs
         void ResizeNavigation()
         {
             var compact=dialog.Bounds.Width<820;
-            var icons=new[]{"settings","ssh","layers","chart-no-axes-combined","key"}; var names=new[]{"Wygląd","Terminal","Obszar pracy","Monitoring","Bezpieczeństwo"};
+            var icons=new[]{"settings","ssh","folder","layers","chart-no-axes-combined","key"}; var names=new[]{"Wygląd","Terminal","SFTP","Obszar pracy","Monitoring","Bezpieczeństwo"};
             var index=0;
             foreach(var category in categories.Items.OfType<TabItem>())
             {
@@ -191,7 +233,7 @@ internal static partial class Dialogs
         var defaults=Button("Domyślne ustawienia",()=>
         {
             resetting=true;
-            try { language.SelectedIndex=0; theme.SelectedIndex=0; uiFont.Value=13; density.SelectedIndex=1; accent.Text=""; palette.SelectedItem=TerminalAppearance.Names[0]; terminalFont.Value=14; family.SelectedItem="Domyślna"; sidebarWidth.Value=272; sidebarStart.SelectedIndex=0; tabWidth.Value=220; interval.Value=5; foreach(var flag in flags.Values)flag.IsChecked=true; }
+            try { language.SelectedIndex=0; theme.SelectedIndex=0; uiFont.Value=13; density.SelectedIndex=1; accent.Text=""; palette.SelectedItem=TerminalAppearance.Names[0]; terminalFont.Value=14; family.SelectedItem="Domyślna"; scrollback.Value=10000; cursor.SelectedIndex=0; localDirectory.Text=""; localFileSort.SelectedIndex=remoteFileSort.SelectedIndex=0; startSide.SelectedIndex=1; sidebarWidth.Value=272; sidebarStart.SelectedIndex=0; tabWidth.Value=220; interval.Value=5; foreach(var (key,flag) in flags)flag.IsChecked=flagDefaults[key]; }
             finally { resetting=false; preview(); }
         }); defaults.HorizontalAlignment=HorizontalAlignment.Left; actions.Children.Add(defaults);
         var cancel=Button("Anuluj",()=> { if(!saving)dialog.Close(); }); Grid.SetColumn(cancel,1); actions.Children.Add(cancel);
@@ -199,7 +241,18 @@ internal static partial class Dialogs
         {
             if(saving)return; saving=true; categories.IsEnabled=false; actions.IsEnabled=false; search.IsEnabled=false; saveRestart.IsEnabled=false;
             try { var draft=Draft(); draft.Validate(); await repository.SaveApplicationSettingsAsync(new(theme.SelectedIndex==5?"system":DesignSystem.Themes[Math.Max(0,theme.SelectedIndex)].Id,palette.SelectedItem as string??TerminalAppearance.Names[0],(int)(terminalFont.Value??14),(int)(interval.Value??5),On("remember"),draft)); saved=true; main?.UpdateLanguageRestartNotice(draft.Language); preview(); await changed(); restartAfterSave=restart?draft.Language:null; saving=false; dialog.Close(); }
-            catch(ArgumentException ex) { error.Text=ex.Message; if(accent.Classes.Contains("error")) { search.Text=""; categories.SelectedIndex=0; accent.BringIntoView(); accent.Focus(); } }
+            catch(ArgumentException ex)
+            {
+                ShowValidation(ex); search.Text="";
+                var (index,field)=ex.ParamName switch {
+                    nameof(ApplicationPreferences.SftpLocalDirectory)=>(2,(Control)localDirectory),
+                    nameof(ApplicationPreferences.SftpLocalSort)=>(2,localFileSort),
+                    nameof(ApplicationPreferences.TerminalCursor)=>(1,cursor),
+                    nameof(ApplicationPreferences.TerminalScrollbackLines)=>(1,scrollback),
+                    _=>(0,accent)
+                };
+                categories.SelectedIndex=index; field.BringIntoView(); field.Focus();
+            }
             catch(Exception ex) { Serilog.Log.Error("Błąd ustawień typu {Type}",ex.GetType().Name); error.Text=L.T("Nie udało się zapisać lub zastosować ustawień. Spróbuj ponownie."); }
             finally { saving=false; categories.IsEnabled=true; actions.IsEnabled=true; search.IsEnabled=true; saveRestart.IsEnabled=true; }
         }

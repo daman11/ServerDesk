@@ -1,4 +1,6 @@
-# Pierwotne MVP — wydanie 0.33.0
+# Pierwotne MVP — wydanie 0.34.0
+
+Nowości 0.34.0: **Ustawienia → Terminal/SFTP** — kształt i miganie kursora, historia 0–100 000 wierszy przy następnym połączeniu, lokalny folder startowy i domyślny widok obu paneli. Podgląd/anulowanie nie kasują bufora, a zapis nie zmienia otwartego SFTP. [Testy i granice](reports/extended-settings-2026-10-16.md).
 
 Ta lista odnosi się do pierwotnej specyfikacji ServerDesk i jej kryteriów gotowości (§21). Nie zalicza dodatkowych Network Tools, VNC ani Serial jako zastępstwa funkcji SSH/SFTP/Server Info/RDP. Historyczny audyt 0.4.0 pozostaje zapisem tamtego stanu.
 
@@ -36,6 +38,6 @@ Etap 0.31.0 przenosi przygotowanie klucza z passphrase oraz pełny odczyt monito
 3. Rozszerzenie macierzy RDP oraz docelowe osadzanie Linux; obecny fallback FreeRDP pozostaje jawnie opisany.
 4. Pozostałe serwery SSH/SFTP, fizyczne gesty/mysz terminalowa i szersza macierz protokołów klawiatury.
 
-Nie ogłaszamy pełnego MVP za zakończone na podstawie samego istnienia kontrolek lub zielonej kompilacji. Wyniki tego etapu i granice testów zapisuje [raport weryfikacji](reports/release-verification-0.33.0.md).
+Nie ogłaszamy pełnego MVP za zakończone na podstawie samego istnienia kontrolek lub zielonej kompilacji. Wyniki tego etapu i granice testów zapisuje [raport weryfikacji](reports/release-verification-0.34.0.md).
 
 Poprawka 0.31.1 naprawia kodowanie instalatora oraz dodaje przypomnienia w docelowym języku i bezpieczny restart z ustawień/okna głównego. [Zakres poprawki](releases/release-0.31.1.md).

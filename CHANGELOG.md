@@ -2,6 +2,16 @@
 
 ## Unreleased
 
+## 0.34.0 — Public Beta — 2026-10-16
+
+- Expand Settings to six searchable categories, including a dedicated SFTP page, with responsive PL/EN fields and notes on when each preference applies.
+- Keep category navigation in one scrollable column, including small windows with a language restart reminder; reveal selected categories for pointer/keyboard navigation.
+- Add terminal cursor shape/blinking with live preview/cancel. Preserve remote cursor overrides when unrelated preferences change; reapply defaults on a new SSH/Serial connection.
+- Configure terminal scrollback from 0 to 100,000 lines on the next connection, preserving the current buffer during preview/save/cancel.
+- Add an absolute local SFTP start directory with a folder picker. Resolve it off the UI thread on first SFTP open; fall back to home with a dismissible warning if unavailable.
+- Configure initial hidden-file visibility, separate local/remote sorting and direction, and the active panel. Preserve browser choices across settings saves and reconnecting the same tab.
+- Restore mixed true/false defaults and reveal the correct invalid field after searching. Keep legacy defaults and atomic persistence without new dependencies or a schema migration.
+
 ## 0.33.0 — Public Beta — 2026-10-16
 
 - Add independent local/remote SFTP Back, Forward, Parent and Home controls, Alt+Left/Right/Up/Home shortcuts and Escape to restore an unsubmitted path.

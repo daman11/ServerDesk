@@ -1,5 +1,7 @@
 # Rozwój i testy
 
+Ustawienia 0.34.0: UiSmoke `ROOT --extended-settings` sprawdza sześć kategorii PL/EN, Graphite/Light, font16 przy 680x500 i 960x720, wyszukiwanie, podgląd kursora, zdalny DECSCUSR, zachowanie bufora, zapis/anulowanie/domyślne i błędną ścieżkę. Jest częścią CI. `ROOT HOST KEY --extended-settings-network` wymaga jednorazowego OpenSSH na 22222 i izolowanych danych; sprawdza rzeczywisty zapisany widok SFTP, fallback, live SSH, limit historii oraz reconnect/nową kartę. Nie korzystaj z osobistych danych. Fizyczne Serial i gesty systemowego wyboru folderu wymagają oddzielnej akceptacji.
+
 ## Czysty checkout
 
 Zainstaluj Git, PowerShell 7 oraz SDK wskazane w `global.json`. Uruchom `pwsh -File scripts/check-repository.ps1`, `dotnet restore ServerDesk.sln --locked-mode`, `dotnet build ServerDesk.sln -c Release --no-restore -m:1` i `dotnet test tests/ServerDesk.Tests -c Release --no-build`. Lokalne SDK i pobrane biblioteki w `.tools` są opcjonalne; nie kopiuj ich do repozytorium. Pełną macierz CI definiuje [ci.yml](../.github/workflows/ci.yml), a strukturę dokumentacji [indeks](README.md).

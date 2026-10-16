@@ -26,9 +26,9 @@ internal static class SettingsLayoutChecks
         dialog.CaptureRenderedFrame()!.Save(Path.Combine(root,"settings-appearance.png"));
         categories.SelectedIndex=1; RedesignChecks.Frames(); Find<ComboBox>(dialog,"Paleta terminala").SelectedItem="Nord"; Find<ComboBox>(dialog,"Krój czcionki terminala").SelectedItem="Consolas"; Find<NumericUpDown>(dialog,"Rozmiar czcionki terminala").Value=17;
         dialog.CaptureRenderedFrame()!.Save(Path.Combine(root,"settings-terminal.png"));
-        categories.SelectedIndex=2; RedesignChecks.Frames(); Find<NumericUpDown>(dialog,"Szerokość panelu połączeń").Value=320; Find<CheckBox>(dialog,"Pokaż oznaczenia protokołów przy serwerach").IsChecked=false;
+        categories.SelectedIndex=3; RedesignChecks.Frames(); Find<NumericUpDown>(dialog,"Szerokość panelu połączeń").Value=320; Find<CheckBox>(dialog,"Pokaż oznaczenia protokołów przy serwerach").IsChecked=false;
         dialog.CaptureRenderedFrame()!.Save(Path.Combine(root,"settings-workspace.png"));
-        categories.SelectedIndex=3; RedesignChecks.Frames(); Find<CheckBox>(dialog,"Nazwa systemu operacyjnego").IsChecked=false;
+        categories.SelectedIndex=4; RedesignChecks.Frames(); Find<CheckBox>(dialog,"Nazwa systemu operacyjnego").IsChecked=false;
         var rectangle=Find<CheckBox>(dialog,"CPU").GetVisualDescendants().OfType<Border>().Single(b=>b.Name=="NormalRectangle");
         if(rectangle.Background is not ISolidColorBrush accentBrush || accentBrush.Color!=Color.Parse("#E5B567"))throw new Exception("Custom accent did not reach checked controls");
         Find<CheckBox>(dialog,"Pokaż dolny pasek statusu").IsChecked=false; RedesignChecks.Frames();

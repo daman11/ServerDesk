@@ -1,6 +1,8 @@
-# ServerDesk 0.33.0 Public Beta — known issues
+# ServerDesk 0.34.0 Public Beta — known issues
 
 This is a public beta. Keep a backup before upgrading and validate the workflows you need in a test environment.
+
+- **Session preferences:** cursor changes preview live; the scrollback limit applies on the next SSH/Serial connection. SFTP defaults apply only on first opening in a tab. Remote applications can override cursor appearance. Local start directories are device-specific; an unavailable directory falls back to home with a warning. Native folder-picker gestures and physical serial adapters need wider manual coverage.
 
 | Platform | Distribution | Verification |
 |---|---|---|

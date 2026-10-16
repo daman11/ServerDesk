@@ -22,7 +22,7 @@ Run from the repository root. Close builds and test tools first. Preview the can
 The cleaner always retains top-level `releases`, `reports` and `README.md`. It also retains entries referenced by detected ServerDesk/build processes or, on Windows, ServerDesk shortcuts in the current user's Desktop and Start Menu. Detection is a precaution; use `-Keep` for other portable builds or work you still need:
 
 ```powershell
-./scripts/clean-artifacts.ps1 -Keep 'win-x64-0.33.0' -WhatIf
+./scripts/clean-artifacts.ps1 -Keep 'win-x64-0.34.0' -WhatIf
 ```
 
 `-Keep` accepts literal top-level names. `-Path` can select a disposable subtree inside this repository's `artifacts/`, but cannot select frozen release/report trees or traverse a symbolic link or junction. Links encountered during deletion are removed without traversing their targets. The cleaner never terminates a process. Failures are reported in `reports/cleanup-latest.json`; `-WhatIf` writes no report and removes nothing.

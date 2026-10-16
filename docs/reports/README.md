@@ -1,6 +1,8 @@
 # Verification and historical reviews
 
-Current release: [0.33.0 verification](release-verification-0.33.0.md). Imported Git baseline: [0.31.1 verification](release-verification-0.31.1.md).
+Current release: [0.34.0 verification](release-verification-0.34.0.md). Imported Git baseline: [0.31.1 verification](release-verification-0.31.1.md).
+
+Personalization: [Terminal and SFTP preferences, 2026-10-16](extended-settings-2026-10-16.md).
 
 Repository maintenance: [Git/GitHub preparation, 2026-10-16](repository-preparation-2026-10-16.md).
 Generated output: [Artifact cleanup, 2026-10-16](artifact-cleanup-2026-10-16.md).

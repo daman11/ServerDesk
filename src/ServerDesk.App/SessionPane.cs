@@ -160,7 +160,7 @@ internal sealed partial class SessionPane : WorkspacePane
         if(Profile.Protocol is Protocol.VNC or Protocol.Serial) { await ConnectAdditionalAsync(ct); return; }
         terminal.IsVisible=true; files.IsVisible=info.IsVisible=false; infoActive=false; SelectPanel(0);
         var client=await factory.SshAsync(Profile,secret,ct);
-        try { ct.ThrowIfCancellationRequested(); terminal.ApplyTemplate(); terminalSearch?.Reset(); terminal.Terminal.Reset(); TerminalAppearance.Apply(terminal,await repository.SettingAsync("terminalPalette",ct)??TerminalAppearance.Names[0],(int)terminal.FontSize,preferences.TerminalFontFamily); session=await SshTerminalSession.CreateAsync(client,ct); terminal.AttachConnection(session); session.Resize(terminal.Terminal.Cols,terminal.Terminal.Rows); terminal.Focus(); connectionStarted=Stopwatch.GetTimestamp(); SetStatus(L.F($"● SSH · {Profile.Username}@{Profile.Host}:{Profile.Port} · połączono"),"●"); _=ObserveEndAsync(session); if(owner.Preferences.ShowMetrics && owner.Preferences.ShowStatusBar)_=StartMonitoringAsync(ct); }
+        try { ct.ThrowIfCancellationRequested(); terminal.ApplyTemplate(); terminalSearch?.Reset(); terminal.Terminal.Reset(); ApplyTerminalConnectionPreferences(preferences); TerminalAppearance.Apply(terminal,await repository.SettingAsync("terminalPalette",ct)??TerminalAppearance.Names[0],(int)terminal.FontSize,preferences.TerminalFontFamily); session=await SshTerminalSession.CreateAsync(client,ct); terminal.AttachConnection(session); session.Resize(terminal.Terminal.Cols,terminal.Terminal.Rows); terminal.Focus(); connectionStarted=Stopwatch.GetTimestamp(); SetStatus(L.F($"● SSH · {Profile.Username}@{Profile.Host}:{Profile.Port} · połączono"),"●"); _=ObserveEndAsync(session); if(owner.Preferences.ShowMetrics && owner.Preferences.ShowStatusBar)_=StartMonitoringAsync(ct); }
         catch { client.Dispose(); throw; }
     }
     public Task ReconnectAsync(string? replacementSecret=null) => ConnectAsync(replacementSecret??secret,lifetime.Token);
@@ -259,7 +259,14 @@ internal sealed partial class SessionPane : WorkspacePane
         ct.ThrowIfCancellationRequested(); terminal.IsVisible=panel==0; files.IsVisible=panel==1; info.IsVisible=panel==2; infoActive=panel==2; SelectPanel(panel);
         if(panel==1)
         {
-            if(sftp==null) { var client=await factory.SftpAsync(Profile,secret,ct); if(ct.IsCancellationRequested) { client.Dispose(); return; } sftp=new SftpSession(client); remoteHome=sftp.WorkingDirectory; remotePath.Text=remoteHome; }
+            if(sftp==null)
+            {
+                var defaults=await repository.PreferencesAsync(ct);
+                var startup=fileDefaultsApplied?null:await FileBrowserStartup.ResolveAsync(defaults,Environment.GetFolderPath(Environment.SpecialFolder.UserProfile),ct);
+                var client=await factory.SftpAsync(Profile,secret,ct); if(ct.IsCancellationRequested) { client.Dispose(); return; }
+                sftp=new SftpSession(client); remoteHome=sftp.WorkingDirectory; remotePath.Text=remoteHome;
+                if(startup!=null)ApplyFileDefaults(defaults,startup);
+            }
             await RefreshAsync();
         }
         if(panel==2 && monitor==null)

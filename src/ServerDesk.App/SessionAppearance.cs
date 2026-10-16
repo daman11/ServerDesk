@@ -91,7 +91,7 @@ internal sealed partial class SessionPane
         }
         finally { if(acquired)appearanceGate.Release(); }
     }
-    internal void ApplySessionPreferences(ApplicationPreferences value)=>state.IsVisible=value.ShowSessionStatus;
+    internal void ApplySessionPreferences(ApplicationPreferences value) { state.IsVisible=value.ShowSessionStatus; ApplyTerminalCursor(value); }
     private void ConfigureFileTables()
     {
         files.RowDefinitions=new RowDefinitions("Auto,Auto,Auto,Auto,*,Auto");

@@ -43,7 +43,7 @@ internal static class TrustedHostsChecks
             var settings=Dialogs.Settings(main,repo,()=>Task.CompletedTask); RedesignChecks.Frames(); var settingsWindow=main.OwnedWindows.Single();
             settingsWindow.GetVisualDescendants().OfType<NumericUpDown>().Single(control=>AutomationProperties.GetName(control)==AppText.T("Rozmiar tekstu interfejsu")).Value=16; RedesignChecks.Frames(2);
             Named<TextBox>(settingsWindow,"SettingsSearch").Text=language=="pl"?"zaufane":"trusted"; RedesignChecks.Frames();
-            if(Named<TabControl>(settingsWindow,"SettingsCategories").SelectedIndex!=4 || !Named<Button>(settingsWindow,"ManageTrustedHosts").IsEffectivelyVisible)throw new Exception("Trust settings are not searchable");
+            if(Named<TabControl>(settingsWindow,"SettingsCategories").SelectedIndex!=5 || !Named<Button>(settingsWindow,"ManageTrustedHosts").IsEffectivelyVisible)throw new Exception("Trust settings are not searchable");
             Click(settingsWindow,"ManageTrustedHosts"); Until(()=>settingsWindow.OwnedWindows.Count==1,"Trust manager did not open from settings"); var dialog=settingsWindow.OwnedWindows.Single(); Ready(dialog);
             if(DesignSystem.Preferences.InterfaceFontSize!=16)throw new Exception("Trust layout was not tested at the requested font size");
             var list=Named<ListBox>(dialog,"TrustedHostsList"); var search=Named<TextBox>(dialog,"TrustedHostsSearch");

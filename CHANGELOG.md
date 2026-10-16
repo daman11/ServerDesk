@@ -2,6 +2,15 @@
 
 ## Unreleased
 
+## 0.36.0 — Public Beta — 2026-10-16
+
+- Add one shared Commands panel for the offline Smart Cheat Sheet, user snippets, favorites, optional ID-only recent history and Polish/English search.
+- Ship 165 versioned command variants / 134 operations across ten categories, with distro/tool inheritance, risk, privilege and shell metadata.
+- Add encrypted user-template CRUD, nested categories/moves, host/folder scope, typed parameters, safe shell quoting and strict JSON import/export.
+- Discover Linux and Windows through bounded separate exec channels of existing SSH sessions; cache per connection, support manual/pinned profiles and never probe RDP/VNC/Serial as shells.
+- Insert without Enter; preview and confirm explicit execution, confirm Dangerous operations twice, refuse stale session/connection targets, and keep multiline scripts/secrets copy-only.
+- Preserve existing four-panel docking and protocols; add offline/editor/security and real loopback SSH acceptance coverage. No new runtime dependencies or SQLite table migration.
+
 ## 0.35.0 — Public Beta — 2026-10-16
 
 - Add three panels (one tall plus two stacked) and a four-panel 2×2 grid. Fill empty groups from spare docked tabs when changing layout, preserving existing sessions and buffers; merge hidden groups safely when reducing the split.

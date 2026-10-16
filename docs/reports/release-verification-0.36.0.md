@@ -1,0 +1,9 @@
+# ServerDesk 0.36.0 — zakres weryfikacji, 2026-10-16
+
+Wydanie obejmuje zintegrowane Command Snippets i Smart Cheat Sheet opisane w [raporcie funkcji](commands-2026-10-16.md) oraz [instrukcji](../commands.md). Biblioteka zawiera 165 wariantów / 134 operacje. Przed pakowaniem: 622/622 testy bez pominięć, Release build bez ostrzeżeń, macierz 13 scenariuszy UI na Windows/Linux oraz rzeczywisty loopback SSH. Nie dodano zależności aplikacji ani migracji tabel SQLite. Definicje użytkownika korzystają z istniejącego szyfrowania systemowego, stan referencyjny z wersjonowanych kluczy settings.
+
+Przed zamrożeniem obowiązują locked restore/Release build, cały zestaw jednostkowy, macierz UI Windows/Linux z nowym panelem i edytorami, dwa rzeczywiste połączenia jednorazowego SSH, regresje protokołów i czterech paneli, advisory NuGet, manifest/natywny host RDP opublikowanego EXE bez logowania, startup/restart, teksty Setup i izolowana instalacja/upgrade/uninstall, zgodność ZIP/DEB/TAR oraz kompilacja i testy źródeł rozpakowanych z ZIP. Rejestracja Apps/Start jest pomijana przy istniejącej instalacji użytkownika.
+
+Payloady powstają z czystego commita, z wersją EXE 0.36.0.0 i SHA tego commita w ProductVersion. Zestaw ma dokładnie dziesięć plików: Windows Setup/ZIP, Linux DEB/TAR, źródła MIT, notatki, weryfikacja, metadane, licencja i SHA256SUMS. Faktyczne końcowe wyniki i licznik testów są dopisywane po wykonaniu do VERIFICATION.md zestawu. Dowody: artifacts/reports/release-0.36.0/. Tag v0.36.0 i paczki pozostają lokalne; wcześniejsze 170 zamrożonych plików nie są zmieniane.
+
+To nie jest deklaracja pełnego zakończenia pierwotnego MVP ani audyt bezpieczeństwa dowolnych importowanych skryptów. Rzeczywisty nowy host Windows SSH, szersza macierz systemów/powłok, fizyczny drag and drop, Serial/IME/mieszane DPI i wielogodzinne sesje nadal wymagają weryfikacji. Bez podpisu zaufanego wydawcy, autoaktualizacji, YAML i WinRM. [Ograniczenia](../known-issues.md).

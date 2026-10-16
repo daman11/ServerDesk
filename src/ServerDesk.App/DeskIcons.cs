@@ -37,7 +37,7 @@ internal static class DeskIcons
         ["connections"]="server",["favorite"]="star",["recent"]="clock-arrow-left",["history"]="clock-arrow-left",["transfers"]="arrow-up-down",["ssh"]="square-terminal",["rdp"]="monitor",["serial"]="link-2",["close"]="x",["refresh"]="refresh-cw",["sidebar"]="panel-left",["up"]="arrow-up",["link"]="link-2",["delete"]="trash",["edit"]="pencil",["connect"]="log-in",["disconnect"]="log-out",["more"]="ellipsis",["import"]="download",["export"]="upload",["key"]="key-round",["warning"]="triangle-alert",["error"]="circle-alert",["success"]="circle-check",["unknown"]="circle-dashed",["file-json"]="file-braces"
     };
     internal static IReadOnlyCollection<string> Available=>Names;
-    internal static string Resolve(string name)=>Aliases.TryGetValue(name,out var alias)?alias:Names.Contains(name)?name:"file";
+    internal static string Resolve(string name)=>name=="commands"?"square-terminal":Aliases.TryGetValue(name,out var alias)?alias:Names.Contains(name)?name:"file";
     internal static Geometry Geometry(string name)=>Cache.GetOrAdd(Resolve(name),Load);
     private static Geometry Load(string name)
     {

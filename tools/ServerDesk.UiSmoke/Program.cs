@@ -37,6 +37,8 @@ if(args.Contains("--large-file-views")) { LargeFileViewChecks.Run(root); return;
 if(args.Contains("--sftp-navigation")) { SftpNavigationChecks.Run(root); return; }
 if(args.Contains("--extended-settings")) { ExtendedSettingsChecks.Run(root); return; }
 if(args.Contains("--four-panels")) { FourPanelChecks.Run(root); return; }
+if(args.Contains("--commands")) { CommandPanelChecks.Run(root); return; }
+if(args.Contains("--commands-network")) { CommandPanelChecks.Network(root,args[1],args[2]); return; }
 if(args.Contains("--four-panels-network")) { FourPanelChecks.Network(root,args[1],args[2]); return; }
 if(args.Contains("--extended-settings-network")) { ExtendedSettingsChecks.Network(root,args[1],args[2]); return; }
 if(args.Contains("--sftp-navigation-network")) { SftpNavigationChecks.Network(root,args[1],args[2]); return; }

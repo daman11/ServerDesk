@@ -19,6 +19,34 @@ public sealed class SshTerminalSession : IPtyConnection
     private Exception? transportError;
     private int exitCode = -1;
     private int disposed;
+    private readonly SemaphoreSlim commandProbeGate=new(1);
+    public async Task<CommandProbeResult> ProbeAsync(string command,CancellationToken ct)
+    {
+        using var timeout=CancellationTokenSource.CreateLinkedTokenSource(ct,lifetime.Token); timeout.CancelAfter(TimeSpan.FromSeconds(12));
+        await commandProbeGate.WaitAsync(timeout.Token).ConfigureAwait(false);
+        try
+        {
+            return await Task.Run(async()=>
+            {
+                timeout.Token.ThrowIfCancellationRequested();
+                using var channel=client.CreateCommand(command); channel.CommandTimeout=TimeSpan.FromSeconds(10);
+                var execution=channel.ExecuteAsync(timeout.Token);
+                // Drain both streams while the command runs, with a hard limit.
+                // Reading Result only after completion would let a hostile server
+                // accumulate unbounded output inside the SSH.NET pipe streams.
+                async Task<byte[]> Read(Stream stream,int limit)
+                {
+                    try { return await StreamLimits.ReadAsync(stream,limit,timeout.Token).ConfigureAwait(false); }
+                    catch { timeout.Cancel(); throw; }
+                }
+                var stdout=Read(channel.OutputStream,128*1024); var stderr=Read(channel.ExtendedOutputStream,16384);
+                await Task.WhenAll(execution,stdout,stderr).ConfigureAwait(false);
+                var text=System.Text.Encoding.UTF8.GetString(await stdout);
+                return new CommandProbeResult(channel.ExitStatus,text);
+            },timeout.Token).ConfigureAwait(false);
+        }
+        finally { commandProbeGate.Release(); }
+    }
     public Task<TerminalCompletion> Completion => completion.Task;
     // SSH has no local process; EOF on ReaderStream reports session termination to the emulator.
     public event EventHandler<PtyExitedEventArgs>? ProcessExited { add { } remove { } }

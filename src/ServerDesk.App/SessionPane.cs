@@ -89,6 +89,7 @@ internal sealed partial class SessionPane : WorkspacePane
         {
 
             actions.Children.Add(PanelButton("Terminal",0)); actions.Children.Add(PanelButton("SFTP",1)); actions.Children.Add(PanelButton("Server Info",2));
+            actions.Children.Add(Button("Komendy",owner.OpenCommandsPanelAsync));
             var options=new Button { Content=DeskIcons.Create("more"),Tag="Opcje",Width=30,Classes={"chrome","icon"} }; optionsButton=options; ToolTip.SetTip(options,L.T("Opcje sesji")); Avalonia.Automation.AutomationProperties.SetName(options,L.T("Opcje sesji"));
             options.ContextMenu=new ContextMenu { ItemsSource=new[]{OperationMenu("Uruchom ponownie sesję",()=>owner.ReconnectAsync(this)),OperationMenu("Poświadczenia",()=>owner.ReauthenticateAsync(this)),OperationMenu("Kopiuj zaznaczenie",()=>terminal.CopyAsync()),OperationMenu("Wklej",()=>terminal.PasteAsync()),OperationMenu("Większa czcionka",()=> { terminal.FontSize=Math.Min(32,terminal.FontSize+1); return Task.CompletedTask; }),OperationMenu("Mniejsza czcionka",()=> { terminal.FontSize=Math.Max(9,terminal.FontSize-1); return Task.CompletedTask; })} };
             options.Click+=(_,_)=>options.ContextMenu.Open(options); actions.Children.Add(options);
@@ -126,6 +127,7 @@ internal sealed partial class SessionPane : WorkspacePane
         }
         catch(Exception ex) { await ResetConnectionsAsync(); if(Profile.Protocol==Protocol.RDP)rdpError=ex.Message; if(disposed==0)MarkFailed(); throw; }
         finally { connecting=false; RenderOperationStatus(); connectionGate.Release(); }
+        if(Profile.Protocol==Protocol.SSH&&IsConnected)_=WarmCommandDiscoveryAsync();
         if(IsConnected || IsRdpLoggedIn)await RecordSuccessfulConnectionAsync();
     }
     private void CancelConnection()
@@ -160,7 +162,7 @@ internal sealed partial class SessionPane : WorkspacePane
         if(Profile.Protocol is Protocol.VNC or Protocol.Serial) { await ConnectAdditionalAsync(ct); return; }
         terminal.IsVisible=true; files.IsVisible=info.IsVisible=false; infoActive=false; SelectPanel(0);
         var client=await factory.SshAsync(Profile,secret,ct);
-        try { ct.ThrowIfCancellationRequested(); terminal.ApplyTemplate(); terminalSearch?.Reset(); terminal.Terminal.Reset(); ApplyTerminalConnectionPreferences(preferences); TerminalAppearance.Apply(terminal,await repository.SettingAsync("terminalPalette",ct)??TerminalAppearance.Names[0],(int)terminal.FontSize,preferences.TerminalFontFamily); session=await SshTerminalSession.CreateAsync(client,ct); terminal.AttachConnection(session); session.Resize(terminal.Terminal.Cols,terminal.Terminal.Rows); terminal.Focus(); connectionStarted=Stopwatch.GetTimestamp(); SetStatus(L.F($"● SSH · {Profile.Username}@{Profile.Host}:{Profile.Port} · połączono"),"●"); _=ObserveEndAsync(session); if(owner.Preferences.ShowMetrics && owner.Preferences.ShowStatusBar)_=StartMonitoringAsync(ct); }
+        try { ct.ThrowIfCancellationRequested(); terminal.ApplyTemplate(); terminalSearch?.Reset(); terminal.Terminal.Reset(); ApplyTerminalConnectionPreferences(preferences); TerminalAppearance.Apply(terminal,await repository.SettingAsync("terminalPalette",ct)??TerminalAppearance.Names[0],(int)terminal.FontSize,preferences.TerminalFontFamily); session=await SshTerminalSession.CreateAsync(client,ct); terminal.AttachConnection(session); commandConnectionId=Guid.NewGuid(); session.Resize(terminal.Terminal.Cols,terminal.Terminal.Rows); terminal.Focus(); connectionStarted=Stopwatch.GetTimestamp(); SetStatus(L.F($"● SSH · {Profile.Username}@{Profile.Host}:{Profile.Port} · połączono"),"●"); _=ObserveEndAsync(session); if(owner.Preferences.ShowMetrics && owner.Preferences.ShowStatusBar)_=StartMonitoringAsync(ct); }
         catch { client.Dispose(); throw; }
     }
     public Task ReconnectAsync(string? replacementSecret=null) => ConnectAsync(replacementSecret??secret,lifetime.Token);
@@ -177,6 +179,7 @@ internal sealed partial class SessionPane : WorkspacePane
     }
     private void ResetConnections()
     {
+        commandConnectionId=Guid.Empty; commandEnvironment=null; commandDiscovery=null;
         CancelFileViews();
         connectionLifetime.Cancel();
         var oldSsh=session; var oldSftp=sftp; var oldMonitor=monitor; var oldMonitorLoop=monitorLoop;

@@ -1,6 +1,6 @@
 # Local data and privacy / Dane lokalne i prywatność
 
-ServerDesk 0.35.0 does not implement analytics, telemetry, a cloud account, automatic update checks or crash-report uploads. Network connections are made for the protocols and servers selected by the user. This statement covers ServerDesk; operating-system components and external clients have their own behavior.
+ServerDesk 0.36.0 does not implement analytics, telemetry, a cloud account, automatic update checks or crash-report uploads. Network connections are made for the protocols and servers selected by the user. This statement covers ServerDesk; operating-system components and external clients have their own behavior.
 
 The local database stores server addresses, usernames, folders, preferences, trusted SSH host fingerprints scoped to host and port, workspace state and connection history. Trust entries can outlive a saved profile and are excluded from profile exports. Version 0.33.0 provides Settings → Security → Trusted SSH keys to inspect or remove an individual entry. Custom artwork and diagnostic logs are also stored locally. Logs do not intentionally record passwords or terminal contents, but can contain connection identifiers and errors; review and redact before sharing.
 
@@ -9,6 +9,8 @@ Network Tools additionally stores bounded operation history, target addresses, c
 Passwords are stored only when requested: DPAPI-protected files on Windows, or the system Secret Service on Linux. Private-key files remain at the paths chosen by the user. Profile exports omit passwords and key contents, but still contain sensitive infrastructure metadata.
 
 Terminal cursor/history preferences and the optional local SFTP start directory are saved in the local preferences database. Choosing a history limit does not save terminal contents to disk; the scrollback buffer remains in memory. SFTP defaults and visited-directory history are excluded from server-profile exports.
+
+Commands additionally stores encrypted user templates/categories through the OS credential store, with no plaintext fallback. SQLite holds opaque vault-part references, favorite IDs, manual/automatic/pinned profile choices per host and optional recent command IDs/timestamps (history is disabled by default). It does not store rendered commands, entered parameter values or output. Secret parameters have no saved defaults and are copy-only, with a clipboard warning. Command JSON export is an explicitly approved plaintext exchange file containing user templates/categories, without entered values, history or host bindings. Automatic SSH discovery uses bounded read-only exec channels on an already authenticated connection, with an in-memory per-connection cache; RDP/VNC/Serial do not trigger shell discovery. [Commands privacy and limits](commands.md).
 
 Default locations:
 

@@ -1,5 +1,7 @@
 Pierwotne MVP: aktualna tabela kryteriów i brakującej weryfikacji znajduje się w [mvp-status.md](mvp-status.md).
 
+Wydanie 0.36.0: wspólny panel Command Snippets / Smart Cheat Sheet, 165 wariantów, offline i kontekst SSH, bezpieczne parametry, ulubione i szyfrowane szablony. [Obsługa i rozszerzanie](commands.md), [testy i ograniczenia](reports/commands-2026-10-16.md).
+
 Wydanie 0.35.0: trzy/cztery panele, niezależne grupy kart i dalsze ustawienia obszaru pracy. [Testy i ograniczenia](reports/four-panel-workspace-2026-10-16.md).
 
 Wydanie 0.34.0: sześć kategorii ustawień, kursor i limit historii SSH/Serial oraz katalog startowy i domyślny widok SFTP. Zmiany zachowują bieżący bufor i wybory otwartej przeglądarki. [Zakres](reports/extended-settings-2026-10-16.md).

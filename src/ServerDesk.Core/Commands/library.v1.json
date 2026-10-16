@@ -1,0 +1,6267 @@
+{
+  "schemaVersion": 1,
+  "version": "1.0.0",
+  "commands": [
+    {
+      "id": "general.identity",
+      "operation": "general.identity",
+      "name": "Bieżący użytkownik",
+      "nameEn": "Current user",
+      "summary": "Bieżący użytkownik",
+      "summaryEn": "Current user",
+      "explanation": "Bieżący użytkownik. Odczytuje dane hosta. Wynik zależy od uprawnień użytkownika i dostępności narzędzia.",
+      "explanationEn": "Current user. Reads host data. Results depend on user permissions and tool availability.",
+      "template": "whoami",
+      "category": "system",
+      "subcategory": "",
+      "tags": [
+        "login",
+        "identity",
+        "tozsamosc"
+      ],
+      "platform": "General",
+      "shell": "Any",
+      "family": "",
+      "distributions": [],
+      "minVersion": "",
+      "maxVersion": "",
+      "tools": [
+        "whoami"
+      ],
+      "privileges": "user",
+      "risk": "ReadOnly",
+      "origin": "BuiltIn",
+      "parameters": [],
+      "examples": [],
+      "priority": 0
+    },
+    {
+      "id": "general.hostname",
+      "operation": "general.hostname",
+      "name": "Nazwa komputera",
+      "nameEn": "Computer name",
+      "summary": "Nazwa komputera",
+      "summaryEn": "Computer name",
+      "explanation": "Nazwa komputera. Odczytuje dane hosta. Wynik zależy od uprawnień użytkownika i dostępności narzędzia.",
+      "explanationEn": "Computer name. Reads host data. Results depend on user permissions and tool availability.",
+      "template": "hostname",
+      "category": "system",
+      "subcategory": "",
+      "tags": [
+        "host",
+        "nazwa"
+      ],
+      "platform": "General",
+      "shell": "Any",
+      "family": "",
+      "distributions": [],
+      "minVersion": "",
+      "maxVersion": "",
+      "tools": [
+        "hostname"
+      ],
+      "privileges": "user",
+      "risk": "ReadOnly",
+      "origin": "BuiltIn",
+      "parameters": [],
+      "examples": [],
+      "priority": 0
+    },
+    {
+      "id": "linux.kernel",
+      "operation": "linux.kernel",
+      "name": "Wersja jądra i architektura",
+      "nameEn": "Kernel and architecture",
+      "summary": "Wersja jądra i architektura",
+      "summaryEn": "Kernel and architecture",
+      "explanation": "Wersja jądra i architektura. Odczytuje dane hosta. Wynik zależy od uprawnień użytkownika i dostępności narzędzia.",
+      "explanationEn": "Kernel and architecture. Reads host data. Results depend on user permissions and tool availability.",
+      "template": "uname -a",
+      "category": "system",
+      "subcategory": "",
+      "tags": [
+        "system",
+        "kernel",
+        "architektura"
+      ],
+      "platform": "Linux",
+      "shell": "Bash",
+      "family": "",
+      "distributions": [],
+      "minVersion": "",
+      "maxVersion": "",
+      "tools": [
+        "uname"
+      ],
+      "privileges": "user",
+      "risk": "ReadOnly",
+      "origin": "BuiltIn",
+      "parameters": [],
+      "examples": [],
+      "priority": 0
+    },
+    {
+      "id": "linux.release",
+      "operation": "linux.release",
+      "name": "Dystrybucja i wersja",
+      "nameEn": "Distribution and release",
+      "summary": "Dystrybucja i wersja",
+      "summaryEn": "Distribution and release",
+      "explanation": "Dystrybucja i wersja. Odczytuje dane hosta. Wynik zależy od uprawnień użytkownika i dostępności narzędzia.",
+      "explanationEn": "Distribution and release. Reads host data. Results depend on user permissions and tool availability.",
+      "template": "cat /etc/os-release",
+      "category": "system",
+      "subcategory": "",
+      "tags": [
+        "os",
+        "linux",
+        "wersja"
+      ],
+      "platform": "Linux",
+      "shell": "Bash",
+      "family": "",
+      "distributions": [],
+      "minVersion": "",
+      "maxVersion": "",
+      "tools": [
+        "cat"
+      ],
+      "privileges": "user",
+      "risk": "ReadOnly",
+      "origin": "BuiltIn",
+      "parameters": [],
+      "examples": [],
+      "priority": 0
+    },
+    {
+      "id": "linux.uptime",
+      "operation": "linux.uptime",
+      "name": "Czas pracy i obciążenie",
+      "nameEn": "Uptime and load",
+      "summary": "Czas pracy i obciążenie",
+      "summaryEn": "Uptime and load",
+      "explanation": "Czas pracy i obciążenie. Odczytuje dane hosta. Wynik zależy od uprawnień użytkownika i dostępności narzędzia.",
+      "explanationEn": "Uptime and load. Reads host data. Results depend on user permissions and tool availability.",
+      "template": "uptime",
+      "category": "system",
+      "subcategory": "",
+      "tags": [
+        "load",
+        "obciazenie"
+      ],
+      "platform": "Linux",
+      "shell": "Bash",
+      "family": "",
+      "distributions": [],
+      "minVersion": "",
+      "maxVersion": "",
+      "tools": [
+        "uptime"
+      ],
+      "privileges": "user",
+      "risk": "ReadOnly",
+      "origin": "BuiltIn",
+      "parameters": [],
+      "examples": [],
+      "priority": 0
+    },
+    {
+      "id": "linux.memory",
+      "operation": "linux.memory",
+      "name": "Pamięć RAM",
+      "nameEn": "Memory usage",
+      "summary": "Pamięć RAM",
+      "summaryEn": "Memory usage",
+      "explanation": "Pamięć RAM. Odczytuje dane hosta. Wynik zależy od uprawnień użytkownika i dostępności narzędzia.",
+      "explanationEn": "Memory usage. Reads host data. Results depend on user permissions and tool availability.",
+      "template": "free -h",
+      "category": "system",
+      "subcategory": "",
+      "tags": [
+        "ram",
+        "pamiec"
+      ],
+      "platform": "Linux",
+      "shell": "Bash",
+      "family": "",
+      "distributions": [],
+      "minVersion": "",
+      "maxVersion": "",
+      "tools": [
+        "free"
+      ],
+      "privileges": "user",
+      "risk": "ReadOnly",
+      "origin": "BuiltIn",
+      "parameters": [],
+      "examples": [],
+      "priority": 0
+    },
+    {
+      "id": "linux.processes",
+      "operation": "linux.processes",
+      "name": "Procesy według CPU",
+      "nameEn": "Processes by CPU",
+      "summary": "Procesy według CPU",
+      "summaryEn": "Processes by CPU",
+      "explanation": "Procesy według CPU. Odczytuje dane hosta. Wynik zależy od uprawnień użytkownika i dostępności narzędzia.",
+      "explanationEn": "Processes by CPU. Reads host data. Results depend on user permissions and tool availability.",
+      "template": "ps aux --sort=-%cpu",
+      "category": "system",
+      "subcategory": "",
+      "tags": [
+        "cpu",
+        "process",
+        "proces"
+      ],
+      "platform": "Linux",
+      "shell": "Bash",
+      "family": "",
+      "distributions": [],
+      "minVersion": "",
+      "maxVersion": "",
+      "tools": [
+        "ps"
+      ],
+      "privileges": "user",
+      "risk": "ReadOnly",
+      "origin": "BuiltIn",
+      "parameters": [],
+      "examples": [],
+      "priority": 0
+    },
+    {
+      "id": "linux.sessions",
+      "operation": "linux.sessions",
+      "name": "Zalogowani użytkownicy",
+      "nameEn": "Logged-in users",
+      "summary": "Zalogowani użytkownicy",
+      "summaryEn": "Logged-in users",
+      "explanation": "Zalogowani użytkownicy. Odczytuje dane hosta. Wynik zależy od uprawnień użytkownika i dostępności narzędzia.",
+      "explanationEn": "Logged-in users. Reads host data. Results depend on user permissions and tool availability.",
+      "template": "who",
+      "category": "system",
+      "subcategory": "",
+      "tags": [
+        "sesje",
+        "users"
+      ],
+      "platform": "Linux",
+      "shell": "Bash",
+      "family": "",
+      "distributions": [],
+      "minVersion": "",
+      "maxVersion": "",
+      "tools": [
+        "who"
+      ],
+      "privileges": "user",
+      "risk": "ReadOnly",
+      "origin": "BuiltIn",
+      "parameters": [],
+      "examples": [],
+      "priority": 0
+    },
+    {
+      "id": "linux.time",
+      "operation": "linux.time",
+      "name": "Data i strefa czasowa",
+      "nameEn": "Date and time zone",
+      "summary": "Data i strefa czasowa",
+      "summaryEn": "Date and time zone",
+      "explanation": "Data i strefa czasowa. Odczytuje dane hosta. Wynik zależy od uprawnień użytkownika i dostępności narzędzia.",
+      "explanationEn": "Date and time zone. Reads host data. Results depend on user permissions and tool availability.",
+      "template": "date -Iseconds",
+      "category": "system",
+      "subcategory": "",
+      "tags": [
+        "czas",
+        "time"
+      ],
+      "platform": "Linux",
+      "shell": "Bash",
+      "family": "",
+      "distributions": [],
+      "minVersion": "",
+      "maxVersion": "",
+      "tools": [
+        "date"
+      ],
+      "privileges": "user",
+      "risk": "ReadOnly",
+      "origin": "BuiltIn",
+      "parameters": [],
+      "examples": [],
+      "priority": 0
+    },
+    {
+      "id": "linux.environment",
+      "operation": "linux.environment",
+      "name": "Wybrana zmienna środowiskowa",
+      "nameEn": "Named environment variable",
+      "summary": "Wybrana zmienna środowiskowa",
+      "summaryEn": "Named environment variable",
+      "explanation": "Wybrana zmienna środowiskowa. Odczytuje dane hosta. Wynik zależy od uprawnień użytkownika i dostępności narzędzia.",
+      "explanationEn": "Named environment variable. Reads host data. Results depend on user permissions and tool availability.",
+      "template": "printenv {{variable}}",
+      "category": "system",
+      "subcategory": "",
+      "tags": [
+        "env",
+        "srodowisko"
+      ],
+      "platform": "Linux",
+      "shell": "Bash",
+      "family": "",
+      "distributions": [],
+      "minVersion": "",
+      "maxVersion": "",
+      "tools": [
+        "printenv"
+      ],
+      "privileges": "user",
+      "risk": "ReadOnly",
+      "origin": "BuiltIn",
+      "parameters": [
+        {
+          "key": "variable",
+          "label": "Variable / zmienna",
+          "kind": "Text",
+          "default": "SHELL",
+          "required": true,
+          "choices": []
+        }
+      ],
+      "examples": [
+        "printenv 'SHELL'"
+      ],
+      "priority": 0
+    },
+    {
+      "id": "alpine.processes",
+      "operation": "linux.processes",
+      "name": "Procesy Alpine Linux",
+      "nameEn": "Alpine Linux processes",
+      "summary": "Procesy Alpine Linux",
+      "summaryEn": "Alpine Linux processes",
+      "explanation": "BusyBox ps nie gwarantuje opcji GNU --sort. Ten wariant pokazuje przenośną listę procesów.",
+      "explanationEn": "BusyBox ps does not guarantee GNU --sort support. This variant displays the portable process list.",
+      "template": "ps",
+      "category": "system",
+      "subcategory": "",
+      "tags": [],
+      "platform": "Linux",
+      "shell": "Bash",
+      "family": "",
+      "distributions": [
+        "alpine"
+      ],
+      "minVersion": "",
+      "maxVersion": "",
+      "tools": [
+        "ps"
+      ],
+      "privileges": "user",
+      "risk": "ReadOnly",
+      "origin": "BuiltIn",
+      "parameters": [],
+      "examples": [],
+      "priority": 4
+    },
+    {
+      "id": "linux.net.listeners",
+      "operation": "linux.net.listeners",
+      "name": "Otwarte porty",
+      "nameEn": "Listening ports",
+      "summary": "Otwarte porty",
+      "summaryEn": "Listening ports",
+      "explanation": "Otwarte porty. Odczytuje dane hosta. Wynik zależy od uprawnień użytkownika i dostępności narzędzia.",
+      "explanationEn": "Listening ports. Reads host data. Results depend on user permissions and tool availability.",
+      "template": "ss -tulpn",
+      "category": "network",
+      "subcategory": "",
+      "tags": [
+        "otwarte porty",
+        "open ports",
+        "nasluch",
+        "listen",
+        "sockets"
+      ],
+      "platform": "Linux",
+      "shell": "Bash",
+      "family": "",
+      "distributions": [],
+      "minVersion": "",
+      "maxVersion": "",
+      "tools": [
+        "ss"
+      ],
+      "privileges": "user",
+      "risk": "ReadOnly",
+      "origin": "BuiltIn",
+      "parameters": [],
+      "examples": [],
+      "priority": 0
+    },
+    {
+      "id": "linux.net.connections",
+      "operation": "linux.net.connections",
+      "name": "Aktywne połączenia TCP",
+      "nameEn": "Active TCP connections",
+      "summary": "Aktywne połączenia TCP",
+      "summaryEn": "Active TCP connections",
+      "explanation": "Aktywne połączenia TCP. Odczytuje dane hosta. Wynik zależy od uprawnień użytkownika i dostępności narzędzia.",
+      "explanationEn": "Active TCP connections. Reads host data. Results depend on user permissions and tool availability.",
+      "template": "ss -tpn",
+      "category": "network",
+      "subcategory": "",
+      "tags": [
+        "tcp",
+        "connections",
+        "polaczenia"
+      ],
+      "platform": "Linux",
+      "shell": "Bash",
+      "family": "",
+      "distributions": [],
+      "minVersion": "",
+      "maxVersion": "",
+      "tools": [
+        "ss"
+      ],
+      "privileges": "user",
+      "risk": "ReadOnly",
+      "origin": "BuiltIn",
+      "parameters": [],
+      "examples": [],
+      "priority": 0
+    },
+    {
+      "id": "linux.net.addresses",
+      "operation": "linux.net.addresses",
+      "name": "Adresy interfejsów",
+      "nameEn": "Interface addresses",
+      "summary": "Adresy interfejsów",
+      "summaryEn": "Interface addresses",
+      "explanation": "Adresy interfejsów. Odczytuje dane hosta. Wynik zależy od uprawnień użytkownika i dostępności narzędzia.",
+      "explanationEn": "Interface addresses. Reads host data. Results depend on user permissions and tool availability.",
+      "template": "ip -brief address",
+      "category": "network",
+      "subcategory": "",
+      "tags": [
+        "ip",
+        "adres",
+        "interface"
+      ],
+      "platform": "Linux",
+      "shell": "Bash",
+      "family": "",
+      "distributions": [],
+      "minVersion": "",
+      "maxVersion": "",
+      "tools": [
+        "ip"
+      ],
+      "privileges": "user",
+      "risk": "ReadOnly",
+      "origin": "BuiltIn",
+      "parameters": [],
+      "examples": [],
+      "priority": 0
+    },
+    {
+      "id": "linux.net.routes",
+      "operation": "linux.net.routes",
+      "name": "Tablica routingu",
+      "nameEn": "Routing table",
+      "summary": "Tablica routingu",
+      "summaryEn": "Routing table",
+      "explanation": "Tablica routingu. Odczytuje dane hosta. Wynik zależy od uprawnień użytkownika i dostępności narzędzia.",
+      "explanationEn": "Routing table. Reads host data. Results depend on user permissions and tool availability.",
+      "template": "ip route show",
+      "category": "network",
+      "subcategory": "",
+      "tags": [
+        "routing",
+        "brama",
+        "gateway"
+      ],
+      "platform": "Linux",
+      "shell": "Bash",
+      "family": "",
+      "distributions": [],
+      "minVersion": "",
+      "maxVersion": "",
+      "tools": [
+        "ip"
+      ],
+      "privileges": "user",
+      "risk": "ReadOnly",
+      "origin": "BuiltIn",
+      "parameters": [],
+      "examples": [],
+      "priority": 0
+    },
+    {
+      "id": "linux.net.neighbors",
+      "operation": "linux.net.neighbors",
+      "name": "Tablica sąsiadów ARP",
+      "nameEn": "ARP neighbor table",
+      "summary": "Tablica sąsiadów ARP",
+      "summaryEn": "ARP neighbor table",
+      "explanation": "Tablica sąsiadów ARP. Odczytuje dane hosta. Wynik zależy od uprawnień użytkownika i dostępności narzędzia.",
+      "explanationEn": "ARP neighbor table. Reads host data. Results depend on user permissions and tool availability.",
+      "template": "ip neighbor show",
+      "category": "network",
+      "subcategory": "",
+      "tags": [
+        "arp",
+        "mac",
+        "neighbors"
+      ],
+      "platform": "Linux",
+      "shell": "Bash",
+      "family": "",
+      "distributions": [],
+      "minVersion": "",
+      "maxVersion": "",
+      "tools": [
+        "ip"
+      ],
+      "privileges": "user",
+      "risk": "ReadOnly",
+      "origin": "BuiltIn",
+      "parameters": [],
+      "examples": [],
+      "priority": 0
+    },
+    {
+      "id": "linux.net.dns",
+      "operation": "linux.net.dns",
+      "name": "Rozwiąż nazwę DNS",
+      "nameEn": "Resolve DNS name",
+      "summary": "Rozwiąż nazwę DNS",
+      "summaryEn": "Resolve DNS name",
+      "explanation": "Rozwiąż nazwę DNS. Odczytuje dane hosta. Wynik zależy od uprawnień użytkownika i dostępności narzędzia.",
+      "explanationEn": "Resolve DNS name. Reads host data. Results depend on user permissions and tool availability.",
+      "template": "dig {{host}}",
+      "category": "network",
+      "subcategory": "",
+      "tags": [
+        "dns",
+        "resolve",
+        "nazwa"
+      ],
+      "platform": "Linux",
+      "shell": "Bash",
+      "family": "",
+      "distributions": [],
+      "minVersion": "",
+      "maxVersion": "",
+      "tools": [
+        "dig"
+      ],
+      "privileges": "user",
+      "risk": "ReadOnly",
+      "origin": "BuiltIn",
+      "parameters": [
+        {
+          "key": "host",
+          "label": "Host",
+          "kind": "Hostname",
+          "default": "localhost",
+          "required": true,
+          "choices": []
+        }
+      ],
+      "examples": [
+        "dig 'localhost'"
+      ],
+      "priority": 0
+    },
+    {
+      "id": "linux.net.nslookup",
+      "operation": "linux.net.nslookup",
+      "name": "Zapytanie DNS nslookup",
+      "nameEn": "DNS lookup with nslookup",
+      "summary": "Zapytanie DNS nslookup",
+      "summaryEn": "DNS lookup with nslookup",
+      "explanation": "Zapytanie DNS nslookup. Odczytuje dane hosta. Wynik zależy od uprawnień użytkownika i dostępności narzędzia.",
+      "explanationEn": "DNS lookup with nslookup. Reads host data. Results depend on user permissions and tool availability.",
+      "template": "nslookup {{host}}",
+      "category": "network",
+      "subcategory": "",
+      "tags": [
+        "dns"
+      ],
+      "platform": "Linux",
+      "shell": "Bash",
+      "family": "",
+      "distributions": [],
+      "minVersion": "",
+      "maxVersion": "",
+      "tools": [
+        "nslookup"
+      ],
+      "privileges": "user",
+      "risk": "ReadOnly",
+      "origin": "BuiltIn",
+      "parameters": [
+        {
+          "key": "host",
+          "label": "Host",
+          "kind": "Hostname",
+          "default": "localhost",
+          "required": true,
+          "choices": []
+        }
+      ],
+      "examples": [
+        "nslookup 'localhost'"
+      ],
+      "priority": 0
+    },
+    {
+      "id": "linux.net.ping",
+      "operation": "linux.net.ping",
+      "name": "Sprawdź osiągalność",
+      "nameEn": "Check reachability",
+      "summary": "Sprawdź osiągalność",
+      "summaryEn": "Check reachability",
+      "explanation": "Sprawdź osiągalność. Odczytuje dane hosta. Wynik zależy od uprawnień użytkownika i dostępności narzędzia.",
+      "explanationEn": "Check reachability. Reads host data. Results depend on user permissions and tool availability.",
+      "template": "ping -c 4 {{host}}",
+      "category": "network",
+      "subcategory": "",
+      "tags": [
+        "ping",
+        "osiagalnosc",
+        "icmp"
+      ],
+      "platform": "Linux",
+      "shell": "Bash",
+      "family": "",
+      "distributions": [],
+      "minVersion": "",
+      "maxVersion": "",
+      "tools": [
+        "ping"
+      ],
+      "privileges": "user",
+      "risk": "ReadOnly",
+      "origin": "BuiltIn",
+      "parameters": [
+        {
+          "key": "host",
+          "label": "Host",
+          "kind": "Hostname",
+          "default": "localhost",
+          "required": true,
+          "choices": []
+        }
+      ],
+      "examples": [
+        "ping -c 4 'localhost'"
+      ],
+      "priority": 0
+    },
+    {
+      "id": "linux.net.trace",
+      "operation": "linux.net.trace",
+      "name": "Trasa pakietów",
+      "nameEn": "Trace packet route",
+      "summary": "Trasa pakietów",
+      "summaryEn": "Trace packet route",
+      "explanation": "Trasa pakietów. Odczytuje dane hosta. Wynik zależy od uprawnień użytkownika i dostępności narzędzia.",
+      "explanationEn": "Trace packet route. Reads host data. Results depend on user permissions and tool availability.",
+      "template": "traceroute {{host}}",
+      "category": "network",
+      "subcategory": "",
+      "tags": [
+        "trasa",
+        "hops",
+        "trace"
+      ],
+      "platform": "Linux",
+      "shell": "Bash",
+      "family": "",
+      "distributions": [],
+      "minVersion": "",
+      "maxVersion": "",
+      "tools": [
+        "traceroute"
+      ],
+      "privileges": "user",
+      "risk": "ReadOnly",
+      "origin": "BuiltIn",
+      "parameters": [
+        {
+          "key": "host",
+          "label": "Host",
+          "kind": "Hostname",
+          "default": "localhost",
+          "required": true,
+          "choices": []
+        }
+      ],
+      "examples": [
+        "traceroute 'localhost'"
+      ],
+      "priority": 0
+    },
+    {
+      "id": "linux.net.http",
+      "operation": "linux.net.http",
+      "name": "Nagłówki odpowiedzi HTTP",
+      "nameEn": "HTTP response headers",
+      "summary": "Nagłówki odpowiedzi HTTP",
+      "summaryEn": "HTTP response headers",
+      "explanation": "Nagłówki odpowiedzi HTTP. Odczytuje dane hosta. Wynik zależy od uprawnień użytkownika i dostępności narzędzia.",
+      "explanationEn": "HTTP response headers. Reads host data. Results depend on user permissions and tool availability.",
+      "template": "curl -I --max-time 15 -- {{url}}",
+      "category": "network",
+      "subcategory": "",
+      "tags": [
+        "http",
+        "headers",
+        "naglowki"
+      ],
+      "platform": "Linux",
+      "shell": "Bash",
+      "family": "",
+      "distributions": [],
+      "minVersion": "",
+      "maxVersion": "",
+      "tools": [
+        "curl"
+      ],
+      "privileges": "user",
+      "risk": "ReadOnly",
+      "origin": "BuiltIn",
+      "parameters": [
+        {
+          "key": "url",
+          "label": "URL",
+          "kind": "Text",
+          "default": "https://example.com",
+          "required": true,
+          "choices": []
+        }
+      ],
+      "examples": [
+        "curl -I --max-time 15 -- 'https://example.com'"
+      ],
+      "priority": 0
+    },
+    {
+      "id": "linux.net.network-manager",
+      "operation": "linux.net.network-manager",
+      "name": "Połączenia NetworkManager",
+      "nameEn": "NetworkManager connections",
+      "summary": "Połączenia NetworkManager",
+      "summaryEn": "NetworkManager connections",
+      "explanation": "Połączenia NetworkManager. Odczytuje dane hosta. Wynik zależy od uprawnień użytkownika i dostępności narzędzia.",
+      "explanationEn": "NetworkManager connections. Reads host data. Results depend on user permissions and tool availability.",
+      "template": "nmcli connection show",
+      "category": "network",
+      "subcategory": "",
+      "tags": [
+        "networkmanager",
+        "siec"
+      ],
+      "platform": "Linux",
+      "shell": "Bash",
+      "family": "",
+      "distributions": [],
+      "minVersion": "",
+      "maxVersion": "",
+      "tools": [
+        "nmcli"
+      ],
+      "privileges": "user",
+      "risk": "ReadOnly",
+      "origin": "BuiltIn",
+      "parameters": [],
+      "examples": [],
+      "priority": 0
+    },
+    {
+      "id": "linux.net.network-devices",
+      "operation": "linux.net.network-devices",
+      "name": "Urządzenia NetworkManager",
+      "nameEn": "NetworkManager devices",
+      "summary": "Urządzenia NetworkManager",
+      "summaryEn": "NetworkManager devices",
+      "explanation": "Urządzenia NetworkManager. Odczytuje dane hosta. Wynik zależy od uprawnień użytkownika i dostępności narzędzia.",
+      "explanationEn": "NetworkManager devices. Reads host data. Results depend on user permissions and tool availability.",
+      "template": "nmcli device status",
+      "category": "network",
+      "subcategory": "",
+      "tags": [
+        "wifi",
+        "networkmanager"
+      ],
+      "platform": "Linux",
+      "shell": "Bash",
+      "family": "",
+      "distributions": [],
+      "minVersion": "",
+      "maxVersion": "",
+      "tools": [
+        "nmcli"
+      ],
+      "privileges": "user",
+      "risk": "ReadOnly",
+      "origin": "BuiltIn",
+      "parameters": [],
+      "examples": [],
+      "priority": 0
+    },
+    {
+      "id": "linux.net.netplan",
+      "operation": "linux.net.netplan",
+      "name": "Konfiguracja Netplan",
+      "nameEn": "Netplan configuration",
+      "summary": "Konfiguracja Netplan",
+      "summaryEn": "Netplan configuration",
+      "explanation": "Konfiguracja Netplan. Odczytuje dane hosta. Wynik zależy od uprawnień użytkownika i dostępności narzędzia.",
+      "explanationEn": "Netplan configuration. Reads host data. Results depend on user permissions and tool availability.",
+      "template": "netplan get",
+      "category": "network",
+      "subcategory": "",
+      "tags": [
+        "netplan",
+        "yaml"
+      ],
+      "platform": "Linux",
+      "shell": "Bash",
+      "family": "",
+      "distributions": [],
+      "minVersion": "",
+      "maxVersion": "",
+      "tools": [
+        "netplan"
+      ],
+      "privileges": "user",
+      "risk": "ReadOnly",
+      "origin": "BuiltIn",
+      "parameters": [],
+      "examples": [],
+      "priority": 0
+    },
+    {
+      "id": "linux.net.socket-files",
+      "operation": "linux.net.socket-files",
+      "name": "Procesy używające portu",
+      "nameEn": "Processes using a port",
+      "summary": "Procesy używające portu",
+      "summaryEn": "Processes using a port",
+      "explanation": "Procesy używające portu. Odczytuje dane hosta. Wynik zależy od uprawnień użytkownika i dostępności narzędzia.",
+      "explanationEn": "Processes using a port. Reads host data. Results depend on user permissions and tool availability.",
+      "template": "lsof -i {{endpoint}}",
+      "category": "network",
+      "subcategory": "",
+      "tags": [
+        "port",
+        "process"
+      ],
+      "platform": "Linux",
+      "shell": "Bash",
+      "family": "",
+      "distributions": [],
+      "minVersion": "",
+      "maxVersion": "",
+      "tools": [
+        "lsof"
+      ],
+      "privileges": "user",
+      "risk": "ReadOnly",
+      "origin": "BuiltIn",
+      "parameters": [
+        {
+          "key": "endpoint",
+          "label": "Endpoint",
+          "kind": "Text",
+          "default": ":443",
+          "required": true,
+          "choices": []
+        }
+      ],
+      "examples": [
+        "lsof -i ':443'"
+      ],
+      "priority": 0
+    },
+    {
+      "id": "linux.net.report",
+      "operation": "linux.net.report",
+      "name": "Krótki raport sieciowy",
+      "nameEn": "Short network report",
+      "summary": "Krótki raport sieciowy",
+      "summaryEn": "Short network report",
+      "explanation": "Trzy odczyty diagnostyczne. Skrypt wieloliniowy jest dostępny wyłącznie do podglądu i kopiowania.",
+      "explanationEn": "Three diagnostic reads. This multiline script is available for preview and copying only.",
+      "template": "ip -brief address\nip route show\nss -tuln",
+      "category": "network",
+      "subcategory": "",
+      "tags": [
+        "skrypt",
+        "script",
+        "raport"
+      ],
+      "platform": "Linux",
+      "shell": "Bash",
+      "family": "",
+      "distributions": [],
+      "minVersion": "",
+      "maxVersion": "",
+      "tools": [
+        "ip",
+        "ss"
+      ],
+      "privileges": "user",
+      "risk": "ReadOnly",
+      "origin": "BuiltIn",
+      "parameters": [],
+      "examples": [],
+      "priority": 0
+    },
+    {
+      "id": "systemd.status",
+      "operation": "service.status",
+      "name": "Sprawdź usługę",
+      "nameEn": "Check service",
+      "summary": "Sprawdź usługę",
+      "summaryEn": "Check service",
+      "explanation": "Sprawdź usługę. Odczytuje dane hosta. Wynik zależy od uprawnień użytkownika i dostępności narzędzia.",
+      "explanationEn": "Check service. Reads host data. Results depend on user permissions and tool availability.",
+      "template": "systemctl status --no-pager -- {{service}}",
+      "category": "services",
+      "subcategory": "",
+      "tags": [
+        "usluga",
+        "service",
+        "systemd",
+        "sprawdz usluge"
+      ],
+      "platform": "Linux",
+      "shell": "Bash",
+      "family": "",
+      "distributions": [],
+      "minVersion": "",
+      "maxVersion": "",
+      "tools": [
+        "systemctl"
+      ],
+      "privileges": "user",
+      "risk": "ReadOnly",
+      "origin": "BuiltIn",
+      "parameters": [
+        {
+          "key": "service",
+          "label": "Service / usługa",
+          "kind": "Text",
+          "default": "ssh",
+          "required": true,
+          "choices": []
+        }
+      ],
+      "examples": [
+        "systemctl status --no-pager -- 'ssh'"
+      ],
+      "priority": 2
+    },
+    {
+      "id": "openrc.status",
+      "operation": "service.status",
+      "name": "Sprawdź usługę (OpenRC)",
+      "nameEn": "Check service (OpenRC)",
+      "summary": "Sprawdź usługę (OpenRC)",
+      "summaryEn": "Check service (OpenRC)",
+      "explanation": "Sprawdź usługę (OpenRC). Odczytuje dane hosta. Wynik zależy od uprawnień użytkownika i dostępności narzędzia.",
+      "explanationEn": "Check service (OpenRC). Reads host data. Results depend on user permissions and tool availability.",
+      "template": "rc-service {{service}} status",
+      "category": "services",
+      "subcategory": "",
+      "tags": [
+        "usluga",
+        "service",
+        "openrc",
+        "sprawdz usluge"
+      ],
+      "platform": "Linux",
+      "shell": "Bash",
+      "family": "",
+      "distributions": [],
+      "minVersion": "",
+      "maxVersion": "",
+      "tools": [
+        "rc-service"
+      ],
+      "privileges": "user",
+      "risk": "ReadOnly",
+      "origin": "BuiltIn",
+      "parameters": [
+        {
+          "key": "service",
+          "label": "Service / usługa",
+          "kind": "Text",
+          "default": "ssh",
+          "required": true,
+          "choices": []
+        }
+      ],
+      "examples": [
+        "rc-service 'ssh' status"
+      ],
+      "priority": 0
+    },
+    {
+      "id": "systemd.start",
+      "operation": "service.start",
+      "name": "Uruchom usługę",
+      "nameEn": "Start service",
+      "summary": "Uruchom usługę",
+      "summaryEn": "Start service",
+      "explanation": "Uruchom usługę. Zmienia stan hosta; sprawdź cel i uprawnienia przed wykonaniem.",
+      "explanationEn": "Start service. Changes host state; verify the target and permissions before executing.",
+      "template": "sudo systemctl start -- {{service}}",
+      "category": "services",
+      "subcategory": "",
+      "tags": [
+        "service",
+        "systemd"
+      ],
+      "platform": "Linux",
+      "shell": "Bash",
+      "family": "",
+      "distributions": [],
+      "minVersion": "",
+      "maxVersion": "",
+      "tools": [
+        "systemctl",
+        "sudo"
+      ],
+      "privileges": "sudo / root",
+      "risk": "Modify",
+      "origin": "BuiltIn",
+      "parameters": [
+        {
+          "key": "service",
+          "label": "Service / usługa",
+          "kind": "Text",
+          "default": "ssh",
+          "required": true,
+          "choices": []
+        }
+      ],
+      "examples": [
+        "sudo systemctl start -- 'ssh'"
+      ],
+      "priority": 2
+    },
+    {
+      "id": "openrc.start",
+      "operation": "service.start",
+      "name": "Uruchom usługę (OpenRC)",
+      "nameEn": "Start service (OpenRC)",
+      "summary": "Uruchom usługę (OpenRC)",
+      "summaryEn": "Start service (OpenRC)",
+      "explanation": "Uruchom usługę (OpenRC). Zmienia stan hosta; sprawdź cel i uprawnienia przed wykonaniem.",
+      "explanationEn": "Start service (OpenRC). Changes host state; verify the target and permissions before executing.",
+      "template": "rc-service {{service}} start",
+      "category": "services",
+      "subcategory": "",
+      "tags": [
+        "usluga",
+        "service",
+        "openrc"
+      ],
+      "platform": "Linux",
+      "shell": "Bash",
+      "family": "",
+      "distributions": [],
+      "minVersion": "",
+      "maxVersion": "",
+      "tools": [
+        "rc-service"
+      ],
+      "privileges": "root",
+      "risk": "Modify",
+      "origin": "BuiltIn",
+      "parameters": [
+        {
+          "key": "service",
+          "label": "Service / usługa",
+          "kind": "Text",
+          "default": "ssh",
+          "required": true,
+          "choices": []
+        }
+      ],
+      "examples": [
+        "rc-service 'ssh' start"
+      ],
+      "priority": 0
+    },
+    {
+      "id": "systemd.stop",
+      "operation": "service.stop",
+      "name": "Zatrzymaj usługę",
+      "nameEn": "Stop service",
+      "summary": "Zatrzymaj usługę",
+      "summaryEn": "Stop service",
+      "explanation": "Zatrzymaj usługę. Zmienia stan hosta; sprawdź cel i uprawnienia przed wykonaniem.",
+      "explanationEn": "Stop service. Changes host state; verify the target and permissions before executing.",
+      "template": "sudo systemctl stop -- {{service}}",
+      "category": "services",
+      "subcategory": "",
+      "tags": [
+        "service",
+        "systemd"
+      ],
+      "platform": "Linux",
+      "shell": "Bash",
+      "family": "",
+      "distributions": [],
+      "minVersion": "",
+      "maxVersion": "",
+      "tools": [
+        "systemctl",
+        "sudo"
+      ],
+      "privileges": "sudo / root",
+      "risk": "Dangerous",
+      "origin": "BuiltIn",
+      "parameters": [
+        {
+          "key": "service",
+          "label": "Service / usługa",
+          "kind": "Text",
+          "default": "ssh",
+          "required": true,
+          "choices": []
+        }
+      ],
+      "examples": [
+        "sudo systemctl stop -- 'ssh'"
+      ],
+      "priority": 2
+    },
+    {
+      "id": "openrc.stop",
+      "operation": "service.stop",
+      "name": "Zatrzymaj usługę (OpenRC)",
+      "nameEn": "Stop service (OpenRC)",
+      "summary": "Zatrzymaj usługę (OpenRC)",
+      "summaryEn": "Stop service (OpenRC)",
+      "explanation": "Zatrzymaj usługę (OpenRC). Zmienia stan hosta; sprawdź cel i uprawnienia przed wykonaniem.",
+      "explanationEn": "Stop service (OpenRC). Changes host state; verify the target and permissions before executing.",
+      "template": "rc-service {{service}} stop",
+      "category": "services",
+      "subcategory": "",
+      "tags": [
+        "usluga",
+        "service",
+        "openrc"
+      ],
+      "platform": "Linux",
+      "shell": "Bash",
+      "family": "",
+      "distributions": [],
+      "minVersion": "",
+      "maxVersion": "",
+      "tools": [
+        "rc-service"
+      ],
+      "privileges": "root",
+      "risk": "Dangerous",
+      "origin": "BuiltIn",
+      "parameters": [
+        {
+          "key": "service",
+          "label": "Service / usługa",
+          "kind": "Text",
+          "default": "ssh",
+          "required": true,
+          "choices": []
+        }
+      ],
+      "examples": [
+        "rc-service 'ssh' stop"
+      ],
+      "priority": 0
+    },
+    {
+      "id": "systemd.restart",
+      "operation": "service.restart",
+      "name": "Zrestartuj usługę",
+      "nameEn": "Restart service",
+      "summary": "Zrestartuj usługę",
+      "summaryEn": "Restart service",
+      "explanation": "Zrestartuj usługę. Zmienia stan hosta; sprawdź cel i uprawnienia przed wykonaniem.",
+      "explanationEn": "Restart service. Changes host state; verify the target and permissions before executing.",
+      "template": "sudo systemctl restart -- {{service}}",
+      "category": "services",
+      "subcategory": "",
+      "tags": [
+        "service",
+        "systemd"
+      ],
+      "platform": "Linux",
+      "shell": "Bash",
+      "family": "",
+      "distributions": [],
+      "minVersion": "",
+      "maxVersion": "",
+      "tools": [
+        "systemctl",
+        "sudo"
+      ],
+      "privileges": "sudo / root",
+      "risk": "Dangerous",
+      "origin": "BuiltIn",
+      "parameters": [
+        {
+          "key": "service",
+          "label": "Service / usługa",
+          "kind": "Text",
+          "default": "ssh",
+          "required": true,
+          "choices": []
+        }
+      ],
+      "examples": [
+        "sudo systemctl restart -- 'ssh'"
+      ],
+      "priority": 2
+    },
+    {
+      "id": "openrc.restart",
+      "operation": "service.restart",
+      "name": "Zrestartuj usługę (OpenRC)",
+      "nameEn": "Restart service (OpenRC)",
+      "summary": "Zrestartuj usługę (OpenRC)",
+      "summaryEn": "Restart service (OpenRC)",
+      "explanation": "Zrestartuj usługę (OpenRC). Zmienia stan hosta; sprawdź cel i uprawnienia przed wykonaniem.",
+      "explanationEn": "Restart service (OpenRC). Changes host state; verify the target and permissions before executing.",
+      "template": "rc-service {{service}} restart",
+      "category": "services",
+      "subcategory": "",
+      "tags": [
+        "usluga",
+        "service",
+        "openrc"
+      ],
+      "platform": "Linux",
+      "shell": "Bash",
+      "family": "",
+      "distributions": [],
+      "minVersion": "",
+      "maxVersion": "",
+      "tools": [
+        "rc-service"
+      ],
+      "privileges": "root",
+      "risk": "Dangerous",
+      "origin": "BuiltIn",
+      "parameters": [
+        {
+          "key": "service",
+          "label": "Service / usługa",
+          "kind": "Text",
+          "default": "ssh",
+          "required": true,
+          "choices": []
+        }
+      ],
+      "examples": [
+        "rc-service 'ssh' restart"
+      ],
+      "priority": 0
+    },
+    {
+      "id": "systemd.enable",
+      "operation": "service.enable",
+      "name": "Włącz autostart usługi",
+      "nameEn": "Enable service at boot",
+      "summary": "Włącz autostart usługi",
+      "summaryEn": "Enable service at boot",
+      "explanation": "Włącz autostart usługi. Zmienia stan hosta; sprawdź cel i uprawnienia przed wykonaniem.",
+      "explanationEn": "Enable service at boot. Changes host state; verify the target and permissions before executing.",
+      "template": "sudo systemctl enable -- {{service}}",
+      "category": "services",
+      "subcategory": "",
+      "tags": [
+        "service",
+        "systemd"
+      ],
+      "platform": "Linux",
+      "shell": "Bash",
+      "family": "",
+      "distributions": [],
+      "minVersion": "",
+      "maxVersion": "",
+      "tools": [
+        "systemctl",
+        "sudo"
+      ],
+      "privileges": "sudo / root",
+      "risk": "Modify",
+      "origin": "BuiltIn",
+      "parameters": [
+        {
+          "key": "service",
+          "label": "Service / usługa",
+          "kind": "Text",
+          "default": "ssh",
+          "required": true,
+          "choices": []
+        }
+      ],
+      "examples": [
+        "sudo systemctl enable -- 'ssh'"
+      ],
+      "priority": 2
+    },
+    {
+      "id": "systemd.disable",
+      "operation": "service.disable",
+      "name": "Wyłącz autostart usługi",
+      "nameEn": "Disable service at boot",
+      "summary": "Wyłącz autostart usługi",
+      "summaryEn": "Disable service at boot",
+      "explanation": "Wyłącz autostart usługi. Zmienia stan hosta; sprawdź cel i uprawnienia przed wykonaniem.",
+      "explanationEn": "Disable service at boot. Changes host state; verify the target and permissions before executing.",
+      "template": "sudo systemctl disable -- {{service}}",
+      "category": "services",
+      "subcategory": "",
+      "tags": [
+        "service",
+        "systemd"
+      ],
+      "platform": "Linux",
+      "shell": "Bash",
+      "family": "",
+      "distributions": [],
+      "minVersion": "",
+      "maxVersion": "",
+      "tools": [
+        "systemctl",
+        "sudo"
+      ],
+      "privileges": "sudo / root",
+      "risk": "Dangerous",
+      "origin": "BuiltIn",
+      "parameters": [
+        {
+          "key": "service",
+          "label": "Service / usługa",
+          "kind": "Text",
+          "default": "ssh",
+          "required": true,
+          "choices": []
+        }
+      ],
+      "examples": [
+        "sudo systemctl disable -- 'ssh'"
+      ],
+      "priority": 2
+    },
+    {
+      "id": "systemd.failed",
+      "operation": "systemd.failed",
+      "name": "Usługi zakończone błędem",
+      "nameEn": "Failed services",
+      "summary": "Usługi zakończone błędem",
+      "summaryEn": "Failed services",
+      "explanation": "Usługi zakończone błędem. Odczytuje dane hosta. Wynik zależy od uprawnień użytkownika i dostępności narzędzia.",
+      "explanationEn": "Failed services. Reads host data. Results depend on user permissions and tool availability.",
+      "template": "systemctl --failed --no-pager",
+      "category": "services",
+      "subcategory": "",
+      "tags": [
+        "failed",
+        "blad",
+        "systemd"
+      ],
+      "platform": "Linux",
+      "shell": "Bash",
+      "family": "",
+      "distributions": [],
+      "minVersion": "",
+      "maxVersion": "",
+      "tools": [
+        "systemctl"
+      ],
+      "privileges": "user",
+      "risk": "ReadOnly",
+      "origin": "BuiltIn",
+      "parameters": [],
+      "examples": [],
+      "priority": 0
+    },
+    {
+      "id": "systemd.units",
+      "operation": "service.list",
+      "name": "Lista usług",
+      "nameEn": "List services",
+      "summary": "Lista usług",
+      "summaryEn": "List services",
+      "explanation": "Lista usług. Odczytuje dane hosta. Wynik zależy od uprawnień użytkownika i dostępności narzędzia.",
+      "explanationEn": "List services. Reads host data. Results depend on user permissions and tool availability.",
+      "template": "systemctl list-units --type=service --no-pager",
+      "category": "services",
+      "subcategory": "",
+      "tags": [
+        "uslugi",
+        "services"
+      ],
+      "platform": "Linux",
+      "shell": "Bash",
+      "family": "",
+      "distributions": [],
+      "minVersion": "",
+      "maxVersion": "",
+      "tools": [
+        "systemctl"
+      ],
+      "privileges": "user",
+      "risk": "ReadOnly",
+      "origin": "BuiltIn",
+      "parameters": [],
+      "examples": [],
+      "priority": 2
+    },
+    {
+      "id": "openrc.units",
+      "operation": "service.list",
+      "name": "Lista usług OpenRC",
+      "nameEn": "List OpenRC services",
+      "summary": "Lista usług OpenRC",
+      "summaryEn": "List OpenRC services",
+      "explanation": "Lista usług OpenRC. Odczytuje dane hosta. Wynik zależy od uprawnień użytkownika i dostępności narzędzia.",
+      "explanationEn": "List OpenRC services. Reads host data. Results depend on user permissions and tool availability.",
+      "template": "rc-status -a",
+      "category": "services",
+      "subcategory": "",
+      "tags": [
+        "uslugi",
+        "services",
+        "openrc"
+      ],
+      "platform": "Linux",
+      "shell": "Bash",
+      "family": "",
+      "distributions": [],
+      "minVersion": "",
+      "maxVersion": "",
+      "tools": [
+        "rc-status"
+      ],
+      "privileges": "user",
+      "risk": "ReadOnly",
+      "origin": "BuiltIn",
+      "parameters": [],
+      "examples": [],
+      "priority": 0
+    },
+    {
+      "id": "pkg.apt.list",
+      "operation": "package.list",
+      "name": "Zainstalowane pakiety · APT",
+      "nameEn": "Installed packages · APT",
+      "summary": "Zainstalowane pakiety · APT",
+      "summaryEn": "Installed packages · APT",
+      "explanation": "Zainstalowane pakiety · APT. Odczytuje dane hosta. Wynik zależy od uprawnień użytkownika i dostępności narzędzia.",
+      "explanationEn": "Installed packages · APT. Reads host data. Results depend on user permissions and tool availability.",
+      "template": "apt list --installed",
+      "category": "packages",
+      "subcategory": "",
+      "tags": [
+        "pakiety",
+        "packages",
+        "updates",
+        "aktualizacja",
+        "apt"
+      ],
+      "platform": "Linux",
+      "shell": "Bash",
+      "family": "debian",
+      "distributions": [],
+      "minVersion": "",
+      "maxVersion": "",
+      "tools": [
+        "apt"
+      ],
+      "privileges": "user",
+      "risk": "ReadOnly",
+      "origin": "BuiltIn",
+      "parameters": [],
+      "examples": [],
+      "priority": 0
+    },
+    {
+      "id": "pkg.apt.info",
+      "operation": "package.info",
+      "name": "Informacje o pakiecie · APT",
+      "nameEn": "Package information · APT",
+      "summary": "Informacje o pakiecie · APT",
+      "summaryEn": "Package information · APT",
+      "explanation": "Informacje o pakiecie · APT. Odczytuje dane hosta. Wynik zależy od uprawnień użytkownika i dostępności narzędzia.",
+      "explanationEn": "Package information · APT. Reads host data. Results depend on user permissions and tool availability.",
+      "template": "apt-cache show {{package}}",
+      "category": "packages",
+      "subcategory": "",
+      "tags": [
+        "pakiety",
+        "packages",
+        "updates",
+        "aktualizacja",
+        "apt"
+      ],
+      "platform": "Linux",
+      "shell": "Bash",
+      "family": "debian",
+      "distributions": [],
+      "minVersion": "",
+      "maxVersion": "",
+      "tools": [
+        "apt-cache"
+      ],
+      "privileges": "user",
+      "risk": "ReadOnly",
+      "origin": "BuiltIn",
+      "parameters": [
+        {
+          "key": "package",
+          "label": "Package / pakiet",
+          "kind": "Text",
+          "default": "curl",
+          "required": true,
+          "choices": []
+        }
+      ],
+      "examples": [
+        "apt-cache show 'curl'"
+      ],
+      "priority": 0
+    },
+    {
+      "id": "pkg.apt.outdated",
+      "operation": "package.outdated",
+      "name": "Dostępne aktualizacje pakietów · APT",
+      "nameEn": "Available package updates · APT",
+      "summary": "Dostępne aktualizacje pakietów · APT",
+      "summaryEn": "Available package updates · APT",
+      "explanation": "Dostępne aktualizacje pakietów · APT. Odczytuje dane hosta. Wynik zależy od uprawnień użytkownika i dostępności narzędzia.",
+      "explanationEn": "Available package updates · APT. Reads host data. Results depend on user permissions and tool availability.",
+      "template": "apt list --upgradable",
+      "category": "packages",
+      "subcategory": "",
+      "tags": [
+        "pakiety",
+        "packages",
+        "updates",
+        "aktualizacja",
+        "apt"
+      ],
+      "platform": "Linux",
+      "shell": "Bash",
+      "family": "debian",
+      "distributions": [],
+      "minVersion": "",
+      "maxVersion": "",
+      "tools": [
+        "apt"
+      ],
+      "privileges": "user",
+      "risk": "ReadOnly",
+      "origin": "BuiltIn",
+      "parameters": [],
+      "examples": [],
+      "priority": 0
+    },
+    {
+      "id": "pkg.apt.refresh",
+      "operation": "package.refresh",
+      "name": "Odśwież indeks pakietów · APT",
+      "nameEn": "Refresh package index · APT",
+      "summary": "Odśwież indeks pakietów · APT",
+      "summaryEn": "Refresh package index · APT",
+      "explanation": "Odśwież indeks pakietów · APT. Zmienia stan hosta; sprawdź cel i uprawnienia przed wykonaniem.",
+      "explanationEn": "Refresh package index · APT. Changes host state; verify the target and permissions before executing.",
+      "template": "sudo apt-get update",
+      "category": "packages",
+      "subcategory": "",
+      "tags": [
+        "pakiety",
+        "packages",
+        "updates",
+        "aktualizacja",
+        "apt"
+      ],
+      "platform": "Linux",
+      "shell": "Bash",
+      "family": "debian",
+      "distributions": [],
+      "minVersion": "",
+      "maxVersion": "",
+      "tools": [
+        "apt-get",
+        "sudo"
+      ],
+      "privileges": "root / sudo",
+      "risk": "Modify",
+      "origin": "BuiltIn",
+      "parameters": [],
+      "examples": [],
+      "priority": 0
+    },
+    {
+      "id": "pkg.apt.install",
+      "operation": "package.install",
+      "name": "Zainstaluj pakiet · APT",
+      "nameEn": "Install package · APT",
+      "summary": "Zainstaluj pakiet · APT",
+      "summaryEn": "Install package · APT",
+      "explanation": "Zainstaluj pakiet · APT. Zmienia stan hosta; sprawdź cel i uprawnienia przed wykonaniem.",
+      "explanationEn": "Install package · APT. Changes host state; verify the target and permissions before executing.",
+      "template": "sudo apt-get install -- {{package}}",
+      "category": "packages",
+      "subcategory": "",
+      "tags": [
+        "pakiety",
+        "packages",
+        "updates",
+        "aktualizacja",
+        "apt"
+      ],
+      "platform": "Linux",
+      "shell": "Bash",
+      "family": "debian",
+      "distributions": [],
+      "minVersion": "",
+      "maxVersion": "",
+      "tools": [
+        "apt-get",
+        "sudo"
+      ],
+      "privileges": "root / sudo",
+      "risk": "Modify",
+      "origin": "BuiltIn",
+      "parameters": [
+        {
+          "key": "package",
+          "label": "Package / pakiet",
+          "kind": "Text",
+          "default": "curl",
+          "required": true,
+          "choices": []
+        }
+      ],
+      "examples": [
+        "sudo apt-get install -- 'curl'"
+      ],
+      "priority": 0
+    },
+    {
+      "id": "pkg.dnf.list",
+      "operation": "package.list",
+      "name": "Zainstalowane pakiety · DNF",
+      "nameEn": "Installed packages · DNF",
+      "summary": "Zainstalowane pakiety · DNF",
+      "summaryEn": "Installed packages · DNF",
+      "explanation": "Zainstalowane pakiety · DNF. Odczytuje dane hosta. Wynik zależy od uprawnień użytkownika i dostępności narzędzia.",
+      "explanationEn": "Installed packages · DNF. Reads host data. Results depend on user permissions and tool availability.",
+      "template": "dnf list --installed",
+      "category": "packages",
+      "subcategory": "",
+      "tags": [
+        "pakiety",
+        "packages",
+        "updates",
+        "aktualizacja",
+        "dnf"
+      ],
+      "platform": "Linux",
+      "shell": "Bash",
+      "family": "rhel",
+      "distributions": [],
+      "minVersion": "",
+      "maxVersion": "",
+      "tools": [
+        "dnf"
+      ],
+      "privileges": "user",
+      "risk": "ReadOnly",
+      "origin": "BuiltIn",
+      "parameters": [],
+      "examples": [],
+      "priority": 0
+    },
+    {
+      "id": "pkg.dnf.info",
+      "operation": "package.info",
+      "name": "Informacje o pakiecie · DNF",
+      "nameEn": "Package information · DNF",
+      "summary": "Informacje o pakiecie · DNF",
+      "summaryEn": "Package information · DNF",
+      "explanation": "Informacje o pakiecie · DNF. Odczytuje dane hosta. Wynik zależy od uprawnień użytkownika i dostępności narzędzia.",
+      "explanationEn": "Package information · DNF. Reads host data. Results depend on user permissions and tool availability.",
+      "template": "dnf info {{package}}",
+      "category": "packages",
+      "subcategory": "",
+      "tags": [
+        "pakiety",
+        "packages",
+        "updates",
+        "aktualizacja",
+        "dnf"
+      ],
+      "platform": "Linux",
+      "shell": "Bash",
+      "family": "rhel",
+      "distributions": [],
+      "minVersion": "",
+      "maxVersion": "",
+      "tools": [
+        "dnf"
+      ],
+      "privileges": "user",
+      "risk": "ReadOnly",
+      "origin": "BuiltIn",
+      "parameters": [
+        {
+          "key": "package",
+          "label": "Package / pakiet",
+          "kind": "Text",
+          "default": "curl",
+          "required": true,
+          "choices": []
+        }
+      ],
+      "examples": [
+        "dnf info 'curl'"
+      ],
+      "priority": 0
+    },
+    {
+      "id": "pkg.dnf.outdated",
+      "operation": "package.outdated",
+      "name": "Dostępne aktualizacje pakietów · DNF",
+      "nameEn": "Available package updates · DNF",
+      "summary": "Dostępne aktualizacje pakietów · DNF",
+      "summaryEn": "Available package updates · DNF",
+      "explanation": "Dostępne aktualizacje pakietów · DNF. Odczytuje dane hosta. Wynik zależy od uprawnień użytkownika i dostępności narzędzia.",
+      "explanationEn": "Available package updates · DNF. Reads host data. Results depend on user permissions and tool availability.",
+      "template": "dnf check-update",
+      "category": "packages",
+      "subcategory": "",
+      "tags": [
+        "pakiety",
+        "packages",
+        "updates",
+        "aktualizacja",
+        "dnf"
+      ],
+      "platform": "Linux",
+      "shell": "Bash",
+      "family": "rhel",
+      "distributions": [],
+      "minVersion": "",
+      "maxVersion": "",
+      "tools": [
+        "dnf"
+      ],
+      "privileges": "user",
+      "risk": "ReadOnly",
+      "origin": "BuiltIn",
+      "parameters": [],
+      "examples": [],
+      "priority": 0
+    },
+    {
+      "id": "pkg.dnf.refresh",
+      "operation": "package.refresh",
+      "name": "Odśwież indeks pakietów · DNF",
+      "nameEn": "Refresh package index · DNF",
+      "summary": "Odśwież indeks pakietów · DNF",
+      "summaryEn": "Refresh package index · DNF",
+      "explanation": "Odśwież indeks pakietów · DNF. Zmienia stan hosta; sprawdź cel i uprawnienia przed wykonaniem.",
+      "explanationEn": "Refresh package index · DNF. Changes host state; verify the target and permissions before executing.",
+      "template": "sudo dnf makecache",
+      "category": "packages",
+      "subcategory": "",
+      "tags": [
+        "pakiety",
+        "packages",
+        "updates",
+        "aktualizacja",
+        "dnf"
+      ],
+      "platform": "Linux",
+      "shell": "Bash",
+      "family": "rhel",
+      "distributions": [],
+      "minVersion": "",
+      "maxVersion": "",
+      "tools": [
+        "dnf",
+        "sudo"
+      ],
+      "privileges": "root / sudo",
+      "risk": "Modify",
+      "origin": "BuiltIn",
+      "parameters": [],
+      "examples": [],
+      "priority": 0
+    },
+    {
+      "id": "pkg.dnf.install",
+      "operation": "package.install",
+      "name": "Zainstaluj pakiet · DNF",
+      "nameEn": "Install package · DNF",
+      "summary": "Zainstaluj pakiet · DNF",
+      "summaryEn": "Install package · DNF",
+      "explanation": "Zainstaluj pakiet · DNF. Zmienia stan hosta; sprawdź cel i uprawnienia przed wykonaniem.",
+      "explanationEn": "Install package · DNF. Changes host state; verify the target and permissions before executing.",
+      "template": "sudo dnf install {{package}}",
+      "category": "packages",
+      "subcategory": "",
+      "tags": [
+        "pakiety",
+        "packages",
+        "updates",
+        "aktualizacja",
+        "dnf"
+      ],
+      "platform": "Linux",
+      "shell": "Bash",
+      "family": "rhel",
+      "distributions": [],
+      "minVersion": "",
+      "maxVersion": "",
+      "tools": [
+        "dnf",
+        "sudo"
+      ],
+      "privileges": "root / sudo",
+      "risk": "Modify",
+      "origin": "BuiltIn",
+      "parameters": [
+        {
+          "key": "package",
+          "label": "Package / pakiet",
+          "kind": "Text",
+          "default": "curl",
+          "required": true,
+          "choices": []
+        }
+      ],
+      "examples": [
+        "sudo dnf install 'curl'"
+      ],
+      "priority": 0
+    },
+    {
+      "id": "pkg.yum.list",
+      "operation": "package.list",
+      "name": "Zainstalowane pakiety · YUM",
+      "nameEn": "Installed packages · YUM",
+      "summary": "Zainstalowane pakiety · YUM",
+      "summaryEn": "Installed packages · YUM",
+      "explanation": "Zainstalowane pakiety · YUM. Odczytuje dane hosta. Wynik zależy od uprawnień użytkownika i dostępności narzędzia.",
+      "explanationEn": "Installed packages · YUM. Reads host data. Results depend on user permissions and tool availability.",
+      "template": "yum list installed",
+      "category": "packages",
+      "subcategory": "",
+      "tags": [
+        "pakiety",
+        "packages",
+        "updates",
+        "aktualizacja",
+        "yum"
+      ],
+      "platform": "Linux",
+      "shell": "Bash",
+      "family": "rhel",
+      "distributions": [],
+      "minVersion": "",
+      "maxVersion": "",
+      "tools": [
+        "yum"
+      ],
+      "privileges": "user",
+      "risk": "ReadOnly",
+      "origin": "BuiltIn",
+      "parameters": [],
+      "examples": [],
+      "priority": 0
+    },
+    {
+      "id": "pkg.yum.info",
+      "operation": "package.info",
+      "name": "Informacje o pakiecie · YUM",
+      "nameEn": "Package information · YUM",
+      "summary": "Informacje o pakiecie · YUM",
+      "summaryEn": "Package information · YUM",
+      "explanation": "Informacje o pakiecie · YUM. Odczytuje dane hosta. Wynik zależy od uprawnień użytkownika i dostępności narzędzia.",
+      "explanationEn": "Package information · YUM. Reads host data. Results depend on user permissions and tool availability.",
+      "template": "yum info {{package}}",
+      "category": "packages",
+      "subcategory": "",
+      "tags": [
+        "pakiety",
+        "packages",
+        "updates",
+        "aktualizacja",
+        "yum"
+      ],
+      "platform": "Linux",
+      "shell": "Bash",
+      "family": "rhel",
+      "distributions": [],
+      "minVersion": "",
+      "maxVersion": "",
+      "tools": [
+        "yum"
+      ],
+      "privileges": "user",
+      "risk": "ReadOnly",
+      "origin": "BuiltIn",
+      "parameters": [
+        {
+          "key": "package",
+          "label": "Package / pakiet",
+          "kind": "Text",
+          "default": "curl",
+          "required": true,
+          "choices": []
+        }
+      ],
+      "examples": [
+        "yum info 'curl'"
+      ],
+      "priority": 0
+    },
+    {
+      "id": "pkg.yum.outdated",
+      "operation": "package.outdated",
+      "name": "Dostępne aktualizacje pakietów · YUM",
+      "nameEn": "Available package updates · YUM",
+      "summary": "Dostępne aktualizacje pakietów · YUM",
+      "summaryEn": "Available package updates · YUM",
+      "explanation": "Dostępne aktualizacje pakietów · YUM. Odczytuje dane hosta. Wynik zależy od uprawnień użytkownika i dostępności narzędzia.",
+      "explanationEn": "Available package updates · YUM. Reads host data. Results depend on user permissions and tool availability.",
+      "template": "yum check-update",
+      "category": "packages",
+      "subcategory": "",
+      "tags": [
+        "pakiety",
+        "packages",
+        "updates",
+        "aktualizacja",
+        "yum"
+      ],
+      "platform": "Linux",
+      "shell": "Bash",
+      "family": "rhel",
+      "distributions": [],
+      "minVersion": "",
+      "maxVersion": "",
+      "tools": [
+        "yum"
+      ],
+      "privileges": "user",
+      "risk": "ReadOnly",
+      "origin": "BuiltIn",
+      "parameters": [],
+      "examples": [],
+      "priority": 0
+    },
+    {
+      "id": "pkg.yum.refresh",
+      "operation": "package.refresh",
+      "name": "Odśwież indeks pakietów · YUM",
+      "nameEn": "Refresh package index · YUM",
+      "summary": "Odśwież indeks pakietów · YUM",
+      "summaryEn": "Refresh package index · YUM",
+      "explanation": "Odśwież indeks pakietów · YUM. Zmienia stan hosta; sprawdź cel i uprawnienia przed wykonaniem.",
+      "explanationEn": "Refresh package index · YUM. Changes host state; verify the target and permissions before executing.",
+      "template": "sudo yum makecache",
+      "category": "packages",
+      "subcategory": "",
+      "tags": [
+        "pakiety",
+        "packages",
+        "updates",
+        "aktualizacja",
+        "yum"
+      ],
+      "platform": "Linux",
+      "shell": "Bash",
+      "family": "rhel",
+      "distributions": [],
+      "minVersion": "",
+      "maxVersion": "",
+      "tools": [
+        "yum",
+        "sudo"
+      ],
+      "privileges": "root / sudo",
+      "risk": "Modify",
+      "origin": "BuiltIn",
+      "parameters": [],
+      "examples": [],
+      "priority": 0
+    },
+    {
+      "id": "pkg.yum.install",
+      "operation": "package.install",
+      "name": "Zainstaluj pakiet · YUM",
+      "nameEn": "Install package · YUM",
+      "summary": "Zainstaluj pakiet · YUM",
+      "summaryEn": "Install package · YUM",
+      "explanation": "Zainstaluj pakiet · YUM. Zmienia stan hosta; sprawdź cel i uprawnienia przed wykonaniem.",
+      "explanationEn": "Install package · YUM. Changes host state; verify the target and permissions before executing.",
+      "template": "sudo yum install {{package}}",
+      "category": "packages",
+      "subcategory": "",
+      "tags": [
+        "pakiety",
+        "packages",
+        "updates",
+        "aktualizacja",
+        "yum"
+      ],
+      "platform": "Linux",
+      "shell": "Bash",
+      "family": "rhel",
+      "distributions": [],
+      "minVersion": "",
+      "maxVersion": "",
+      "tools": [
+        "yum",
+        "sudo"
+      ],
+      "privileges": "root / sudo",
+      "risk": "Modify",
+      "origin": "BuiltIn",
+      "parameters": [
+        {
+          "key": "package",
+          "label": "Package / pakiet",
+          "kind": "Text",
+          "default": "curl",
+          "required": true,
+          "choices": []
+        }
+      ],
+      "examples": [
+        "sudo yum install 'curl'"
+      ],
+      "priority": 0
+    },
+    {
+      "id": "pkg.pacman.list",
+      "operation": "package.list",
+      "name": "Zainstalowane pakiety · PACMAN",
+      "nameEn": "Installed packages · PACMAN",
+      "summary": "Zainstalowane pakiety · PACMAN",
+      "summaryEn": "Installed packages · PACMAN",
+      "explanation": "Zainstalowane pakiety · PACMAN. Odczytuje dane hosta. Wynik zależy od uprawnień użytkownika i dostępności narzędzia.",
+      "explanationEn": "Installed packages · PACMAN. Reads host data. Results depend on user permissions and tool availability.",
+      "template": "pacman -Q",
+      "category": "packages",
+      "subcategory": "",
+      "tags": [
+        "pakiety",
+        "packages",
+        "updates",
+        "aktualizacja",
+        "pacman"
+      ],
+      "platform": "Linux",
+      "shell": "Bash",
+      "family": "arch",
+      "distributions": [],
+      "minVersion": "",
+      "maxVersion": "",
+      "tools": [
+        "pacman"
+      ],
+      "privileges": "user",
+      "risk": "ReadOnly",
+      "origin": "BuiltIn",
+      "parameters": [],
+      "examples": [],
+      "priority": 0
+    },
+    {
+      "id": "pkg.pacman.info",
+      "operation": "package.info",
+      "name": "Informacje o pakiecie · PACMAN",
+      "nameEn": "Package information · PACMAN",
+      "summary": "Informacje o pakiecie · PACMAN",
+      "summaryEn": "Package information · PACMAN",
+      "explanation": "Informacje o pakiecie · PACMAN. Odczytuje dane hosta. Wynik zależy od uprawnień użytkownika i dostępności narzędzia.",
+      "explanationEn": "Package information · PACMAN. Reads host data. Results depend on user permissions and tool availability.",
+      "template": "pacman -Si {{package}}",
+      "category": "packages",
+      "subcategory": "",
+      "tags": [
+        "pakiety",
+        "packages",
+        "updates",
+        "aktualizacja",
+        "pacman"
+      ],
+      "platform": "Linux",
+      "shell": "Bash",
+      "family": "arch",
+      "distributions": [],
+      "minVersion": "",
+      "maxVersion": "",
+      "tools": [
+        "pacman"
+      ],
+      "privileges": "user",
+      "risk": "ReadOnly",
+      "origin": "BuiltIn",
+      "parameters": [
+        {
+          "key": "package",
+          "label": "Package / pakiet",
+          "kind": "Text",
+          "default": "curl",
+          "required": true,
+          "choices": []
+        }
+      ],
+      "examples": [
+        "pacman -Si 'curl'"
+      ],
+      "priority": 0
+    },
+    {
+      "id": "pkg.pacman.outdated",
+      "operation": "package.outdated",
+      "name": "Dostępne aktualizacje pakietów · PACMAN",
+      "nameEn": "Available package updates · PACMAN",
+      "summary": "Dostępne aktualizacje pakietów · PACMAN",
+      "summaryEn": "Available package updates · PACMAN",
+      "explanation": "Dostępne aktualizacje pakietów · PACMAN. Odczytuje dane hosta. Wynik zależy od uprawnień użytkownika i dostępności narzędzia.",
+      "explanationEn": "Available package updates · PACMAN. Reads host data. Results depend on user permissions and tool availability.",
+      "template": "pacman -Qu",
+      "category": "packages",
+      "subcategory": "",
+      "tags": [
+        "pakiety",
+        "packages",
+        "updates",
+        "aktualizacja",
+        "pacman"
+      ],
+      "platform": "Linux",
+      "shell": "Bash",
+      "family": "arch",
+      "distributions": [],
+      "minVersion": "",
+      "maxVersion": "",
+      "tools": [
+        "pacman"
+      ],
+      "privileges": "user",
+      "risk": "ReadOnly",
+      "origin": "BuiltIn",
+      "parameters": [],
+      "examples": [],
+      "priority": 0
+    },
+    {
+      "id": "pkg.pacman.refresh",
+      "operation": "package.refresh",
+      "name": "Pełna aktualizacja Arch Linux · PACMAN",
+      "nameEn": "Full Arch Linux upgrade · PACMAN",
+      "summary": "Pełna aktualizacja Arch Linux · PACMAN",
+      "summaryEn": "Full Arch Linux upgrade · PACMAN",
+      "explanation": "Arch wymaga pełnej, spójnej aktualizacji; nie wykonuj częściowej aktualizacji baz pacman -Sy.",
+      "explanationEn": "Arch requires a coherent full upgrade; do not perform a partial pacman -Sy database upgrade.",
+      "template": "sudo pacman -Syu",
+      "category": "packages",
+      "subcategory": "",
+      "tags": [
+        "pakiety",
+        "packages",
+        "updates",
+        "aktualizacja",
+        "pacman"
+      ],
+      "platform": "Linux",
+      "shell": "Bash",
+      "family": "arch",
+      "distributions": [],
+      "minVersion": "",
+      "maxVersion": "",
+      "tools": [
+        "pacman",
+        "sudo"
+      ],
+      "privileges": "root / sudo",
+      "risk": "Dangerous",
+      "origin": "BuiltIn",
+      "parameters": [],
+      "examples": [],
+      "priority": 0
+    },
+    {
+      "id": "pkg.pacman.install",
+      "operation": "package.install",
+      "name": "Zainstaluj pakiet · PACMAN",
+      "nameEn": "Install package · PACMAN",
+      "summary": "Zainstaluj pakiet · PACMAN",
+      "summaryEn": "Install package · PACMAN",
+      "explanation": "Zainstaluj pakiet · PACMAN. Zmienia stan hosta; sprawdź cel i uprawnienia przed wykonaniem.",
+      "explanationEn": "Install package · PACMAN. Changes host state; verify the target and permissions before executing.",
+      "template": "sudo pacman -S {{package}}",
+      "category": "packages",
+      "subcategory": "",
+      "tags": [
+        "pakiety",
+        "packages",
+        "updates",
+        "aktualizacja",
+        "pacman"
+      ],
+      "platform": "Linux",
+      "shell": "Bash",
+      "family": "arch",
+      "distributions": [],
+      "minVersion": "",
+      "maxVersion": "",
+      "tools": [
+        "pacman",
+        "sudo"
+      ],
+      "privileges": "root / sudo",
+      "risk": "Modify",
+      "origin": "BuiltIn",
+      "parameters": [
+        {
+          "key": "package",
+          "label": "Package / pakiet",
+          "kind": "Text",
+          "default": "curl",
+          "required": true,
+          "choices": []
+        }
+      ],
+      "examples": [
+        "sudo pacman -S 'curl'"
+      ],
+      "priority": 0
+    },
+    {
+      "id": "pkg.apk.list",
+      "operation": "package.list",
+      "name": "Zainstalowane pakiety · APK",
+      "nameEn": "Installed packages · APK",
+      "summary": "Zainstalowane pakiety · APK",
+      "summaryEn": "Installed packages · APK",
+      "explanation": "Zainstalowane pakiety · APK. Odczytuje dane hosta. Wynik zależy od uprawnień użytkownika i dostępności narzędzia.",
+      "explanationEn": "Installed packages · APK. Reads host data. Results depend on user permissions and tool availability.",
+      "template": "apk info",
+      "category": "packages",
+      "subcategory": "",
+      "tags": [
+        "pakiety",
+        "packages",
+        "updates",
+        "aktualizacja",
+        "apk"
+      ],
+      "platform": "Linux",
+      "shell": "Bash",
+      "family": "alpine",
+      "distributions": [],
+      "minVersion": "",
+      "maxVersion": "",
+      "tools": [
+        "apk"
+      ],
+      "privileges": "user",
+      "risk": "ReadOnly",
+      "origin": "BuiltIn",
+      "parameters": [],
+      "examples": [],
+      "priority": 0
+    },
+    {
+      "id": "pkg.apk.info",
+      "operation": "package.info",
+      "name": "Informacje o pakiecie · APK",
+      "nameEn": "Package information · APK",
+      "summary": "Informacje o pakiecie · APK",
+      "summaryEn": "Package information · APK",
+      "explanation": "Informacje o pakiecie · APK. Odczytuje dane hosta. Wynik zależy od uprawnień użytkownika i dostępności narzędzia.",
+      "explanationEn": "Package information · APK. Reads host data. Results depend on user permissions and tool availability.",
+      "template": "apk info {{package}}",
+      "category": "packages",
+      "subcategory": "",
+      "tags": [
+        "pakiety",
+        "packages",
+        "updates",
+        "aktualizacja",
+        "apk"
+      ],
+      "platform": "Linux",
+      "shell": "Bash",
+      "family": "alpine",
+      "distributions": [],
+      "minVersion": "",
+      "maxVersion": "",
+      "tools": [
+        "apk"
+      ],
+      "privileges": "user",
+      "risk": "ReadOnly",
+      "origin": "BuiltIn",
+      "parameters": [
+        {
+          "key": "package",
+          "label": "Package / pakiet",
+          "kind": "Text",
+          "default": "curl",
+          "required": true,
+          "choices": []
+        }
+      ],
+      "examples": [
+        "apk info 'curl'"
+      ],
+      "priority": 0
+    },
+    {
+      "id": "pkg.apk.outdated",
+      "operation": "package.outdated",
+      "name": "Dostępne aktualizacje pakietów · APK",
+      "nameEn": "Available package updates · APK",
+      "summary": "Dostępne aktualizacje pakietów · APK",
+      "summaryEn": "Available package updates · APK",
+      "explanation": "Dostępne aktualizacje pakietów · APK. Odczytuje dane hosta. Wynik zależy od uprawnień użytkownika i dostępności narzędzia.",
+      "explanationEn": "Available package updates · APK. Reads host data. Results depend on user permissions and tool availability.",
+      "template": "apk version -l '<'",
+      "category": "packages",
+      "subcategory": "",
+      "tags": [
+        "pakiety",
+        "packages",
+        "updates",
+        "aktualizacja",
+        "apk"
+      ],
+      "platform": "Linux",
+      "shell": "Bash",
+      "family": "alpine",
+      "distributions": [],
+      "minVersion": "",
+      "maxVersion": "",
+      "tools": [
+        "apk"
+      ],
+      "privileges": "user",
+      "risk": "ReadOnly",
+      "origin": "BuiltIn",
+      "parameters": [],
+      "examples": [],
+      "priority": 0
+    },
+    {
+      "id": "pkg.apk.refresh",
+      "operation": "package.refresh",
+      "name": "Odśwież indeks pakietów · APK",
+      "nameEn": "Refresh package index · APK",
+      "summary": "Odśwież indeks pakietów · APK",
+      "summaryEn": "Refresh package index · APK",
+      "explanation": "Odśwież indeks pakietów · APK. Zmienia stan hosta; sprawdź cel i uprawnienia przed wykonaniem.",
+      "explanationEn": "Refresh package index · APK. Changes host state; verify the target and permissions before executing.",
+      "template": "apk update",
+      "category": "packages",
+      "subcategory": "",
+      "tags": [
+        "pakiety",
+        "packages",
+        "updates",
+        "aktualizacja",
+        "apk"
+      ],
+      "platform": "Linux",
+      "shell": "Bash",
+      "family": "alpine",
+      "distributions": [],
+      "minVersion": "",
+      "maxVersion": "",
+      "tools": [
+        "apk"
+      ],
+      "privileges": "root / sudo",
+      "risk": "Modify",
+      "origin": "BuiltIn",
+      "parameters": [],
+      "examples": [],
+      "priority": 0
+    },
+    {
+      "id": "pkg.apk.install",
+      "operation": "package.install",
+      "name": "Zainstaluj pakiet · APK",
+      "nameEn": "Install package · APK",
+      "summary": "Zainstaluj pakiet · APK",
+      "summaryEn": "Install package · APK",
+      "explanation": "Zainstaluj pakiet · APK. Zmienia stan hosta; sprawdź cel i uprawnienia przed wykonaniem.",
+      "explanationEn": "Install package · APK. Changes host state; verify the target and permissions before executing.",
+      "template": "apk add {{package}}",
+      "category": "packages",
+      "subcategory": "",
+      "tags": [
+        "pakiety",
+        "packages",
+        "updates",
+        "aktualizacja",
+        "apk"
+      ],
+      "platform": "Linux",
+      "shell": "Bash",
+      "family": "alpine",
+      "distributions": [],
+      "minVersion": "",
+      "maxVersion": "",
+      "tools": [
+        "apk"
+      ],
+      "privileges": "root / sudo",
+      "risk": "Modify",
+      "origin": "BuiltIn",
+      "parameters": [
+        {
+          "key": "package",
+          "label": "Package / pakiet",
+          "kind": "Text",
+          "default": "curl",
+          "required": true,
+          "choices": []
+        }
+      ],
+      "examples": [
+        "apk add 'curl'"
+      ],
+      "priority": 0
+    },
+    {
+      "id": "linux.files.list",
+      "operation": "linux.files.list",
+      "name": "Pliki i uprawnienia",
+      "nameEn": "Files and permissions",
+      "summary": "Pliki i uprawnienia",
+      "summaryEn": "Files and permissions",
+      "explanation": "Pliki i uprawnienia. Odczytuje dane hosta. Wynik zależy od uprawnień użytkownika i dostępności narzędzia.",
+      "explanationEn": "Files and permissions. Reads host data. Results depend on user permissions and tool availability.",
+      "template": "ls -lah -- {{path}}",
+      "category": "files",
+      "subcategory": "",
+      "tags": [
+        "pliki",
+        "files",
+        "permissions",
+        "uprawnienia"
+      ],
+      "platform": "Linux",
+      "shell": "Bash",
+      "family": "",
+      "distributions": [],
+      "minVersion": "",
+      "maxVersion": "",
+      "tools": [
+        "ls"
+      ],
+      "privileges": "user",
+      "risk": "ReadOnly",
+      "origin": "BuiltIn",
+      "parameters": [
+        {
+          "key": "path",
+          "label": "Path / ścieżka",
+          "kind": "FilePath",
+          "default": "/var/log",
+          "required": true,
+          "choices": []
+        }
+      ],
+      "examples": [
+        "ls -lah -- '/var/log'"
+      ],
+      "priority": 0
+    },
+    {
+      "id": "linux.files.usage",
+      "operation": "linux.files.usage",
+      "name": "Rozmiar katalogu",
+      "nameEn": "Directory size",
+      "summary": "Rozmiar katalogu",
+      "summaryEn": "Directory size",
+      "explanation": "Rozmiar katalogu. Odczytuje dane hosta. Wynik zależy od uprawnień użytkownika i dostępności narzędzia.",
+      "explanationEn": "Directory size. Reads host data. Results depend on user permissions and tool availability.",
+      "template": "du -sh -- {{path}}",
+      "category": "files",
+      "subcategory": "",
+      "tags": [
+        "pliki",
+        "files",
+        "permissions",
+        "uprawnienia"
+      ],
+      "platform": "Linux",
+      "shell": "Bash",
+      "family": "",
+      "distributions": [],
+      "minVersion": "",
+      "maxVersion": "",
+      "tools": [
+        "du"
+      ],
+      "privileges": "user",
+      "risk": "ReadOnly",
+      "origin": "BuiltIn",
+      "parameters": [
+        {
+          "key": "path",
+          "label": "Path / ścieżka",
+          "kind": "FilePath",
+          "default": "/var/log",
+          "required": true,
+          "choices": []
+        }
+      ],
+      "examples": [
+        "du -sh -- '/var/log'"
+      ],
+      "priority": 0
+    },
+    {
+      "id": "linux.files.find",
+      "operation": "linux.files.find",
+      "name": "Znajdź pliki po nazwie",
+      "nameEn": "Find files by name",
+      "summary": "Znajdź pliki po nazwie",
+      "summaryEn": "Find files by name",
+      "explanation": "Znajdź pliki po nazwie. Odczytuje dane hosta. Wynik zależy od uprawnień użytkownika i dostępności narzędzia.",
+      "explanationEn": "Find files by name. Reads host data. Results depend on user permissions and tool availability.",
+      "template": "find {{path}} -name {{pattern}}",
+      "category": "files",
+      "subcategory": "",
+      "tags": [
+        "pliki",
+        "files",
+        "permissions",
+        "uprawnienia"
+      ],
+      "platform": "Linux",
+      "shell": "Bash",
+      "family": "",
+      "distributions": [],
+      "minVersion": "",
+      "maxVersion": "",
+      "tools": [
+        "find"
+      ],
+      "privileges": "user",
+      "risk": "ReadOnly",
+      "origin": "BuiltIn",
+      "parameters": [
+        {
+          "key": "path",
+          "label": "Path / ścieżka",
+          "kind": "FilePath",
+          "default": "/var/log",
+          "required": true,
+          "choices": []
+        },
+        {
+          "key": "pattern",
+          "label": "Pattern / wzorzec",
+          "kind": "Text",
+          "default": "*.log",
+          "required": true,
+          "choices": []
+        }
+      ],
+      "examples": [
+        "find '/var/log' -name '*.log'"
+      ],
+      "priority": 0
+    },
+    {
+      "id": "linux.files.read",
+      "operation": "linux.files.read",
+      "name": "Odczytaj plik",
+      "nameEn": "Read a file",
+      "summary": "Odczytaj plik",
+      "summaryEn": "Read a file",
+      "explanation": "Odczytaj plik. Odczytuje dane hosta. Wynik zależy od uprawnień użytkownika i dostępności narzędzia.",
+      "explanationEn": "Read a file. Reads host data. Results depend on user permissions and tool availability.",
+      "template": "cat -- {{path}}",
+      "category": "files",
+      "subcategory": "",
+      "tags": [
+        "pliki",
+        "files",
+        "permissions",
+        "uprawnienia"
+      ],
+      "platform": "Linux",
+      "shell": "Bash",
+      "family": "",
+      "distributions": [],
+      "minVersion": "",
+      "maxVersion": "",
+      "tools": [
+        "cat"
+      ],
+      "privileges": "user",
+      "risk": "ReadOnly",
+      "origin": "BuiltIn",
+      "parameters": [
+        {
+          "key": "path",
+          "label": "Path / ścieżka",
+          "kind": "FilePath",
+          "default": "/var/log",
+          "required": true,
+          "choices": []
+        }
+      ],
+      "examples": [
+        "cat -- '/var/log'"
+      ],
+      "priority": 0
+    },
+    {
+      "id": "linux.files.tail",
+      "operation": "linux.files.tail",
+      "name": "Ostatnie linie pliku",
+      "nameEn": "Last lines of a file",
+      "summary": "Ostatnie linie pliku",
+      "summaryEn": "Last lines of a file",
+      "explanation": "Ostatnie linie pliku. Odczytuje dane hosta. Wynik zależy od uprawnień użytkownika i dostępności narzędzia.",
+      "explanationEn": "Last lines of a file. Reads host data. Results depend on user permissions and tool availability.",
+      "template": "tail -n 50 -- {{path}}",
+      "category": "files",
+      "subcategory": "",
+      "tags": [
+        "pliki",
+        "files",
+        "permissions",
+        "uprawnienia"
+      ],
+      "platform": "Linux",
+      "shell": "Bash",
+      "family": "",
+      "distributions": [],
+      "minVersion": "",
+      "maxVersion": "",
+      "tools": [
+        "tail"
+      ],
+      "privileges": "user",
+      "risk": "ReadOnly",
+      "origin": "BuiltIn",
+      "parameters": [
+        {
+          "key": "path",
+          "label": "Path / ścieżka",
+          "kind": "FilePath",
+          "default": "/var/log",
+          "required": true,
+          "choices": []
+        }
+      ],
+      "examples": [
+        "tail -n 50 -- '/var/log'"
+      ],
+      "priority": 0
+    },
+    {
+      "id": "linux.files.mkdir",
+      "operation": "linux.files.mkdir",
+      "name": "Utwórz katalog",
+      "nameEn": "Create directory",
+      "summary": "Utwórz katalog",
+      "summaryEn": "Create directory",
+      "explanation": "Utwórz katalog. Zmienia stan hosta; sprawdź cel i uprawnienia przed wykonaniem.",
+      "explanationEn": "Create directory. Changes host state; verify the target and permissions before executing.",
+      "template": "mkdir -p -- {{path}}",
+      "category": "files",
+      "subcategory": "",
+      "tags": [
+        "pliki",
+        "files",
+        "permissions",
+        "uprawnienia"
+      ],
+      "platform": "Linux",
+      "shell": "Bash",
+      "family": "",
+      "distributions": [],
+      "minVersion": "",
+      "maxVersion": "",
+      "tools": [
+        "mkdir"
+      ],
+      "privileges": "user",
+      "risk": "Modify",
+      "origin": "BuiltIn",
+      "parameters": [
+        {
+          "key": "path",
+          "label": "Path / ścieżka",
+          "kind": "FilePath",
+          "default": "/var/log",
+          "required": true,
+          "choices": []
+        }
+      ],
+      "examples": [
+        "mkdir -p -- '/var/log'"
+      ],
+      "priority": 0
+    },
+    {
+      "id": "linux.files.copy",
+      "operation": "linux.files.copy",
+      "name": "Skopiuj plik",
+      "nameEn": "Copy a file",
+      "summary": "Skopiuj plik",
+      "summaryEn": "Copy a file",
+      "explanation": "Skopiuj plik. Zmienia stan hosta; sprawdź cel i uprawnienia przed wykonaniem.",
+      "explanationEn": "Copy a file. Changes host state; verify the target and permissions before executing.",
+      "template": "cp -i -- {{source}} {{destination}}",
+      "category": "files",
+      "subcategory": "",
+      "tags": [
+        "pliki",
+        "files",
+        "permissions",
+        "uprawnienia"
+      ],
+      "platform": "Linux",
+      "shell": "Bash",
+      "family": "",
+      "distributions": [],
+      "minVersion": "",
+      "maxVersion": "",
+      "tools": [
+        "cp"
+      ],
+      "privileges": "user",
+      "risk": "Modify",
+      "origin": "BuiltIn",
+      "parameters": [
+        {
+          "key": "source",
+          "label": "Source / źródło",
+          "kind": "FilePath",
+          "default": "/tmp/source",
+          "required": true,
+          "choices": []
+        },
+        {
+          "key": "destination",
+          "label": "Destination / cel",
+          "kind": "FilePath",
+          "default": "/tmp/copy",
+          "required": true,
+          "choices": []
+        }
+      ],
+      "examples": [
+        "cp -i -- '/tmp/source' '/tmp/copy'"
+      ],
+      "priority": 0
+    },
+    {
+      "id": "linux.files.move",
+      "operation": "linux.files.move",
+      "name": "Przenieś plik",
+      "nameEn": "Move a file",
+      "summary": "Przenieś plik",
+      "summaryEn": "Move a file",
+      "explanation": "Przenieś plik. Zmienia stan hosta; sprawdź cel i uprawnienia przed wykonaniem.",
+      "explanationEn": "Move a file. Changes host state; verify the target and permissions before executing.",
+      "template": "mv -i -- {{source}} {{destination}}",
+      "category": "files",
+      "subcategory": "",
+      "tags": [
+        "pliki",
+        "files",
+        "permissions",
+        "uprawnienia"
+      ],
+      "platform": "Linux",
+      "shell": "Bash",
+      "family": "",
+      "distributions": [],
+      "minVersion": "",
+      "maxVersion": "",
+      "tools": [
+        "mv"
+      ],
+      "privileges": "user",
+      "risk": "Modify",
+      "origin": "BuiltIn",
+      "parameters": [
+        {
+          "key": "source",
+          "label": "Source / źródło",
+          "kind": "FilePath",
+          "default": "/tmp/source",
+          "required": true,
+          "choices": []
+        },
+        {
+          "key": "destination",
+          "label": "Destination / cel",
+          "kind": "FilePath",
+          "default": "/tmp/renamed",
+          "required": true,
+          "choices": []
+        }
+      ],
+      "examples": [
+        "mv -i -- '/tmp/source' '/tmp/renamed'"
+      ],
+      "priority": 0
+    },
+    {
+      "id": "linux.files.chmod",
+      "operation": "linux.files.chmod",
+      "name": "Zmień uprawnienia pliku",
+      "nameEn": "Change file permissions",
+      "summary": "Zmień uprawnienia pliku",
+      "summaryEn": "Change file permissions",
+      "explanation": "Zmień uprawnienia pliku. Zmienia stan hosta; sprawdź cel i uprawnienia przed wykonaniem.",
+      "explanationEn": "Change file permissions. Changes host state; verify the target and permissions before executing.",
+      "template": "chmod {{mode}} -- {{path}}",
+      "category": "files",
+      "subcategory": "",
+      "tags": [
+        "pliki",
+        "files",
+        "permissions",
+        "uprawnienia"
+      ],
+      "platform": "Linux",
+      "shell": "Bash",
+      "family": "",
+      "distributions": [],
+      "minVersion": "",
+      "maxVersion": "",
+      "tools": [
+        "chmod"
+      ],
+      "privileges": "user",
+      "risk": "Modify",
+      "origin": "BuiltIn",
+      "parameters": [
+        {
+          "key": "mode",
+          "label": "Mode / uprawnienia",
+          "kind": "Choice",
+          "default": "640",
+          "required": true,
+          "choices": [
+            "600",
+            "640",
+            "644",
+            "700",
+            "750",
+            "755"
+          ]
+        },
+        {
+          "key": "path",
+          "label": "Path / ścieżka",
+          "kind": "FilePath",
+          "default": "/var/log",
+          "required": true,
+          "choices": []
+        }
+      ],
+      "examples": [
+        "chmod '640' -- '/var/log'"
+      ],
+      "priority": 0
+    },
+    {
+      "id": "linux.files.owner",
+      "operation": "linux.files.owner",
+      "name": "Zmień właściciela",
+      "nameEn": "Change ownership",
+      "summary": "Zmień właściciela",
+      "summaryEn": "Change ownership",
+      "explanation": "Zmień właściciela. Zmienia stan hosta; sprawdź cel i uprawnienia przed wykonaniem.",
+      "explanationEn": "Change ownership. Changes host state; verify the target and permissions before executing.",
+      "template": "sudo chown {{owner}} -- {{path}}",
+      "category": "files",
+      "subcategory": "",
+      "tags": [
+        "pliki",
+        "files",
+        "permissions",
+        "uprawnienia"
+      ],
+      "platform": "Linux",
+      "shell": "Bash",
+      "family": "",
+      "distributions": [],
+      "minVersion": "",
+      "maxVersion": "",
+      "tools": [
+        "chown",
+        "sudo"
+      ],
+      "privileges": "user",
+      "risk": "Modify",
+      "origin": "BuiltIn",
+      "parameters": [
+        {
+          "key": "owner",
+          "label": "Owner / właściciel",
+          "kind": "Text",
+          "default": "root:root",
+          "required": true,
+          "choices": []
+        },
+        {
+          "key": "path",
+          "label": "Path / ścieżka",
+          "kind": "FilePath",
+          "default": "/var/log",
+          "required": true,
+          "choices": []
+        }
+      ],
+      "examples": [
+        "sudo chown 'root:root' -- '/var/log'"
+      ],
+      "priority": 0
+    },
+    {
+      "id": "linux.files.remove",
+      "operation": "linux.files.remove",
+      "name": "Usuń pojedynczy plik",
+      "nameEn": "Remove one file",
+      "summary": "Usuń pojedynczy plik",
+      "summaryEn": "Remove one file",
+      "explanation": "Usuń pojedynczy plik. Zmienia stan hosta; sprawdź cel i uprawnienia przed wykonaniem.",
+      "explanationEn": "Remove one file. Changes host state; verify the target and permissions before executing.",
+      "template": "rm -i -- {{path}}",
+      "category": "files",
+      "subcategory": "",
+      "tags": [
+        "pliki",
+        "files",
+        "permissions",
+        "uprawnienia"
+      ],
+      "platform": "Linux",
+      "shell": "Bash",
+      "family": "",
+      "distributions": [],
+      "minVersion": "",
+      "maxVersion": "",
+      "tools": [
+        "rm"
+      ],
+      "privileges": "user",
+      "risk": "Dangerous",
+      "origin": "BuiltIn",
+      "parameters": [
+        {
+          "key": "path",
+          "label": "Path / ścieżka",
+          "kind": "FilePath",
+          "default": "/var/log",
+          "required": true,
+          "choices": []
+        }
+      ],
+      "examples": [
+        "rm -i -- '/var/log'"
+      ],
+      "priority": 0
+    },
+    {
+      "id": "linux.users.id",
+      "operation": "linux.users.id",
+      "name": "Identyfikatory użytkownika",
+      "nameEn": "User identifiers",
+      "summary": "Identyfikatory użytkownika",
+      "summaryEn": "User identifiers",
+      "explanation": "Identyfikatory użytkownika. Odczytuje dane hosta. Wynik zależy od uprawnień użytkownika i dostępności narzędzia.",
+      "explanationEn": "User identifiers. Reads host data. Results depend on user permissions and tool availability.",
+      "template": "id {{user}}",
+      "category": "users",
+      "subcategory": "",
+      "tags": [
+        "konto",
+        "user",
+        "grupy",
+        "groups"
+      ],
+      "platform": "Linux",
+      "shell": "Bash",
+      "family": "",
+      "distributions": [],
+      "minVersion": "",
+      "maxVersion": "",
+      "tools": [
+        "id"
+      ],
+      "privileges": "user",
+      "risk": "ReadOnly",
+      "origin": "BuiltIn",
+      "parameters": [
+        {
+          "key": "user",
+          "label": "User / użytkownik",
+          "kind": "Text",
+          "default": "admin",
+          "required": true,
+          "choices": []
+        }
+      ],
+      "examples": [
+        "id 'admin'"
+      ],
+      "priority": 0
+    },
+    {
+      "id": "linux.users.users",
+      "operation": "linux.users.users",
+      "name": "Lista kont",
+      "nameEn": "List accounts",
+      "summary": "Lista kont",
+      "summaryEn": "List accounts",
+      "explanation": "Lista kont. Odczytuje dane hosta. Wynik zależy od uprawnień użytkownika i dostępności narzędzia.",
+      "explanationEn": "List accounts. Reads host data. Results depend on user permissions and tool availability.",
+      "template": "getent passwd",
+      "category": "users",
+      "subcategory": "",
+      "tags": [
+        "konto",
+        "user",
+        "grupy",
+        "groups"
+      ],
+      "platform": "Linux",
+      "shell": "Bash",
+      "family": "",
+      "distributions": [],
+      "minVersion": "",
+      "maxVersion": "",
+      "tools": [
+        "getent"
+      ],
+      "privileges": "user",
+      "risk": "ReadOnly",
+      "origin": "BuiltIn",
+      "parameters": [],
+      "examples": [],
+      "priority": 0
+    },
+    {
+      "id": "linux.users.groups",
+      "operation": "linux.users.groups",
+      "name": "Lista grup",
+      "nameEn": "List groups",
+      "summary": "Lista grup",
+      "summaryEn": "List groups",
+      "explanation": "Lista grup. Odczytuje dane hosta. Wynik zależy od uprawnień użytkownika i dostępności narzędzia.",
+      "explanationEn": "List groups. Reads host data. Results depend on user permissions and tool availability.",
+      "template": "getent group",
+      "category": "users",
+      "subcategory": "",
+      "tags": [
+        "konto",
+        "user",
+        "grupy",
+        "groups"
+      ],
+      "platform": "Linux",
+      "shell": "Bash",
+      "family": "",
+      "distributions": [],
+      "minVersion": "",
+      "maxVersion": "",
+      "tools": [
+        "getent"
+      ],
+      "privileges": "user",
+      "risk": "ReadOnly",
+      "origin": "BuiltIn",
+      "parameters": [],
+      "examples": [],
+      "priority": 0
+    },
+    {
+      "id": "linux.users.create",
+      "operation": "linux.users.create",
+      "name": "Utwórz konto",
+      "nameEn": "Create account",
+      "summary": "Utwórz konto",
+      "summaryEn": "Create account",
+      "explanation": "Utwórz konto. Zmienia stan hosta; sprawdź cel i uprawnienia przed wykonaniem.",
+      "explanationEn": "Create account. Changes host state; verify the target and permissions before executing.",
+      "template": "sudo useradd -m -- {{user}}",
+      "category": "users",
+      "subcategory": "",
+      "tags": [
+        "konto",
+        "user",
+        "grupy",
+        "groups"
+      ],
+      "platform": "Linux",
+      "shell": "Bash",
+      "family": "",
+      "distributions": [],
+      "minVersion": "",
+      "maxVersion": "",
+      "tools": [
+        "useradd",
+        "sudo"
+      ],
+      "privileges": "sudo / root",
+      "risk": "Modify",
+      "origin": "BuiltIn",
+      "parameters": [
+        {
+          "key": "user",
+          "label": "User / użytkownik",
+          "kind": "Text",
+          "default": "admin",
+          "required": true,
+          "choices": []
+        }
+      ],
+      "examples": [
+        "sudo useradd -m -- 'admin'"
+      ],
+      "priority": 0
+    },
+    {
+      "id": "linux.users.group",
+      "operation": "linux.users.group",
+      "name": "Dodaj użytkownika do grupy",
+      "nameEn": "Add user to group",
+      "summary": "Dodaj użytkownika do grupy",
+      "summaryEn": "Add user to group",
+      "explanation": "Dodaj użytkownika do grupy. Zmienia stan hosta; sprawdź cel i uprawnienia przed wykonaniem.",
+      "explanationEn": "Add user to group. Changes host state; verify the target and permissions before executing.",
+      "template": "sudo usermod -aG {{group}} -- {{user}}",
+      "category": "users",
+      "subcategory": "",
+      "tags": [
+        "konto",
+        "user",
+        "grupy",
+        "groups"
+      ],
+      "platform": "Linux",
+      "shell": "Bash",
+      "family": "",
+      "distributions": [],
+      "minVersion": "",
+      "maxVersion": "",
+      "tools": [
+        "usermod",
+        "sudo"
+      ],
+      "privileges": "sudo / root",
+      "risk": "Modify",
+      "origin": "BuiltIn",
+      "parameters": [
+        {
+          "key": "group",
+          "label": "Group / grupa",
+          "kind": "Text",
+          "default": "developers",
+          "required": true,
+          "choices": []
+        },
+        {
+          "key": "user",
+          "label": "User / użytkownik",
+          "kind": "Text",
+          "default": "admin",
+          "required": true,
+          "choices": []
+        }
+      ],
+      "examples": [
+        "sudo usermod -aG 'developers' -- 'admin'"
+      ],
+      "priority": 0
+    },
+    {
+      "id": "linux.users.lock",
+      "operation": "linux.users.lock",
+      "name": "Zablokuj hasło konta",
+      "nameEn": "Lock account password",
+      "summary": "Zablokuj hasło konta",
+      "summaryEn": "Lock account password",
+      "explanation": "Zablokuj hasło konta. Zmienia stan hosta; sprawdź cel i uprawnienia przed wykonaniem.",
+      "explanationEn": "Lock account password. Changes host state; verify the target and permissions before executing.",
+      "template": "sudo passwd -l -- {{user}}",
+      "category": "users",
+      "subcategory": "",
+      "tags": [
+        "konto",
+        "user",
+        "grupy",
+        "groups"
+      ],
+      "platform": "Linux",
+      "shell": "Bash",
+      "family": "",
+      "distributions": [],
+      "minVersion": "",
+      "maxVersion": "",
+      "tools": [
+        "passwd",
+        "sudo"
+      ],
+      "privileges": "sudo / root",
+      "risk": "Dangerous",
+      "origin": "BuiltIn",
+      "parameters": [
+        {
+          "key": "user",
+          "label": "User / użytkownik",
+          "kind": "Text",
+          "default": "admin",
+          "required": true,
+          "choices": []
+        }
+      ],
+      "examples": [
+        "sudo passwd -l -- 'admin'"
+      ],
+      "priority": 0
+    },
+    {
+      "id": "linux.storage.space",
+      "operation": "linux.storage.space",
+      "name": "Wolne miejsce na dysku",
+      "nameEn": "Free disk space",
+      "summary": "Wolne miejsce na dysku",
+      "summaryEn": "Free disk space",
+      "explanation": "Wolne miejsce na dysku. Odczytuje dane hosta. Wynik zależy od uprawnień użytkownika i dostępności narzędzia.",
+      "explanationEn": "Free disk space. Reads host data. Results depend on user permissions and tool availability.",
+      "template": "df -hT",
+      "category": "storage",
+      "subcategory": "",
+      "tags": [
+        "dysk",
+        "disk",
+        "storage",
+        "lvm",
+        "smart",
+        "zfs"
+      ],
+      "platform": "Linux",
+      "shell": "Bash",
+      "family": "",
+      "distributions": [],
+      "minVersion": "",
+      "maxVersion": "",
+      "tools": [
+        "df"
+      ],
+      "privileges": "user",
+      "risk": "ReadOnly",
+      "origin": "BuiltIn",
+      "parameters": [],
+      "examples": [],
+      "priority": 0
+    },
+    {
+      "id": "linux.storage.devices",
+      "operation": "linux.storage.devices",
+      "name": "Urządzenia blokowe",
+      "nameEn": "Block devices",
+      "summary": "Urządzenia blokowe",
+      "summaryEn": "Block devices",
+      "explanation": "Urządzenia blokowe. Odczytuje dane hosta. Wynik zależy od uprawnień użytkownika i dostępności narzędzia.",
+      "explanationEn": "Block devices. Reads host data. Results depend on user permissions and tool availability.",
+      "template": "lsblk -f",
+      "category": "storage",
+      "subcategory": "",
+      "tags": [
+        "dysk",
+        "disk",
+        "storage",
+        "lvm",
+        "smart",
+        "zfs"
+      ],
+      "platform": "Linux",
+      "shell": "Bash",
+      "family": "",
+      "distributions": [],
+      "minVersion": "",
+      "maxVersion": "",
+      "tools": [
+        "lsblk"
+      ],
+      "privileges": "user",
+      "risk": "ReadOnly",
+      "origin": "BuiltIn",
+      "parameters": [],
+      "examples": [],
+      "priority": 0
+    },
+    {
+      "id": "linux.storage.mounts",
+      "operation": "linux.storage.mounts",
+      "name": "Punkty montowania",
+      "nameEn": "Mount points",
+      "summary": "Punkty montowania",
+      "summaryEn": "Mount points",
+      "explanation": "Punkty montowania. Odczytuje dane hosta. Wynik zależy od uprawnień użytkownika i dostępności narzędzia.",
+      "explanationEn": "Mount points. Reads host data. Results depend on user permissions and tool availability.",
+      "template": "findmnt",
+      "category": "storage",
+      "subcategory": "",
+      "tags": [
+        "dysk",
+        "disk",
+        "storage",
+        "lvm",
+        "smart",
+        "zfs"
+      ],
+      "platform": "Linux",
+      "shell": "Bash",
+      "family": "",
+      "distributions": [],
+      "minVersion": "",
+      "maxVersion": "",
+      "tools": [
+        "findmnt"
+      ],
+      "privileges": "user",
+      "risk": "ReadOnly",
+      "origin": "BuiltIn",
+      "parameters": [],
+      "examples": [],
+      "priority": 0
+    },
+    {
+      "id": "linux.storage.lvm-lv",
+      "operation": "linux.storage.lvm-lv",
+      "name": "Woluminy logiczne LVM",
+      "nameEn": "LVM logical volumes",
+      "summary": "Woluminy logiczne LVM",
+      "summaryEn": "LVM logical volumes",
+      "explanation": "Woluminy logiczne LVM. Odczytuje dane hosta. Wynik zależy od uprawnień użytkownika i dostępności narzędzia.",
+      "explanationEn": "LVM logical volumes. Reads host data. Results depend on user permissions and tool availability.",
+      "template": "lvs",
+      "category": "storage",
+      "subcategory": "",
+      "tags": [
+        "dysk",
+        "disk",
+        "storage",
+        "lvm",
+        "smart",
+        "zfs"
+      ],
+      "platform": "Linux",
+      "shell": "Bash",
+      "family": "",
+      "distributions": [],
+      "minVersion": "",
+      "maxVersion": "",
+      "tools": [
+        "lvs"
+      ],
+      "privileges": "user",
+      "risk": "ReadOnly",
+      "origin": "BuiltIn",
+      "parameters": [],
+      "examples": [],
+      "priority": 0
+    },
+    {
+      "id": "linux.storage.lvm-vg",
+      "operation": "linux.storage.lvm-vg",
+      "name": "Grupy woluminów LVM",
+      "nameEn": "LVM volume groups",
+      "summary": "Grupy woluminów LVM",
+      "summaryEn": "LVM volume groups",
+      "explanation": "Grupy woluminów LVM. Odczytuje dane hosta. Wynik zależy od uprawnień użytkownika i dostępności narzędzia.",
+      "explanationEn": "LVM volume groups. Reads host data. Results depend on user permissions and tool availability.",
+      "template": "vgs",
+      "category": "storage",
+      "subcategory": "",
+      "tags": [
+        "dysk",
+        "disk",
+        "storage",
+        "lvm",
+        "smart",
+        "zfs"
+      ],
+      "platform": "Linux",
+      "shell": "Bash",
+      "family": "",
+      "distributions": [],
+      "minVersion": "",
+      "maxVersion": "",
+      "tools": [
+        "vgs"
+      ],
+      "privileges": "user",
+      "risk": "ReadOnly",
+      "origin": "BuiltIn",
+      "parameters": [],
+      "examples": [],
+      "priority": 0
+    },
+    {
+      "id": "linux.storage.lvm-pv",
+      "operation": "linux.storage.lvm-pv",
+      "name": "Woluminy fizyczne LVM",
+      "nameEn": "LVM physical volumes",
+      "summary": "Woluminy fizyczne LVM",
+      "summaryEn": "LVM physical volumes",
+      "explanation": "Woluminy fizyczne LVM. Odczytuje dane hosta. Wynik zależy od uprawnień użytkownika i dostępności narzędzia.",
+      "explanationEn": "LVM physical volumes. Reads host data. Results depend on user permissions and tool availability.",
+      "template": "pvs",
+      "category": "storage",
+      "subcategory": "",
+      "tags": [
+        "dysk",
+        "disk",
+        "storage",
+        "lvm",
+        "smart",
+        "zfs"
+      ],
+      "platform": "Linux",
+      "shell": "Bash",
+      "family": "",
+      "distributions": [],
+      "minVersion": "",
+      "maxVersion": "",
+      "tools": [
+        "pvs"
+      ],
+      "privileges": "user",
+      "risk": "ReadOnly",
+      "origin": "BuiltIn",
+      "parameters": [],
+      "examples": [],
+      "priority": 0
+    },
+    {
+      "id": "linux.storage.smart",
+      "operation": "linux.storage.smart",
+      "name": "Stan SMART urządzenia",
+      "nameEn": "Device SMART health",
+      "summary": "Stan SMART urządzenia",
+      "summaryEn": "Device SMART health",
+      "explanation": "Stan SMART urządzenia. Odczytuje dane hosta. Wynik zależy od uprawnień użytkownika i dostępności narzędzia.",
+      "explanationEn": "Device SMART health. Reads host data. Results depend on user permissions and tool availability.",
+      "template": "sudo smartctl -a {{device}}",
+      "category": "storage",
+      "subcategory": "",
+      "tags": [
+        "dysk",
+        "disk",
+        "storage",
+        "lvm",
+        "smart",
+        "zfs"
+      ],
+      "platform": "Linux",
+      "shell": "Bash",
+      "family": "",
+      "distributions": [],
+      "minVersion": "",
+      "maxVersion": "",
+      "tools": [
+        "smartctl",
+        "sudo"
+      ],
+      "privileges": "sudo / root",
+      "risk": "ReadOnly",
+      "origin": "BuiltIn",
+      "parameters": [
+        {
+          "key": "device",
+          "label": "Device / urządzenie",
+          "kind": "FilePath",
+          "default": "/dev/sda",
+          "required": true,
+          "choices": []
+        }
+      ],
+      "examples": [
+        "sudo smartctl -a '/dev/sda'"
+      ],
+      "priority": 0
+    },
+    {
+      "id": "linux.storage.zpool",
+      "operation": "linux.storage.zpool",
+      "name": "Stan puli ZFS",
+      "nameEn": "ZFS pool status",
+      "summary": "Stan puli ZFS",
+      "summaryEn": "ZFS pool status",
+      "explanation": "Stan puli ZFS. Odczytuje dane hosta. Wynik zależy od uprawnień użytkownika i dostępności narzędzia.",
+      "explanationEn": "ZFS pool status. Reads host data. Results depend on user permissions and tool availability.",
+      "template": "zpool status",
+      "category": "storage",
+      "subcategory": "",
+      "tags": [
+        "dysk",
+        "disk",
+        "storage",
+        "lvm",
+        "smart",
+        "zfs"
+      ],
+      "platform": "Linux",
+      "shell": "Bash",
+      "family": "",
+      "distributions": [],
+      "minVersion": "",
+      "maxVersion": "",
+      "tools": [
+        "zpool"
+      ],
+      "privileges": "user",
+      "risk": "ReadOnly",
+      "origin": "BuiltIn",
+      "parameters": [],
+      "examples": [],
+      "priority": 0
+    },
+    {
+      "id": "linux.storage.zfs",
+      "operation": "linux.storage.zfs",
+      "name": "Zbiory danych ZFS",
+      "nameEn": "ZFS datasets",
+      "summary": "Zbiory danych ZFS",
+      "summaryEn": "ZFS datasets",
+      "explanation": "Zbiory danych ZFS. Odczytuje dane hosta. Wynik zależy od uprawnień użytkownika i dostępności narzędzia.",
+      "explanationEn": "ZFS datasets. Reads host data. Results depend on user permissions and tool availability.",
+      "template": "zfs list",
+      "category": "storage",
+      "subcategory": "",
+      "tags": [
+        "dysk",
+        "disk",
+        "storage",
+        "lvm",
+        "smart",
+        "zfs"
+      ],
+      "platform": "Linux",
+      "shell": "Bash",
+      "family": "",
+      "distributions": [],
+      "minVersion": "",
+      "maxVersion": "",
+      "tools": [
+        "zfs"
+      ],
+      "privileges": "user",
+      "risk": "ReadOnly",
+      "origin": "BuiltIn",
+      "parameters": [],
+      "examples": [],
+      "priority": 0
+    },
+    {
+      "id": "linux.logs.boot",
+      "operation": "linux.logs.boot",
+      "name": "Logi bieżącego rozruchu",
+      "nameEn": "Current boot logs",
+      "summary": "Logi bieżącego rozruchu",
+      "summaryEn": "Current boot logs",
+      "explanation": "Logi bieżącego rozruchu. Odczytuje dane hosta. Wynik zależy od uprawnień użytkownika i dostępności narzędzia.",
+      "explanationEn": "Current boot logs. Reads host data. Results depend on user permissions and tool availability.",
+      "template": "journalctl -b -n 100 --no-pager",
+      "category": "logs",
+      "subcategory": "",
+      "tags": [
+        "log",
+        "dziennik",
+        "bledy",
+        "troubleshooting"
+      ],
+      "platform": "Linux",
+      "shell": "Bash",
+      "family": "",
+      "distributions": [],
+      "minVersion": "",
+      "maxVersion": "",
+      "tools": [
+        "journalctl"
+      ],
+      "privileges": "user",
+      "risk": "ReadOnly",
+      "origin": "BuiltIn",
+      "parameters": [],
+      "examples": [],
+      "priority": 0
+    },
+    {
+      "id": "linux.logs.service",
+      "operation": "linux.logs.service",
+      "name": "Logi usługi",
+      "nameEn": "Service logs",
+      "summary": "Logi usługi",
+      "summaryEn": "Service logs",
+      "explanation": "Logi usługi. Odczytuje dane hosta. Wynik zależy od uprawnień użytkownika i dostępności narzędzia.",
+      "explanationEn": "Service logs. Reads host data. Results depend on user permissions and tool availability.",
+      "template": "journalctl -u {{service}} -n 100 --no-pager",
+      "category": "logs",
+      "subcategory": "",
+      "tags": [
+        "log",
+        "dziennik",
+        "bledy",
+        "troubleshooting"
+      ],
+      "platform": "Linux",
+      "shell": "Bash",
+      "family": "",
+      "distributions": [],
+      "minVersion": "",
+      "maxVersion": "",
+      "tools": [
+        "journalctl"
+      ],
+      "privileges": "user",
+      "risk": "ReadOnly",
+      "origin": "BuiltIn",
+      "parameters": [
+        {
+          "key": "service",
+          "label": "Service / usługa",
+          "kind": "Text",
+          "default": "ssh",
+          "required": true,
+          "choices": []
+        }
+      ],
+      "examples": [
+        "journalctl -u 'ssh' -n 100 --no-pager"
+      ],
+      "priority": 0
+    },
+    {
+      "id": "linux.logs.errors",
+      "operation": "linux.logs.errors",
+      "name": "Ostatnie błędy systemu",
+      "nameEn": "Recent system errors",
+      "summary": "Ostatnie błędy systemu",
+      "summaryEn": "Recent system errors",
+      "explanation": "Ostatnie błędy systemu. Odczytuje dane hosta. Wynik zależy od uprawnień użytkownika i dostępności narzędzia.",
+      "explanationEn": "Recent system errors. Reads host data. Results depend on user permissions and tool availability.",
+      "template": "journalctl -p err -n 100 --no-pager",
+      "category": "logs",
+      "subcategory": "",
+      "tags": [
+        "log",
+        "dziennik",
+        "bledy",
+        "troubleshooting"
+      ],
+      "platform": "Linux",
+      "shell": "Bash",
+      "family": "",
+      "distributions": [],
+      "minVersion": "",
+      "maxVersion": "",
+      "tools": [
+        "journalctl"
+      ],
+      "privileges": "user",
+      "risk": "ReadOnly",
+      "origin": "BuiltIn",
+      "parameters": [],
+      "examples": [],
+      "priority": 0
+    },
+    {
+      "id": "linux.logs.boots",
+      "operation": "linux.logs.boots",
+      "name": "Historia rozruchów",
+      "nameEn": "Boot history",
+      "summary": "Historia rozruchów",
+      "summaryEn": "Boot history",
+      "explanation": "Historia rozruchów. Odczytuje dane hosta. Wynik zależy od uprawnień użytkownika i dostępności narzędzia.",
+      "explanationEn": "Boot history. Reads host data. Results depend on user permissions and tool availability.",
+      "template": "journalctl --list-boots --no-pager",
+      "category": "logs",
+      "subcategory": "",
+      "tags": [
+        "log",
+        "dziennik",
+        "bledy",
+        "troubleshooting"
+      ],
+      "platform": "Linux",
+      "shell": "Bash",
+      "family": "",
+      "distributions": [],
+      "minVersion": "",
+      "maxVersion": "",
+      "tools": [
+        "journalctl"
+      ],
+      "privileges": "user",
+      "risk": "ReadOnly",
+      "origin": "BuiltIn",
+      "parameters": [],
+      "examples": [],
+      "priority": 0
+    },
+    {
+      "id": "linux.logs.openrc",
+      "operation": "linux.logs.openrc",
+      "name": "Log systemowy Alpine / OpenRC",
+      "nameEn": "Alpine / OpenRC system log",
+      "summary": "Log systemowy Alpine / OpenRC",
+      "summaryEn": "Alpine / OpenRC system log",
+      "explanation": "Log systemowy Alpine / OpenRC. Odczytuje dane hosta. Wynik zależy od uprawnień użytkownika i dostępności narzędzia.",
+      "explanationEn": "Alpine / OpenRC system log. Reads host data. Results depend on user permissions and tool availability.",
+      "template": "tail -n 100 /var/log/messages",
+      "category": "logs",
+      "subcategory": "",
+      "tags": [
+        "log",
+        "openrc",
+        "troubleshooting"
+      ],
+      "platform": "Linux",
+      "shell": "Bash",
+      "family": "alpine",
+      "distributions": [],
+      "minVersion": "",
+      "maxVersion": "",
+      "tools": [
+        "tail"
+      ],
+      "privileges": "user",
+      "risk": "ReadOnly",
+      "origin": "BuiltIn",
+      "parameters": [],
+      "examples": [],
+      "priority": 0
+    },
+    {
+      "id": "linux.security.ufw",
+      "operation": "linux.security.ufw",
+      "name": "Stan zapory UFW",
+      "nameEn": "UFW firewall status",
+      "summary": "Stan zapory UFW",
+      "summaryEn": "UFW firewall status",
+      "explanation": "Stan zapory UFW. Odczytuje dane hosta. Wynik zależy od uprawnień użytkownika i dostępności narzędzia.",
+      "explanationEn": "UFW firewall status. Reads host data. Results depend on user permissions and tool availability.",
+      "template": "sudo ufw status verbose",
+      "category": "security",
+      "subcategory": "",
+      "tags": [
+        "firewall",
+        "zapora",
+        "bezpieczenstwo",
+        "security"
+      ],
+      "platform": "Linux",
+      "shell": "Bash",
+      "family": "",
+      "distributions": [],
+      "minVersion": "",
+      "maxVersion": "",
+      "tools": [
+        "ufw",
+        "sudo"
+      ],
+      "privileges": "root / sudo or policy authorization",
+      "risk": "ReadOnly",
+      "origin": "BuiltIn",
+      "parameters": [],
+      "examples": [],
+      "priority": 0
+    },
+    {
+      "id": "linux.security.firewalld",
+      "operation": "linux.security.firewalld",
+      "name": "Aktywne strefy firewalld",
+      "nameEn": "Active firewalld zones",
+      "summary": "Aktywne strefy firewalld",
+      "summaryEn": "Active firewalld zones",
+      "explanation": "Aktywne strefy firewalld. Odczytuje dane hosta. Wynik zależy od uprawnień użytkownika i dostępności narzędzia.",
+      "explanationEn": "Active firewalld zones. Reads host data. Results depend on user permissions and tool availability.",
+      "template": "firewall-cmd --get-active-zones",
+      "category": "security",
+      "subcategory": "",
+      "tags": [
+        "firewall",
+        "zapora",
+        "bezpieczenstwo",
+        "security"
+      ],
+      "platform": "Linux",
+      "shell": "Bash",
+      "family": "",
+      "distributions": [],
+      "minVersion": "",
+      "maxVersion": "",
+      "tools": [
+        "firewall-cmd"
+      ],
+      "privileges": "root / sudo or policy authorization",
+      "risk": "ReadOnly",
+      "origin": "BuiltIn",
+      "parameters": [],
+      "examples": [],
+      "priority": 0
+    },
+    {
+      "id": "linux.security.firewalld-rules",
+      "operation": "linux.security.firewalld-rules",
+      "name": "Reguły firewalld",
+      "nameEn": "Firewalld rules",
+      "summary": "Reguły firewalld",
+      "summaryEn": "Firewalld rules",
+      "explanation": "Reguły firewalld. Odczytuje dane hosta. Wynik zależy od uprawnień użytkownika i dostępności narzędzia.",
+      "explanationEn": "Firewalld rules. Reads host data. Results depend on user permissions and tool availability.",
+      "template": "firewall-cmd --list-all",
+      "category": "security",
+      "subcategory": "",
+      "tags": [
+        "firewall",
+        "zapora",
+        "bezpieczenstwo",
+        "security"
+      ],
+      "platform": "Linux",
+      "shell": "Bash",
+      "family": "",
+      "distributions": [],
+      "minVersion": "",
+      "maxVersion": "",
+      "tools": [
+        "firewall-cmd"
+      ],
+      "privileges": "root / sudo or policy authorization",
+      "risk": "ReadOnly",
+      "origin": "BuiltIn",
+      "parameters": [],
+      "examples": [],
+      "priority": 0
+    },
+    {
+      "id": "linux.security.nft",
+      "operation": "linux.security.nft",
+      "name": "Reguły nftables",
+      "nameEn": "Nftables ruleset",
+      "summary": "Reguły nftables",
+      "summaryEn": "Nftables ruleset",
+      "explanation": "Reguły nftables. Odczytuje dane hosta. Wynik zależy od uprawnień użytkownika i dostępności narzędzia.",
+      "explanationEn": "Nftables ruleset. Reads host data. Results depend on user permissions and tool availability.",
+      "template": "sudo nft list ruleset",
+      "category": "security",
+      "subcategory": "",
+      "tags": [
+        "firewall",
+        "zapora",
+        "bezpieczenstwo",
+        "security"
+      ],
+      "platform": "Linux",
+      "shell": "Bash",
+      "family": "",
+      "distributions": [],
+      "minVersion": "",
+      "maxVersion": "",
+      "tools": [
+        "nft",
+        "sudo"
+      ],
+      "privileges": "root / sudo or policy authorization",
+      "risk": "ReadOnly",
+      "origin": "BuiltIn",
+      "parameters": [],
+      "examples": [],
+      "priority": 0
+    },
+    {
+      "id": "linux.security.iptables",
+      "operation": "linux.security.iptables",
+      "name": "Reguły iptables",
+      "nameEn": "Iptables rules",
+      "summary": "Reguły iptables",
+      "summaryEn": "Iptables rules",
+      "explanation": "Reguły iptables. Odczytuje dane hosta. Wynik zależy od uprawnień użytkownika i dostępności narzędzia.",
+      "explanationEn": "Iptables rules. Reads host data. Results depend on user permissions and tool availability.",
+      "template": "sudo iptables -L -n -v",
+      "category": "security",
+      "subcategory": "",
+      "tags": [
+        "firewall",
+        "zapora",
+        "bezpieczenstwo",
+        "security"
+      ],
+      "platform": "Linux",
+      "shell": "Bash",
+      "family": "",
+      "distributions": [],
+      "minVersion": "",
+      "maxVersion": "",
+      "tools": [
+        "iptables",
+        "sudo"
+      ],
+      "privileges": "root / sudo or policy authorization",
+      "risk": "ReadOnly",
+      "origin": "BuiltIn",
+      "parameters": [],
+      "examples": [],
+      "priority": 0
+    },
+    {
+      "id": "linux.security.ufw-enable",
+      "operation": "linux.security.ufw-enable",
+      "name": "Włącz zaporę UFW",
+      "nameEn": "Enable UFW firewall",
+      "summary": "Włącz zaporę UFW",
+      "summaryEn": "Enable UFW firewall",
+      "explanation": "Włączenie zapory może przerwać SSH. Najpierw sprawdź regułę dostępu i zapewnij konsolę awaryjną.",
+      "explanationEn": "Enabling the firewall can disconnect SSH. Check the access rule and arrange recovery console access first.",
+      "template": "sudo ufw enable",
+      "category": "security",
+      "subcategory": "",
+      "tags": [
+        "firewall",
+        "zapora",
+        "bezpieczenstwo",
+        "security"
+      ],
+      "platform": "Linux",
+      "shell": "Bash",
+      "family": "",
+      "distributions": [],
+      "minVersion": "",
+      "maxVersion": "",
+      "tools": [
+        "ufw",
+        "sudo"
+      ],
+      "privileges": "root / sudo or policy authorization",
+      "risk": "Dangerous",
+      "origin": "BuiltIn",
+      "parameters": [],
+      "examples": [],
+      "priority": 0
+    },
+    {
+      "id": "devops.docker-ps",
+      "operation": "devops.docker-ps",
+      "name": "Kontenery Docker",
+      "nameEn": "Docker containers",
+      "summary": "Kontenery Docker",
+      "summaryEn": "Docker containers",
+      "explanation": "Kontenery Docker. Odczytuje dane hosta. Wynik zależy od uprawnień użytkownika i dostępności narzędzia.",
+      "explanationEn": "Docker containers. Reads host data. Results depend on user permissions and tool availability.",
+      "template": "docker ps -a",
+      "category": "devops",
+      "subcategory": "",
+      "tags": [
+        "devops",
+        "docker",
+        "kontenery"
+      ],
+      "platform": "General",
+      "shell": "Any",
+      "family": "",
+      "distributions": [],
+      "minVersion": "",
+      "maxVersion": "",
+      "tools": [
+        "docker"
+      ],
+      "privileges": "user",
+      "risk": "ReadOnly",
+      "origin": "BuiltIn",
+      "parameters": [],
+      "examples": [],
+      "priority": 0
+    },
+    {
+      "id": "devops.docker-images",
+      "operation": "devops.docker-images",
+      "name": "Obrazy Docker",
+      "nameEn": "Docker images",
+      "summary": "Obrazy Docker",
+      "summaryEn": "Docker images",
+      "explanation": "Obrazy Docker. Odczytuje dane hosta. Wynik zależy od uprawnień użytkownika i dostępności narzędzia.",
+      "explanationEn": "Docker images. Reads host data. Results depend on user permissions and tool availability.",
+      "template": "docker image ls",
+      "category": "devops",
+      "subcategory": "",
+      "tags": [
+        "devops",
+        "docker",
+        "kontenery"
+      ],
+      "platform": "General",
+      "shell": "Any",
+      "family": "",
+      "distributions": [],
+      "minVersion": "",
+      "maxVersion": "",
+      "tools": [
+        "docker"
+      ],
+      "privileges": "user",
+      "risk": "ReadOnly",
+      "origin": "BuiltIn",
+      "parameters": [],
+      "examples": [],
+      "priority": 0
+    },
+    {
+      "id": "devops.docker-logs",
+      "operation": "devops.docker-logs",
+      "name": "Logi kontenera",
+      "nameEn": "Container logs",
+      "summary": "Logi kontenera",
+      "summaryEn": "Container logs",
+      "explanation": "Logi kontenera. Odczytuje dane hosta. Wynik zależy od uprawnień użytkownika i dostępności narzędzia.",
+      "explanationEn": "Container logs. Reads host data. Results depend on user permissions and tool availability.",
+      "template": "docker logs --tail 100 {{container}}",
+      "category": "devops",
+      "subcategory": "",
+      "tags": [
+        "devops",
+        "docker",
+        "kontenery"
+      ],
+      "platform": "General",
+      "shell": "Any",
+      "family": "",
+      "distributions": [],
+      "minVersion": "",
+      "maxVersion": "",
+      "tools": [
+        "docker"
+      ],
+      "privileges": "user",
+      "risk": "ReadOnly",
+      "origin": "BuiltIn",
+      "parameters": [
+        {
+          "key": "container",
+          "label": "Container / kontener",
+          "kind": "Text",
+          "default": "web",
+          "required": true,
+          "choices": []
+        }
+      ],
+      "examples": [
+        "docker logs --tail 100 'web'"
+      ],
+      "priority": 0
+    },
+    {
+      "id": "devops.docker-stats",
+      "operation": "devops.docker-stats",
+      "name": "Zasoby kontenerów",
+      "nameEn": "Container resource usage",
+      "summary": "Zasoby kontenerów",
+      "summaryEn": "Container resource usage",
+      "explanation": "Zasoby kontenerów. Odczytuje dane hosta. Wynik zależy od uprawnień użytkownika i dostępności narzędzia.",
+      "explanationEn": "Container resource usage. Reads host data. Results depend on user permissions and tool availability.",
+      "template": "docker stats --no-stream",
+      "category": "devops",
+      "subcategory": "",
+      "tags": [
+        "devops",
+        "docker",
+        "kontenery"
+      ],
+      "platform": "General",
+      "shell": "Any",
+      "family": "",
+      "distributions": [],
+      "minVersion": "",
+      "maxVersion": "",
+      "tools": [
+        "docker"
+      ],
+      "privileges": "user",
+      "risk": "ReadOnly",
+      "origin": "BuiltIn",
+      "parameters": [],
+      "examples": [],
+      "priority": 0
+    },
+    {
+      "id": "devops.docker-inspect",
+      "operation": "devops.docker-inspect",
+      "name": "Metadane kontenera",
+      "nameEn": "Container metadata",
+      "summary": "Metadane kontenera",
+      "summaryEn": "Container metadata",
+      "explanation": "Metadane kontenera. Odczytuje dane hosta. Wynik zależy od uprawnień użytkownika i dostępności narzędzia.",
+      "explanationEn": "Container metadata. Reads host data. Results depend on user permissions and tool availability.",
+      "template": "docker inspect {{container}}",
+      "category": "devops",
+      "subcategory": "",
+      "tags": [
+        "devops",
+        "docker",
+        "kontenery"
+      ],
+      "platform": "General",
+      "shell": "Any",
+      "family": "",
+      "distributions": [],
+      "minVersion": "",
+      "maxVersion": "",
+      "tools": [
+        "docker"
+      ],
+      "privileges": "user",
+      "risk": "ReadOnly",
+      "origin": "BuiltIn",
+      "parameters": [
+        {
+          "key": "container",
+          "label": "Container / kontener",
+          "kind": "Text",
+          "default": "web",
+          "required": true,
+          "choices": []
+        }
+      ],
+      "examples": [
+        "docker inspect 'web'"
+      ],
+      "priority": 0
+    },
+    {
+      "id": "devops.docker-restart",
+      "operation": "devops.docker-restart",
+      "name": "Zrestartuj kontener",
+      "nameEn": "Restart container",
+      "summary": "Zrestartuj kontener",
+      "summaryEn": "Restart container",
+      "explanation": "Zrestartuj kontener. Zmienia stan hosta; sprawdź cel i uprawnienia przed wykonaniem.",
+      "explanationEn": "Restart container. Changes host state; verify the target and permissions before executing.",
+      "template": "docker restart {{container}}",
+      "category": "devops",
+      "subcategory": "",
+      "tags": [
+        "devops",
+        "docker",
+        "kontenery"
+      ],
+      "platform": "General",
+      "shell": "Any",
+      "family": "",
+      "distributions": [],
+      "minVersion": "",
+      "maxVersion": "",
+      "tools": [
+        "docker"
+      ],
+      "privileges": "user",
+      "risk": "Dangerous",
+      "origin": "BuiltIn",
+      "parameters": [
+        {
+          "key": "container",
+          "label": "Container / kontener",
+          "kind": "Text",
+          "default": "web",
+          "required": true,
+          "choices": []
+        }
+      ],
+      "examples": [
+        "docker restart 'web'"
+      ],
+      "priority": 0
+    },
+    {
+      "id": "devops.compose-ps",
+      "operation": "devops.compose-ps",
+      "name": "Usługi Docker Compose",
+      "nameEn": "Docker Compose services",
+      "summary": "Usługi Docker Compose",
+      "summaryEn": "Docker Compose services",
+      "explanation": "Usługi Docker Compose. Odczytuje dane hosta. Wynik zależy od uprawnień użytkownika i dostępności narzędzia.",
+      "explanationEn": "Docker Compose services. Reads host data. Results depend on user permissions and tool availability.",
+      "template": "docker compose ps",
+      "category": "devops",
+      "subcategory": "",
+      "tags": [
+        "devops",
+        "docker",
+        "kontenery"
+      ],
+      "platform": "General",
+      "shell": "Any",
+      "family": "",
+      "distributions": [],
+      "minVersion": "",
+      "maxVersion": "",
+      "tools": [
+        "docker",
+        "docker-compose-plugin"
+      ],
+      "privileges": "user",
+      "risk": "ReadOnly",
+      "origin": "BuiltIn",
+      "parameters": [],
+      "examples": [],
+      "priority": 0
+    },
+    {
+      "id": "devops.compose-logs",
+      "operation": "devops.compose-logs",
+      "name": "Logi Docker Compose",
+      "nameEn": "Docker Compose logs",
+      "summary": "Logi Docker Compose",
+      "summaryEn": "Docker Compose logs",
+      "explanation": "Logi Docker Compose. Odczytuje dane hosta. Wynik zależy od uprawnień użytkownika i dostępności narzędzia.",
+      "explanationEn": "Docker Compose logs. Reads host data. Results depend on user permissions and tool availability.",
+      "template": "docker compose logs --tail 100",
+      "category": "devops",
+      "subcategory": "",
+      "tags": [
+        "devops",
+        "docker",
+        "kontenery"
+      ],
+      "platform": "General",
+      "shell": "Any",
+      "family": "",
+      "distributions": [],
+      "minVersion": "",
+      "maxVersion": "",
+      "tools": [
+        "docker",
+        "docker-compose-plugin"
+      ],
+      "privileges": "user",
+      "risk": "ReadOnly",
+      "origin": "BuiltIn",
+      "parameters": [],
+      "examples": [],
+      "priority": 0
+    },
+    {
+      "id": "devops.git-status",
+      "operation": "devops.git-status",
+      "name": "Stan repozytorium Git",
+      "nameEn": "Git repository status",
+      "summary": "Stan repozytorium Git",
+      "summaryEn": "Git repository status",
+      "explanation": "Stan repozytorium Git. Odczytuje dane hosta. Wynik zależy od uprawnień użytkownika i dostępności narzędzia.",
+      "explanationEn": "Git repository status. Reads host data. Results depend on user permissions and tool availability.",
+      "template": "git status --short --branch",
+      "category": "devops",
+      "subcategory": "",
+      "tags": [
+        "devops",
+        "git",
+        "administracja"
+      ],
+      "platform": "General",
+      "shell": "Any",
+      "family": "",
+      "distributions": [],
+      "minVersion": "",
+      "maxVersion": "",
+      "tools": [
+        "git"
+      ],
+      "privileges": "user",
+      "risk": "ReadOnly",
+      "origin": "BuiltIn",
+      "parameters": [],
+      "examples": [],
+      "priority": 0
+    },
+    {
+      "id": "devops.git-log",
+      "operation": "devops.git-log",
+      "name": "Historia Git",
+      "nameEn": "Git history",
+      "summary": "Historia Git",
+      "summaryEn": "Git history",
+      "explanation": "Historia Git. Odczytuje dane hosta. Wynik zależy od uprawnień użytkownika i dostępności narzędzia.",
+      "explanationEn": "Git history. Reads host data. Results depend on user permissions and tool availability.",
+      "template": "git log -10 --oneline --decorate",
+      "category": "devops",
+      "subcategory": "",
+      "tags": [
+        "devops",
+        "git",
+        "administracja"
+      ],
+      "platform": "General",
+      "shell": "Any",
+      "family": "",
+      "distributions": [],
+      "minVersion": "",
+      "maxVersion": "",
+      "tools": [
+        "git"
+      ],
+      "privileges": "user",
+      "risk": "ReadOnly",
+      "origin": "BuiltIn",
+      "parameters": [],
+      "examples": [],
+      "priority": 0
+    },
+    {
+      "id": "devops.git-diff",
+      "operation": "devops.git-diff",
+      "name": "Lokalne zmiany Git",
+      "nameEn": "Local Git changes",
+      "summary": "Lokalne zmiany Git",
+      "summaryEn": "Local Git changes",
+      "explanation": "Lokalne zmiany Git. Odczytuje dane hosta. Wynik zależy od uprawnień użytkownika i dostępności narzędzia.",
+      "explanationEn": "Local Git changes. Reads host data. Results depend on user permissions and tool availability.",
+      "template": "git diff --stat",
+      "category": "devops",
+      "subcategory": "",
+      "tags": [
+        "devops",
+        "git",
+        "administracja"
+      ],
+      "platform": "General",
+      "shell": "Any",
+      "family": "",
+      "distributions": [],
+      "minVersion": "",
+      "maxVersion": "",
+      "tools": [
+        "git"
+      ],
+      "privileges": "user",
+      "risk": "ReadOnly",
+      "origin": "BuiltIn",
+      "parameters": [],
+      "examples": [],
+      "priority": 0
+    },
+    {
+      "id": "devops.git-fetch",
+      "operation": "devops.git-fetch",
+      "name": "Pobierz referencje Git",
+      "nameEn": "Fetch Git refs",
+      "summary": "Pobierz referencje Git",
+      "summaryEn": "Fetch Git refs",
+      "explanation": "Pobierz referencje Git. Zmienia stan hosta; sprawdź cel i uprawnienia przed wykonaniem.",
+      "explanationEn": "Fetch Git refs. Changes host state; verify the target and permissions before executing.",
+      "template": "git fetch --prune",
+      "category": "devops",
+      "subcategory": "",
+      "tags": [
+        "devops",
+        "git",
+        "administracja"
+      ],
+      "platform": "General",
+      "shell": "Any",
+      "family": "",
+      "distributions": [],
+      "minVersion": "",
+      "maxVersion": "",
+      "tools": [
+        "git"
+      ],
+      "privileges": "user",
+      "risk": "Modify",
+      "origin": "BuiltIn",
+      "parameters": [],
+      "examples": [],
+      "priority": 0
+    },
+    {
+      "id": "devops.kube-nodes",
+      "operation": "devops.kube-nodes",
+      "name": "Węzły Kubernetes",
+      "nameEn": "Kubernetes nodes",
+      "summary": "Węzły Kubernetes",
+      "summaryEn": "Kubernetes nodes",
+      "explanation": "Węzły Kubernetes. Odczytuje dane hosta. Wynik zależy od uprawnień użytkownika i dostępności narzędzia.",
+      "explanationEn": "Kubernetes nodes. Reads host data. Results depend on user permissions and tool availability.",
+      "template": "kubectl get nodes -o wide",
+      "category": "devops",
+      "subcategory": "",
+      "tags": [
+        "devops",
+        "kubectl",
+        "administracja"
+      ],
+      "platform": "General",
+      "shell": "Any",
+      "family": "",
+      "distributions": [],
+      "minVersion": "",
+      "maxVersion": "",
+      "tools": [
+        "kubectl"
+      ],
+      "privileges": "user",
+      "risk": "ReadOnly",
+      "origin": "BuiltIn",
+      "parameters": [],
+      "examples": [],
+      "priority": 0
+    },
+    {
+      "id": "devops.kube-pods",
+      "operation": "devops.kube-pods",
+      "name": "Pody wszystkich przestrzeni",
+      "nameEn": "Pods in all namespaces",
+      "summary": "Pody wszystkich przestrzeni",
+      "summaryEn": "Pods in all namespaces",
+      "explanation": "Pody wszystkich przestrzeni. Odczytuje dane hosta. Wynik zależy od uprawnień użytkownika i dostępności narzędzia.",
+      "explanationEn": "Pods in all namespaces. Reads host data. Results depend on user permissions and tool availability.",
+      "template": "kubectl get pods --all-namespaces -o wide",
+      "category": "devops",
+      "subcategory": "",
+      "tags": [
+        "devops",
+        "kubectl",
+        "administracja"
+      ],
+      "platform": "General",
+      "shell": "Any",
+      "family": "",
+      "distributions": [],
+      "minVersion": "",
+      "maxVersion": "",
+      "tools": [
+        "kubectl"
+      ],
+      "privileges": "user",
+      "risk": "ReadOnly",
+      "origin": "BuiltIn",
+      "parameters": [],
+      "examples": [],
+      "priority": 0
+    },
+    {
+      "id": "devops.kube-services",
+      "operation": "devops.kube-services",
+      "name": "Usługi Kubernetes",
+      "nameEn": "Kubernetes services",
+      "summary": "Usługi Kubernetes",
+      "summaryEn": "Kubernetes services",
+      "explanation": "Usługi Kubernetes. Odczytuje dane hosta. Wynik zależy od uprawnień użytkownika i dostępności narzędzia.",
+      "explanationEn": "Kubernetes services. Reads host data. Results depend on user permissions and tool availability.",
+      "template": "kubectl get services --all-namespaces",
+      "category": "devops",
+      "subcategory": "",
+      "tags": [
+        "devops",
+        "kubectl",
+        "administracja"
+      ],
+      "platform": "General",
+      "shell": "Any",
+      "family": "",
+      "distributions": [],
+      "minVersion": "",
+      "maxVersion": "",
+      "tools": [
+        "kubectl"
+      ],
+      "privileges": "user",
+      "risk": "ReadOnly",
+      "origin": "BuiltIn",
+      "parameters": [],
+      "examples": [],
+      "priority": 0
+    },
+    {
+      "id": "devops.kube-context",
+      "operation": "devops.kube-context",
+      "name": "Aktywny kontekst Kubernetes",
+      "nameEn": "Current Kubernetes context",
+      "summary": "Aktywny kontekst Kubernetes",
+      "summaryEn": "Current Kubernetes context",
+      "explanation": "Aktywny kontekst Kubernetes. Odczytuje dane hosta. Wynik zależy od uprawnień użytkownika i dostępności narzędzia.",
+      "explanationEn": "Current Kubernetes context. Reads host data. Results depend on user permissions and tool availability.",
+      "template": "kubectl config current-context",
+      "category": "devops",
+      "subcategory": "",
+      "tags": [
+        "devops",
+        "kubectl",
+        "administracja"
+      ],
+      "platform": "General",
+      "shell": "Any",
+      "family": "",
+      "distributions": [],
+      "minVersion": "",
+      "maxVersion": "",
+      "tools": [
+        "kubectl"
+      ],
+      "privileges": "user",
+      "risk": "ReadOnly",
+      "origin": "BuiltIn",
+      "parameters": [],
+      "examples": [],
+      "priority": 0
+    },
+    {
+      "id": "devops.kube-events",
+      "operation": "devops.kube-events",
+      "name": "Zdarzenia Kubernetes",
+      "nameEn": "Kubernetes events",
+      "summary": "Zdarzenia Kubernetes",
+      "summaryEn": "Kubernetes events",
+      "explanation": "Zdarzenia Kubernetes. Odczytuje dane hosta. Wynik zależy od uprawnień użytkownika i dostępności narzędzia.",
+      "explanationEn": "Kubernetes events. Reads host data. Results depend on user permissions and tool availability.",
+      "template": "kubectl get events --all-namespaces --sort-by=.lastTimestamp",
+      "category": "devops",
+      "subcategory": "",
+      "tags": [
+        "devops",
+        "kubectl",
+        "administracja"
+      ],
+      "platform": "General",
+      "shell": "Any",
+      "family": "",
+      "distributions": [],
+      "minVersion": "",
+      "maxVersion": "",
+      "tools": [
+        "kubectl"
+      ],
+      "privileges": "user",
+      "risk": "ReadOnly",
+      "origin": "BuiltIn",
+      "parameters": [],
+      "examples": [],
+      "priority": 0
+    },
+    {
+      "id": "devops.ansible-version",
+      "operation": "devops.ansible-version",
+      "name": "Wersja Ansible",
+      "nameEn": "Ansible version",
+      "summary": "Wersja Ansible",
+      "summaryEn": "Ansible version",
+      "explanation": "Wersja Ansible. Odczytuje dane hosta. Wynik zależy od uprawnień użytkownika i dostępności narzędzia.",
+      "explanationEn": "Ansible version. Reads host data. Results depend on user permissions and tool availability.",
+      "template": "ansible --version",
+      "category": "devops",
+      "subcategory": "",
+      "tags": [
+        "devops",
+        "ansible",
+        "administracja"
+      ],
+      "platform": "General",
+      "shell": "Any",
+      "family": "",
+      "distributions": [],
+      "minVersion": "",
+      "maxVersion": "",
+      "tools": [
+        "ansible"
+      ],
+      "privileges": "user",
+      "risk": "ReadOnly",
+      "origin": "BuiltIn",
+      "parameters": [],
+      "examples": [],
+      "priority": 0
+    },
+    {
+      "id": "devops.ansible-hosts",
+      "operation": "devops.ansible-hosts",
+      "name": "Hosty z inwentarza Ansible",
+      "nameEn": "Ansible inventory hosts",
+      "summary": "Hosty z inwentarza Ansible",
+      "summaryEn": "Ansible inventory hosts",
+      "explanation": "Hosty z inwentarza Ansible. Odczytuje dane hosta. Wynik zależy od uprawnień użytkownika i dostępności narzędzia.",
+      "explanationEn": "Ansible inventory hosts. Reads host data. Results depend on user permissions and tool availability.",
+      "template": "ansible all --list-hosts",
+      "category": "devops",
+      "subcategory": "",
+      "tags": [
+        "devops",
+        "ansible",
+        "administracja"
+      ],
+      "platform": "General",
+      "shell": "Any",
+      "family": "",
+      "distributions": [],
+      "minVersion": "",
+      "maxVersion": "",
+      "tools": [
+        "ansible"
+      ],
+      "privileges": "user",
+      "risk": "ReadOnly",
+      "origin": "BuiltIn",
+      "parameters": [],
+      "examples": [],
+      "priority": 0
+    },
+    {
+      "id": "windows.ps.os",
+      "operation": "windows.ps.os",
+      "name": "Informacje o Windows",
+      "nameEn": "Windows information",
+      "summary": "Informacje o Windows",
+      "summaryEn": "Windows information",
+      "explanation": "Informacje o Windows. Odczytuje dane hosta. Wynik zależy od uprawnień użytkownika i dostępności narzędzia.",
+      "explanationEn": "Windows information. Reads host data. Results depend on user permissions and tool availability.",
+      "template": "Get-ComputerInfo | Select-Object WindowsProductName, WindowsVersion, OsBuildNumber, OsArchitecture",
+      "category": "system",
+      "subcategory": "",
+      "tags": [],
+      "platform": "Windows",
+      "shell": "PowerShell",
+      "family": "",
+      "distributions": [],
+      "minVersion": "",
+      "maxVersion": "",
+      "tools": [
+        "Get-ComputerInfo"
+      ],
+      "privileges": "user",
+      "risk": "ReadOnly",
+      "origin": "BuiltIn",
+      "parameters": [],
+      "examples": [],
+      "priority": 0
+    },
+    {
+      "id": "windows.ps.memory",
+      "operation": "windows.ps.memory",
+      "name": "Pamięć Windows",
+      "nameEn": "Windows memory",
+      "summary": "Pamięć Windows",
+      "summaryEn": "Windows memory",
+      "explanation": "Pamięć Windows. Odczytuje dane hosta. Wynik zależy od uprawnień użytkownika i dostępności narzędzia.",
+      "explanationEn": "Windows memory. Reads host data. Results depend on user permissions and tool availability.",
+      "template": "Get-CimInstance Win32_OperatingSystem | Select-Object TotalVisibleMemorySize, FreePhysicalMemory",
+      "category": "system",
+      "subcategory": "",
+      "tags": [
+        "ram",
+        "pamiec"
+      ],
+      "platform": "Windows",
+      "shell": "PowerShell",
+      "family": "",
+      "distributions": [],
+      "minVersion": "",
+      "maxVersion": "",
+      "tools": [
+        "Get-CimInstance"
+      ],
+      "privileges": "user",
+      "risk": "ReadOnly",
+      "origin": "BuiltIn",
+      "parameters": [],
+      "examples": [],
+      "priority": 0
+    },
+    {
+      "id": "windows.ps.processes",
+      "operation": "windows.ps.processes",
+      "name": "Procesy według CPU",
+      "nameEn": "Processes by CPU",
+      "summary": "Procesy według CPU",
+      "summaryEn": "Processes by CPU",
+      "explanation": "Procesy według CPU. Odczytuje dane hosta. Wynik zależy od uprawnień użytkownika i dostępności narzędzia.",
+      "explanationEn": "Processes by CPU. Reads host data. Results depend on user permissions and tool availability.",
+      "template": "Get-Process | Sort-Object CPU -Descending | Select-Object -First 20 Name, Id, CPU",
+      "category": "system",
+      "subcategory": "",
+      "tags": [
+        "cpu",
+        "procesy"
+      ],
+      "platform": "Windows",
+      "shell": "PowerShell",
+      "family": "",
+      "distributions": [],
+      "minVersion": "",
+      "maxVersion": "",
+      "tools": [
+        "Get-Process"
+      ],
+      "privileges": "user",
+      "risk": "ReadOnly",
+      "origin": "BuiltIn",
+      "parameters": [],
+      "examples": [],
+      "priority": 0
+    },
+    {
+      "id": "windows.ps.uptime",
+      "operation": "windows.ps.uptime",
+      "name": "Ostatni rozruch Windows",
+      "nameEn": "Windows last boot",
+      "summary": "Ostatni rozruch Windows",
+      "summaryEn": "Windows last boot",
+      "explanation": "Ostatni rozruch Windows. Odczytuje dane hosta. Wynik zależy od uprawnień użytkownika i dostępności narzędzia.",
+      "explanationEn": "Windows last boot. Reads host data. Results depend on user permissions and tool availability.",
+      "template": "Get-CimInstance Win32_OperatingSystem | Select-Object LastBootUpTime",
+      "category": "system",
+      "subcategory": "",
+      "tags": [
+        "uptime",
+        "restart"
+      ],
+      "platform": "Windows",
+      "shell": "PowerShell",
+      "family": "",
+      "distributions": [],
+      "minVersion": "",
+      "maxVersion": "",
+      "tools": [
+        "Get-CimInstance"
+      ],
+      "privileges": "user",
+      "risk": "ReadOnly",
+      "origin": "BuiltIn",
+      "parameters": [],
+      "examples": [],
+      "priority": 0
+    },
+    {
+      "id": "windows.ps.listeners",
+      "operation": "windows.ps.listeners",
+      "name": "Otwarte porty",
+      "nameEn": "Listening ports",
+      "summary": "Otwarte porty",
+      "summaryEn": "Listening ports",
+      "explanation": "Otwarte porty. Odczytuje dane hosta. Wynik zależy od uprawnień użytkownika i dostępności narzędzia.",
+      "explanationEn": "Listening ports. Reads host data. Results depend on user permissions and tool availability.",
+      "template": "Get-NetTCPConnection -State Listen | Sort-Object LocalPort",
+      "category": "network",
+      "subcategory": "",
+      "tags": [
+        "otwarte porty",
+        "open ports",
+        "nasluch",
+        "sockets"
+      ],
+      "platform": "Windows",
+      "shell": "PowerShell",
+      "family": "",
+      "distributions": [],
+      "minVersion": "",
+      "maxVersion": "",
+      "tools": [
+        "Get-NetTCPConnection"
+      ],
+      "privileges": "user",
+      "risk": "ReadOnly",
+      "origin": "BuiltIn",
+      "parameters": [],
+      "examples": [],
+      "priority": 0
+    },
+    {
+      "id": "windows.ps.addresses",
+      "operation": "windows.ps.addresses",
+      "name": "Adresy interfejsów Windows",
+      "nameEn": "Windows interface addresses",
+      "summary": "Adresy interfejsów Windows",
+      "summaryEn": "Windows interface addresses",
+      "explanation": "Adresy interfejsów Windows. Odczytuje dane hosta. Wynik zależy od uprawnień użytkownika i dostępności narzędzia.",
+      "explanationEn": "Windows interface addresses. Reads host data. Results depend on user permissions and tool availability.",
+      "template": "Get-NetIPAddress | Select-Object InterfaceAlias, IPAddress, PrefixLength",
+      "category": "network",
+      "subcategory": "",
+      "tags": [
+        "ip",
+        "siec",
+        "network"
+      ],
+      "platform": "Windows",
+      "shell": "PowerShell",
+      "family": "",
+      "distributions": [],
+      "minVersion": "",
+      "maxVersion": "",
+      "tools": [
+        "Get-NetIPAddress"
+      ],
+      "privileges": "user",
+      "risk": "ReadOnly",
+      "origin": "BuiltIn",
+      "parameters": [],
+      "examples": [],
+      "priority": 0
+    },
+    {
+      "id": "windows.ps.dns",
+      "operation": "windows.ps.dns",
+      "name": "Rozwiąż nazwę DNS",
+      "nameEn": "Resolve DNS name",
+      "summary": "Rozwiąż nazwę DNS",
+      "summaryEn": "Resolve DNS name",
+      "explanation": "Rozwiąż nazwę DNS. Odczytuje dane hosta. Wynik zależy od uprawnień użytkownika i dostępności narzędzia.",
+      "explanationEn": "Resolve DNS name. Reads host data. Results depend on user permissions and tool availability.",
+      "template": "Resolve-DnsName -Name {{host}}",
+      "category": "network",
+      "subcategory": "",
+      "tags": [
+        "dns",
+        "resolve"
+      ],
+      "platform": "Windows",
+      "shell": "PowerShell",
+      "family": "",
+      "distributions": [],
+      "minVersion": "",
+      "maxVersion": "",
+      "tools": [
+        "Resolve-DnsName"
+      ],
+      "privileges": "user",
+      "risk": "ReadOnly",
+      "origin": "BuiltIn",
+      "parameters": [
+        {
+          "key": "host",
+          "label": "Host",
+          "kind": "Hostname",
+          "default": "localhost",
+          "required": true,
+          "choices": []
+        }
+      ],
+      "examples": [
+        "Resolve-DnsName -Name 'localhost'"
+      ],
+      "priority": 0
+    },
+    {
+      "id": "windows.ps.test-port",
+      "operation": "windows.ps.test-port",
+      "name": "Sprawdź port TCP",
+      "nameEn": "Test TCP port",
+      "summary": "Sprawdź port TCP",
+      "summaryEn": "Test TCP port",
+      "explanation": "Sprawdź port TCP. Odczytuje dane hosta. Wynik zależy od uprawnień użytkownika i dostępności narzędzia.",
+      "explanationEn": "Test TCP port. Reads host data. Results depend on user permissions and tool availability.",
+      "template": "Test-NetConnection -ComputerName {{host}} -Port {{port}}",
+      "category": "network",
+      "subcategory": "",
+      "tags": [
+        "port",
+        "test"
+      ],
+      "platform": "Windows",
+      "shell": "PowerShell",
+      "family": "",
+      "distributions": [],
+      "minVersion": "",
+      "maxVersion": "",
+      "tools": [
+        "Test-NetConnection"
+      ],
+      "privileges": "user",
+      "risk": "ReadOnly",
+      "origin": "BuiltIn",
+      "parameters": [
+        {
+          "key": "host",
+          "label": "Host",
+          "kind": "Hostname",
+          "default": "localhost",
+          "required": true,
+          "choices": []
+        },
+        {
+          "key": "port",
+          "label": "Port",
+          "kind": "Number",
+          "default": "443",
+          "required": true,
+          "choices": []
+        }
+      ],
+      "examples": [
+        "Test-NetConnection -ComputerName 'localhost' -Port '443'"
+      ],
+      "priority": 0
+    },
+    {
+      "id": "windows.ps.service-status",
+      "operation": "service.status",
+      "name": "Sprawdź usługę",
+      "nameEn": "Check service",
+      "summary": "Sprawdź usługę",
+      "summaryEn": "Check service",
+      "explanation": "Sprawdź usługę. Odczytuje dane hosta. Wynik zależy od uprawnień użytkownika i dostępności narzędzia.",
+      "explanationEn": "Check service. Reads host data. Results depend on user permissions and tool availability.",
+      "template": "Get-Service -Name {{service}}",
+      "category": "services",
+      "subcategory": "",
+      "tags": [
+        "sprawdz usluge",
+        "service",
+        "usluga"
+      ],
+      "platform": "Windows",
+      "shell": "PowerShell",
+      "family": "",
+      "distributions": [],
+      "minVersion": "",
+      "maxVersion": "",
+      "tools": [
+        "Get-Service"
+      ],
+      "privileges": "user",
+      "risk": "ReadOnly",
+      "origin": "BuiltIn",
+      "parameters": [
+        {
+          "key": "service",
+          "label": "Service / usługa",
+          "kind": "Text",
+          "default": "Spooler",
+          "required": true,
+          "choices": []
+        }
+      ],
+      "examples": [
+        "Get-Service -Name 'Spooler'"
+      ],
+      "priority": 0
+    },
+    {
+      "id": "windows.ps.service-list",
+      "operation": "service.list",
+      "name": "Lista usług Windows",
+      "nameEn": "Windows services",
+      "summary": "Lista usług Windows",
+      "summaryEn": "Windows services",
+      "explanation": "Lista usług Windows. Odczytuje dane hosta. Wynik zależy od uprawnień użytkownika i dostępności narzędzia.",
+      "explanationEn": "Windows services. Reads host data. Results depend on user permissions and tool availability.",
+      "template": "Get-Service | Sort-Object Status, Name",
+      "category": "services",
+      "subcategory": "",
+      "tags": [
+        "services",
+        "uslugi"
+      ],
+      "platform": "Windows",
+      "shell": "PowerShell",
+      "family": "",
+      "distributions": [],
+      "minVersion": "",
+      "maxVersion": "",
+      "tools": [
+        "Get-Service"
+      ],
+      "privileges": "user",
+      "risk": "ReadOnly",
+      "origin": "BuiltIn",
+      "parameters": [],
+      "examples": [],
+      "priority": 0
+    },
+    {
+      "id": "windows.ps.service-start",
+      "operation": "service.start",
+      "name": "Uruchom usługę Windows",
+      "nameEn": "Start Windows service",
+      "summary": "Uruchom usługę Windows",
+      "summaryEn": "Start Windows service",
+      "explanation": "Uruchom usługę Windows. Zmienia stan hosta; sprawdź cel i uprawnienia przed wykonaniem.",
+      "explanationEn": "Start Windows service. Changes host state; verify the target and permissions before executing.",
+      "template": "Start-Service -Name {{service}}",
+      "category": "services",
+      "subcategory": "",
+      "tags": [
+        "service"
+      ],
+      "platform": "Windows",
+      "shell": "PowerShell",
+      "family": "",
+      "distributions": [],
+      "minVersion": "",
+      "maxVersion": "",
+      "tools": [
+        "Start-Service"
+      ],
+      "privileges": "administrator",
+      "risk": "Modify",
+      "origin": "BuiltIn",
+      "parameters": [
+        {
+          "key": "service",
+          "label": "Service",
+          "kind": "Text",
+          "default": "Spooler",
+          "required": true,
+          "choices": []
+        }
+      ],
+      "examples": [
+        "Start-Service -Name 'Spooler'"
+      ],
+      "priority": 0
+    },
+    {
+      "id": "windows.ps.service-stop",
+      "operation": "service.stop",
+      "name": "Zatrzymaj usługę Windows",
+      "nameEn": "Stop Windows service",
+      "summary": "Zatrzymaj usługę Windows",
+      "summaryEn": "Stop Windows service",
+      "explanation": "Zatrzymaj usługę Windows. Zmienia stan hosta; sprawdź cel i uprawnienia przed wykonaniem.",
+      "explanationEn": "Stop Windows service. Changes host state; verify the target and permissions before executing.",
+      "template": "Stop-Service -Name {{service}}",
+      "category": "services",
+      "subcategory": "",
+      "tags": [
+        "service"
+      ],
+      "platform": "Windows",
+      "shell": "PowerShell",
+      "family": "",
+      "distributions": [],
+      "minVersion": "",
+      "maxVersion": "",
+      "tools": [
+        "Stop-Service"
+      ],
+      "privileges": "administrator",
+      "risk": "Dangerous",
+      "origin": "BuiltIn",
+      "parameters": [
+        {
+          "key": "service",
+          "label": "Service",
+          "kind": "Text",
+          "default": "Spooler",
+          "required": true,
+          "choices": []
+        }
+      ],
+      "examples": [
+        "Stop-Service -Name 'Spooler'"
+      ],
+      "priority": 0
+    },
+    {
+      "id": "windows.ps.service-restart",
+      "operation": "service.restart",
+      "name": "Zrestartuj usługę Windows",
+      "nameEn": "Restart Windows service",
+      "summary": "Zrestartuj usługę Windows",
+      "summaryEn": "Restart Windows service",
+      "explanation": "Zrestartuj usługę Windows. Zmienia stan hosta; sprawdź cel i uprawnienia przed wykonaniem.",
+      "explanationEn": "Restart Windows service. Changes host state; verify the target and permissions before executing.",
+      "template": "Restart-Service -Name {{service}}",
+      "category": "services",
+      "subcategory": "",
+      "tags": [
+        "service"
+      ],
+      "platform": "Windows",
+      "shell": "PowerShell",
+      "family": "",
+      "distributions": [],
+      "minVersion": "",
+      "maxVersion": "",
+      "tools": [
+        "Restart-Service"
+      ],
+      "privileges": "administrator",
+      "risk": "Dangerous",
+      "origin": "BuiltIn",
+      "parameters": [
+        {
+          "key": "service",
+          "label": "Service",
+          "kind": "Text",
+          "default": "Spooler",
+          "required": true,
+          "choices": []
+        }
+      ],
+      "examples": [
+        "Restart-Service -Name 'Spooler'"
+      ],
+      "priority": 0
+    },
+    {
+      "id": "windows.ps.packages",
+      "operation": "windows.ps.packages",
+      "name": "Zainstalowane aplikacje winget",
+      "nameEn": "Installed winget applications",
+      "summary": "Zainstalowane aplikacje winget",
+      "summaryEn": "Installed winget applications",
+      "explanation": "Zainstalowane aplikacje winget. Odczytuje dane hosta. Wynik zależy od uprawnień użytkownika i dostępności narzędzia.",
+      "explanationEn": "Installed winget applications. Reads host data. Results depend on user permissions and tool availability.",
+      "template": "winget list",
+      "category": "packages",
+      "subcategory": "",
+      "tags": [
+        "pakiety",
+        "applications"
+      ],
+      "platform": "Windows",
+      "shell": "PowerShell",
+      "family": "",
+      "distributions": [],
+      "minVersion": "",
+      "maxVersion": "",
+      "tools": [
+        "winget"
+      ],
+      "privileges": "user",
+      "risk": "ReadOnly",
+      "origin": "BuiltIn",
+      "parameters": [],
+      "examples": [],
+      "priority": 0
+    },
+    {
+      "id": "windows.ps.package-updates",
+      "operation": "windows.ps.package-updates",
+      "name": "Aktualizacje aplikacji winget",
+      "nameEn": "Winget application updates",
+      "summary": "Aktualizacje aplikacji winget",
+      "summaryEn": "Winget application updates",
+      "explanation": "winget obsługuje aktualizacje aplikacji, nie aktualizacje systemu Windows Update. Wymaga zainstalowanego App Installer; dostępność sprawdzana osobno.",
+      "explanationEn": "winget manages application updates, not Windows Update operating-system updates. It requires App Installer; availability is checked separately.",
+      "template": "winget upgrade",
+      "category": "packages",
+      "subcategory": "",
+      "tags": [
+        "aktualizacja",
+        "updates"
+      ],
+      "platform": "Windows",
+      "shell": "PowerShell",
+      "family": "",
+      "distributions": [],
+      "minVersion": "",
+      "maxVersion": "",
+      "tools": [
+        "winget"
+      ],
+      "privileges": "user",
+      "risk": "ReadOnly",
+      "origin": "BuiltIn",
+      "parameters": [],
+      "examples": [],
+      "priority": 0
+    },
+    {
+      "id": "windows.ps.package-update-all",
+      "operation": "windows.ps.package-update-all",
+      "name": "Aktualizuj aplikacje winget",
+      "nameEn": "Upgrade winget applications",
+      "summary": "Aktualizuj aplikacje winget",
+      "summaryEn": "Upgrade winget applications",
+      "explanation": "winget obsługuje aktualizacje aplikacji, nie aktualizacje systemu Windows Update. Wymaga zainstalowanego App Installer; dostępność sprawdzana osobno.",
+      "explanationEn": "winget manages application updates, not Windows Update operating-system updates. It requires App Installer; availability is checked separately.",
+      "template": "winget upgrade --all",
+      "category": "packages",
+      "subcategory": "",
+      "tags": [
+        "aktualizacja",
+        "updates"
+      ],
+      "platform": "Windows",
+      "shell": "PowerShell",
+      "family": "",
+      "distributions": [],
+      "minVersion": "",
+      "maxVersion": "",
+      "tools": [
+        "winget"
+      ],
+      "privileges": "administrator",
+      "risk": "Modify",
+      "origin": "BuiltIn",
+      "parameters": [],
+      "examples": [],
+      "priority": 0
+    },
+    {
+      "id": "windows.ps.hotfix",
+      "operation": "windows.ps.hotfix",
+      "name": "Zainstalowane poprawki Windows",
+      "nameEn": "Installed Windows hotfixes",
+      "summary": "Zainstalowane poprawki Windows",
+      "summaryEn": "Installed Windows hotfixes",
+      "explanation": "Zainstalowane poprawki Windows. Odczytuje dane hosta. Wynik zależy od uprawnień użytkownika i dostępności narzędzia.",
+      "explanationEn": "Installed Windows hotfixes. Reads host data. Results depend on user permissions and tool availability.",
+      "template": "Get-HotFix | Sort-Object InstalledOn -Descending",
+      "category": "packages",
+      "subcategory": "",
+      "tags": [
+        "windows update",
+        "hotfix",
+        "poprawki"
+      ],
+      "platform": "Windows",
+      "shell": "PowerShell",
+      "family": "",
+      "distributions": [],
+      "minVersion": "",
+      "maxVersion": "",
+      "tools": [
+        "Get-HotFix"
+      ],
+      "privileges": "user",
+      "risk": "ReadOnly",
+      "origin": "BuiltIn",
+      "parameters": [],
+      "examples": [],
+      "priority": 0
+    },
+    {
+      "id": "windows.ps.files",
+      "operation": "windows.ps.files",
+      "name": "Pliki i katalogi Windows",
+      "nameEn": "Windows files and directories",
+      "summary": "Pliki i katalogi Windows",
+      "summaryEn": "Windows files and directories",
+      "explanation": "Pliki i katalogi Windows. Odczytuje dane hosta. Wynik zależy od uprawnień użytkownika i dostępności narzędzia.",
+      "explanationEn": "Windows files and directories. Reads host data. Results depend on user permissions and tool availability.",
+      "template": "Get-ChildItem -LiteralPath {{path}} -Force",
+      "category": "files",
+      "subcategory": "",
+      "tags": [
+        "pliki",
+        "files"
+      ],
+      "platform": "Windows",
+      "shell": "PowerShell",
+      "family": "",
+      "distributions": [],
+      "minVersion": "",
+      "maxVersion": "",
+      "tools": [],
+      "privileges": "user",
+      "risk": "ReadOnly",
+      "origin": "BuiltIn",
+      "parameters": [
+        {
+          "key": "path",
+          "label": "Path / ścieżka",
+          "kind": "FilePath",
+          "default": "C:\\Windows\\Temp",
+          "required": true,
+          "choices": []
+        }
+      ],
+      "examples": [
+        "Get-ChildItem -LiteralPath 'C:\\Windows\\Temp' -Force"
+      ],
+      "priority": 0
+    },
+    {
+      "id": "windows.ps.file-content",
+      "operation": "windows.ps.file-content",
+      "name": "Odczytaj plik Windows",
+      "nameEn": "Read Windows file",
+      "summary": "Odczytaj plik Windows",
+      "summaryEn": "Read Windows file",
+      "explanation": "Odczytaj plik Windows. Odczytuje dane hosta. Wynik zależy od uprawnień użytkownika i dostępności narzędzia.",
+      "explanationEn": "Read Windows file. Reads host data. Results depend on user permissions and tool availability.",
+      "template": "Get-Content -LiteralPath {{path}} -Tail 100",
+      "category": "files",
+      "subcategory": "",
+      "tags": [
+        "log",
+        "plik"
+      ],
+      "platform": "Windows",
+      "shell": "PowerShell",
+      "family": "",
+      "distributions": [],
+      "minVersion": "",
+      "maxVersion": "",
+      "tools": [],
+      "privileges": "user",
+      "risk": "ReadOnly",
+      "origin": "BuiltIn",
+      "parameters": [
+        {
+          "key": "path",
+          "label": "Path",
+          "kind": "FilePath",
+          "default": "C:\\Windows\\win.ini",
+          "required": true,
+          "choices": []
+        }
+      ],
+      "examples": [
+        "Get-Content -LiteralPath 'C:\\Windows\\win.ini' -Tail 100"
+      ],
+      "priority": 0
+    },
+    {
+      "id": "windows.ps.file-hash",
+      "operation": "windows.ps.file-hash",
+      "name": "Suma SHA-256 pliku",
+      "nameEn": "File SHA-256 hash",
+      "summary": "Suma SHA-256 pliku",
+      "summaryEn": "File SHA-256 hash",
+      "explanation": "Suma SHA-256 pliku. Odczytuje dane hosta. Wynik zależy od uprawnień użytkownika i dostępności narzędzia.",
+      "explanationEn": "File SHA-256 hash. Reads host data. Results depend on user permissions and tool availability.",
+      "template": "Get-FileHash -LiteralPath {{path}} -Algorithm SHA256",
+      "category": "files",
+      "subcategory": "",
+      "tags": [
+        "checksum",
+        "hash",
+        "suma"
+      ],
+      "platform": "Windows",
+      "shell": "PowerShell",
+      "family": "",
+      "distributions": [],
+      "minVersion": "",
+      "maxVersion": "",
+      "tools": [
+        "Get-FileHash"
+      ],
+      "privileges": "user",
+      "risk": "ReadOnly",
+      "origin": "BuiltIn",
+      "parameters": [
+        {
+          "key": "path",
+          "label": "Path",
+          "kind": "FilePath",
+          "default": "C:\\Windows\\win.ini",
+          "required": true,
+          "choices": []
+        }
+      ],
+      "examples": [
+        "Get-FileHash -LiteralPath 'C:\\Windows\\win.ini' -Algorithm SHA256"
+      ],
+      "priority": 0
+    },
+    {
+      "id": "windows.ps.file-acl",
+      "operation": "windows.ps.file-acl",
+      "name": "Uprawnienia pliku Windows",
+      "nameEn": "Windows file permissions",
+      "summary": "Uprawnienia pliku Windows",
+      "summaryEn": "Windows file permissions",
+      "explanation": "Uprawnienia pliku Windows. Odczytuje dane hosta. Wynik zależy od uprawnień użytkownika i dostępności narzędzia.",
+      "explanationEn": "Windows file permissions. Reads host data. Results depend on user permissions and tool availability.",
+      "template": "Get-Acl -LiteralPath {{path}} | Format-List",
+      "category": "files",
+      "subcategory": "",
+      "tags": [
+        "acl",
+        "permissions",
+        "uprawnienia"
+      ],
+      "platform": "Windows",
+      "shell": "PowerShell",
+      "family": "",
+      "distributions": [],
+      "minVersion": "",
+      "maxVersion": "",
+      "tools": [
+        "Get-Acl"
+      ],
+      "privileges": "user",
+      "risk": "ReadOnly",
+      "origin": "BuiltIn",
+      "parameters": [
+        {
+          "key": "path",
+          "label": "Path",
+          "kind": "FilePath",
+          "default": "C:\\Windows\\Temp",
+          "required": true,
+          "choices": []
+        }
+      ],
+      "examples": [
+        "Get-Acl -LiteralPath 'C:\\Windows\\Temp' | Format-List"
+      ],
+      "priority": 0
+    },
+    {
+      "id": "windows.ps.users",
+      "operation": "windows.ps.users",
+      "name": "Konta lokalne Windows",
+      "nameEn": "Windows local accounts",
+      "summary": "Konta lokalne Windows",
+      "summaryEn": "Windows local accounts",
+      "explanation": "Konta lokalne Windows. Odczytuje dane hosta. Wynik zależy od uprawnień użytkownika i dostępności narzędzia.",
+      "explanationEn": "Windows local accounts. Reads host data. Results depend on user permissions and tool availability.",
+      "template": "Get-LocalUser | Select-Object Name, Enabled, LastLogon",
+      "category": "users",
+      "subcategory": "",
+      "tags": [
+        "konto",
+        "users"
+      ],
+      "platform": "Windows",
+      "shell": "PowerShell",
+      "family": "",
+      "distributions": [],
+      "minVersion": "",
+      "maxVersion": "",
+      "tools": [
+        "Get-LocalUser"
+      ],
+      "privileges": "user",
+      "risk": "ReadOnly",
+      "origin": "BuiltIn",
+      "parameters": [],
+      "examples": [],
+      "priority": 0
+    },
+    {
+      "id": "windows.ps.groups",
+      "operation": "windows.ps.groups",
+      "name": "Grupy lokalne Windows",
+      "nameEn": "Windows local groups",
+      "summary": "Grupy lokalne Windows",
+      "summaryEn": "Windows local groups",
+      "explanation": "Grupy lokalne Windows. Odczytuje dane hosta. Wynik zależy od uprawnień użytkownika i dostępności narzędzia.",
+      "explanationEn": "Windows local groups. Reads host data. Results depend on user permissions and tool availability.",
+      "template": "Get-LocalGroup",
+      "category": "users",
+      "subcategory": "",
+      "tags": [
+        "groups",
+        "grupy"
+      ],
+      "platform": "Windows",
+      "shell": "PowerShell",
+      "family": "",
+      "distributions": [],
+      "minVersion": "",
+      "maxVersion": "",
+      "tools": [
+        "Get-LocalGroup"
+      ],
+      "privileges": "user",
+      "risk": "ReadOnly",
+      "origin": "BuiltIn",
+      "parameters": [],
+      "examples": [],
+      "priority": 0
+    },
+    {
+      "id": "windows.ps.storage",
+      "operation": "windows.ps.storage",
+      "name": "Woluminy Windows",
+      "nameEn": "Windows volumes",
+      "summary": "Woluminy Windows",
+      "summaryEn": "Windows volumes",
+      "explanation": "Woluminy Windows. Odczytuje dane hosta. Wynik zależy od uprawnień użytkownika i dostępności narzędzia.",
+      "explanationEn": "Windows volumes. Reads host data. Results depend on user permissions and tool availability.",
+      "template": "Get-Volume | Select-Object DriveLetter, FileSystemLabel, SizeRemaining, Size, HealthStatus",
+      "category": "storage",
+      "subcategory": "",
+      "tags": [
+        "dysk",
+        "disk",
+        "space"
+      ],
+      "platform": "Windows",
+      "shell": "PowerShell",
+      "family": "",
+      "distributions": [],
+      "minVersion": "",
+      "maxVersion": "",
+      "tools": [
+        "Get-Volume"
+      ],
+      "privileges": "user",
+      "risk": "ReadOnly",
+      "origin": "BuiltIn",
+      "parameters": [],
+      "examples": [],
+      "priority": 0
+    },
+    {
+      "id": "windows.ps.disks",
+      "operation": "windows.ps.disks",
+      "name": "Dyski Windows",
+      "nameEn": "Windows disks",
+      "summary": "Dyski Windows",
+      "summaryEn": "Windows disks",
+      "explanation": "Dyski Windows. Odczytuje dane hosta. Wynik zależy od uprawnień użytkownika i dostępności narzędzia.",
+      "explanationEn": "Windows disks. Reads host data. Results depend on user permissions and tool availability.",
+      "template": "Get-Disk | Select-Object Number, FriendlyName, OperationalStatus, Size",
+      "category": "storage",
+      "subcategory": "",
+      "tags": [
+        "dysk",
+        "disk"
+      ],
+      "platform": "Windows",
+      "shell": "PowerShell",
+      "family": "",
+      "distributions": [],
+      "minVersion": "",
+      "maxVersion": "",
+      "tools": [
+        "Get-Disk"
+      ],
+      "privileges": "user",
+      "risk": "ReadOnly",
+      "origin": "BuiltIn",
+      "parameters": [],
+      "examples": [],
+      "priority": 0
+    },
+    {
+      "id": "windows.ps.events",
+      "operation": "windows.ps.events",
+      "name": "Ostatnie zdarzenia systemowe",
+      "nameEn": "Recent system events",
+      "summary": "Ostatnie zdarzenia systemowe",
+      "summaryEn": "Recent system events",
+      "explanation": "Ostatnie zdarzenia systemowe. Odczytuje dane hosta. Wynik zależy od uprawnień użytkownika i dostępności narzędzia.",
+      "explanationEn": "Recent system events. Reads host data. Results depend on user permissions and tool availability.",
+      "template": "Get-WinEvent -LogName System -MaxEvents 50 | Select-Object TimeCreated, Id, LevelDisplayName, Message",
+      "category": "logs",
+      "subcategory": "",
+      "tags": [
+        "logs",
+        "dziennik",
+        "bledy",
+        "events"
+      ],
+      "platform": "Windows",
+      "shell": "PowerShell",
+      "family": "",
+      "distributions": [],
+      "minVersion": "",
+      "maxVersion": "",
+      "tools": [
+        "Get-WinEvent"
+      ],
+      "privileges": "user",
+      "risk": "ReadOnly",
+      "origin": "BuiltIn",
+      "parameters": [],
+      "examples": [],
+      "priority": 0
+    },
+    {
+      "id": "windows.ps.application-events",
+      "operation": "windows.ps.application-events",
+      "name": "Dziennik aplikacji Windows",
+      "nameEn": "Windows application events",
+      "summary": "Dziennik aplikacji Windows",
+      "summaryEn": "Windows application events",
+      "explanation": "Dziennik aplikacji Windows. Odczytuje dane hosta. Wynik zależy od uprawnień użytkownika i dostępności narzędzia.",
+      "explanationEn": "Windows application events. Reads host data. Results depend on user permissions and tool availability.",
+      "template": "Get-WinEvent -LogName Application -MaxEvents 50",
+      "category": "logs",
+      "subcategory": "",
+      "tags": [
+        "logs",
+        "application"
+      ],
+      "platform": "Windows",
+      "shell": "PowerShell",
+      "family": "",
+      "distributions": [],
+      "minVersion": "",
+      "maxVersion": "",
+      "tools": [
+        "Get-WinEvent"
+      ],
+      "privileges": "user",
+      "risk": "ReadOnly",
+      "origin": "BuiltIn",
+      "parameters": [],
+      "examples": [],
+      "priority": 0
+    },
+    {
+      "id": "windows.ps.firewall",
+      "operation": "windows.ps.firewall",
+      "name": "Reguły zapory Windows",
+      "nameEn": "Windows firewall rules",
+      "summary": "Reguły zapory Windows",
+      "summaryEn": "Windows firewall rules",
+      "explanation": "Reguły zapory Windows. Odczytuje dane hosta. Wynik zależy od uprawnień użytkownika i dostępności narzędzia.",
+      "explanationEn": "Windows firewall rules. Reads host data. Results depend on user permissions and tool availability.",
+      "template": "Get-NetFirewallRule -Enabled True | Select-Object DisplayName, Direction, Action",
+      "category": "security",
+      "subcategory": "",
+      "tags": [
+        "zapora",
+        "firewall"
+      ],
+      "platform": "Windows",
+      "shell": "PowerShell",
+      "family": "",
+      "distributions": [],
+      "minVersion": "",
+      "maxVersion": "",
+      "tools": [
+        "Get-NetFirewallRule"
+      ],
+      "privileges": "user",
+      "risk": "ReadOnly",
+      "origin": "BuiltIn",
+      "parameters": [],
+      "examples": [],
+      "priority": 0
+    },
+    {
+      "id": "windows.ps.defender",
+      "operation": "windows.ps.defender",
+      "name": "Stan Microsoft Defender",
+      "nameEn": "Microsoft Defender status",
+      "summary": "Stan Microsoft Defender",
+      "summaryEn": "Microsoft Defender status",
+      "explanation": "Stan Microsoft Defender. Odczytuje dane hosta. Wynik zależy od uprawnień użytkownika i dostępności narzędzia.",
+      "explanationEn": "Microsoft Defender status. Reads host data. Results depend on user permissions and tool availability.",
+      "template": "Get-MpComputerStatus",
+      "category": "security",
+      "subcategory": "",
+      "tags": [
+        "antivirus",
+        "defender",
+        "security"
+      ],
+      "platform": "Windows",
+      "shell": "PowerShell",
+      "family": "",
+      "distributions": [],
+      "minVersion": "",
+      "maxVersion": "",
+      "tools": [
+        "Get-MpComputerStatus"
+      ],
+      "privileges": "user",
+      "risk": "ReadOnly",
+      "origin": "BuiltIn",
+      "parameters": [],
+      "examples": [],
+      "priority": 0
+    },
+    {
+      "id": "windows.ps.tasks",
+      "operation": "windows.ps.tasks",
+      "name": "Zaplanowane zadania",
+      "nameEn": "Scheduled tasks",
+      "summary": "Zaplanowane zadania",
+      "summaryEn": "Scheduled tasks",
+      "explanation": "Zaplanowane zadania. Odczytuje dane hosta. Wynik zależy od uprawnień użytkownika i dostępności narzędzia.",
+      "explanationEn": "Scheduled tasks. Reads host data. Results depend on user permissions and tool availability.",
+      "template": "Get-ScheduledTask | Select-Object TaskName, State",
+      "category": "system",
+      "subcategory": "",
+      "tags": [
+        "tasks",
+        "zadania"
+      ],
+      "platform": "Windows",
+      "shell": "PowerShell",
+      "family": "",
+      "distributions": [],
+      "minVersion": "",
+      "maxVersion": "",
+      "tools": [
+        "Get-ScheduledTask"
+      ],
+      "privileges": "user",
+      "risk": "ReadOnly",
+      "origin": "BuiltIn",
+      "parameters": [],
+      "examples": [],
+      "priority": 0
+    },
+    {
+      "id": "windows.ps.dism",
+      "operation": "windows.ps.dism",
+      "name": "Sprawdź stan obrazu Windows",
+      "nameEn": "Check Windows image health",
+      "summary": "Sprawdź stan obrazu Windows",
+      "summaryEn": "Check Windows image health",
+      "explanation": "Sprawdź stan obrazu Windows. Odczytuje dane hosta. Wynik zależy od uprawnień użytkownika i dostępności narzędzia.",
+      "explanationEn": "Check Windows image health. Reads host data. Results depend on user permissions and tool availability.",
+      "template": "DISM.exe /Online /Cleanup-Image /CheckHealth",
+      "category": "logs",
+      "subcategory": "",
+      "tags": [
+        "dism",
+        "health",
+        "troubleshooting"
+      ],
+      "platform": "Windows",
+      "shell": "PowerShell",
+      "family": "",
+      "distributions": [],
+      "minVersion": "",
+      "maxVersion": "",
+      "tools": [
+        "DISM.exe"
+      ],
+      "privileges": "administrator",
+      "risk": "ReadOnly",
+      "origin": "BuiltIn",
+      "parameters": [],
+      "examples": [],
+      "priority": 0
+    },
+    {
+      "id": "windows.ps.sfc",
+      "operation": "windows.ps.sfc",
+      "name": "Zweryfikuj pliki systemowe Windows",
+      "nameEn": "Verify Windows system files",
+      "summary": "Zweryfikuj pliki systemowe Windows",
+      "summaryEn": "Verify Windows system files",
+      "explanation": "Zweryfikuj pliki systemowe Windows. Odczytuje dane hosta. Wynik zależy od uprawnień użytkownika i dostępności narzędzia.",
+      "explanationEn": "Verify Windows system files. Reads host data. Results depend on user permissions and tool availability.",
+      "template": "sfc.exe /verifyonly",
+      "category": "logs",
+      "subcategory": "",
+      "tags": [
+        "sfc",
+        "integrity"
+      ],
+      "platform": "Windows",
+      "shell": "PowerShell",
+      "family": "",
+      "distributions": [],
+      "minVersion": "",
+      "maxVersion": "",
+      "tools": [
+        "sfc.exe"
+      ],
+      "privileges": "administrator",
+      "risk": "ReadOnly",
+      "origin": "BuiltIn",
+      "parameters": [],
+      "examples": [],
+      "priority": 0
+    },
+    {
+      "id": "windows.cmd.version",
+      "operation": "windows.cmd.version",
+      "name": "Wersja Windows (CMD)",
+      "nameEn": "Windows version (CMD)",
+      "summary": "Wersja Windows (CMD)",
+      "summaryEn": "Windows version (CMD)",
+      "explanation": "Wersja Windows (CMD). Odczytuje dane hosta. Wynik zależy od uprawnień użytkownika i dostępności narzędzia.",
+      "explanationEn": "Windows version (CMD). Reads host data. Results depend on user permissions and tool availability.",
+      "template": "ver",
+      "category": "system",
+      "subcategory": "",
+      "tags": [
+        "cmd",
+        "windows",
+        "system"
+      ],
+      "platform": "Windows",
+      "shell": "Cmd",
+      "family": "",
+      "distributions": [],
+      "minVersion": "",
+      "maxVersion": "",
+      "tools": [],
+      "privileges": "user",
+      "risk": "ReadOnly",
+      "origin": "BuiltIn",
+      "parameters": [],
+      "examples": [],
+      "priority": 0
+    },
+    {
+      "id": "windows.cmd.info",
+      "operation": "windows.cmd.info",
+      "name": "Informacje systemowe (CMD)",
+      "nameEn": "System information (CMD)",
+      "summary": "Informacje systemowe (CMD)",
+      "summaryEn": "System information (CMD)",
+      "explanation": "Informacje systemowe (CMD). Odczytuje dane hosta. Wynik zależy od uprawnień użytkownika i dostępności narzędzia.",
+      "explanationEn": "System information (CMD). Reads host data. Results depend on user permissions and tool availability.",
+      "template": "systeminfo",
+      "category": "system",
+      "subcategory": "",
+      "tags": [
+        "cmd",
+        "windows",
+        "system"
+      ],
+      "platform": "Windows",
+      "shell": "Cmd",
+      "family": "",
+      "distributions": [],
+      "minVersion": "",
+      "maxVersion": "",
+      "tools": [
+        "systeminfo"
+      ],
+      "privileges": "user",
+      "risk": "ReadOnly",
+      "origin": "BuiltIn",
+      "parameters": [],
+      "examples": [],
+      "priority": 0
+    },
+    {
+      "id": "windows.cmd.ip",
+      "operation": "windows.cmd.ip",
+      "name": "Konfiguracja IP (CMD)",
+      "nameEn": "IP configuration (CMD)",
+      "summary": "Konfiguracja IP (CMD)",
+      "summaryEn": "IP configuration (CMD)",
+      "explanation": "Konfiguracja IP (CMD). Odczytuje dane hosta. Wynik zależy od uprawnień użytkownika i dostępności narzędzia.",
+      "explanationEn": "IP configuration (CMD). Reads host data. Results depend on user permissions and tool availability.",
+      "template": "ipconfig /all",
+      "category": "network",
+      "subcategory": "",
+      "tags": [
+        "cmd",
+        "windows",
+        "network"
+      ],
+      "platform": "Windows",
+      "shell": "Cmd",
+      "family": "",
+      "distributions": [],
+      "minVersion": "",
+      "maxVersion": "",
+      "tools": [
+        "ipconfig"
+      ],
+      "privileges": "user",
+      "risk": "ReadOnly",
+      "origin": "BuiltIn",
+      "parameters": [],
+      "examples": [],
+      "priority": 0
+    },
+    {
+      "id": "windows.cmd.ports",
+      "operation": "windows.cmd.ports",
+      "name": "Porty i połączenia (CMD)",
+      "nameEn": "Ports and connections (CMD)",
+      "summary": "Porty i połączenia (CMD)",
+      "summaryEn": "Ports and connections (CMD)",
+      "explanation": "Porty i połączenia (CMD). Odczytuje dane hosta. Wynik zależy od uprawnień użytkownika i dostępności narzędzia.",
+      "explanationEn": "Ports and connections (CMD). Reads host data. Results depend on user permissions and tool availability.",
+      "template": "netstat -ano",
+      "category": "network",
+      "subcategory": "",
+      "tags": [
+        "cmd",
+        "windows",
+        "network",
+        "otwarte porty"
+      ],
+      "platform": "Windows",
+      "shell": "Cmd",
+      "family": "",
+      "distributions": [],
+      "minVersion": "",
+      "maxVersion": "",
+      "tools": [
+        "netstat"
+      ],
+      "privileges": "user",
+      "risk": "ReadOnly",
+      "origin": "BuiltIn",
+      "parameters": [],
+      "examples": [],
+      "priority": 0
+    },
+    {
+      "id": "windows.cmd.ping",
+      "operation": "windows.cmd.ping",
+      "name": "Sprawdź osiągalność (CMD)",
+      "nameEn": "Check reachability (CMD)",
+      "summary": "Sprawdź osiągalność (CMD)",
+      "summaryEn": "Check reachability (CMD)",
+      "explanation": "Sprawdź osiągalność (CMD). Odczytuje dane hosta. Wynik zależy od uprawnień użytkownika i dostępności narzędzia.",
+      "explanationEn": "Check reachability (CMD). Reads host data. Results depend on user permissions and tool availability.",
+      "template": "ping -n 4 {{host}}",
+      "category": "network",
+      "subcategory": "",
+      "tags": [
+        "cmd",
+        "windows",
+        "network"
+      ],
+      "platform": "Windows",
+      "shell": "Cmd",
+      "family": "",
+      "distributions": [],
+      "minVersion": "",
+      "maxVersion": "",
+      "tools": [
+        "ping"
+      ],
+      "privileges": "user",
+      "risk": "ReadOnly",
+      "origin": "BuiltIn",
+      "parameters": [
+        {
+          "key": "host",
+          "label": "Host",
+          "kind": "Hostname",
+          "default": "localhost",
+          "required": true,
+          "choices": []
+        }
+      ],
+      "examples": [
+        "ping -n 4 \"localhost\""
+      ],
+      "priority": 0
+    },
+    {
+      "id": "windows.cmd.dns",
+      "operation": "windows.cmd.dns",
+      "name": "DNS (CMD)",
+      "nameEn": "DNS lookup (CMD)",
+      "summary": "DNS (CMD)",
+      "summaryEn": "DNS lookup (CMD)",
+      "explanation": "DNS (CMD). Odczytuje dane hosta. Wynik zależy od uprawnień użytkownika i dostępności narzędzia.",
+      "explanationEn": "DNS lookup (CMD). Reads host data. Results depend on user permissions and tool availability.",
+      "template": "nslookup {{host}}",
+      "category": "network",
+      "subcategory": "",
+      "tags": [
+        "cmd",
+        "windows",
+        "network"
+      ],
+      "platform": "Windows",
+      "shell": "Cmd",
+      "family": "",
+      "distributions": [],
+      "minVersion": "",
+      "maxVersion": "",
+      "tools": [
+        "nslookup"
+      ],
+      "privileges": "user",
+      "risk": "ReadOnly",
+      "origin": "BuiltIn",
+      "parameters": [
+        {
+          "key": "host",
+          "label": "Host",
+          "kind": "Hostname",
+          "default": "localhost",
+          "required": true,
+          "choices": []
+        }
+      ],
+      "examples": [
+        "nslookup \"localhost\""
+      ],
+      "priority": 0
+    },
+    {
+      "id": "windows.cmd.route",
+      "operation": "windows.cmd.route",
+      "name": "Routing (CMD)",
+      "nameEn": "Routing table (CMD)",
+      "summary": "Routing (CMD)",
+      "summaryEn": "Routing table (CMD)",
+      "explanation": "Routing (CMD). Odczytuje dane hosta. Wynik zależy od uprawnień użytkownika i dostępności narzędzia.",
+      "explanationEn": "Routing table (CMD). Reads host data. Results depend on user permissions and tool availability.",
+      "template": "route print",
+      "category": "network",
+      "subcategory": "",
+      "tags": [
+        "cmd",
+        "windows",
+        "network"
+      ],
+      "platform": "Windows",
+      "shell": "Cmd",
+      "family": "",
+      "distributions": [],
+      "minVersion": "",
+      "maxVersion": "",
+      "tools": [
+        "route"
+      ],
+      "privileges": "user",
+      "risk": "ReadOnly",
+      "origin": "BuiltIn",
+      "parameters": [],
+      "examples": [],
+      "priority": 0
+    },
+    {
+      "id": "windows.cmd.service",
+      "operation": "windows.cmd.service",
+      "name": "Sprawdź usługę (CMD)",
+      "nameEn": "Check service (CMD)",
+      "summary": "Sprawdź usługę (CMD)",
+      "summaryEn": "Check service (CMD)",
+      "explanation": "Sprawdź usługę (CMD). Odczytuje dane hosta. Wynik zależy od uprawnień użytkownika i dostępności narzędzia.",
+      "explanationEn": "Check service (CMD). Reads host data. Results depend on user permissions and tool availability.",
+      "template": "sc.exe query {{service}}",
+      "category": "services",
+      "subcategory": "",
+      "tags": [
+        "cmd",
+        "windows",
+        "sprawdz usluge"
+      ],
+      "platform": "Windows",
+      "shell": "Cmd",
+      "family": "",
+      "distributions": [],
+      "minVersion": "",
+      "maxVersion": "",
+      "tools": [
+        "sc.exe"
+      ],
+      "privileges": "user",
+      "risk": "ReadOnly",
+      "origin": "BuiltIn",
+      "parameters": [
+        {
+          "key": "service",
+          "label": "Service",
+          "kind": "Text",
+          "default": "Spooler",
+          "required": true,
+          "choices": []
+        }
+      ],
+      "examples": [
+        "sc.exe query \"Spooler\""
+      ],
+      "priority": 0
+    },
+    {
+      "id": "windows.cmd.files",
+      "operation": "windows.cmd.files",
+      "name": "Lista plików (CMD)",
+      "nameEn": "List files (CMD)",
+      "summary": "Lista plików (CMD)",
+      "summaryEn": "List files (CMD)",
+      "explanation": "Lista plików (CMD). Odczytuje dane hosta. Wynik zależy od uprawnień użytkownika i dostępności narzędzia.",
+      "explanationEn": "List files (CMD). Reads host data. Results depend on user permissions and tool availability.",
+      "template": "dir {{path}}",
+      "category": "files",
+      "subcategory": "",
+      "tags": [
+        "cmd",
+        "windows",
+        "files"
+      ],
+      "platform": "Windows",
+      "shell": "Cmd",
+      "family": "",
+      "distributions": [],
+      "minVersion": "",
+      "maxVersion": "",
+      "tools": [],
+      "privileges": "user",
+      "risk": "ReadOnly",
+      "origin": "BuiltIn",
+      "parameters": [
+        {
+          "key": "path",
+          "label": "Path",
+          "kind": "FilePath",
+          "default": "C:\\Windows",
+          "required": true,
+          "choices": []
+        }
+      ],
+      "examples": [
+        "dir \"C:\\Windows\""
+      ],
+      "priority": 0
+    },
+    {
+      "id": "windows.cmd.users",
+      "operation": "windows.cmd.users",
+      "name": "Konta użytkowników (CMD)",
+      "nameEn": "User accounts (CMD)",
+      "summary": "Konta użytkowników (CMD)",
+      "summaryEn": "User accounts (CMD)",
+      "explanation": "Konta użytkowników (CMD). Odczytuje dane hosta. Wynik zależy od uprawnień użytkownika i dostępności narzędzia.",
+      "explanationEn": "User accounts (CMD). Reads host data. Results depend on user permissions and tool availability.",
+      "template": "net user",
+      "category": "users",
+      "subcategory": "",
+      "tags": [
+        "cmd",
+        "windows",
+        "users"
+      ],
+      "platform": "Windows",
+      "shell": "Cmd",
+      "family": "",
+      "distributions": [],
+      "minVersion": "",
+      "maxVersion": "",
+      "tools": [
+        "net"
+      ],
+      "privileges": "user",
+      "risk": "ReadOnly",
+      "origin": "BuiltIn",
+      "parameters": [],
+      "examples": [],
+      "priority": 0
+    },
+    {
+      "id": "windows.cmd.processes",
+      "operation": "windows.cmd.processes",
+      "name": "Lista procesów (CMD)",
+      "nameEn": "List processes (CMD)",
+      "summary": "Lista procesów (CMD)",
+      "summaryEn": "List processes (CMD)",
+      "explanation": "Lista procesów (CMD). Odczytuje dane hosta. Wynik zależy od uprawnień użytkownika i dostępności narzędzia.",
+      "explanationEn": "List processes (CMD). Reads host data. Results depend on user permissions and tool availability.",
+      "template": "tasklist",
+      "category": "system",
+      "subcategory": "",
+      "tags": [
+        "cmd",
+        "windows",
+        "system"
+      ],
+      "platform": "Windows",
+      "shell": "Cmd",
+      "family": "",
+      "distributions": [],
+      "minVersion": "",
+      "maxVersion": "",
+      "tools": [
+        "tasklist"
+      ],
+      "privileges": "user",
+      "risk": "ReadOnly",
+      "origin": "BuiltIn",
+      "parameters": [],
+      "examples": [],
+      "priority": 0
+    },
+    {
+      "id": "windows.cmd.system-events",
+      "operation": "windows.cmd.system-events",
+      "name": "Ostatnie zdarzenia (CMD)",
+      "nameEn": "Recent events (CMD)",
+      "summary": "Ostatnie zdarzenia (CMD)",
+      "summaryEn": "Recent events (CMD)",
+      "explanation": "Ostatnie zdarzenia (CMD). Odczytuje dane hosta. Wynik zależy od uprawnień użytkownika i dostępności narzędzia.",
+      "explanationEn": "Recent events (CMD). Reads host data. Results depend on user permissions and tool availability.",
+      "template": "wevtutil qe System /c:20 /rd:true /f:text",
+      "category": "logs",
+      "subcategory": "",
+      "tags": [
+        "cmd",
+        "windows",
+        "logs"
+      ],
+      "platform": "Windows",
+      "shell": "Cmd",
+      "family": "",
+      "distributions": [],
+      "minVersion": "",
+      "maxVersion": "",
+      "tools": [
+        "wevtutil"
+      ],
+      "privileges": "user",
+      "risk": "ReadOnly",
+      "origin": "BuiltIn",
+      "parameters": [],
+      "examples": [],
+      "priority": 0
+    },
+    {
+      "id": "ubuntu.netplan.status",
+      "operation": "ubuntu.netplan.status",
+      "name": "Stan sieci Netplan Ubuntu",
+      "nameEn": "Ubuntu Netplan status",
+      "summary": "Stan sieci Netplan Ubuntu",
+      "summaryEn": "Ubuntu Netplan status",
+      "explanation": "Polecenie status jest dostępne w nowszych wersjach Netplan. Profil Ubuntu 24.04+ ogranicza starsze warianty, ale obecność narzędzia jest sprawdzana niezależnie.",
+      "explanationEn": "Status is available in newer Netplan versions. The Ubuntu 24.04+ profile excludes older releases; tool presence is checked independently.",
+      "template": "netplan status --all",
+      "category": "network",
+      "subcategory": "",
+      "tags": [
+        "ubuntu",
+        "netplan",
+        "siec"
+      ],
+      "platform": "Linux",
+      "shell": "Bash",
+      "family": "",
+      "distributions": [
+        "ubuntu"
+      ],
+      "minVersion": "24.04",
+      "maxVersion": "",
+      "tools": [
+        "netplan"
+      ],
+      "privileges": "user",
+      "risk": "ReadOnly",
+      "origin": "BuiltIn",
+      "parameters": [],
+      "examples": [],
+      "priority": 0
+    }
+  ]
+}

@@ -51,14 +51,14 @@ public sealed partial class MainWindow
         docking.ContextMenu=new ContextMenu { ItemsSource=new[]{Menu("Jeden panel",()=> { SetWorkspaceMode(WorkspaceMode.Single); return Task.CompletedTask; }),Menu("Panele obok siebie",()=> { SetWorkspaceMode(WorkspaceMode.Columns); return Task.CompletedTask; }),Menu("Panele jeden nad drugim",()=> { SetWorkspaceMode(WorkspaceMode.Rows); return Task.CompletedTask; }),Menu("Trzy panele (1 + 2)",()=> { SetWorkspaceMode(WorkspaceMode.Three); return Task.CompletedTask; }),Menu("Cztery panele (2 × 2)",()=> { SetWorkspaceMode(WorkspaceMode.Grid); return Task.CompletedTask; }),Menu("Wyrównaj wielkość paneli",()=> { EqualizeWorkspace(); return Task.CompletedTask; }),Menu("Przywróć wszystkie odpięte sesje",()=> { foreach(var pane in Panes.Where(p=>dockState.Location(p.WorkspaceId)==SessionDock.Floating).ToArray())DockSession(pane,SessionDock.Primary); return Task.CompletedTask; })} };
         docking.Click+=(_,_)=>docking.ContextMenu.Open(docking); titleActions.Children.Add(docking);
         var more=new Button { Content=DeskIcons.Labelled("more","Menu"),Tag="Menu",Classes={"icon","chrome"} };
-        more.ContextMenu=new ContextMenu { ItemsSource=new[]{Menu("Szybkie połączenie",QuickAsync),Menu("Nowy folder",FolderAsync),Menu("Import konfiguracji",ImportAsync),Menu("Eksport konfiguracji",ExportAsync),Menu("Paleta poleceń · Ctrl+Shift+P",CommandsAsync),Menu("Ustawienia",SettingsAsync),Menu("Historia połączeń",()=>HistoryAsync()),Menu("Network Tools",()=>SelectSectionAsync("network")),Menu("O aplikacji",AboutAsync)} };
+        more.ContextMenu=new ContextMenu { ItemsSource=new[]{Menu("Szybkie połączenie",QuickAsync),Menu("Nowy folder",FolderAsync),Menu("Import konfiguracji",ImportAsync),Menu("Eksport konfiguracji",ExportAsync),Menu("Paleta poleceń · Ctrl+Shift+P",CommandsAsync),Menu("Ustawienia",SettingsAsync),Menu("Historia połączeń",()=>HistoryAsync()),Menu("Network Tools",()=>SelectSectionAsync("network")),Menu("Komendy · Smart Cheat Sheet · Ctrl+Shift+K",OpenCommandsPanelAsync),Menu("O aplikacji",AboutAsync)} };
         more.Click+=(_,_)=>more.ContextMenu.Open(more); titleActions.Children.Add(more); Grid.SetColumn(titleActions,2); titlebar.Children.Add(titleActions);
         BuildWindowCaptions(titlebar);
         var header=BuildWorkspaceHeader(titlebar); Grid.SetColumnSpan(header,4); layout.Children.Add(header);
         var activity=new DockPanel(); DesignSystem.Resource(activity,DockPanel.BackgroundProperty,"BackgroundPrimary"); Grid.SetRow(activity,1); layout.Children.Add(activity);
         var bottom=new StackPanel(); DockPanel.SetDock(bottom,Dock.Bottom); activity.Children.Add(bottom);
         var activityList=new StackPanel(); activity.Children.Add(activityList);
-        foreach(var item in new[]{("connections",L.T("Połączenia")),("favorite",L.T("Ulubione")),("recent",L.T("Ostatnie")),("transfers",L.T("Transfery")),("network", "Network Tools"),("settings",L.T("Ustawienia"))})
+        foreach(var item in new[]{("connections",L.T("Połączenia")),("favorite",L.T("Ulubione")),("recent",L.T("Ostatnie")),("transfers",L.T("Transfery")),("network", "Network Tools"),("commands",L.T("Komendy")),("settings",L.T("Ustawienia"))})
         {
             var button=DeskIcons.Button(item.Item1,item.Item2,()=>_ = Safe(()=>SelectSectionAsync(item.Item1)),DesignTokens.ActivityButton); button.Margin=new Thickness(3); button.Classes.Add("activity");
             activityButtons[item.Item1]=button; (item.Item1=="settings"?bottom:activityList).Children.Add(button);
@@ -84,13 +84,13 @@ public sealed partial class MainWindow
         vm.Servers.CollectionChanged+=(_,_)=>QueueTree();
         var splitter=new GridSplitter { ResizeDirection=GridResizeDirection.Columns,HorizontalAlignment=HorizontalAlignment.Stretch }; Grid.SetColumn(splitter,2); Grid.SetRow(splitter,1); layout.Children.Add(splitter);
         splitter.DragCompleted+=(_,_)=> { if(sidebar.IsVisible)sidebarWidth=layout.ColumnDefinitions[1].ActualWidth; };
-        BuildDockWorkspace(); Grid.SetColumn(sessionHost,3); Grid.SetRow(sessionHost,1); layout.Children.Add(sessionHost);
+        BuildDockWorkspace(); BuildCommandWorkspace(); Grid.SetColumn(commandWorkspace,3); Grid.SetRow(commandWorkspace,1); layout.Children.Add(commandWorkspace);
         var status=new Grid { Name="WorkspaceStatusBar",ColumnDefinitions=new ColumnDefinitions("180,*,Auto,Auto"),Margin=new Thickness(10,0),ColumnSpacing=10,ClipToBounds=true }; workspaceStatus=status;
         var statusRule=new Border { Height=1,VerticalAlignment=VerticalAlignment.Top,IsHitTestVisible=false,Margin=new Thickness(-10,0) }; DesignSystem.Resource(statusRule,Border.BackgroundProperty,"BorderDefault"); Grid.SetColumnSpan(statusRule,4); status.Children.Add(statusRule);
         status.Children.Add(connectionStatus); Grid.SetColumn(metricsBar,1); status.Children.Add(metricsBar); Grid.SetColumn(transferStatus,2); status.Children.Add(transferStatus); Grid.SetColumn(encoding,3); status.Children.Add(encoding);
         connectionStatus.TextTrimming=TextTrimming.CharacterEllipsis;
         Grid.SetRow(status,2); Grid.SetColumnSpan(status,4); layout.Children.Add(status); Content=layout;
-        AddHandler(KeyDownEvent,HandleKeys,RoutingStrategies.Tunnel); SizeChanged+=(_,_)=>UpdateStatus(); statusTimer.Tick+=(_,_)=>UpdateStatus(); statusTimer.Start(); UpdateActivity(); UpdateStatus();
+        AddHandler(KeyDownEvent,HandleKeys,RoutingStrategies.Tunnel); SizeChanged+=(_,_)=> { ResizeCommandWorkspace(); UpdateStatus(); }; statusTimer.Tick+=(_,_)=>UpdateStatus(); statusTimer.Start(); UpdateActivity(); UpdateStatus();
     }
     private void QueueTree()
     { if(treePending)return; treePending=true; Dispatcher.UIThread.Post(()=> { treePending=false; BuildTree(); },DispatcherPriority.Background); }
@@ -166,6 +166,7 @@ public sealed partial class MainWindow
     }
     private async Task SelectSectionAsync(string id)
     {
+        if(id=="commands") { if(commandPanelHost.IsVisible)CloseCommandsPanel(); else await OpenCommandsPanelAsync(); return; }
         if(id=="settings") { await SettingsAsync(); return; }
         if(section==id && sidebar.IsVisible) { ToggleSidebar(); return; }
         section=id; if(!sidebar.IsVisible)ToggleSidebar();
@@ -174,7 +175,7 @@ public sealed partial class MainWindow
     }
     private void UpdateActivity()
     {
-        foreach(var (id,button) in activityButtons)button.Classes.Set("active",id==section);
+        foreach(var (id,button) in activityButtons)button.Classes.Set("active",id=="commands"?commandPanelHost.IsVisible:id==section);
     }
     private void ToggleSidebar()
     {
@@ -183,6 +184,7 @@ public sealed partial class MainWindow
     }
     private void UpdateStatus()
     {
+        UpdateCommandTarget();
         var active=ActiveSession;
         metricsBar.Update(active,Bounds.Width,preferences); encoding.IsVisible=!metricsBar.IsVisible && ActivePane is not NetworkToolPane;
         transferStatus.IsVisible=preferences.ShowTransferCount;
@@ -199,6 +201,7 @@ public sealed partial class MainWindow
         if(e.Key==Key.Tab) { CycleSession(shift); e.Handled=true; }
         else if(shift && e.Key==Key.N) { e.Handled=true; _ = Safe(()=>EditAsync(null)); }
         else if(shift && e.Key==Key.P) { e.Handled=true; _ = Safe(CommandsAsync); }
+        else if(shift && e.Key==Key.K) { e.Handled=true; _ = Safe(OpenCommandsPanelAsync); }
         else if(shift && e.Key==Key.L) { e.Handled=true; _ = Safe(()=>SwitchSessionAsync(sender as Window)); }
         else if(e.Key is Key.B or Key.W)
         {
@@ -212,6 +215,7 @@ public sealed partial class MainWindow
     private async Task CommandsAsync()
     {
         var commands=new Dictionary<string,Func<Task>> { ["Network Tools"]=()=>SelectSectionAsync("network"),[L.T("Nowe połączenie")]=()=>EditAsync(null),[L.T("Szybkie połączenie")]=QuickAsync,[L.T("Otwarte sesje · Ctrl+Shift+L")]=()=>SwitchSessionAsync(),[L.T("Nowy folder")]=FolderAsync,[L.T("Import konfiguracji")]=ImportAsync,[L.T("Eksport konfiguracji")]=ExportAsync,[L.T("Ustawienia wyglądu")]=SettingsAsync,[L.T("Historia połączeń")]=()=>HistoryAsync(),[L.T("Pokaż / ukryj panel boczny")]=()=> { ToggleSidebar(); return Task.CompletedTask; } };
+        commands[L.T("Komendy · Smart Cheat Sheet · Ctrl+Shift+K")]=OpenCommandsPanelAsync;
         foreach(var tool in Enum.GetValues<NetworkToolKind>())commands["Network Tools · "+NetworkToolCatalog.Name(tool)]=()=> { OpenNetworkTool(tool); return Task.CompletedTask; };
         foreach(var (label,mode) in new[]{("Jeden panel",WorkspaceMode.Single),("Panele obok siebie",WorkspaceMode.Columns),("Panele jeden nad drugim",WorkspaceMode.Rows),("Trzy panele (1 + 2)",WorkspaceMode.Three),("Cztery panele (2 × 2)",WorkspaceMode.Grid)})commands[L.T(label)]=()=> { SetWorkspaceMode(mode); return Task.CompletedTask; };
         commands[L.T("Wyrównaj wielkość paneli")]=()=> { EqualizeWorkspace(); return Task.CompletedTask; };

@@ -4,6 +4,7 @@
 |---|---|
 | Instalacja i pierwsze połączenie | [Instrukcja PL](getting-started.md), [English guide](getting-started.en.md) |
 | Obsługa aplikacji | [Podręcznik](user-manual.md), [Network Tools](network-tools.md) |
+| Ściągawka i własne polecenia | [Commands: obsługa, bezpieczeństwo, architektura i rozszerzanie](commands.md) |
 | Ograniczenia i prywatność | [Known issues](known-issues.md), [Privacy](privacy.md), [Security policy](../SECURITY.md) |
 | Architektura i rozwój | [Architecture](architecture.md), [Development and tests](development.md), [Contributing](../CONTRIBUTING.md) |
 | Repozytorium i GitHub | [Git workflow and first upload](github.md) |

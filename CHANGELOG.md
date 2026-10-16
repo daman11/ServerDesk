@@ -2,6 +2,10 @@
 
 ## Unreleased
 
+## 0.37.0 — Public Beta — 2026-10-16
+
+- Preserve selected folders across connection-tree sorting and refresh. Clear filtered server selections and check live filters before Enter/double-click can start a connection.
+- Keep search-expanded folder states temporary, retaining the normal collapse state and sort preferences after restart. Add PL/EN browser acceptance to Windows/Linux CI alongside sorting and database backups.
 - Surface unconfirmed SFTP temporary-file cleanup with exact local/remote paths, warning status and queue counts; retain earlier cleanup warnings after a successful retry without deleting older partial files automatically.
 - Include successful transfers with cleanup warnings in the attention filter and make transfer details searchable. Explain cancellation, completed files and restart-from-zero retry in PL/EN.
 - Unlink the exact remote temporary entry during cleanup, preserving the target if that leaf was replaced by a symlink.

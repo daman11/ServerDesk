@@ -1,6 +1,6 @@
 # Droga do ServerDesk 1.0
 
-Punkt wyjścia: 0.36.2 Public Beta. Funkcje rdzenia i dodatków istnieją; stan implementacji oraz granice wcześniejszych testów opisuje [MVP](mvp-status.md). Poniższa lista jest bieżącym planem stabilizacji, a nie deklaracją gotowości 1.0.
+Punkt wyjścia: 0.37.0 Public Beta. Funkcje rdzenia i dodatków istnieją; stan implementacji oraz granice wcześniejszych testów opisuje [MVP](mvp-status.md). Poniższa lista jest bieżącym planem stabilizacji, a nie deklaracją gotowości 1.0.
 
 Małe kroki kończą się commitem, celowanymi sprawdzeniami i EXE do uruchomienia z folderu. Pełna macierz i paczki są przeznaczone dla większych etapów, RC i wydania 1.0.
 
@@ -23,7 +23,9 @@ Małe kroki kończą się commitem, celowanymi sprawdzeniami i EXE do uruchomien
 - [x] Celowana macierz przerwania uploadu i anulowania downloadu na własnym OpenSSH: zachowanie oryginałów, SHA-256 po retry, cicha utrata sieci, zwolnienie slotów i ręczne sprzątanie tylko wskazanego `.part`. [Zakres i ograniczenia](reports/sftp-interruption-2026-10-16.md).
 - [ ] SSH: fizyczna klawiatura/AltGr/IME, zaznaczanie i mysz, aplikacje pełnoekranowe, uśpienie i reconnect.
 - [ ] SFTP: rzeczywiste WAN, brak miejsca/quota, pozostałe fazy przerwania, inne serwery SFTP i pozostałe `.part` po awaryjnym zamknięciu procesu. Powyższe celowane próby nie zamykają pełnej macierzy.
-- [ ] Profile: regresja sortowania, filtrów, drzew folderów i rzeczywistych gestów drag and drop.
+- [x] Profile: zachowanie zaznaczonego folderu przy sort/reload, usuwanie zaznaczenia ukrytego profilu i blokada Enter przed przebudową; PL/EN.
+- [x] Profile: tymczasowe rozwijanie wyników wyszukiwania bez nadpisywania zwykłego stanu folderów; sortowanie i zwinięcie odtwarzane po restarcie.
+- [ ] Profile: większe drzewa oraz rzeczywiste gesty drag and drop i fizyczna klawiatura. Automatyczne testy drzewa i sortowania nie zastępują tych prób.
 - [ ] Monitoring: reprezentatywne dystrybucje, uprawnienia i brak opcjonalnych poleceń.
 - [ ] Sesje: wielogodzinna praca, powtarzane otwieranie/reconnect/zamykanie i pomiary zasobów.
 

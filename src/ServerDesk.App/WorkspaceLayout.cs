@@ -33,6 +33,7 @@ public sealed partial class MainWindow
     private string section="connections";
     private double sidebarWidth=272;
     private bool treePending;
+    private bool rebuildingTree;
     private string connectedKey="";
     private readonly HashSet<string> collapsed=[];
     private void BuildWorkspace()
@@ -76,9 +77,9 @@ public sealed partial class MainWindow
         search.TextChanged+=(_,_)=>clearSearch.IsVisible=!string.IsNullOrEmpty(search.Text); Avalonia.Automation.AutomationProperties.SetName(search,L.T("Szukaj połączeń"));
         BuildBrowserFilters();
         connectionTools.Children.Add(BuildConnectionSorting());
-        tree.SelectionChanged+=(_,_)=> { if(tree.SelectedItem is TreeViewItem node) { if(node.Tag is ServerProfile p) { vm.SelectedServer=p; servers.SelectedItem=p; } else if(node.Tag is string f) { vm.SelectedServer=null; vm.SelectedFolder=f; } } };
-        tree.DoubleTapped+=(_,_)=> { if(tree.SelectedItem is TreeViewItem { Tag:ServerProfile p })_ = Safe(()=>ConnectAsync(p)); };
-        tree.KeyDown+=(_,e)=> { if(e.Key==Key.Enter && tree.SelectedItem is TreeViewItem { Tag:ServerProfile p }) { e.Handled=true; _ = Safe(()=>ConnectAsync(p)); } };
+        tree.SelectionChanged+=(_,_)=> { if(!rebuildingTree && tree.SelectedItem is TreeViewItem node) { if(node.Tag is ServerProfile p) { vm.SelectedServer=p; servers.SelectedItem=p; } else if(node.Tag is string f) { vm.SelectedServer=null; vm.SelectedFolder=f; } } };
+        tree.DoubleTapped+=(_,_)=> { if(tree.SelectedItem is TreeViewItem { Tag:ServerProfile p } && IsBrowserProfileVisible(p))_ = Safe(()=>ConnectAsync(p)); };
+        tree.KeyDown+=(_,e)=> { if(e.Key==Key.Enter && tree.SelectedItem is TreeViewItem { Tag:ServerProfile p }) { e.Handled=true; if(IsBrowserProfileVisible(p))_ = Safe(()=>ConnectAsync(p)); } };
         tree.SetValue(ScrollViewer.HorizontalScrollBarVisibilityProperty,ScrollBarVisibility.Disabled); connectionBrowser.Children.Add(tree); connectionBrowser.Children.Add(browserEmpty);
         BuildTransferOverview(); BuildNetworkBrowser(); sidebar.Children.Add(new Grid { Children={connectionBrowser,transferOverview,networkBrowserHost } });
         vm.Servers.CollectionChanged+=(_,_)=>QueueTree();
@@ -93,20 +94,30 @@ public sealed partial class MainWindow
         AddHandler(KeyDownEvent,HandleKeys,RoutingStrategies.Tunnel); SizeChanged+=(_,_)=> { ResizeCommandWorkspace(); UpdateStatus(); }; statusTimer.Tick+=(_,_)=>UpdateStatus(); statusTimer.Start(); UpdateActivity(); UpdateStatus();
     }
     private void QueueTree()
-    { if(treePending)return; treePending=true; Dispatcher.UIThread.Post(()=> { treePending=false; BuildTree(); },DispatcherPriority.Background); }
+    {
+        if(section is "connections" or "favorite" or "recent" && vm.SelectedServer is {} selected && !IsBrowserProfileVisible(selected))
+        { vm.SelectedServer=null; servers.SelectedItem=null; }
+        if(treePending)return; treePending=true; Dispatcher.UIThread.Post(()=> { treePending=false; BuildTree(); },DispatcherPriority.Background);
+    }
     private void BuildTree()
     {
-        var selected=vm.SelectedServer?.Id; var matches=ProfileSearch.Compile(vm.Search); var profiles=vm.AllServers.Where(p=>matches(p) && (vm.ProtocolFilter==null || p.Protocol==vm.ProtocolFilter));
+        var selected=vm.SelectedServer?.Id; var selectedFolder=selected==null && tree.SelectedItem is not TreeViewItem { Tag:ServerProfile } && RealFolder()?vm.SelectedFolder:null;
+        var searching=!string.IsNullOrWhiteSpace(vm.Search); TreeViewItem? selection=null;
+        var matches=ProfileSearch.Compile(vm.Search); var profiles=vm.AllServers.Where(p=>matches(p) && (vm.ProtocolFilter==null || p.Protocol==vm.ProtocolFilter));
         if(section=="favorite")profiles=profiles.Where(p=>p.Favorite);
         if(section=="recent")profiles=profiles.Where(p=>p.LastConnected!=null);
         profiles=ProfileOrdering.Sort(profiles,vm.SortMode,vm.SortDescending).ToArray();
+        if(selected!=null && !profiles.Any(p=>p.Id==selected)) { selected=null; vm.SelectedServer=null; servers.SelectedItem=null; }
         var counts=new Dictionary<string,int>(); foreach(var item in profiles) { var path=item.Folder; while(path.Length>0) { counts[path]=counts.GetValueOrDefault(path)+1; var split=path.LastIndexOf('/'); path=split<0?"":path[..split]; } }
         var roots=new List<TreeViewItem>(); var folders=new Dictionary<string,TreeViewItem>();
         TreeViewItem Folder(string path)
         {
             if(folders.TryGetValue(path,out var found))return found;
-            var slash=path.LastIndexOf('/'); var node=new TreeViewItem { Header=Row(FolderIcons.Resolve(vm.FolderIcons.GetValueOrDefault(path)),slash<0?path:path[(slash+1)..],count:counts.GetValueOrDefault(path)),Tag=path,IsExpanded=!string.IsNullOrWhiteSpace(vm.Search) || !collapsed.Contains(path) };
-            node.PropertyChanged+=(_,e)=> { if(e.Property==TreeViewItem.IsExpandedProperty) { if(node.IsExpanded)collapsed.Remove(path); else collapsed.Add(path); } };
+            var slash=path.LastIndexOf('/'); var node=new TreeViewItem { Header=Row(FolderIcons.Resolve(vm.FolderIcons.GetValueOrDefault(path)),slash<0?path:path[(slash+1)..],count:counts.GetValueOrDefault(path)),Tag=path,IsExpanded=searching || !collapsed.Contains(path) };
+            // Search expansion is temporary, including clicks on search results.
+            // Detached/rebuilt search nodes must never rewrite saved collapse state.
+            node.PropertyChanged+=(_,e)=> { if(e.Property==TreeViewItem.IsExpandedProperty && !rebuildingTree && !searching && string.IsNullOrWhiteSpace(vm.Search)) { if(node.IsExpanded)collapsed.Remove(path); else collapsed.Add(path); } };
+            if(path==selectedFolder)selection=node;
             node.ContextMenu=new ContextMenu { ItemsSource=new[]{Menu("Nowe połączenie w folderze",()=>EditAsync(new ServerProfile { Folder=path })),Menu("Zmień ikonę folderu",()=>EditFolderIconAsync(path)),Menu("Zmień nazwę",async()=> { vm.SelectedFolder=path; await RenameFolderAsync(); }),Menu("Usuń pusty folder",async()=> { vm.SelectedFolder=path; await DeleteFolderAsync(); })} };
             DragDrop.SetAllowDrop(node,true);
             DragDrop.AddDragOverHandler(node,(_,e)=> { e.DragEffects=e.DataTransfer.Contains(ServerDrag)?DragDropEffects.Move:DragDropEffects.None; e.Handled=true; });
@@ -131,9 +142,12 @@ public sealed partial class MainWindow
             context.Opened+=(_,_)=>PopulateContext();
             DragSupport.Source(node,ServerDrag,()=>p,DragDropEffects.Move);
             if(p.Folder.Length>0 && section=="connections")Folder(p.Folder).Items.Add(node); else roots.Add(node);
-            if(p.Id==selected)node.IsSelected=true;
+            if(p.Id==selected)selection=node;
         }
-        tree.ItemsSource=OrderFolders(roots).ToArray(); UpdateBrowserState(profiles.Count()); UpdateWelcome();
+        rebuildingTree=true;
+        try { tree.ItemsSource=OrderFolders(roots).ToArray(); tree.SelectedItem=selection; }
+        finally { rebuildingTree=false; }
+        UpdateBrowserState(profiles.Count()); UpdateWelcome();
     }
     private static Control Row(string icon,string name,bool favorite=false,bool connected=false,string? protocol=null,ServerProfile? profile=null,int? count=null,string? detail=null)
     {

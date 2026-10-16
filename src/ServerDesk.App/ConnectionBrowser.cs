@@ -16,6 +16,10 @@ public sealed partial class MainWindow
     private readonly TextBlock browserEmptyHint=DesignSystem.Label("",true,12);
     private Button clearBrowserFilters=null!,emptyBrowserAction=null!;
     private bool HasBrowserFilter=>!string.IsNullOrWhiteSpace(vm.Search) || vm.ProtocolFilter!=null;
+    // Check the live filter too: Enter can arrive before the queued tree rebuild.
+    private bool IsBrowserProfileVisible(ServerProfile profile)=>
+        ProfileSearch.Matches(profile,vm.Search) && (vm.ProtocolFilter==null || profile.Protocol==vm.ProtocolFilter) &&
+        (section=="connections" || section=="favorite" && profile.Favorite || section=="recent" && profile.LastConnected!=null);
     private void ClearBrowserFilters() { vm.Search=""; vm.ProtocolFilter=null; QueueTree(); }
     private void BuildBrowserFilters()
     {

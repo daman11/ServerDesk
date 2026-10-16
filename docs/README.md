@@ -1,5 +1,7 @@
 # Dokumentacja / Documentation
 
+Bieżące wydanie: [0.37.0 Public Beta](releases/release-0.37.0.md) — dane, panel połączeń i SFTP. [Zakres testów wydania](reports/release-verification-0.37.0.md).
+
 | Temat / Topic | Dokument |
 |---|---|
 | Instalacja i pierwsze połączenie | [Instrukcja PL](getting-started.md), [English guide](getting-started.en.md) |

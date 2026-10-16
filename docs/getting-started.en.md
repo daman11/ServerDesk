@@ -1,6 +1,6 @@
-# ServerDesk 0.36.2 — getting started
+# ServerDesk 0.37.0 — getting started
 
-**New: Commands — Ctrl+Shift+K.** Browse 165 command variants offline or follow the active SSH host. Add encrypted user snippets, parameters and favorites. Insert never sends Enter; Execute requires confirmation. [Guide, architecture and limits](commands.md), [0.36.2 notes](releases/release-0.36.2.md).
+**New: Commands — Ctrl+Shift+K.** Browse 165 command variants offline or follow the active SSH host. Add encrypted user snippets, parameters and favorites. Insert never sends Enter; Execute requires confirmation. [Guide, architecture and limits](commands.md), [0.37.0 notes](releases/release-0.37.0.md).
 
 Choose **Layout → Three panels (1 + 2)** or **Four panels (2 × 2)**. Spare docked tabs fill empty panels. Drag a tab to another panel or use its **Dock in panel 1–4** menu. Click an empty panel's number before opening a connection. Drag separators to resize; **Equalize panel sizes** resets both axes. Reducing the split keeps tabs open in the remaining groups.
 
@@ -8,23 +8,23 @@ Choose **Layout → Three panels (1 + 2)** or **Four panels (2 × 2)**. Spare do
 
 In SFTP, use Back/Forward or Alt+Left/Right, Alt+Up for the parent directory and Alt+Home for home. Ctrl+L selects the path; Enter opens it and Escape restores the open directory. Each panel has its own history, cleared when the whole SSH session reconnects.
 
-**Development builds after 0.36.2:** if only the file connection breaks, choose **Refresh / F5** or reopen SFTP. A detected broken browser connection is restored while keeping directories, filters and history, without restarting the terminal. Host trust is checked again. This only reloads directory listings; it does not repeat transfers, deletions or renames. If the entire SSH session is lost, reconnect that session first.
+**Since 0.37.0:** if only the file connection breaks, choose **Refresh / F5** or reopen SFTP. A detected broken browser connection is restored while keeping directories, filters and history, without restarting the terminal. Host trust is checked again. This only reloads directory listings; it does not repeat transfers, deletions or renames. If the entire SSH session is lost, reconnect that session first.
 
 Free, open-source software under MIT. **Public beta**; see [known-issues.md](known-issues.md) for tested platforms and limitations. Polski: [getting-started.md](getting-started.md).
 
-Development builds show transfer failure guidance in the queue. Hover over a detail to read it in full. After fixing permissions or paths, choose **Retry**; if SSH was lost, reconnect the session first. Retrying starts the file from the beginning. A generic SFTP server failure may mean permissions or insufficient space, among other causes; the server does not always specify the exact reason.
+Since 0.37.0, ServerDesk shows transfer failure guidance in the queue. Hover over a detail to read it in full. After fixing permissions or paths, choose **Retry**; if SSH was lost, reconnect the session first. Retrying starts the file from the beginning. A generic SFTP server failure may mean permissions or insufficient space, among other causes; the server does not always specify the exact reason.
 
 ## Windows x64
 
-Run `ServerDesk-0.36.2-win-x64-Setup.exe`. Setup installs for the current user, creates a Start menu shortcut and registers an uninstaller. No separate .NET installation is needed. Alternatively, extract the **entire** portable ZIP into its own directory and run `ServerDesk.App.exe`.
+Run `ServerDesk-0.37.0-win-x64-Setup.exe`. Setup installs for the current user, creates a Start menu shortcut and registers an uninstaller. No separate .NET installation is needed. Alternatively, extract the **entire** portable ZIP into its own directory and run `ServerDesk.App.exe`.
 
-This beta is not signed with a trusted publisher certificate. Use a trusted release source and do not disable Windows protection. Compare `Get-FileHash .\ServerDesk-0.36.2-win-x64-Setup.exe -Algorithm SHA256` with `SHA256SUMS.txt`. A checksum alongside a download detects corruption; it does not independently authenticate the publisher.
+This beta is not signed with a trusted publisher certificate. Use a trusted release source and do not disable Windows protection. Compare `Get-FileHash .\ServerDesk-0.37.0-win-x64-Setup.exe -Algorithm SHA256` with `SHA256SUMS.txt`. A checksum alongside a download detects corruption; it does not independently authenticate the publisher.
 
 ## Linux x64
 
-Ubuntu/Debian: `sudo apt install ./serverdesk_0.36.2_amd64.deb`, then launch ServerDesk from the menu or run `serverdesk`. Remembered passwords need `libsecret-tools` and an unlocked Secret Service such as GNOME Keyring. Install your distribution's FreeRDP client for RDP connections.
+Ubuntu/Debian: `sudo apt install ./serverdesk_0.37.0_amd64.deb`, then launch ServerDesk from the menu or run `serverdesk`. Remembered passwords need `libsecret-tools` and an unlocked Secret Service such as GNOME Keyring. Install your distribution's FreeRDP client for RDP connections.
 
-For TAR.GZ: `mkdir serverdesk-0.36.2`, then `tar -xzf ServerDesk-0.36.2-linux-x64.tar.gz -C serverdesk-0.36.2` and `./serverdesk-0.36.2/ServerDesk.App`. Native library requirements are listed in the DEB and [development.md](development.md). Linux testing used WSLg; other desktops need further verification.
+For TAR.GZ: `mkdir serverdesk-0.37.0`, then `tar -xzf ServerDesk-0.37.0-linux-x64.tar.gz -C serverdesk-0.37.0` and `./serverdesk-0.37.0/ServerDesk.App`. Native library requirements are listed in the DEB and [development.md](development.md). Linux testing used WSLg; other desktops need further verification.
 
 ## Connect
 
@@ -43,7 +43,7 @@ The welcome dashboard shows up to three recently used connections. Clicking one 
 
 ## SFTP operations and deletion
 
-**Development builds — partial files:** after a lost upload connection or failed local cleanup, a job may show “check partial file”. Its full detail/tooltip contains the exact path. Enable **Hidden** on the server, inspect the file and use normal deletion with preview. Older `.part` files are never swept automatically; they may belong to other transfers. **Retry** starts the file from the beginning and asks again before overwriting. Files already completed in a directory remain in place after cancellation.
+**Partial files (0.37.0):** after a lost upload connection or failed local cleanup, a job may show “check partial file”. Its full detail/tooltip contains the exact path. Enable **Hidden** on the server, inspect the file and use normal deletion with preview. Older `.part` files are never swept automatically; they may belong to other transfers. **Retry** starts the file from the beginning and asks again before overwriting. Files already completed in a directory remain in place after cancellation.
 
 An earlier cleanup warning stays in history after a successful retry. It does not recheck whether the file still exists; after manual cleanup, clear the finished job. **Failed, cancelled and warnings** includes these jobs, and transfer search also matches full details and partial-file paths. History is retained only while the tab remains open.
 

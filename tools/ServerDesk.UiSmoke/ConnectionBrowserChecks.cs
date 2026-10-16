@@ -1,0 +1,74 @@
+using System.Diagnostics;
+using System.Reflection;
+using System.Text.Json;
+using Avalonia.Controls;
+using Avalonia.Headless;
+using Avalonia.Input;
+using ServerDesk.App;
+using ServerDesk.Core;
+using ServerDesk.Infrastructure;
+
+internal static class ConnectionBrowserChecks
+{
+    private static T Field<T>(object owner,string name)=>(T)owner.GetType().GetField(name,BindingFlags.Instance|BindingFlags.NonPublic)!.GetValue(owner)!;
+    private static Task Call(object owner,string name,params object[] args)=>(Task)owner.GetType().GetMethod(name,BindingFlags.Instance|BindingFlags.NonPublic)!.Invoke(owner,args)!;
+    private static IEnumerable<TreeViewItem> Nodes(IEnumerable<object?> items)
+    { foreach(var node in items.OfType<TreeViewItem>()) { yield return node; foreach(var child in Nodes(node.Items))yield return child; } }
+    private static void Until(Func<bool> done)
+    { var clock=Stopwatch.StartNew(); while(!done()) { if(clock.Elapsed>TimeSpan.FromSeconds(30))throw new TimeoutException("Connection browser fixture timed out"); RedesignChecks.Frames(1); } }
+    internal static void Run(string root)
+    {
+        var preferences=DesignSystem.Preferences;
+        foreach(var language in new[]{"pl","en"})
+        {
+            AppText.SetLanguage(language); var paths=new AppPaths(Path.Combine(root,"browser-"+language+"-"+Guid.NewGuid().ToString("N")));
+            var repo=new ProfileRepository(paths); RedesignChecks.Wait(repo.InitializeAsync());
+            var settings=repo.ApplicationSettingsAsync().GetAwaiter().GetResult(); RedesignChecks.Wait(repo.SaveApplicationSettingsAsync(settings with { Preferences=settings.Preferences with { Language=language } }));
+            var first=new ServerProfile { Name="node2",Host="fixture.invalid",Username="fixture",Folder="Rack2/Lab",Favorite=false };
+            var second=first with { Id=Guid.NewGuid(),Name="node10",Folder="Rack10/Lab",Favorite=true,Protocol=Protocol.RDP,Port=3389 };
+            RedesignChecks.Wait(repo.SaveAsync(first)); RedesignChecks.Wait(repo.SaveAsync(second));
+            var vm=new MainViewModel(repo); var main=new MainWindow(vm,repo,new CredentialStore(paths),new SshConnectionFactory(repo),new ExternalRdpClient()); main.Show(); RedesignChecks.Frames(20);
+            var tree=Field<TreeView>(main,"tree");
+            TreeViewItem Folder(string path)=>Nodes(tree.Items).Single(n=>n.Tag as string==path);
+            TreeViewItem Profile(Guid id)=>Nodes(tree.Items).Single(n=>n.Tag is ServerProfile p && p.Id==id);
+            void FolderSelected() { if(tree.SelectedItem is not TreeViewItem { Tag:string path } || path!="Rack2/Lab" || vm.SelectedFolder!=path || vm.SelectedServer!=null)throw new Exception("Folder selection was lost or replaced during rebuild"); }
+            void NoHiddenSelection()
+            { if(tree.SelectedItem!=null || vm.SelectedServer!=null || main.OpenSessions.Any() || main.OwnedWindows.Any())throw new Exception("A filtered profile remained selected or launched a connection"); }
+            try
+            {
+                tree.SelectedItem=Folder("Rack2/Lab"); vm.SortMode=ProfileSort.Host; vm.SortDescending=true; RedesignChecks.Frames(); FolderSelected();
+                RedesignChecks.Wait(vm.LoadAsync()); RedesignChecks.Frames(); FolderSelected();
+                tree.SelectedItem=Profile(first.Id);
+                vm.Search="no-such-profile";
+                // Dispatch before the Background tree rebuild, reproducing fast Enter.
+                tree.RaiseEvent(new KeyEventArgs { RoutedEvent=InputElement.KeyDownEvent,Key=Key.Enter });
+                RedesignChecks.Frames(); NoHiddenSelection();
+                vm.Search=""; RedesignChecks.Frames(); if(tree.SelectedItem is TreeViewItem { Tag:ServerProfile } || vm.SelectedServer!=null)throw new Exception("Clearing search restored a hidden server selection");
+                tree.SelectedItem=Profile(first.Id); vm.ProtocolFilter=Protocol.RDP;
+                tree.RaiseEvent(new KeyEventArgs { RoutedEvent=InputElement.KeyDownEvent,Key=Key.Enter }); RedesignChecks.Frames(); NoHiddenSelection();
+                vm.ProtocolFilter=null; RedesignChecks.Frames(); tree.SelectedItem=Profile(first.Id);
+                RedesignChecks.Wait(Call(main,"SelectSectionAsync","favorite")); RedesignChecks.Frames(); NoHiddenSelection();
+                RedesignChecks.Wait(Call(main,"SelectSectionAsync","connections")); RedesignChecks.Frames();
+                Folder("Rack2").IsExpanded=false; Folder("Rack10").IsExpanded=true;
+                vm.Search="fixture"; RedesignChecks.Frames();
+                if(!Folder("Rack2").IsExpanded || !Folder("Rack10").IsExpanded)throw new Exception("Search did not reveal result ancestors");
+                Folder("Rack2").IsExpanded=false; Folder("Rack2").IsExpanded=true; Folder("Rack10").IsExpanded=false;
+                vm.SortMode=ProfileSort.Name; vm.SortDescending=true; RedesignChecks.Frames(); vm.Search=""; RedesignChecks.Frames();
+                if(Folder("Rack2").IsExpanded || !Folder("Rack10").IsExpanded)throw new Exception("Temporary search expansion overwrote saved folder states");
+                foreach(var theme in new[]{"graphite","light"})
+                {
+                    DesignSystem.Apply(theme); DesignSystem.ApplyPreferences(preferences with { InterfaceFontSize=16 }); main.Width=900; main.Height=680; RedesignChecks.Frames();
+                    main.CaptureRenderedFrame()!.Save(Path.Combine(root,$"browser-{language}-{theme}.png"));
+                }
+                main.Close(); Until(()=>!main.IsVisible);
+                var saved=JsonSerializer.Deserialize<string[]>(repo.SettingAsync("collapsedFolders").GetAwaiter().GetResult()??"[]")!;
+                if(!saved.Contains("Rack2") || saved.Contains("Rack10"))throw new Exception("Closing persisted temporary search expansion");
+                vm=new MainViewModel(repo); main=new MainWindow(vm,repo,new CredentialStore(paths),new SshConnectionFactory(repo),new ExternalRdpClient()); main.Show(); RedesignChecks.Frames(20); tree=Field<TreeView>(main,"tree");
+                if(Folder("Rack2").IsExpanded || !Folder("Rack10").IsExpanded || vm.SortMode!=ProfileSort.Name || !vm.SortDescending)throw new Exception("Restart lost collapse states or sort order");
+                Console.WriteLine("PASS "+language+": folder selection survives sort/reload; search/protocol/favorites clear hidden profiles; immediate Enter cannot open hidden connection; search expansion stays temporary; restart preserves collapse states and sort; 900px font16 Graphite/Light");
+            }
+            finally { main.Close(); Until(()=>!main.IsVisible); }
+        }
+        AppText.SetLanguage("pl"); DesignSystem.ApplyPreferences(preferences); DesignSystem.Apply("dark");
+    }
+}

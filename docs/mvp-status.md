@@ -1,4 +1,6 @@
-# Pierwotne MVP — wydanie 0.36.2
+# Pierwotne MVP — wydanie 0.37.0
+
+0.37.0 stabilizuje dane, SFTP i przeglądarkę połączeń: sprawdzone kopie SQLite, ręczne odzyskiwanie SFTP, wskazówki błędów i plików częściowych oraz zachowanie zaznaczenia i zwiniętych folderów. [Wydanie](releases/release-0.37.0.md), [zakres weryfikacji](reports/release-verification-0.37.0.md).
 
 0.36.2 uzupełnia ikony i ujednolica nazwy istniejących modułów oraz dodaje audyt kompletności akcji. Nie rozszerza zakresu protokołów MVP.
 

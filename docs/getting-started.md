@@ -1,6 +1,6 @@
-# ServerDesk 0.36.2 — pierwsze kroki
+# ServerDesk 0.37.0 — pierwsze kroki
 
-**Nowość: Komendy — Ctrl+Shift+K.** Korzystaj offline ze 165 wariantów poleceń albo dopasuj bibliotekę do aktywnego SSH. Dodawaj własne szablony, parametry i ulubione. Wstawianie nie wysyła Enter; wykonanie wymaga potwierdzenia. [Instrukcja](commands.md), [wydanie 0.36.2](releases/release-0.36.2.md).
+**Nowość: Komendy — Ctrl+Shift+K.** Korzystaj offline ze 165 wariantów poleceń albo dopasuj bibliotekę do aktywnego SSH. Dodawaj własne szablony, parametry i ulubione. Wstawianie nie wysyła Enter; wykonanie wymaga potwierdzenia. [Instrukcja](commands.md), [wydanie 0.37.0](releases/release-0.37.0.md).
 
 W menu **Układ** wybierz **Trzy panele (1 + 2)** albo **Cztery panele (2 × 2)**. Otwarte karty rozłożą się między pustymi panelami; możesz też przeciągać je do wybranego panelu lub użyć menu karty „Dokuj do panelu 1–4”. Kliknij numer pustego panelu przed otwarciem połączenia. Separatory zmieniają rozmiary, a **Wyrównaj wielkość paneli** przywraca równy podział. Przy zmniejszeniu liczby paneli karty pozostają otwarte w widocznych grupach.
 
@@ -8,23 +8,23 @@ W menu **Układ** wybierz **Trzy panele (1 + 2)** albo **Cztery panele (2 × 2)*
 
 W panelu SFTP użyj Wstecz/Dalej lub Alt+←/→, Alt+↑ dla katalogu nadrzędnego i Alt+Home dla domowego. Ctrl+L wybiera ścieżkę, Enter ją otwiera, a Escape przywraca poprzednio otwarty katalog. Historia jest osobna dla obu paneli i znika przy ponownym połączeniu całej sesji SSH.
 
-**W wersji rozwojowej po 0.36.2:** jeżeli zerwało się tylko połączenie plikowe, wybierz **Odśwież / F5** lub ponownie otwórz SFTP. Program odtworzy wykryte zerwane połączenie z zachowaniem katalogów, filtrów i historii, bez restartowania terminala. Klucz hosta jest ponownie weryfikowany. Ta czynność odczytuje listę plików; nie ponawia transferów, usuwania ani zmiany nazw. Przy utracie całego SSH najpierw połącz sesję ponownie.
+**Od 0.37.0:** jeżeli zerwało się tylko połączenie plikowe, wybierz **Odśwież / F5** lub ponownie otwórz SFTP. Program odtworzy wykryte zerwane połączenie z zachowaniem katalogów, filtrów i historii, bez restartowania terminala. Klucz hosta jest ponownie weryfikowany. Ta czynność odczytuje listę plików; nie ponawia transferów, usuwania ani zmiany nazw. Przy utracie całego SSH najpierw połącz sesję ponownie.
 
 Bezpłatna aplikacja open source na licencji MIT. **Publiczna beta**; zakres testów i ograniczenia: [known-issues.md](known-issues.md). English: [getting-started.en.md](getting-started.en.md).
 
-W wersji rozwojowej kolejka transferów podaje przyczynę błędu i wskazówki przed ponowieniem. Najedź na opis, aby przeczytać całość. Po poprawieniu uprawnień lub ścieżki użyj **Ponów**; przy utracie SSH najpierw połącz sesję. Ponowienie przesyła plik od początku. Ogólny błąd serwera SFTP może oznaczać m.in. uprawnienia lub brak miejsca — serwer nie zawsze podaje dokładną przyczynę.
+Od 0.37.0 kolejka transferów podaje przyczynę błędu i wskazówki przed ponowieniem. Najedź na opis, aby przeczytać całość. Po poprawieniu uprawnień lub ścieżki użyj **Ponów**; przy utracie SSH najpierw połącz sesję. Ponowienie przesyła plik od początku. Ogólny błąd serwera SFTP może oznaczać m.in. uprawnienia lub brak miejsca — serwer nie zawsze podaje dokładną przyczynę.
 
 ## Windows x64
 
-Uruchom `ServerDesk-0.36.2-win-x64-Setup.exe`. Instalator działa dla bieżącego użytkownika, dodaje skrót w menu Start i wpis na liście zainstalowanych aplikacji. Nie wymaga osobnej instalacji .NET. Dostępny jest też ZIP: rozpakuj **całe archiwum** do osobnego katalogu i uruchom `ServerDesk.App.exe`.
+Uruchom `ServerDesk-0.37.0-win-x64-Setup.exe`. Instalator działa dla bieżącego użytkownika, dodaje skrót w menu Start i wpis na liście zainstalowanych aplikacji. Nie wymaga osobnej instalacji .NET. Dostępny jest też ZIP: rozpakuj **całe archiwum** do osobnego katalogu i uruchom `ServerDesk.App.exe`.
 
-Wydanie nie ma podpisu zaufanego wydawcy. Pobieraj je z zaufanego źródła; nie wyłączaj ochrony Windows. Sumę paczki możesz porównać z `SHA256SUMS.txt` poleceniem `Get-FileHash .\ServerDesk-0.36.2-win-x64-Setup.exe -Algorithm SHA256`. Suma obok pliku potwierdza zgodność pobrania, ale sama nie potwierdza tożsamości wydawcy.
+Wydanie nie ma podpisu zaufanego wydawcy. Pobieraj je z zaufanego źródła; nie wyłączaj ochrony Windows. Sumę paczki możesz porównać z `SHA256SUMS.txt` poleceniem `Get-FileHash .\ServerDesk-0.37.0-win-x64-Setup.exe -Algorithm SHA256`. Suma obok pliku potwierdza zgodność pobrania, ale sama nie potwierdza tożsamości wydawcy.
 
 ## Linux x64
 
-Ubuntu/Debian: `sudo apt install ./serverdesk_0.36.2_amd64.deb`, następnie uruchom ServerDesk z menu lub poleceniem `serverdesk`. Do zapamiętywania haseł potrzebny jest `libsecret-tools` oraz odblokowany Secret Service (np. GNOME Keyring). Do RDP zainstaluj FreeRDP dla swojej dystrybucji.
+Ubuntu/Debian: `sudo apt install ./serverdesk_0.37.0_amd64.deb`, następnie uruchom ServerDesk z menu lub poleceniem `serverdesk`. Do zapamiętywania haseł potrzebny jest `libsecret-tools` oraz odblokowany Secret Service (np. GNOME Keyring). Do RDP zainstaluj FreeRDP dla swojej dystrybucji.
 
-Archiwum: `mkdir serverdesk-0.36.2`, następnie `tar -xzf ServerDesk-0.36.2-linux-x64.tar.gz -C serverdesk-0.36.2` i `./serverdesk-0.36.2/ServerDesk.App`. W razie braków bibliotek sprawdź zależności w pakiecie DEB lub [development.md](development.md). Testy Linux wykonano pod WSLg; pozostałe środowiska wymagają weryfikacji.
+Archiwum: `mkdir serverdesk-0.37.0`, następnie `tar -xzf ServerDesk-0.37.0-linux-x64.tar.gz -C serverdesk-0.37.0` i `./serverdesk-0.37.0/ServerDesk.App`. W razie braków bibliotek sprawdź zależności w pakiecie DEB lub [development.md](development.md). Testy Linux wykonano pod WSLg; pozostałe środowiska wymagają weryfikacji.
 
 ## Pierwsze połączenie
 
@@ -43,7 +43,7 @@ Nagłówki **Lokalny komputer** i **Zdalny · serwer** identyfikują strony SFTP
 
 ## Operacje i usuwanie plików w panelu SFTP
 
-**Wersja rozwojowa — pliki częściowe:** przy zerwanym uploadzie lub błędzie lokalnego sprzątania zadanie może pokazać „sprawdź plik częściowy”. Pełny opis/podpowiedź zawiera dokładną ścieżkę. Na serwerze włącz **Ukryte**, sprawdź plik i użyj zwykłego usuwania z podglądem. Program nie usuwa automatycznie starszych `.part`, które mogą należeć do innych transferów. **Ponów** zaczyna plik od początku i ponownie pyta o nadpisanie; ukończone pliki katalogu pozostają na miejscu po anulowaniu.
+**Pliki częściowe (0.37.0):** przy zerwanym uploadzie lub błędzie lokalnego sprzątania zadanie może pokazać „sprawdź plik częściowy”. Pełny opis/podpowiedź zawiera dokładną ścieżkę. Na serwerze włącz **Ukryte**, sprawdź plik i użyj zwykłego usuwania z podglądem. Program nie usuwa automatycznie starszych `.part`, które mogą należeć do innych transferów. **Ponów** zaczyna plik od początku i ponownie pyta o nadpisanie; ukończone pliki katalogu pozostają na miejscu po anulowaniu.
 
 Ostrzeżenie o wcześniejszej próbie pozostaje w historii także po udanym ponowieniu. Nie jest to ponowne sprawdzenie istnienia pliku; po ręcznym posprzątaniu możesz wyczyścić zakończone zadanie. Filtr **Błędy, anulowane i ostrzeżenia** obejmuje takie zadania, a wyszukiwanie transferów uwzględnia także pełne opisy i ścieżki plików częściowych. Historia znika po zamknięciu karty.
 

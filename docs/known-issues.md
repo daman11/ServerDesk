@@ -2,7 +2,9 @@
 
 This is a public beta. Keep a backup before upgrading and validate the workflows you need in a test environment.
 
-- **Development database snapshots (after 0.36.2):** manual backups are available in Settings → Security; an existing database is backed up before a schema migration. These snapshots include committed WAL data and database metadata, but exclude OS credential-store contents and private keys. They do not replace a full data backup. Restore instructions and limitations: [database backups](database-backups.md).
+- **Connection browser (0.37.0):** filtering clears a hidden server selection; select a visible profile again before connecting. Search expansion is temporary and does not replace normal folder collapse state. Automated PL/EN tests cover sort/reload/filter/restart; physical drag and drop and very large folder trees still need wider acceptance.
+
+- **Database snapshots (0.37.0):** manual backups are available in Settings → Security; an existing database is backed up before a schema migration. These snapshots include committed WAL data and database metadata, but exclude OS credential-store contents and private keys. They do not replace a full data backup. Restore instructions and limitations: [database backups](database-backups.md).
 
 - **Split workspace:** up to four docked panels. Three-panel mode uses a tall left panel; grid mode is 2×2. At small sizes, toolbars wrap and terminal space decreases; hiding the sidebar helps. Layout changes keep live sessions, but physical cross-window drag gestures and mixed-monitor DPI need wider testing. New snapshots are backward-readable by 0.35.0; older builds may reject the new layout values. Keep a backup before downgrading.
 

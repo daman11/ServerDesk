@@ -11,6 +11,21 @@ namespace ServerDesk.App;
 internal static partial class Dialogs
 {
     internal sealed record CredentialInput(string Secret,bool Remember);
+    internal static async Task<bool> ContinueWithoutSavingCredentials(Window owner,CancellationToken ct)
+    {
+        if(ct.IsCancellationRequested)return false;
+        var stack=new StackPanel { Spacing=DesignTokens.Section };
+        stack.Children.Add(DesignSystem.PageHeading("key",L.T("Nie potwierdzono zapisu hasła")));
+        var notice=Text(L.T("Systemowy magazyn haseł nie potwierdził zapisu. Możesz połączyć się z podanym hasłem bez ponawiania zapisu albo anulować połączenie i odblokować magazyn."));
+        notice.Name="CredentialSaveNotice"; stack.Children.Add(notice);
+        if(OperatingSystem.IsLinux())stack.Children.Add(Text(L.T("Linux/KDE: zapisywanie wymaga secret-tool (pakiet libsecret-tools) i działającej usługi Secret Service z odblokowanym portfelem."),12));
+        var row=new StackPanel { Orientation=Orientation.Horizontal,HorizontalAlignment=HorizontalAlignment.Right,Spacing=DesignTokens.Medium }; stack.Children.Add(row);
+        var dialog=Window("Nie potwierdzono zapisu hasła",stack); dialog.Name="CredentialSaveWarning";
+        row.Children.Add(Button("Anuluj",()=>dialog.Close(false)));
+        var once=Button("Połącz bez zapisywania",()=>dialog.Close(true)); once.Content=DeskIcons.Labelled("connect",L.T("Połącz bez zapisywania")); once.IsDefault=true; once.Classes.Add("primary"); row.Children.Add(once);
+        using var cancelled=ct.Register(()=>Avalonia.Threading.Dispatcher.UIThread.Post(()=>dialog.Close(false)));
+        return await dialog.ShowDialog<bool>(owner);
+    }
     internal static async Task<CredentialInput?> Credentials(Window owner,bool key,bool rdp=false,bool vnc=false,string? notice=null)
     {
         var stack=new StackPanel { Spacing=DesignTokens.Section }; stack.Children.Add(DesignSystem.PageHeading("key",vnc?L.T("Uwierzytelnianie VNC"):rdp?L.T("Uwierzytelnianie RDP"):L.T("Uwierzytelnianie SSH")));

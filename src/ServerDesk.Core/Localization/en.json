@@ -1373,5 +1373,9 @@
   "Połączenie SFTP zostało przerwane. Sprawdź sieć i ponów zadanie. Jeśli terminal także jest rozłączony, najpierw połącz sesję SSH.": "The SFTP connection was interrupted. Check the network and retry the task. If the terminal is disconnected too, reconnect the SSH session first.",
   "Serwer SFTP odrzucił operację. Sprawdź uprawnienia, ścieżkę i wolne miejsce na serwerze przed ponowieniem. Serwer nie podał jednoznacznej przyczyny.": "The SFTP server rejected the operation. Check permissions, the path and free space on the server before retrying. The server did not specify an exact cause.",
   "Nie udało się ukończyć transferu. Sprawdź ścieżki, połączenie i uprawnienia przed ponowieniem.": "The transfer could not be completed. Check paths, connectivity and permissions before retrying.",
-  "Serwer nie obsługuje wymaganej operacji SFTP. Sprawdź możliwości serwera i wybierz obsługiwany sposób wykonania zadania. Samo ponowienie może nie pomóc.": "The server does not support the required SFTP operation. Check server capabilities and choose a supported way to complete the task. Simply retrying may not help."
+  "Serwer nie obsługuje wymaganej operacji SFTP. Sprawdź możliwości serwera i wybierz obsługiwany sposób wykonania zadania. Samo ponowienie może nie pomóc.": "The server does not support the required SFTP operation. Check server capabilities and choose a supported way to complete the task. Simply retrying may not help.",
+  "Nie potwierdzono zapisu hasła": "Password storage was not confirmed",
+  "Systemowy magazyn haseł nie potwierdził zapisu. Możesz połączyć się z podanym hasłem bez ponawiania zapisu albo anulować połączenie i odblokować magazyn.": "The system password store did not confirm the save. You can connect using the supplied password without another save attempt, or cancel and unlock the store.",
+  "Linux/KDE: zapisywanie wymaga secret-tool (pakiet libsecret-tools) i działającej usługi Secret Service z odblokowanym portfelem.": "Linux/KDE: saving requires secret-tool (the libsecret-tools package) and a working Secret Service with an unlocked wallet.",
+  "Połącz bez zapisywania": "Connect without saving"
 }

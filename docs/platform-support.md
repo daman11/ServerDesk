@@ -29,6 +29,18 @@ Zależności opisują [instrukcje rozwoju](development.md). Na Kali sprawdź dos
 
 ServerDesk korzysta z Secret Service przez `secret-tool`, a nie bezpośrednio z API KWallet. Obecność KWallet nie potwierdza dostępności właściwego interfejsu w konkretnej sesji. Otwieranie portfela zależy od konfiguracji pulpitu; [podręcznik KDE](https://docs.kde.org/stable_kf6/en/kwalletmanager/kwalletmanager/introduction.html) opisuje także warunkowe odblokowanie podczas logowania. Brak serwisu lub odmowa odblokowania muszą pozwolić na pracę z hasłem bez zapisywania; nie należy obiecywać trwałego zapisu bez tej akceptacji.
 
+### Błąd przy zaznaczonym zapamiętaniu hasła
+
+Jeżeli połączenie wymaga hasła, można odznaczyć **Zapamiętaj w systemowym magazynie poświadczeń** i użyć hasła tylko do bieżącej sesji. W bieżącym buildzie roboczym niepotwierdzony zapis otwiera osobny komunikat z akcjami **Połącz bez zapisywania** i **Anuluj**. Pierwsza używa podanego hasła bez kolejnej próby zapisu, druga kończy ten przebieg bez uruchomienia połączenia. Aplikacja nie przełącza się na zapis jawny, nie usuwa istniejącego wpisu i nie ponawia zapisu automatycznie. Niepotwierdzony zapis nie gwarantuje, że dostawca magazynu nie zdążył zachować wpisu przed błędem.
+
+Do ustalenia przyczyny uruchom preflight w tej samej zwykłej sesji graficznej co ServerDesk i odczytaj osobno trzy linie:
+
+- `secret-tool: not on PATH` — brakuje narzędzia lub nie jest dostępne dla aplikacji. Na Kali/Debian narzędzie dostarcza [pakiet libsecret-tools](https://packages.debian.org/sid/libsecret-tools); jeśli nie jest zainstalowany, użyj `sudo apt install libsecret-tools`. Samo narzędzie nie zastępuje usługi magazynu.
+- `DBUS_SESSION_BUS_ADDRESS: absent` — aplikacja nie ma wskazanego adresu magistrali sesji. Uruchom ją z menu pulpitu lub Konsole tej samej sesji użytkownika, bez `sudo`.
+- `Secret Service: not currently owned` — podczas odczytu brak właściciela interfejsu; skrypt nie próbuje aktywacji. `owned` potwierdza właściciela, ale nie stan odblokowania ani możliwość zapisu. Sprawdź portfel i ewentualne okno zgody w swojej sesji KDE. Nie dodawaj drugiego dostawcy magazynu tylko na podstawie tej linii.
+
+Samo `present` przy zmiennej środowiskowej nie rozstrzyga przyczyny błędu. Do zgłoszenia wystarczą powyższe trzy niesekretne linie; nie dołączaj haseł ani eksportu portfela. Poprawka komunikatu nie zastępuje konfiguracji systemowego Secret Service.
+
 ## Ręczna akceptacja na Kali lub innym docelowym desktopie
 
 Wykorzystaj osobne konto/VM i jednorazowe profile. Można uruchomić aplikację z osobnym katalogiem danych przez `SERVERDESK_DATA_HOME`; nie kopiuj osobistej bazy ani haseł do zgłoszenia.

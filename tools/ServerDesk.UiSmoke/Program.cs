@@ -34,6 +34,8 @@ if(args.Contains("--brand-assets")) { BrandAssets.Generate(root); return; }
 if(args.Contains("--ssh-acceptance")) { SshAcceptanceChecks.Run(root,args[1]); return; }
 if(args.Contains("--large-browser")) { LargeBrowserChecks.Run(root,args.Contains("--measure-only")); return; }
 if(args.Contains("--platform-ux")) { PlatformUxChecks.Run(root); return; }
+if(args.Contains("--credential-save")) { CredentialSaveChecks.Run(root); return; }
+if(args.Contains("--credential-save-network")) { CredentialSaveChecks.Network(root,args[1],args[2]); return; }
 if(args.Contains("--large-file-views")) { LargeFileViewChecks.Run(root); return; }
 if(args.Contains("--sftp-navigation")) { SftpNavigationChecks.Run(root); return; }
 if(args.Contains("--extended-settings")) { ExtendedSettingsChecks.Run(root); return; }

@@ -2,6 +2,9 @@
 
 ## Unreleased
 
+- Replace the generic connection-time credential-save error with an explicit choice to connect without another save attempt or cancel. Explain Linux Secret Service requirements in PL/EN while preserving the existing secure storage backend.
+- Add focused missing-helper/read-only-store UI coverage and a real disposable SSH recovery check; document troubleshooting for Linux password storage.
+
 - Refit tracked dialogs when display scale or monitor layout changes, restore original resize limits on a larger screen, and keep confirmation content scrollable above its actions.
 - Add opt-in PL/EN desktop UX coverage for five themes, larger text, simulated DPI transitions, keyboard navigation, accessible category names and collection of closed dialog windows.
 - Add a read-only Linux desktop preflight and a native acceptance checklist for Kali/KDE/Wayland; extend session endurance measurements with CPU, working set and post-close counters.

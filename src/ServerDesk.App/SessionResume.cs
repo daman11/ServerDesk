@@ -118,7 +118,17 @@ public sealed partial class MainWindow
         }
         if(secret.Length>0)return secret;
         var input=await Dialogs.Credentials(this,profile.Protocol==Protocol.SSH && profile.Authentication==Authentication.PrivateKey,profile.Protocol==Protocol.RDP,profile.Protocol==Protocol.VNC,notice); if(input==null)return null;
-        if(input.Remember && input.Secret.Length>0)await Safe(()=>credentials.SaveAsync(CredentialReference.ForProfile(profile),input.Secret,lifetime.Token));
+        if(input.Remember && input.Secret.Length>0)
+        {
+            try { await credentials.SaveAsync(CredentialReference.ForProfile(profile),input.Secret,lifetime.Token); }
+            catch(Exception ex) when(ex is InvalidOperationException or IOException or UnauthorizedAccessException or System.Security.Cryptography.CryptographicException)
+            {
+                // Persistence failure is separate from authentication. Ask explicitly
+                // before using the supplied secret without another save attempt.
+                Serilog.Log.Warning("Credential save was not confirmed: {Type}",ex.GetType().Name);
+                if(!await Dialogs.ContinueWithoutSavingCredentials(this,lifetime.Token))return null;
+            }
+        }
         return input.Secret;
     }
     internal async Task StartExistingSessionAsync(SessionPane pane)

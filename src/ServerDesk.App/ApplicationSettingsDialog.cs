@@ -138,8 +138,15 @@ internal static partial class Dialogs
         var sidebarWidth=Number(workspace,"Szerokość panelu połączeń",p.SidebarWidth,220,500);
         var sidebarStart=new ComboBox { ItemsSource=new[]{L.T("Zapamiętaj ostatni stan"),L.T("Zawsze pokaż"),L.T("Zawsze ukryj")},SelectedIndex=(int)p.SidebarOnStartup,HorizontalAlignment=HorizontalAlignment.Stretch }; Label(workspace,"Panel połączeń przy uruchomieniu",sidebarStart);
         var tabWidth=Number(workspace,"Maksymalna szerokość nazwy karty",p.TabLabelWidth,140,360);
+        var tabHeight=Number(workspace,"Wysokość paska kart",p.TabStripHeight,30,48); tabHeight.Name="TabStripHeight";
+        var separatorSize=Number(workspace,"Szerokość separatorów paneli",p.PaneSeparatorSize,4,12); separatorSize.Name="PaneSeparatorSize";
+        Flag(workspace,"panelNumbers","Pokaż numery paneli w podzielonym widoku",p.ShowPanelNumbers);
         Flag(workspace,"protocols","Pokaż oznaczenia protokołów przy serwerach",p.ShowProtocolBadges);
+        var tabTarget=new ComboBox { Name="NewTabTarget",ItemsSource=new[]{L.T("Aktywny panel"),L.T("Zawsze panel 1"),L.T("Panel z najmniejszą liczbą kart")},SelectedIndex=(int)p.NewTabTarget,HorizontalAlignment=HorizontalAlignment.Stretch }; Label(workspace,"Otwieraj nowe karty w",tabTarget);
+        workspace.Children.Add(Text(L.T("Rozmiary pasków i separatorów mają podgląd na żywo. Anuluj przywraca poprzedni wygląd. Nowe karty używają wybranej reguły bez przenoszenia otwartych sesji."),12));
         workspace=Section(workspacePage,"history","Przy uruchomieniu");
+        var startupLayout=new ComboBox { Name="WorkspaceOnStartup",ItemsSource=new[]{L.T("Zapamiętaj ostatni układ"),L.T("Jeden panel"),L.T("Panele obok siebie"),L.T("Panele jeden nad drugim"),L.T("Trzy panele (1 + 2)"),L.T("Cztery panele (2 × 2)")},SelectedIndex=(int)p.WorkspaceOnStartup,HorizontalAlignment=HorizontalAlignment.Stretch }; Label(workspace,"Układ przy uruchomieniu",startupLayout);
+        workspace.Children.Add(Text(L.T("Układ startowy obowiązuje przy kolejnym uruchomieniu. Przywrócone karty zostaną rozmieszczone w wybranym układzie bez automatycznego łączenia. Bieżący podział zmienisz w menu Układ."),12));
         Flag(workspace,"remember","Przywracaj karty i układ po restarcie",original.RememberWorkspace);
         workspace.Children.Add(Text(L.T("Przywrócone karty czekają na Połącz. Hasła i zawartość terminala nie są zapisywane w układzie."),12));
         var monitoring=Section(monitoringPage,"chart-no-axes-combined","Pasek statusu i monitoring");
@@ -159,6 +166,7 @@ internal static partial class Dialogs
             TerminalScrollbackLines=(int)(scrollback.Value??10000),TerminalCursor=(TerminalCursorShape)Math.Max(0,cursor.SelectedIndex),TerminalCursorBlink=On("blink"),
             SftpLocalDirectory=localDirectory.Text??"",SftpShowHidden=On("hidden"),SftpLocalSort=(FileSort)Math.Max(0,localFileSort.SelectedIndex),SftpRemoteSort=(FileSort)Math.Max(0,remoteFileSort.SelectedIndex),SftpLocalDescending=On("localDescending"),SftpRemoteDescending=On("remoteDescending"),SftpStartRemote=startSide.SelectedIndex==1,
             SidebarWidth=(int)(sidebarWidth.Value??272),SidebarOnStartup=(SidebarStartup)Math.Max(0,sidebarStart.SelectedIndex),TabLabelWidth=(int)(tabWidth.Value??220),ShowProtocolBadges=On("protocols"),ShowSessionStatus=On("sessionStatus"),
+            TabStripHeight=(int)(tabHeight.Value??35),PaneSeparatorSize=(int)(separatorSize.Value??4),ShowPanelNumbers=On("panelNumbers"),NewTabTarget=(NewTabPlacement)Math.Max(0,tabTarget.SelectedIndex),WorkspaceOnStartup=(WorkspaceStartup)Math.Max(0,startupLayout.SelectedIndex),
             ShowStatusBar=On("status"),ShowMetrics=On("metrics"),ShowTransferCount=On("transfers"),MetricCpu=On("cpu"),MetricMemory=On("ram"),MetricNetwork=On("network"),MetricUptime=On("uptime"),MetricDisk=On("disk"),MetricSystem=On("system"),MetricClock=On("clock")
         };
         preview=()=>
@@ -173,6 +181,7 @@ internal static partial class Dialogs
         }
         theme.SelectionChanged+=(_,_)=>preview(); density.SelectionChanged+=(_,_)=>preview(); family.SelectionChanged+=(_,_)=>preview(); sidebarStart.SelectionChanged+=(_,_)=>preview(); accent.TextChanged+=(_,_)=>preview();
         cursor.SelectionChanged+=(_,_)=>preview(); localDirectory.TextChanged+=(_,_)=>preview(); localFileSort.SelectionChanged+=(_,_)=>preview(); remoteFileSort.SelectionChanged+=(_,_)=>preview(); startSide.SelectionChanged+=(_,_)=>preview();
+        tabTarget.SelectionChanged+=(_,_)=>preview(); startupLayout.SelectionChanged+=(_,_)=>preview();
         TabItem Category(string glyph,string title,StackPanel page)
         {
             var scroll=new ScrollViewer { Content=page,HorizontalScrollBarVisibility=Avalonia.Controls.Primitives.ScrollBarVisibility.Disabled };
@@ -233,7 +242,7 @@ internal static partial class Dialogs
         var defaults=Button("Domyślne ustawienia",()=>
         {
             resetting=true;
-            try { language.SelectedIndex=0; theme.SelectedIndex=0; uiFont.Value=13; density.SelectedIndex=1; accent.Text=""; palette.SelectedItem=TerminalAppearance.Names[0]; terminalFont.Value=14; family.SelectedItem="Domyślna"; scrollback.Value=10000; cursor.SelectedIndex=0; localDirectory.Text=""; localFileSort.SelectedIndex=remoteFileSort.SelectedIndex=0; startSide.SelectedIndex=1; sidebarWidth.Value=272; sidebarStart.SelectedIndex=0; tabWidth.Value=220; interval.Value=5; foreach(var (key,flag) in flags)flag.IsChecked=flagDefaults[key]; }
+            try { language.SelectedIndex=0; theme.SelectedIndex=0; uiFont.Value=13; density.SelectedIndex=1; accent.Text=""; palette.SelectedItem=TerminalAppearance.Names[0]; terminalFont.Value=14; family.SelectedItem="Domyślna"; scrollback.Value=10000; cursor.SelectedIndex=0; localDirectory.Text=""; localFileSort.SelectedIndex=remoteFileSort.SelectedIndex=0; startSide.SelectedIndex=1; sidebarWidth.Value=272; sidebarStart.SelectedIndex=0; tabWidth.Value=220; tabHeight.Value=35; separatorSize.Value=4; tabTarget.SelectedIndex=startupLayout.SelectedIndex=0; interval.Value=5; foreach(var (key,flag) in flags)flag.IsChecked=flagDefaults[key]; }
             finally { resetting=false; preview(); }
         }); defaults.HorizontalAlignment=HorizontalAlignment.Left; actions.Children.Add(defaults);
         var cancel=Button("Anuluj",()=> { if(!saving)dialog.Close(); }); Grid.SetColumn(cancel,1); actions.Children.Add(cancel);
@@ -249,6 +258,7 @@ internal static partial class Dialogs
                     nameof(ApplicationPreferences.SftpLocalSort)=>(2,localFileSort),
                     nameof(ApplicationPreferences.TerminalCursor)=>(1,cursor),
                     nameof(ApplicationPreferences.TerminalScrollbackLines)=>(1,scrollback),
+                    nameof(ApplicationPreferences.WorkspaceOnStartup)=>(3,startupLayout),
                     _=>(0,accent)
                 };
                 categories.SelectedIndex=index; field.BringIntoView(); field.Focus();

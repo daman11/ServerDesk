@@ -47,7 +47,7 @@ public sealed partial class MainWindow : Window
         ssh.ConfirmHostKey=(challenge,ct)=> Dispatcher.UIThread.InvokeAsync(()=>Dialogs.Confirm(this,L.T("Weryfikacja klucza SSH"),L.F($"Pierwsze połączenie: {challenge.Host}:{challenge.Port}\n{challenge.Algorithm}\n{challenge.Fingerprint}\n\nPorównaj fingerprint z zaufanym źródłem. Zapisać klucz i kontynuować?"),ct));
         BuildWorkspace();
         ConfigureWindowPlacement();
-        Activated+=(_,_)=> { if(ActiveSession is {} active && dockState.Location(active.WorkspaceId)==SessionDock.Floating && sessions.FirstOrDefault(p=>p.WorkspaceId==(dockState.SelectedPrimary??dockState.SelectedSecondary)) is {} docked)FocusSession(docked); };
+        Activated+=(_,_)=> { if(ActiveSession is {} active && dockState.Location(active.WorkspaceId)==SessionDock.Floating && sessions.FirstOrDefault(p=>WorkspaceState.DockedGroups.Select(dockState.Selected).Contains(p.WorkspaceId)) is {} docked)FocusSession(docked); };
         Opened+=async (_,_)=> { initialization=Safe(InitializeAsync); await initialization; };
         Closing+=async (_,e)=>
         {
@@ -102,8 +102,10 @@ public sealed partial class MainWindow : Window
         if(await repository.SettingAsync("sidebarHidden")=="True")ToggleSidebar();
         if(preferences.SidebarOnStartup==SidebarStartup.Show && !this.sidebar.IsVisible || preferences.SidebarOnStartup==SidebarStartup.Hide && this.sidebar.IsVisible)ToggleSidebar();
         if(double.TryParse(await repository.SettingAsync("splitRatio"),System.Globalization.CultureInfo.InvariantCulture,out var ratio))dockState.SetRatio(ratio);
+        if(double.TryParse(await repository.SettingAsync("rowSplitRatio"),System.Globalization.CultureInfo.InvariantCulture,out var rowRatio))dockState.SetRowRatio(rowRatio);
         if(Enum.TryParse<WorkspaceMode>(await repository.SettingAsync("workspaceMode"),out var mode) && Enum.IsDefined(mode))dockState.SetMode(mode); LayoutDockWorkspace();
         await RestoreSessionSnapshotAsync();
+        if(preferences.WorkspaceOnStartup!=WorkspaceStartup.Remember)SetWorkspaceMode((WorkspaceMode)((int)preferences.WorkspaceOnStartup-1));
         workspaceReady=true;
     }
     private async Task EditAsync(ServerProfile? profile)

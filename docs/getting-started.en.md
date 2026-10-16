@@ -1,4 +1,8 @@
-# ServerDesk 0.34.0 — getting started
+# ServerDesk 0.35.0 — getting started
+
+Choose **Layout → Three panels (1 + 2)** or **Four panels (2 × 2)**. Spare docked tabs fill empty panels. Drag a tab to another panel or use its **Dock in panel 1–4** menu. Click an empty panel's number before opening a connection. Drag separators to resize; **Equalize panel sizes** resets both axes. Reducing the split keeps tabs open in the remaining groups.
+
+**Settings → Workspace** controls startup layout, where new tabs open (active/first/fewest tabs), tab-strip height, separator width and panel numbers. Sizes preview live; Cancel restores them. The startup layout applies on the next launch without connecting automatically. [Release notes](releases/release-0.35.0.md).
 
 In SFTP, use Back/Forward or Alt+Left/Right, Alt+Up for the parent directory and Alt+Home for home. Ctrl+L selects the path; Enter opens it and Escape restores the open directory. Each panel has its own history, cleared on reconnect.
 
@@ -6,15 +10,15 @@ Free, open-source software under MIT. **Public beta**; see [known-issues.md](kno
 
 ## Windows x64
 
-Run `ServerDesk-0.34.0-win-x64-Setup.exe`. Setup installs for the current user, creates a Start menu shortcut and registers an uninstaller. No separate .NET installation is needed. Alternatively, extract the **entire** portable ZIP into its own directory and run `ServerDesk.App.exe`.
+Run `ServerDesk-0.35.0-win-x64-Setup.exe`. Setup installs for the current user, creates a Start menu shortcut and registers an uninstaller. No separate .NET installation is needed. Alternatively, extract the **entire** portable ZIP into its own directory and run `ServerDesk.App.exe`.
 
-This beta is not signed with a trusted publisher certificate. Use a trusted release source and do not disable Windows protection. Compare `Get-FileHash .\ServerDesk-0.34.0-win-x64-Setup.exe -Algorithm SHA256` with `SHA256SUMS.txt`. A checksum alongside a download detects corruption; it does not independently authenticate the publisher.
+This beta is not signed with a trusted publisher certificate. Use a trusted release source and do not disable Windows protection. Compare `Get-FileHash .\ServerDesk-0.35.0-win-x64-Setup.exe -Algorithm SHA256` with `SHA256SUMS.txt`. A checksum alongside a download detects corruption; it does not independently authenticate the publisher.
 
 ## Linux x64
 
-Ubuntu/Debian: `sudo apt install ./serverdesk_0.34.0_amd64.deb`, then launch ServerDesk from the menu or run `serverdesk`. Remembered passwords need `libsecret-tools` and an unlocked Secret Service such as GNOME Keyring. Install your distribution's FreeRDP client for RDP connections.
+Ubuntu/Debian: `sudo apt install ./serverdesk_0.35.0_amd64.deb`, then launch ServerDesk from the menu or run `serverdesk`. Remembered passwords need `libsecret-tools` and an unlocked Secret Service such as GNOME Keyring. Install your distribution's FreeRDP client for RDP connections.
 
-For TAR.GZ: `mkdir serverdesk-0.34.0`, then `tar -xzf ServerDesk-0.34.0-linux-x64.tar.gz -C serverdesk-0.34.0` and `./serverdesk-0.34.0/ServerDesk.App`. Native library requirements are listed in the DEB and [development.md](development.md). Linux testing used WSLg; other desktops need further verification.
+For TAR.GZ: `mkdir serverdesk-0.35.0`, then `tar -xzf ServerDesk-0.35.0-linux-x64.tar.gz -C serverdesk-0.35.0` and `./serverdesk-0.35.0/ServerDesk.App`. Native library requirements are listed in the DEB and [development.md](development.md). Linux testing used WSLg; other desktops need further verification.
 
 ## Connect
 
@@ -35,7 +39,7 @@ The welcome dashboard shows up to three recently used connections. Clicking one 
 
 **Settings → Terminal → Cursor and history**: choose a bar, block or underline and cursor blinking. Cursor preview is immediate; Cancel restores the previous choice. The 0–100,000-line history limit applies to the next SSH/Serial connection and preserves the current buffer (0 disables history). Remote applications can change the cursor.
 
-**Settings → SFTP**: choose an absolute local start directory (empty means home), hidden-file visibility, active panel and independent sorting/direction for each side. These defaults apply the first time SFTP is opened in a tab. Saving preferences and reconnecting that tab retain its browser choices; a new tab uses the new defaults. An unavailable start directory falls back to home with a notification. [Release notes](releases/release-0.34.0.md).
+**Settings → SFTP**: choose an absolute local start directory (empty means home), hidden-file visibility, active panel and independent sorting/direction for each side. These defaults apply the first time SFTP is opened in a tab. Saving preferences and reconnecting that tab retain its browser choices; a new tab uses the new defaults. An unavailable start directory falls back to home with a notification. [Release notes](releases/release-0.35.0.md).
 
 Use **Copy link contents…** for one symbolic link. Confirm the resolved source and destination; the contents become regular files/directories and nested links are skipped. **Details** shows the resolved target; Enter/double-click opens a linked directory. **Create remote symbolic link…** links to the selected existing target. [Detailed behavior and limits](releases/release-0.27.0.md).
 

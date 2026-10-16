@@ -1,6 +1,8 @@
-# ServerDesk 0.34.0 Public Beta — known issues
+# ServerDesk 0.35.0 Public Beta — known issues
 
 This is a public beta. Keep a backup before upgrading and validate the workflows you need in a test environment.
+
+- **Split workspace:** up to four docked panels. Three-panel mode uses a tall left panel; grid mode is 2×2. At small sizes, toolbars wrap and terminal space decreases; hiding the sidebar helps. Layout changes keep live sessions, but physical cross-window drag gestures and mixed-monitor DPI need wider testing. New snapshots are backward-readable by 0.35.0; older builds may reject the new layout values. Keep a backup before downgrading.
 
 - **Session preferences:** cursor changes preview live; the scrollback limit applies on the next SSH/Serial connection. SFTP defaults apply only on first opening in a tab. Remote applications can override cursor appearance. Local start directories are device-specific; an unavailable directory falls back to home with a warning. Native folder-picker gestures and physical serial adapters need wider manual coverage.
 

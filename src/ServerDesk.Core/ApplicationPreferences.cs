@@ -3,6 +3,8 @@ namespace ServerDesk.Core;
 public enum InterfaceDensity { Compact,Standard,Comfortable }
 public enum SidebarStartup { Remember,Show,Hide }
 public enum TerminalCursorShape { Bar,Block,Underline }
+public enum WorkspaceStartup { Remember,Single,Columns,Rows,Three,Grid }
+public enum NewTabPlacement { FocusedPanel,FirstPanel,LeastPopulated }
 public sealed record ApplicationPreferences
 {
     public string Language { get; init; }="pl";
@@ -23,6 +25,11 @@ public sealed record ApplicationPreferences
     public int SidebarWidth { get; init; }=272;
     public SidebarStartup SidebarOnStartup { get; init; }
     public int TabLabelWidth { get; init; }=220;
+    public WorkspaceStartup WorkspaceOnStartup { get; init; }
+    public NewTabPlacement NewTabTarget { get; init; }
+    public int TabStripHeight { get; init; }=35;
+    public int PaneSeparatorSize { get; init; }=4;
+    public bool ShowPanelNumbers { get; init; }=true;
     public bool ShowProtocolBadges { get; init; }=true;
     public bool ShowSessionStatus { get; init; }=true;
     public bool ShowStatusBar { get; init; }=true;
@@ -39,6 +46,7 @@ public sealed record ApplicationPreferences
     public void Validate()
     {
         if(!AppText.IsSupported(Language))throw new ArgumentException(AppText.T("Nieobsługiwany język aplikacji."));
+        if(!Enum.IsDefined(WorkspaceOnStartup) || !Enum.IsDefined(NewTabTarget) || TabStripHeight is <30 or >48 || PaneSeparatorSize is <4 or >12)throw new ArgumentException(L.T("Niepoprawne ustawienia paneli obszaru pracy."),nameof(WorkspaceOnStartup));
         if(TerminalScrollbackLines is <0 or >100000)throw new ArgumentException(L.T("Historia terminala musi mieć od 0 do 100000 wierszy."),nameof(TerminalScrollbackLines));
         if(!Enum.IsDefined(TerminalCursor))throw new ArgumentException(L.T("Nieobsługiwany kształt kursora terminala."),nameof(TerminalCursor));
         if(SftpLocalDirectory==null || SftpLocalDirectory.Length>4096 || SftpLocalDirectory.Contains('\0') || SftpLocalDirectory.Length>0 && !Path.IsPathFullyQualified(SftpLocalDirectory))throw new ArgumentException(L.T("Katalog startowy SFTP powinien być pełną ścieżką lokalną lub pusty, aby użyć katalogu domowego."),nameof(SftpLocalDirectory));

@@ -1,4 +1,4 @@
-# ServerDesk — 0.34.0 Public Beta
+# ServerDesk — 0.35.0 Public Beta
 
 Native Windows/Linux workspace for SSH, SFTP, RDP, VNC and serial connections. Built with C#, .NET 10 and Avalonia 12. Free and open source under the [MIT license](LICENSE).
 
@@ -8,11 +8,11 @@ Native Windows/Linux workspace for SSH, SFTP, RDP, VNC and serial connections. B
 
 | System | Package | Start |
 |---|---|---|
-| Windows x64 | `ServerDesk-0.34.0-win-x64-Setup.exe` | Run Setup; current-user installation and Start menu shortcut |
-| Windows x64 portable | `ServerDesk-0.34.0-win-x64.zip` | Extract everything; run `ServerDesk.App.exe` |
-| Linux x64 DEB | `serverdesk_0.34.0_amd64.deb` | `sudo apt install ./serverdesk_0.34.0_amd64.deb` |
-| Linux x64 archive | `ServerDesk-0.34.0-linux-x64.tar.gz` | Extract into a new directory; run `./ServerDesk.App` |
-| Source | `ServerDesk-0.34.0-source.zip` | .NET 10 SDK required |
+| Windows x64 | `ServerDesk-0.35.0-win-x64-Setup.exe` | Run Setup; current-user installation and Start menu shortcut |
+| Windows x64 portable | `ServerDesk-0.35.0-win-x64.zip` | Extract everything; run `ServerDesk.App.exe` |
+| Linux x64 DEB | `serverdesk_0.35.0_amd64.deb` | `sudo apt install ./serverdesk_0.35.0_amd64.deb` |
+| Linux x64 archive | `ServerDesk-0.35.0-linux-x64.tar.gz` | Extract into a new directory; run `./ServerDesk.App` |
+| Source | `ServerDesk-0.35.0-source.zip` | .NET 10 SDK required |
 
 The binary packages include .NET. Linux additionally needs its system X11/fontconfig libraries, Secret Service for remembered passwords and an installed FreeRDP client for RDP. Linux verification used Ubuntu/WSLg; other desktop/distribution combinations are experimental. ARM/macOS packages are not provided.
 
@@ -29,7 +29,7 @@ This beta is unsigned. Obtain it from a trusted release source and compare its S
 - SFTP symbolic-link navigation/details, remote link creation and explicit copying of resolved contents, with bounded directory traversal and protected link destinations.
 - Nine [Network Tools](docs/network-tools.md): Ping, Traceroute/MTR, DNS, TCP scanner, Wake-on-LAN, HTTP, TLS, subnet calculator and SNMP v2c/v3; standalone targets and editable server context.
 - Embedded Windows RDP; external Linux FreeRDP; embedded VNC; serial terminal.
-- Split panes, detachable tabs and workspace recovery without automatic connections.
+- One, two, three or four workspace panels, detachable tabs and recovery without automatic connections; configurable startup layout, new-tab placement, separators and tab-strip height.
 - Server/folder icons, colors, custom artwork, five themes and configurable interface/terminal.
 - Polish and English UI, destination-language reminders and Save and restart in Settings.
 - Responsive welcome dashboard with recent connections, searchable settings (Ctrl+F) and clear active local/remote SFTP panel headings.

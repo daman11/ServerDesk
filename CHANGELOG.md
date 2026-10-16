@@ -2,6 +2,16 @@
 
 ## Unreleased
 
+## 0.35.0 — Public Beta — 2026-10-16
+
+- Add three panels (one tall plus two stacked) and a four-panel 2×2 grid. Fill empty groups from spare docked tabs when changing layout, preserving existing sessions and buffers; merge hidden groups safely when reducing the split.
+- Extend docking, tab order, Ctrl+Tab, the session switcher and floating-window actions to four independent groups. Add panel numbers, empty-panel targeting and drop hit testing for each layout.
+- Persist selection in all four groups and independent horizontal/vertical split proportions. Read older snapshots with the existing floating-dock value and default the new axis without reading credentials or automatically connecting.
+- Add Settings → Workspace preferences for startup layout, new-tab placement, tab-strip height, separator width and panel numbers. Preview sizes live with cancel rollback; apply the startup choice on next launch.
+- Resize content rows directly so the horizontal separator cannot stretch the adjacent tab header. Support pointer dragging and Up/Down/Home on that separator; add an Equalize panel sizes action.
+- Initialize a loaded but unmeasured terminal template before applying cursor preferences to restored/inactive cards, fixing a possible null reference.
+- Add model/persistence/compatibility tests, Windows/Linux layout and real four-session SSH acceptance, retained two-panel regression and published native RDP-host coverage for three/four panes.
+
 ## 0.34.0 — Public Beta — 2026-10-16
 
 - Expand Settings to six searchable categories, including a dedicated SFTP page, with responsive PL/EN fields and notes on when each preference applies.

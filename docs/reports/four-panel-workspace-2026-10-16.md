@@ -1,0 +1,15 @@
+# Cztery panele i ustawienia obszaru pracy — 2026-10-16
+
+Zakres 0.35.0: układy Three i Grid, cztery niezależne grupy, dokowanie i wybór nowych kart, dwie proporcje oraz pięć preferencji obszaru pracy. Sesje pozostają tymi samymi kontrolkami we wspólnym Grid; zmiana liczby paneli nie przepina transportów. Zmniejszenie układu przenosi ukrywane grupy do pierwszej, zachowując identyfikatory i fokus. Osobne okna nie są automatycznie rozkładane.
+
+Testy jednostkowe: 535/535. Nowe przypadki obejmują niezależny wybór i kolejność czterech grup, zamykanie sąsiada, przejście 4→3→2→1 z zachowaniem fokus/sesji, niepoprawne dropy bez utraty stanu, 500 przejść/move z 20 kartami, stary JSON i numeric Floating=2, obie proporcje, kompletny roundtrip/atomowy rollback, walidację ukrytych grup i usuniętych profili oraz zgodność preferencji. Snapshot pozostaje referencyjny, bez treści terminala, adresów i sekretów.
+
+`--four-panels`: PL/EN, Graphite/Light, font16/Comfortable, 900/1320/1920 px i render150%; menu układów, trafianie celów w środkach paneli, brak nakładania, cel pustego panelu, podgląd/anulowanie/zapis/wyszukiwanie ustawień, skrajne rozmiary paska, niezależny Ctrl+Tab i kolejność, odpięcie/powrót z zachowaniem bufora, zapis obu osi oraz wymuszony układ startowy bez odczytu poświadczeń i autołączenia. Wskaźnik przeciąga oba separatory; test sprawdza zapis proporcji i niezmienną wysokość nagłówków. Home sprawdza lokalną obsługę poziomego separatora.
+
+`--four-panels-network`: cztery rzeczywiste, niezależne sesje jednorazowego OpenSSH na loopback 22222. Kontrola obejmuje wyjście i wejście każdej sesji, te same instancje emulatora i identyfikatory transportu po 3/4 układach, resize i preferencjach, przejście do SFTP, osobne okno i powrót oraz zamknięcie wszystkich transportów. Wyniki i zrzuty są zachowywane dla Windows oraz Ubuntu/WSL; nie używa się zwykłych danych ani serwerów użytkownika.
+
+Dotychczasowe scenariusze dwóch paneli, pływających okien, artwork i bezpiecznego odtwarzania są zachowane w `--docking-regression` oraz wcześniejszych testach protokołów. CI zawiera nowe scenariusze, lecz lokalny wynik nie oznacza wykonania GitHub Actions. Natywny check opublikowanego EXE obejmuje teraz widoczny host RDP w trzech i czterech panelach bez logowania do serwera. Końcowe wyniki dystrybucji: VERIFICATION.md paczki; dowody w artifacts/reports/release-0.35.0/.
+
+Poprawka stabilności: załadowany terminal przywróconej karty może jeszcze nie mieć template. Przed publicznym dostępem do emulatora przy zmianie kursora wywoływane jest ApplyTemplate. Test odtwarzania i podglądu preferencji objął ten wcześniejszy NullReferenceException. Poziomy separator zmienia wiersze treści bez rozciągania sąsiedniego nagłówka.
+
+Granice: brak nowego logowania do rzeczywistego RDP, testu fizycznych monitorów, wszystkich IME/klawiatur i długich sesji czterech serwerów. Sprawdzono programowe gesty wskaźnika na separatorach i cele dokowania; pełne fizyczne cross-window drag and drop wymaga ręcznej akceptacji. WSLg nie zastępuje testów wszystkich dystrybucji i desktopów. Małe panele zawijają toolbar i mają mniej miejsca na tekst.

@@ -74,15 +74,17 @@ internal static class RdpExecutableCheck
                         if(!IsWindowVisible(handle))throw new InvalidOperationException("Published RDP control is hidden.");
                         main.DockSession(pane!,SessionDock.Secondary);
                     }
-                    else if(phase==2) { SameControl(); steps.Add("Split view retained HWND"+(args.Length==5?" and login":"")); main.DockSession(pane!,SessionDock.Floating); }
-                    else if(phase==3) { SameControl(); steps.Add("Floating window retained HWND"+(args.Length==5?" and login":"")); main.DockSession(pane!,SessionDock.Primary); }
-                    else if(phase==4) { SameControl(); steps.Add("Dock back retained HWND"+(args.Length==5?" and login":"")); main.Width=950; main.Height=700; }
-                    else if(phase==5)
+                    else if(phase==2) { SameControl(); steps.Add("Split view retained HWND"+(args.Length==5?" and login":"")); main.DockSession(pane!,SessionDock.Quaternary); }
+                    else if(phase==3) { SameControl(); if(!IsWindowVisible(handle))throw new InvalidOperationException("Four-panel RDP host is hidden."); steps.Add("Four-panel grid retained visible HWND"); main.DockSession(pane!,SessionDock.Tertiary); main.SetWorkspaceMode(WorkspaceMode.Three); }
+                    else if(phase==4) { SameControl(); if(!IsWindowVisible(handle))throw new InvalidOperationException("Three-panel RDP host is hidden."); steps.Add("Three-panel layout retained visible HWND"); main.DockSession(pane!,SessionDock.Floating); }
+                    else if(phase==5) { SameControl(); steps.Add("Floating window retained HWND"+(args.Length==5?" and login":"")); main.DockSession(pane!,SessionDock.Primary); }
+                    else if(phase==6) { SameControl(); steps.Add("Dock back retained HWND"+(args.Length==5?" and login":"")); main.Width=950; main.Height=700; }
+                    else if(phase==7)
                     {
                         SameControl(); steps.Add("Resize retained native control");
                         if(args.Length==5)await pane!.ReconnectAsync();
                     }
-                    else if(phase==6)
+                    else if(phase==8)
                     {
                         if(args.Length==5)
                         {

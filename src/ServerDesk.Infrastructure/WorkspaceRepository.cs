@@ -34,6 +34,7 @@ public sealed partial class ProfileRepository
         await Write("lastWorkspace",json);
         await Write("workspaceMode",snapshot.Mode.ToString());
         await Write("splitRatio",snapshot.Ratio.ToString(System.Globalization.CultureInfo.InvariantCulture));
+        await Write("rowSplitRatio",snapshot.RowRatio.ToString(System.Globalization.CultureInfo.InvariantCulture));
         await transaction.CommitAsync(ct);
     }
 }

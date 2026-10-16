@@ -59,10 +59,10 @@ public sealed partial class MainWindow
             if(closing)return;
             // Capture only after earlier writers have finished, without yielding
             // while reading UI state. Later changes queue a newer snapshot.
-            var ordered=dockState.Primary.Concat(dockState.Secondary).Concat(dockState.Floating).Select(id=>sessions.FirstOrDefault(p=>p.WorkspaceId==id)).OfType<SessionPane>().ToArray();
+            var ordered=dockState.All.Select(id=>sessions.FirstOrDefault(p=>p.WorkspaceId==id)).OfType<SessionPane>().ToArray();
             var entries=ordered.Select(p=>new SavedSession(p.WorkspaceId,p.Profile.Id,dockState.Location(p.WorkspaceId),p.SelectedPanel,floatingDocks.TryGetValue(p.WorkspaceId,out var floating)?floating.NormalGeometry:null)).ToList();
             Guid? Keep(Guid? id)=>entries.Any(e=>e.Key==id)?id:null;
-            var snapshot=new WorkspaceSnapshot(1,dockState.Mode,dockState.Ratio,entries,Keep(dockState.SelectedPrimary),Keep(dockState.SelectedSecondary),Keep(dockState.Focused));
+            var snapshot=new WorkspaceSnapshot(1,dockState.Mode,dockState.Ratio,entries,Keep(dockState.SelectedPrimary),Keep(dockState.SelectedSecondary),Keep(dockState.Focused),Keep(dockState.SelectedTertiary),Keep(dockState.SelectedQuaternary),dockState.RowRatio);
             await Task.Run(()=>repository.SaveWorkspaceSnapshotAsync(snapshot));
         }
         finally { snapshotGate.Release(); }
@@ -76,7 +76,7 @@ public sealed partial class MainWindow
         catch(Exception ex) when(ex is JsonException or InvalidDataException)
         { ReportBackgroundError(L.T("Nie udało się przywrócić kart. Utwórz połączenie z listy serwerów."),ex); SetWorkspaceNotice(vm.Status); return; }
         var profiles=vm.AllServers.ToDictionary(p=>p.Id); var available=saved.AvailableProfiles(profiles.Keys); var mapping=new Dictionary<Guid,SessionPane>();
-        dockState.SetMode(available.Mode); dockState.SetRatio(available.Ratio); LayoutDockWorkspace();
+        dockState.SetMode(available.Mode); dockState.SetRatio(available.Ratio); dockState.SetRowRatio(available.RowRatio); LayoutDockWorkspace();
         foreach(var entry in available.Sessions)
         {
             var pane=new SessionPane(this,profiles[entry.ProfileId],ssh,rdp,repository); pane.PrepareRestored(entry.Panel); RegisterPane(pane,SessionDock.Primary); mapping[entry.Key]=pane;
@@ -85,6 +85,8 @@ public sealed partial class MainWindow
         }
         if(available.SelectedPrimary is {} primary && mapping.TryGetValue(primary,out var p))FocusSession(p);
         if(available.SelectedSecondary is {} secondary && mapping.TryGetValue(secondary,out var s))FocusSession(s);
+        if(available.SelectedTertiary is {} tertiary && mapping.TryGetValue(tertiary,out var t))FocusSession(t);
+        if(available.SelectedQuaternary is {} quaternary && mapping.TryGetValue(quaternary,out var q))FocusSession(q);
         if(available.Focused is {} focused && mapping.TryGetValue(focused,out var f))FocusSession(f);
         foreach(var pane in mapping.Values)restoredCards.Add(pane.WorkspaceId);
         skippedRestoredProfiles=saved.Sessions.Count-available.Sessions.Count; UpdateResumeNotice();

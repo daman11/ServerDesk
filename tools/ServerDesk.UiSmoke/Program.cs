@@ -36,6 +36,8 @@ if(args.Contains("--large-browser")) { LargeBrowserChecks.Run(root); return; }
 if(args.Contains("--large-file-views")) { LargeFileViewChecks.Run(root); return; }
 if(args.Contains("--sftp-navigation")) { SftpNavigationChecks.Run(root); return; }
 if(args.Contains("--extended-settings")) { ExtendedSettingsChecks.Run(root); return; }
+if(args.Contains("--four-panels")) { FourPanelChecks.Run(root); return; }
+if(args.Contains("--four-panels-network")) { FourPanelChecks.Network(root,args[1],args[2]); return; }
 if(args.Contains("--extended-settings-network")) { ExtendedSettingsChecks.Network(root,args[1],args[2]); return; }
 if(args.Contains("--sftp-navigation-network")) { SftpNavigationChecks.Network(root,args[1],args[2]); return; }
 if(args.Contains("--trusted-hosts")) { TrustedHostsChecks.Run(root); return; }
@@ -71,6 +73,7 @@ if(args.Contains("--stability")) { StabilityChecks.Run(repository,root); window.
 if(args.Contains("--session-chrome")) { SessionChromeChecks.Preview(window,repository,root); return; }
 if(args.Contains("--workspace-details")) { WorkspaceDetailsChecks.Preview(window,repository,root); window.Close(); RedesignChecks.Frames(); return; }
 if(args.Contains("--settings-layout")) { SettingsLayoutChecks.Run(window,repository,root); window.Close(); RedesignChecks.Frames(); return; }
+if(args.Contains("--docking-regression")) { PersonalizationChecks.Run(window,root); SessionWorkflowChecks.Run(root); window.Close(); RedesignChecks.Frames(); return; }
 if(args.Contains("--sftp-workflow")) { SftpWorkflowChecks.Run(window,repository,root,args[1],args[2]); window.Close(); RedesignChecks.Frames(); return; }
 if(args.Contains("--sftp-resilience")) { SftpResilienceChecks.Run(window,repository,root,args[1],args[2]); window.Close(); RedesignChecks.Frames(); return; }
 if(args.Contains("--sftp-links")) { SftpLinkChecks.Run(window,repository,root,args[1],args[2]); window.Close(); RedesignChecks.Frames(); return; }

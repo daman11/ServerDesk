@@ -1,4 +1,6 @@
-# Pierwotne MVP — wydanie 0.34.0
+# Pierwotne MVP — wydanie 0.35.0
+
+0.35.0 rozwija równoległą pracę w terminalach: trzy lub cztery panele, niezależne grupy kart, pełne menu dokowania i zapamiętywanie obu proporcji. Nowe ustawienia obszaru pracy nie rozłączają sesji. [Zakres weryfikacji](reports/four-panel-workspace-2026-10-16.md).
 
 Nowości 0.34.0: **Ustawienia → Terminal/SFTP** — kształt i miganie kursora, historia 0–100 000 wierszy przy następnym połączeniu, lokalny folder startowy i domyślny widok obu paneli. Podgląd/anulowanie nie kasują bufora, a zapis nie zmienia otwartego SFTP. [Testy i granice](reports/extended-settings-2026-10-16.md).
 
@@ -38,6 +40,6 @@ Etap 0.31.0 przenosi przygotowanie klucza z passphrase oraz pełny odczyt monito
 3. Rozszerzenie macierzy RDP oraz docelowe osadzanie Linux; obecny fallback FreeRDP pozostaje jawnie opisany.
 4. Pozostałe serwery SSH/SFTP, fizyczne gesty/mysz terminalowa i szersza macierz protokołów klawiatury.
 
-Nie ogłaszamy pełnego MVP za zakończone na podstawie samego istnienia kontrolek lub zielonej kompilacji. Wyniki tego etapu i granice testów zapisuje [raport weryfikacji](reports/release-verification-0.34.0.md).
+Nie ogłaszamy pełnego MVP za zakończone na podstawie samego istnienia kontrolek lub zielonej kompilacji. Wyniki tego etapu i granice testów zapisuje [raport weryfikacji](reports/release-verification-0.35.0.md).
 
 Poprawka 0.31.1 naprawia kodowanie instalatora oraz dodaje przypomnienia w docelowym języku i bezpieczny restart z ustawień/okna głównego. [Zakres poprawki](releases/release-0.31.1.md).

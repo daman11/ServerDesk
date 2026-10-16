@@ -1,8 +1,10 @@
 # ServerDesk
 
-Natywny klient administracyjny C# / .NET 10 / Avalonia 12 dla Windows i Linux. Wersja 0.34.0 Public Beta; [status MVP](mvp-status.md), [ograniczenia](known-issues.md) i [zmiany tego wydania](releases/release-0.34.0.md).
+Natywny klient administracyjny C# / .NET 10 / Avalonia 12 dla Windows i Linux. Wersja 0.35.0 Public Beta; [status MVP](mvp-status.md), [ograniczenia](known-issues.md) i [zmiany tego wydania](releases/release-0.35.0.md).
 
 ## Uruchomienie
+
+**Podział od 0.35.0:** menu Układ udostępnia 1 panel, 2 obok/nad sobą, 3 (duży lewy + 2 prawe) i 4 w siatce 2×2. Menu każdej karty i okna odpiętego pozwala dokować do panelu 1–4; Ctrl+Tab przełącza karty tylko w bieżącej grupie. Numery i puste obszary wskazują cel nowej karty. Poziomy separator obsługuje też ↑/↓ i Home. Zapis obejmuje wybory wszystkich grup i obie proporcje. Ustawienia obszaru pracy określają układ startowy, miejsce nowych kart, wysokość pasków, szerokość separatorów i numery. [Szczegóły](releases/release-0.35.0.md).
 
 **Personalizacja od 0.34.0:** Ustawienia mają sześć kategorii z wyszukiwaniem Ctrl+F. **Terminal → Kursor i historia**: kreska/blok/podkreślenie i miganie z podglądem; Anuluj cofa wybór. Historia 0–100 000 wierszy obowiązuje przy kolejnym połączeniu SSH/Serial; 0 ją wyłącza, bieżący bufor pozostaje. **SFTP**: lokalny folder startowy, ukryte pliki, aktywna strona i niezależne sortowanie/kierunki. Te domyślne stosowane są przy pierwszym SFTP w karcie; zapis/reconnect nie resetuje wyborów otwartej przeglądarki. Niedostępny folder zastępuje domowy z komunikatem. [Szczegóły](releases/release-0.34.0.md).
 
@@ -12,7 +14,7 @@ Od wersji 0.32.0: **Menu → Ustawienia → Bezpieczeństwo → Zaufane klucze S
 
 Windows: rozpakuj całe archiwum wydania Windows i uruchom `ServerDesk.App.exe`. Nie przenoś samego EXE — wydanie zawiera biblioteki natywne. Nie wymaga instalacji .NET. Wersja przenośna domyślnie zapisuje konfigurację w `%APPDATA%\ServerDesk`.
 
-Linux: rozpakuj archiwum, wykonaj `chmod +x ServerDesk.App` i `./ServerDesk.App`. Alternatywnie zainstaluj DEB: `sudo apt install ./serverdesk_0.34.0_amd64.deb`. Na Fedora użyj archiwum. Wymagane są biblioteki X11/fontconfig (szczegóły w dokumentacji). WSLg służył do części testów; nie zastępuje testów na fizycznym Kubuntu/Fedora.
+Linux: rozpakuj archiwum, wykonaj `chmod +x ServerDesk.App` i `./ServerDesk.App`. Alternatywnie zainstaluj DEB: `sudo apt install ./serverdesk_0.35.0_amd64.deb`. Na Fedora użyj archiwum. Wymagane są biblioteki X11/fontconfig (szczegóły w dokumentacji). WSLg służył do części testów; nie zastępuje testów na fizycznym Kubuntu/Fedora.
 
 Okno zapamiętuje normalny rozmiar i maksymalizację, a przy starcie mieści się w obszarze roboczym monitora. Po odłączeniu monitora wraca na ekran główny. Nie trzeba usuwać zapisanej konfiguracji.
 

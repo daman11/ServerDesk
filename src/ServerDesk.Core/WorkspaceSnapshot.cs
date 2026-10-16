@@ -5,17 +5,18 @@ namespace ServerDesk.Core;
 // This document deliberately contains references and layout only, no connection
 // configuration, terminal text, file paths or credentials.
 public sealed record SavedSession(Guid Key,Guid ProfileId,SessionDock Dock,int Panel=0,WindowGeometry? Window=null);
-public sealed record WorkspaceSnapshot(int Version,WorkspaceMode Mode,double Ratio,List<SavedSession> Sessions,Guid? SelectedPrimary=null,Guid? SelectedSecondary=null,Guid? Focused=null)
+public sealed record WorkspaceSnapshot(int Version,WorkspaceMode Mode,double Ratio,List<SavedSession> Sessions,Guid? SelectedPrimary=null,Guid? SelectedSecondary=null,Guid? Focused=null,Guid? SelectedTertiary=null,Guid? SelectedQuaternary=null,double RowRatio=.5)
 {
     public const int MaximumSessions=128;
     public const int MaximumJsonCharacters=128*1024;
     public void Validate()
     {
-        if(Version!=1 || !Enum.IsDefined(Mode) || !double.IsFinite(Ratio) || Ratio is <.2 or >.8 || Sessions==null || Sessions.Count>MaximumSessions)throw new InvalidDataException(L.T("Niepoprawny zapis obszaru pracy."));
+        if(Version!=1 || !Enum.IsDefined(Mode) || !double.IsFinite(Ratio) || Ratio is <.2 or >.8 || !double.IsFinite(RowRatio) || RowRatio is <.2 or >.8 || Sessions==null || Sessions.Count>MaximumSessions)throw new InvalidDataException(L.T("Niepoprawny zapis obszaru pracy."));
         if(Sessions.Any(s=>s==null || s.Key==Guid.Empty || s.ProfileId==Guid.Empty || !Enum.IsDefined(s.Dock) || s.Panel is <0 or >2) || Sessions.Select(s=>s.Key).Distinct().Count()!=Sessions.Count)throw new InvalidDataException(L.T("Niepoprawne karty obszaru pracy."));
         foreach(var session in Sessions)session.Window?.Validate();
         bool Selected(Guid? key,SessionDock? dock)=>key==null || Sessions.Any(s=>s.Key==key && (dock==null || s.Dock==dock));
-        if(!Selected(SelectedPrimary,SessionDock.Primary) || !Selected(SelectedSecondary,SessionDock.Secondary) || !Selected(Focused,null) || Mode==WorkspaceMode.Single && Sessions.Any(s=>s.Dock==SessionDock.Secondary))throw new InvalidDataException(L.T("Niepoprawny wybór karty."));
+        var state=new WorkspaceState(); state.SetMode(Mode);
+        if(!Selected(SelectedPrimary,SessionDock.Primary) || !Selected(SelectedSecondary,SessionDock.Secondary) || !Selected(SelectedTertiary,SessionDock.Tertiary) || !Selected(SelectedQuaternary,SessionDock.Quaternary) || !Selected(Focused,null) || Sessions.Any(s=>s.Dock!=SessionDock.Floating && !state.VisibleDocks.Contains(s.Dock)))throw new InvalidDataException(L.T("Niepoprawny wybór karty."));
     }
     public string Serialize() { Validate(); return JsonSerializer.Serialize(this); }
     public static WorkspaceSnapshot Parse(string json)
@@ -27,7 +28,7 @@ public sealed record WorkspaceSnapshot(int Version,WorkspaceMode Mode,double Rat
     {
         var ids=known.ToHashSet(); var sessions=Sessions.Where(s=>ids.Contains(s.ProfileId)).ToList();
         Guid? Keep(Guid? key)=>sessions.Any(s=>s.Key==key)?key:null;
-        return this with { Sessions=sessions,SelectedPrimary=Keep(SelectedPrimary),SelectedSecondary=Keep(SelectedSecondary),Focused=Keep(Focused) };
+        return this with { Sessions=sessions,SelectedPrimary=Keep(SelectedPrimary),SelectedSecondary=Keep(SelectedSecondary),SelectedTertiary=Keep(SelectedTertiary),SelectedQuaternary=Keep(SelectedQuaternary),Focused=Keep(Focused) };
     }
 }
 public sealed record ScreenArea(int X,int Y,int Width,int Height,double Scale=1);

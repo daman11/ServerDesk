@@ -22,6 +22,9 @@ internal sealed partial class SessionPane
         // after a remote application has replaced the template's cursor binding.
         if(terminal.IsLoaded)
         {
+            // Restored/inactive cards may be loaded before a hidden terminal's
+            // template has been measured. Its public Terminal getter needs it.
+            terminal.ApplyTemplate();
             var code=(value.TerminalCursor switch { TerminalCursorShape.Block=>1,TerminalCursorShape.Underline=>3,_=>5 })+(value.TerminalCursorBlink?0:1);
             terminal.Terminal.Write($"\u001b[{code} q");
         }

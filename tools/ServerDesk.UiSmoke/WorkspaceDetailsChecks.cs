@@ -25,7 +25,9 @@ internal static class WorkspaceDetailsChecks
         var titlebar=main.GetVisualDescendants().OfType<Grid>().Single(g=>g.Name=="WorkspaceTitleBar");
         if(!main.ExtendClientAreaToDecorationsHint || main.WindowDecorations!=WindowDecorations.BorderOnly || WindowDecorationProperties.GetElementRole(titlebar)!=WindowDecorationsElementRole.TitleBar)throw new Exception("Window does not use a single custom title bar");
         var folder=main.GetVisualDescendants().OfType<TreeViewItem>().Single(t=>t.Tag as string=="Production/Linux");
-        if(!folder.ContextMenu!.Items.OfType<MenuItem>().Any(m=>m.Header as string=="Zmień ikonę folderu"))throw new Exception("Folder icon command missing");
+        folder.ContextMenu!.Open(folder); RedesignChecks.Frames(2);
+        if(!folder.ContextMenu.Items.OfType<MenuItem>().Any(m=>m.Header as string=="Zmień ikonę folderu"))throw new Exception("Folder icon command missing");
+        folder.ContextMenu.Close();
         var edit=main.EditFolderIconAsync("Production/Linux"); RedesignChecks.Frames();
         var dialog=main.OwnedWindows.Single(); var picker=dialog.GetVisualDescendants().OfType<ComboBox>().Single(c=>AutomationProperties.GetName(c)=="Ikona folderu");
         picker.SelectedItem=FolderIcons.Choices.Single(c=>c.Id=="database"); RedesignChecks.Frames(); dialog.CaptureRenderedFrame()!.Save(Path.Combine(root,"folder-icon-picker.png"));

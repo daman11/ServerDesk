@@ -3,6 +3,7 @@ using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Controls.Primitives;
 using Avalonia.Controls.Chrome;
+using Avalonia.Controls.Templates;
 using Avalonia.Data;
 using Avalonia.Data.Converters;
 using Avalonia.Input;
@@ -108,6 +109,16 @@ public sealed partial class MainWindow
         if(section=="recent")profiles=profiles.Where(p=>p.LastConnected!=null);
         profiles=ProfileOrdering.Sort(profiles,vm.SortMode,vm.SortDescending).ToArray();
         if(selected!=null && !profiles.Any(p=>p.Id==selected)) { selected=null; vm.SelectedServer=null; servers.SelectedItem=null; }
+        var connectedIds=sessions.Where(s=>s.IsConnected || s.IsRdpLoggedIn).Select(s=>s.Profile.Id).ToHashSet();
+        var sortMode=vm.SortMode; var badges=preferences.ShowProtocolBadges;
+        // Tree items keep their identity and drag handlers; construct expensive row
+        // visuals only when Avalonia presents them, rather than inside closed folders.
+        var profileTemplate=new FuncDataTemplate<ServerProfile>((p,_)=>
+        {
+            if(p==null)return null;
+            var detail=sortMode==ProfileSort.Host?SortAddress(p):sortMode==ProfileSort.LastConnected?p.LastConnected?.ToLocalTime().ToString("g")??"—":null;
+            return Row(ProfileIcons.Resolve(p),p.Name,p.Favorite,connectedIds.Contains(p.Id),badges?p.Protocol.ToString():null,p,detail:detail);
+        });
         var counts=new Dictionary<string,int>(); foreach(var item in profiles) { var path=item.Folder; while(path.Length>0) { counts[path]=counts.GetValueOrDefault(path)+1; var split=path.LastIndexOf('/'); path=split<0?"":path[..split]; } }
         var roots=new List<TreeViewItem>(); var folders=new Dictionary<string,TreeViewItem>();
         TreeViewItem Folder(string path)
@@ -118,7 +129,7 @@ public sealed partial class MainWindow
             // Detached/rebuilt search nodes must never rewrite saved collapse state.
             node.PropertyChanged+=(_,e)=> { if(e.Property==TreeViewItem.IsExpandedProperty && !rebuildingTree && !searching && string.IsNullOrWhiteSpace(vm.Search)) { if(node.IsExpanded)collapsed.Remove(path); else collapsed.Add(path); } };
             if(path==selectedFolder)selection=node;
-            node.ContextMenu=new ContextMenu { ItemsSource=new[]{Menu("Nowe połączenie w folderze",()=>EditAsync(new ServerProfile { Folder=path })),Menu("Zmień ikonę folderu",()=>EditFolderIconAsync(path)),Menu("Zmień nazwę",async()=> { vm.SelectedFolder=path; await RenameFolderAsync(); }),Menu("Usuń pusty folder",async()=> { vm.SelectedFolder=path; await DeleteFolderAsync(); })} };
+            node.ContextMenu=DeferredBrowserMenu(()=>new[]{Menu("Nowe połączenie w folderze",()=>EditAsync(new ServerProfile { Folder=path })),Menu("Zmień ikonę folderu",()=>EditFolderIconAsync(path)),Menu("Zmień nazwę",async()=> { vm.SelectedFolder=path; await RenameFolderAsync(); }),Menu("Usuń pusty folder",async()=> { vm.SelectedFolder=path; await DeleteFolderAsync(); })});
             DragDrop.SetAllowDrop(node,true);
             DragDrop.AddDragOverHandler(node,(_,e)=> { e.DragEffects=e.DataTransfer.Contains(ServerDrag)?DragDropEffects.Move:DragDropEffects.None; e.Handled=true; });
             DragDrop.AddDropHandler(node,(_,e)=> { if(e.DataTransfer.TryGetValue(ServerDrag) is {} p)_ = Safe(async()=> { await repository.MoveToFolderAsync(p.Id,path); await vm.LoadAsync(); }); e.Handled=true; });
@@ -127,19 +138,9 @@ public sealed partial class MainWindow
         if(section=="connections" && !HasBrowserFilter)foreach(var path in vm.Folders.Where(f=>f is not ("Wszystkie" or "★ Ulubione" or "◷ Ostatnie")))Folder(path);
         foreach(var p in profiles)
         {
-            var connected=sessions.Any(s=>s.Profile.Id==p.Id && (s.IsConnected || s.IsRdpLoggedIn));
-            var sortDetail=vm.SortMode==ProfileSort.Host?SortAddress(p):vm.SortMode==ProfileSort.LastConnected?p.LastConnected?.ToLocalTime().ToString("g")??"—":null;
-            var row=Row(ProfileIcons.Resolve(p),p.Name,p.Favorite,connected,preferences.ShowProtocolBadges?p.Protocol.ToString():null,p,detail:sortDetail);
-            var node=new TreeViewItem { Header=row,Tag=p }; ToolTip.SetTip(node,$"{p.Protocol} · {(p.Protocol==Protocol.SSH?p.Username+"@":"")}{p.Endpoint}\n{p.Description}");
-            var context=new ContextMenu(); node.ContextMenu=context; var populated=false;
-            void PopulateContext()
-            {
-                if(populated)return; populated=true;
-                context.ItemsSource=new[]{Menu("Połącz",()=>ConnectAsync(p)),Menu("Edytuj",()=>EditAsync(p)),Menu("Duplikuj",async()=> { vm.SelectedServer=p; await DuplicateAsync(); }),Menu("Ulubiony",async()=> { vm.SelectedServer=p; await FavoriteAsync(); }),Menu("Przenieś do folderu",async()=> { vm.SelectedServer=p; await MoveAsync(); }),Menu("Usuń",async()=> { vm.SelectedServer=p; await DeleteAsync(); }),Menu("Usuń zapisane hasło",async()=> { vm.SelectedServer=p; await ForgetSecretAsync(); }),Menu("Historia tego serwera",()=>HistoryAsync(p.Id)),NetworkContextMenu(p)};
-            }
-            context.Opening+=(_,_)=>PopulateContext();
-            // Programmatic Open() bypasses Opening in Avalonia; cover it too.
-            context.Opened+=(_,_)=>PopulateContext();
+            var node=new TreeViewItem { Header=p,HeaderTemplate=profileTemplate,Tag=p }; ToolTip.SetTip(node,$"{p.Protocol} · {(p.Protocol==Protocol.SSH?p.Username+"@":"")}{p.Endpoint}\n{p.Description}");
+            Avalonia.Automation.AutomationProperties.SetName(node,p.Name);
+            node.ContextMenu=DeferredBrowserMenu(()=>new[]{Menu("Połącz",()=>ConnectAsync(p)),Menu("Edytuj",()=>EditAsync(p)),Menu("Duplikuj",async()=> { vm.SelectedServer=p; await DuplicateAsync(); }),Menu("Ulubiony",async()=> { vm.SelectedServer=p; await FavoriteAsync(); }),Menu("Przenieś do folderu",async()=> { vm.SelectedServer=p; await MoveAsync(); }),Menu("Usuń",async()=> { vm.SelectedServer=p; await DeleteAsync(); }),Menu("Usuń zapisane hasło",async()=> { vm.SelectedServer=p; await ForgetSecretAsync(); }),Menu("Historia tego serwera",()=>HistoryAsync(p.Id)),NetworkContextMenu(p)});
             DragSupport.Source(node,ServerDrag,()=>p,DragDropEffects.Move);
             if(p.Folder.Length>0 && section=="connections")Folder(p.Folder).Items.Add(node); else roots.Add(node);
             if(p.Id==selected)selection=node;

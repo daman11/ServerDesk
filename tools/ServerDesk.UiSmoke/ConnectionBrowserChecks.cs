@@ -26,7 +26,7 @@ internal static class ConnectionBrowserChecks
             var settings=repo.ApplicationSettingsAsync().GetAwaiter().GetResult(); RedesignChecks.Wait(repo.SaveApplicationSettingsAsync(settings with { Preferences=settings.Preferences with { Language=language } }));
             var first=new ServerProfile { Name="node2",Host="fixture.invalid",Username="fixture",Folder="Rack2/Lab",Favorite=false };
             var second=first with { Id=Guid.NewGuid(),Name="node10",Folder="Rack10/Lab",Favorite=true,Protocol=Protocol.RDP,Port=3389 };
-            RedesignChecks.Wait(repo.SaveAsync(first)); RedesignChecks.Wait(repo.SaveAsync(second));
+            RedesignChecks.Wait(repo.AddFolderAsync(first.Folder)); RedesignChecks.Wait(repo.AddFolderAsync(second.Folder));
             var vm=new MainViewModel(repo); var main=new MainWindow(vm,repo,new CredentialStore(paths),new SshConnectionFactory(repo),new ExternalRdpClient()); main.Show(); RedesignChecks.Frames(20);
             var tree=Field<TreeView>(main,"tree");
             TreeViewItem Folder(string path)=>Nodes(tree.Items).Single(n=>n.Tag as string==path);
@@ -36,6 +36,21 @@ internal static class ConnectionBrowserChecks
             { if(tree.SelectedItem!=null || vm.SelectedServer!=null || main.OpenSessions.Any() || main.OwnedWindows.Any())throw new Exception("A filtered profile remained selected or launched a connection"); }
             try
             {
+                var empty=Field<StackPanel>(main,"browserEmpty");
+                if(empty.IsVisible || Nodes(tree.Items).Count(n=>n.Tag is string)!=4)throw new Exception("Empty-folder tree is covered by the empty-server prompt");
+                vm.Search="missing"; RedesignChecks.Frames(); if(!empty.IsVisible || tree.Items.Count!=0)throw new Exception("Empty search results have no prompt");
+                vm.Search=""; RedesignChecks.Frames(); if(empty.IsVisible)throw new Exception("Clearing search covered the empty folders");
+                var folder=Folder(first.Folder); var context=folder.ContextMenu!;
+                foreach(var attempt in new[]{1,2})
+                {
+                    context.Open(folder); RedesignChecks.Frames(3);
+                    var entries=context.Items.OfType<MenuItem>().ToArray();
+                    var labels=new[]{"Nowe połączenie w folderze","Zmień ikonę folderu","Zmień nazwę","Usuń pusty folder"}.Select(label=>AppText.T(label));
+                    if(entries.Length!=4 || !entries.Select(item=>item.Header as string).SequenceEqual(labels) || entries.Any(item=>item.Icon is not DeskIcon))throw new Exception("Deferred folder menu lost or duplicated localized actions/icons");
+                    context.Close(); RedesignChecks.Frames(2);
+                }
+                main.CaptureRenderedFrame()!.Save(Path.Combine(root,$"empty-folders-{language}.png"));
+                RedesignChecks.Wait(repo.SaveAsync(first)); RedesignChecks.Wait(repo.SaveAsync(second)); RedesignChecks.Wait(vm.LoadAsync()); RedesignChecks.Frames();
                 tree.SelectedItem=Folder("Rack2/Lab"); vm.SortMode=ProfileSort.Host; vm.SortDescending=true; RedesignChecks.Frames(); FolderSelected();
                 RedesignChecks.Wait(vm.LoadAsync()); RedesignChecks.Frames(); FolderSelected();
                 tree.SelectedItem=Profile(first.Id);
@@ -65,7 +80,7 @@ internal static class ConnectionBrowserChecks
                 if(!saved.Contains("Rack2") || saved.Contains("Rack10"))throw new Exception("Closing persisted temporary search expansion");
                 vm=new MainViewModel(repo); main=new MainWindow(vm,repo,new CredentialStore(paths),new SshConnectionFactory(repo),new ExternalRdpClient()); main.Show(); RedesignChecks.Frames(20); tree=Field<TreeView>(main,"tree");
                 if(Folder("Rack2").IsExpanded || !Folder("Rack10").IsExpanded || vm.SortMode!=ProfileSort.Name || !vm.SortDescending)throw new Exception("Restart lost collapse states or sort order");
-                Console.WriteLine("PASS "+language+": folder selection survives sort/reload; search/protocol/favorites clear hidden profiles; immediate Enter cannot open hidden connection; search expansion stays temporary; restart preserves collapse states and sort; 900px font16 Graphite/Light");
+                Console.WriteLine("PASS "+language+": empty folders stay accessible; repeated deferred folder menus retain four localized actions/icons; folder selection survives sort/reload; search/protocol/favorites clear hidden profiles; immediate Enter cannot open hidden connection; search expansion stays temporary; restart preserves collapse states and sort; 900px font16 Graphite/Light");
             }
             finally { main.Close(); Until(()=>!main.IsVisible); }
         }

@@ -2,6 +2,10 @@
 
 ## Unreleased
 
+- Defer connection-row visuals and folder-menu actions until presented/opened; retain profile icons, status, sorting details and drag handlers while reducing allocations for collapsed trees.
+- Keep empty folders accessible without overlaying the first-server prompt; preserve localized folder actions and icons across repeated menu opens.
+- Expand the opt-in large-browser check to 5,000 profiles and 200 folders, including protocol/search filters, numeric IP sorting, matching selection and the hidden-profile Enter guard. Add a measurement-only mode for bounded before/after comparisons.
+
 - Keep Linux monitoring network details on older iproute2 without JSON support, using validated one-line addresses/link details and separate IPv4/IPv6 route fallbacks.
 - Show IPv6 default gateways alongside IPv4; ignore duplicate gateways and malformed fallback rows without discarding other metrics.
 - Treat inconsistent CPU counter intervals as unavailable rather than showing a misleading 0%; resume after a valid pair of samples. Add focused parser and real OpenSSH/UI regression coverage.

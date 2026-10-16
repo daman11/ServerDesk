@@ -21,6 +21,14 @@ public sealed partial class MainWindow
         ProfileSearch.Matches(profile,vm.Search) && (vm.ProtocolFilter==null || profile.Protocol==vm.ProtocolFilter) &&
         (section=="connections" || section=="favorite" && profile.Favorite || section=="recent" && profile.LastConnected!=null);
     private void ClearBrowserFilters() { vm.Search=""; vm.ProtocolFilter=null; QueueTree(); }
+    private static ContextMenu DeferredBrowserMenu(Func<MenuItem[]> items)
+    {
+        var menu=new ContextMenu(); var populated=false;
+        void Populate() { if(populated)return; menu.ItemsSource=items(); populated=true; }
+        menu.Opening+=(_,_)=>Populate();
+        // Avalonia's programmatic Open() can bypass Opening.
+        menu.Opened+=(_,_)=>Populate(); return menu;
+    }
     private void BuildBrowserFilters()
     {
         var body=new StackPanel { Margin=new Thickness(10,0,10,8),Spacing=6 };
@@ -47,7 +55,7 @@ public sealed partial class MainWindow
         foreach(var (button,filter) in protocolButtons)button.Classes.Set("active",filter==vm.ProtocolFilter);
         browserCount.Text=L.F($"Widoczne: {count} / {vm.AllServers.Count}");
         clearBrowserFilters.IsVisible=HasBrowserFilter;
-        browserEmpty.IsVisible=section!="transfers" && count==0;
+        browserEmpty.IsVisible=(section is "connections" or "favorite" or "recent") && count==0 && tree.Items.Count==0;
         browserEmptyTitle.Text=HasBrowserFilter?L.T("Brak wyników"):section=="favorite"?L.T("Brak ulubionych"):section=="recent"?L.T("Brak ostatnich połączeń"):L.T("Dodaj pierwszy serwer");
         browserEmptyHint.Text=HasBrowserFilter?L.T("Zmień zapytanie lub wyczyść filtry."):section=="favorite"?L.T("Oznacz serwer gwiazdką w jego menu."):section=="recent"?L.T("Tutaj pojawią się potwierdzone połączenia SSH, RDP, VNC i Serial."):L.T("Zapisz połączenie SSH, RDP, VNC lub Serial.");
         emptyBrowserAction.Content=DeskIcons.Labelled(HasBrowserFilter?"close":"plus",HasBrowserFilter?L.T("Wyczyść filtry"):L.T("Nowe połączenie"));

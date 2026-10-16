@@ -4,6 +4,8 @@
 
 Zmiany robocze po 0.37.0 poprawiają monitoring: odczyt sieci bez JSON na starszym iproute2, domyślne bramy IPv6 obok IPv4 i pomijanie niespójnego przedziału CPU zamiast fałszywego 0%. Celowane testy obejmują parsery, własny OpenSSH, PL/EN i powrót monitoringu po zerwaniu jego transportu. [Dokładny zakres](reports/monitoring-compatibility-2026-10-16.md); bez nowego wydania paczek i bez deklaracji pełnej macierzy dystrybucji.
 
+Kolejny etap roboczy ogranicza tworzenie ukrytych wierszy i menu w drzewie połączeń oraz usuwa komunikat nakładający się na puste foldery. Import, filtrowanie i sortowanie 5000 profili/200 folderów sprawdzono na Windows. [Zakres i pomiary](reports/browser-scalability-2026-10-16.md); fizyczne gesty, głębsze drzewa i długie sesje pozostają w planie 1.0.
+
 0.36.2 uzupełnia ikony i ujednolica nazwy istniejących modułów oraz dodaje audyt kompletności akcji. Nie rozszerza zakresu protokołów MVP.
 
 0.36.1 porządkuje wygląd komend, ustawień i wspólnych list. Dodaje kontrolę układu małego okna z większą czcionką; zakres istniejących funkcji MVP opisano poniżej.
@@ -19,7 +21,7 @@ Ta lista odnosi się do pierwotnej specyfikacji ServerDesk i jej kryteriów goto
 | Kryterium pierwotnego MVP | Implementacja i potwierdzony zakres | Pozostała weryfikacja |
 |---|---|---|
 | Uruchomienie Windows/Linux | Natywna aplikacja Avalonia; Windows x64 Setup/ZIP, Linux x64 DEB/TAR. Gotowe EXE i okno WSLg sprawdzane w procesie wydania. | Oddzielne Windows 10, Kubuntu, Fedora, Debian i fizyczne środowiska X11/Wayland. |
-| Dodanie, zapis, edycja i foldery serwerów | SQLite, foldery/podfoldery, ulubione, historia, naturalne sortowanie nazw/IP, wyszukiwanie, duplikowanie i Quick Connect. | Sprawdzono import/widok 1000 profili; pozostają większe drzewa, pełna ręczna macierz gestów i wielogodzinne pomiary. |
+| Dodanie, zapis, edycja i foldery serwerów | SQLite, foldery/podfoldery, ulubione, historia, naturalne sortowanie nazw/IP, wyszukiwanie, duplikowanie i Quick Connect. | Etap roboczy na Windows: import/widok 5000 profili i 200 folderów. Pozostają dalsza skala/głębokość, wiele własnych grafik, pełna ręczna macierz gestów i wielogodzinne pomiary. |
 | Połączenie SSH i interaktywny terminal | **0.28.0:** rzeczywisty OpenSSH z hasłem i kluczem/passphrase; vim/nano z zapisem UTF-8, top/htop/MC, bash/zsh/fish, 28 przypadków inputu i schowek, trzy rozmiary PTY, EOF/reconnect oraz utrata transportu. Escape Windows i kopiowanie bez zaznaczenia poprawione; otwarcie PTY i resize poza UI. Windows i Ubuntu/WSL. | Inne implementacje/wersje SSH, fizyczne układy klawiatury/AltGr/IME, mysz terminalowa i pełna macierz rozszerzonych protokołów klawiatury. |
 | Kilka terminali i zakładki | Oddzielne transporty i terminale, karty, dwa panele, osobne okna, zmiana kolejności i przywracanie bez automatycznego logowania. 0.30.0: poprawione zwalnianie źródeł anulowania, pełne sprzątanie także usuniętych kart, reconnect i przenoszenie działającego terminala między oknami. | Wielogodzinne sesje i duża liczba terminali; ograniczone pomiary oraz dokładny zakres opisuje raport 0.30.0. |
 | Przeglądanie plików SFTP | Dwa panele, metadane/ikony, ukryte pliki, filtrowanie/sortowanie, zaznaczanie grup, katalogi, rename, move, chmod i trwałe usuwanie z podglądem. | Sprawdzono rzeczywisty katalog 5000 wpisów i anulowanie odczytu; pozostają większe katalogi i serwery inne niż OpenSSH. |

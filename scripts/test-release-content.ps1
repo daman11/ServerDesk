@@ -2,11 +2,20 @@ param([string]$ReleaseDirectory)
 $ErrorActionPreference='Stop'
 $repo=Split-Path -Parent $PSScriptRoot
 $version=([xml](Get-Content (Join-Path $repo 'Directory.Build.props'))).Project.PropertyGroup.Version
+$head=git -C $repo rev-parse HEAD
+if($LASTEXITCODE -ne 0){throw 'Release verification requires the source Git checkout'}
+$windowsVersion=[Diagnostics.FileVersionInfo]::GetVersionInfo((Join-Path $repo "artifacts/win-x64-$version/ServerDesk.App.exe"))
+if($windowsVersion.FileVersion -ne "$version.0" -or $windowsVersion.ProductVersion -ne "$version+$head"){throw 'Windows payload version/commit differs from current source; rebuild from the final release commit'}
 foreach($runtime in @('win-x64','linux-x64')) {
     $directory=Join-Path $repo "artifacts/$runtime-$version"
     $release=Get-Content "$directory/RELEASE.json" -Raw | ConvertFrom-Json
     if($release.version -ne $version -or $release.runtime -ne $runtime -or $release.license -ne 'MIT'){throw 'Wrong payload metadata'}
     foreach($required in @('LICENSE','CHANGELOG.md','SECURITY.md','THIRD-PARTY-NOTICES.md','DEPENDENCIES.json','DOTNET-LICENSE.txt','DOTNET-THIRD-PARTY-NOTICES.txt','LUCIDE-LICENSE.txt','MARCUSW-VNC-LICENSE.txt','licenses/inter-LICENSE.txt','licenses/nsis-COPYING.txt','docs/getting-started.md','docs/getting-started.en.md','docs/known-issues.md',"docs/releases/release-$version.md","docs/reports/release-verification-$version.md")){if(-not (Test-Path -LiteralPath "$directory/$required")){throw "Missing $required in $runtime"}}
+    foreach($file in (Get-ChildItem (Join-Path $repo 'docs') -File -Recurse)){
+        $relative=[IO.Path]::GetRelativePath($repo,$file.FullName)
+        $copy=Join-Path $directory $relative
+        if(-not (Test-Path -LiteralPath $copy) -or (Get-FileHash -LiteralPath $copy).Hash -ne (Get-FileHash -LiteralPath $file.FullName).Hash){throw "Missing or stale offline documentation: $relative in $runtime"}
+    }
     $inventory=Get-Content "$directory/DEPENDENCIES.json" -Raw | ConvertFrom-Json
     foreach($package in $inventory.packages){foreach($notice in $package.notices){if(-not (Test-Path -LiteralPath "$directory/$notice")){throw "Missing notice for $($package.id)"}}}
     foreach($file in (Get-ChildItem $directory -Recurse -File)) {

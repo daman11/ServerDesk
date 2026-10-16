@@ -1,4 +1,4 @@
-# ServerDesk — 0.31.1 Public Beta
+# ServerDesk — 0.32.0 Public Beta
 
 Native Windows/Linux workspace for SSH, SFTP, RDP, VNC and serial connections. Built with C#, .NET 10 and Avalonia 12. Free and open source under the [MIT license](LICENSE).
 
@@ -8,11 +8,11 @@ Native Windows/Linux workspace for SSH, SFTP, RDP, VNC and serial connections. B
 
 | System | Package | Start |
 |---|---|---|
-| Windows x64 | `ServerDesk-0.31.1-win-x64-Setup.exe` | Run Setup; current-user installation and Start menu shortcut |
-| Windows x64 portable | `ServerDesk-0.31.1-win-x64.zip` | Extract everything; run `ServerDesk.App.exe` |
-| Linux x64 DEB | `serverdesk_0.31.1_amd64.deb` | `sudo apt install ./serverdesk_0.31.1_amd64.deb` |
-| Linux x64 archive | `ServerDesk-0.31.1-linux-x64.tar.gz` | Extract into a new directory; run `./ServerDesk.App` |
-| Source | `ServerDesk-0.31.1-source.zip` | .NET 10 SDK required |
+| Windows x64 | `ServerDesk-0.32.0-win-x64-Setup.exe` | Run Setup; current-user installation and Start menu shortcut |
+| Windows x64 portable | `ServerDesk-0.32.0-win-x64.zip` | Extract everything; run `ServerDesk.App.exe` |
+| Linux x64 DEB | `serverdesk_0.32.0_amd64.deb` | `sudo apt install ./serverdesk_0.32.0_amd64.deb` |
+| Linux x64 archive | `ServerDesk-0.32.0-linux-x64.tar.gz` | Extract into a new directory; run `./ServerDesk.App` |
+| Source | `ServerDesk-0.32.0-source.zip` | .NET 10 SDK required |
 
 The binary packages include .NET. Linux additionally needs its system X11/fontconfig libraries, Secret Service for remembered passwords and an installed FreeRDP client for RDP. Linux verification used Ubuntu/WSLg; other desktop/distribution combinations are experimental. ARM/macOS packages are not provided.
 
@@ -21,6 +21,7 @@ This beta is unsigned. Obtain it from a trusted release source and compare its S
 ## Features
 
 - SSH terminal, SFTP transfer queue, batch/recursive deletion with preview and Linux monitoring.
+- Local SSH/Serial scrollback search (Ctrl+Shift+F), reviewed SSH trust management in Settings, and cancellable background filtering/sorting for large file lists.
 - Larger connection lists with batched updates; bounded transfer progress and tested cancellation/retry under network loss.
 - SSH VT keyboard fixes, background PTY setup and coalesced resizing; real password/OpenSSH terminal acceptance checks.
 - SFTP symbolic-link navigation/details, remote link creation and explicit copying of resolved contents, with bounded directory traversal and protected link destinations.

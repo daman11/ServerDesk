@@ -2,6 +2,10 @@
 
 ## Unreleased
 
+## 0.32.0 — Public Beta — 2026-10-16
+
+- Restore the local release cadence: finish user-visible changes with versioned packages, verification and an immutable Git tag; add a read-only check that detects code ahead of its release or mismatched packaged source.
+- Include the full documentation tree in binary packages so the offline index and linked feature/release reports are available.
 - Add local scrollback search to SSH/Serial terminals: Ctrl+Shift+F, literal/case/whole-word matching, previous/next navigation, Unicode and wrapped-line matches, bounded result counts, refresh after output and a return-to-current-output action.
 - Keep search/status rows separate from terminal content, clear search on reconnect/close and consume local key releases so Kitty input cannot leak search shortcuts to the remote host.
 - Add Settings → Security → Trusted SSH keys with host/port/fingerprint search, fingerprint copying and explicitly confirmed removal of one reviewed key. Compare the stored fingerprint when deleting so a stale dialog cannot remove a replacement key.

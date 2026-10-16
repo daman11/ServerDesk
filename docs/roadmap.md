@@ -1,10 +1,10 @@
 Pierwotne MVP: aktualna tabela kryteriów i brakującej weryfikacji znajduje się w [mvp-status.md](mvp-status.md).
 
-Bieżący etap terminala: lokalne wyszukiwanie historii SSH/Serial, logiczne trafienia przez zawinięcia, kontrola skrótów i osobny pasek bez zasłaniania zawartości. [Zakres](reports/terminal-search-2026-10-16.md).
+Wydanie 0.32.0: lokalne wyszukiwanie historii SSH/Serial, logiczne trafienia przez zawinięcia, kontrola skrótów i osobny pasek bez zasłaniania zawartości. [Zakres](reports/terminal-search-2026-10-16.md).
 
-Bieżący etap w Git: zarządzanie zapisanym zaufaniem SSH w ustawieniach, bez automatycznego akceptowania zmienionych kluczy. [Testy i zakres](reports/ssh-trust-management-2026-10-16.md).
+Wydanie 0.32.0: zarządzanie zapisanym zaufaniem SSH w ustawieniach, bez automatycznego akceptowania zmienionych kluczy. [Testy i zakres](reports/ssh-trust-management-2026-10-16.md).
 
-Bieżący etap w Git po 0.31.1: filtrowanie i sortowanie dużych list SFTP w tle, anulowanie starszych wyników i bezpieczne zamykanie. Sprawdzono widoki po 50 000 wpisów na panel Windows/Linux oraz rzeczywisty katalog 5000 plików OpenSSH. [Zakres pomiarów](reports/sftp-large-file-views-2026-10-16.md). Paczki 0.31.1 pozostają zamrożone.
+Wydanie 0.32.0: filtrowanie i sortowanie dużych list SFTP w tle, anulowanie starszych wyników i bezpieczne zamykanie. Sprawdzono widoki po 50 000 wpisów na panel Windows/Linux oraz rzeczywisty katalog 5000 plików OpenSSH. [Zakres pomiarów](reports/sftp-large-file-views-2026-10-16.md). Paczki 0.31.1 pozostają zamrożone.
 
 Wydanie 0.29.0 usprawnia większe listy połączeń oraz transfery przy utracie sieci: ograniczony postęp/bufor uploadu, anulowanie, zachowanie oryginałów i retry. Testy obejmują 1000 profili oraz rzeczywisty katalog 5000 plików. [Zmiany](releases/release-0.29.0.md).
 

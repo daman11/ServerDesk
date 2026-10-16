@@ -13,7 +13,9 @@
 
 The maintainer wants ongoing work versioned in Git. Inspect `git status` before editing. Complete and validate each requested logical change, then create a local commit with a concise English message. Routine local commits need no extra confirmation. Do not include unrelated user edits. Do not amend published history, move existing release tags, or push without the user's publication instruction.
 
-`main` is the primary branch. The imported `v0.31.1` tag matches the frozen source release; earlier releases have documents and local packages but no fabricated Git history. Subsequent public versions use `vMAJOR.MINOR.PATCH` tags and `Directory.Build.props` as the version source. Commit changes independently of release numbering. Do not overwrite frozen packages under `artifacts/releases/`.
+`main` is the primary branch. The imported `v0.31.1` tag matches the frozen source release; earlier releases have documents and local packages but no fabricated Git history. Subsequent public versions use `vMAJOR.MINOR.PATCH` tags and `Directory.Build.props` as the version source. Do not overwrite frozen packages under `artifacts/releases/`.
+
+The maintainer expects both commits and usable local releases. At the start, run `scripts/check-release-state.ps1` to identify changes ahead of the current release. After a requested batch of user-visible application changes, prepare the next patch/minor version, update the changelog/current guides, complete the release gates, assemble versioned Windows/Linux/source packages, commit the validated source and create its annotated tag. Finish with `scripts/check-release-state.ps1 -RequireCurrentRelease` and link the installer. Intermediate logical commits are encouraged; they do not replace the release. Documentation-only maintenance need not create an application release. An explicit user instruction to work only on source overrides this cadence. Preparing a local release does not authorize pushing or publishing remotely.
 
 ## Validation and content
 

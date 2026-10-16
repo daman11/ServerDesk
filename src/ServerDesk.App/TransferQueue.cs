@@ -56,7 +56,7 @@ internal sealed partial class SessionPane
     {
         var title=DesignSystem.Label(job.Label); title.TextTrimming=TextTrimming.CharacterEllipsis;
         job.Status=DesignSystem.Label(L.T("W kolejce"),true,12); job.Status.TextTrimming=TextTrimming.CharacterEllipsis;
-        job.Detail=DesignSystem.Label(L.T("Oczekiwanie na wolne miejsce"),true,12); job.Detail.TextTrimming=TextTrimming.CharacterEllipsis;
+        job.Detail=DesignSystem.Label(L.T("Oczekiwanie na wolne miejsce"),true,12); job.Detail.TextTrimming=TextTrimming.CharacterEllipsis; job.Detail.TextWrapping=TextWrapping.Wrap; job.Detail.MaxLines=3;
         job.Bar=new ProgressBar { Maximum=100,Height=3,IsIndeterminate=true };
         job.Cancel=DeskIcons.Button("x","Anuluj: "+job.Label,()=> { job.Cancellation?.Cancel(); job.Cancel.IsEnabled=false; });
         job.Retry=DeskIcons.Button("refresh","Ponów: "+job.Label,()=>_=owner.Safe(()=>
@@ -105,7 +105,7 @@ internal sealed partial class SessionPane
             refresh=true;
         }
         catch(Exception) when(cancel.IsCancellationRequested) { job.State=TransferState.Cancelled; job.Detail.Text=L.T("Możesz ponowić zadanie po połączeniu sesji."); }
-        catch(Exception ex) { job.State=TransferState.Failed; job.Detail.Text=ex.Message; ToolTip.SetTip(job.Detail,ex.Message); owner.ReportBackgroundError(L.T("Transfer SFTP nie powiódł się."),ex); }
+        catch(Exception ex) { job.State=TransferState.Failed; job.Detail.Text=TransferErrorMessages.Describe(ex); ToolTip.SetTip(job.Detail,job.Detail.Text); owner.ReportBackgroundError(L.T("Transfer SFTP nie powiódł się."),ex); }
         finally
         {
             finished=true; job.Cancellation=null; transfers.Remove(cancel); if(acquired)MainWindow.TransferSlots.Release();

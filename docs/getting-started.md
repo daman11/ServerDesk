@@ -12,6 +12,8 @@ W panelu SFTP użyj Wstecz/Dalej lub Alt+←/→, Alt+↑ dla katalogu nadrzędn
 
 Bezpłatna aplikacja open source na licencji MIT. **Publiczna beta**; zakres testów i ograniczenia: [known-issues.md](known-issues.md). English: [getting-started.en.md](getting-started.en.md).
 
+W wersji rozwojowej kolejka transferów podaje przyczynę błędu i wskazówki przed ponowieniem. Najedź na opis, aby przeczytać całość. Po poprawieniu uprawnień lub ścieżki użyj **Ponów**; przy utracie SSH najpierw połącz sesję. Ponowienie przesyła plik od początku. Ogólny błąd serwera SFTP może oznaczać m.in. uprawnienia lub brak miejsca — serwer nie zawsze podaje dokładną przyczynę.
+
 ## Windows x64
 
 Uruchom `ServerDesk-0.36.2-win-x64-Setup.exe`. Instalator działa dla bieżącego użytkownika, dodaje skrót w menu Start i wpis na liście zainstalowanych aplikacji. Nie wymaga osobnej instalacji .NET. Dostępny jest też ZIP: rozpakuj **całe archiwum** do osobnego katalogu i uruchom `ServerDesk.App.exe`.

@@ -30,7 +30,7 @@ public sealed partial class SftpSession
     private static IOException Changed()=>new(L.T("Zawartość zmieniła się od przygotowania podglądu. Odśwież listę i przygotuj usuwanie ponownie."));
     private static FileEntry Entry(ISftpFile file)=>new(file.Name,file.FullName,file.IsDirectory,file.IsSymbolicLink,file.IsSymbolicLink?0:file.Length,file.LastWriteTime,Permissions(file.Attributes));
     private IAsyncEnumerable<ISftpFile> DeletionListAsync(string path,CancellationToken ct)=>client.ListDirectoryAsync(path,ct).WhereDeletionEntries(ct);
-    private async Task<ISftpFile> ReadDeletionFileAsync(string path,CancellationToken ct)
+    private async Task<ISftpFile> ReadDeletionFileAsync(string path,CancellationToken ct,Exception? missingSource=null)
     {
         path=FileDeletionService.Normalize(path,false);
         var parent=RemotePath.Parent(path);
@@ -48,7 +48,9 @@ public sealed partial class SftpSession
         // actual directory entry (also works for a dangling link), never its target.
         await foreach(var candidate in DeletionListAsync(parent,ct))
             if(candidate.FullName==path)return Supported(candidate);
-        throw Changed();
+        // A missing transfer source needs path guidance, while deletion keeps
+        // its existing stale-preview guard. Never bypass parent/link checks.
+        throw missingSource??Changed();
     }
     private static ISftpFile Supported(ISftpFile file)
     {

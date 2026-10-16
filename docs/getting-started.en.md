@@ -12,6 +12,8 @@ In SFTP, use Back/Forward or Alt+Left/Right, Alt+Up for the parent directory and
 
 Free, open-source software under MIT. **Public beta**; see [known-issues.md](known-issues.md) for tested platforms and limitations. Polski: [getting-started.md](getting-started.md).
 
+Development builds show transfer failure guidance in the queue. Hover over a detail to read it in full. After fixing permissions or paths, choose **Retry**; if SSH was lost, reconnect the session first. Retrying starts the file from the beginning. A generic SFTP server failure may mean permissions or insufficient space, among other causes; the server does not always specify the exact reason.
+
 ## Windows x64
 
 Run `ServerDesk-0.36.2-win-x64-Setup.exe`. Setup installs for the current user, creates a Start menu shortcut and registers an uninstaller. No separate .NET installation is needed. Alternatively, extract the **entire** portable ZIP into its own directory and run `ServerDesk.App.exe`.

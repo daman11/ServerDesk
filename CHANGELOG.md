@@ -2,6 +2,8 @@
 
 ## Unreleased
 
+- Explain SFTP transfer failures in Polish/English with recovery guidance for permissions, missing paths, authentication, timeouts, connection errors and known local disk-full codes. Preserve host-key and integrity safeguards; wrap queue details with full tooltips.
+- Correct the chmod prompt to pass octal digits to SSH.NET without converting them twice. Report a disappeared transfer source separately from deletion-preview changes, retaining link/ancestor validation.
 - Let explicit SFTP Refresh/F5 and reopening the file panel replace a detected broken browser connection while retaining the live SSH terminal, paths, filters, selections and navigation history.
 - Serialize browser recovery, revalidate SSH host trust and cancel pending recovery when the tab closes. Post-transfer refresh still does not reconnect or repeat file operations automatically.
 - Release SFTP connections and global transfer slots before refreshing directory listings, so stalled browsing cannot block queued copies. Preserve successful transfer results when refresh fails.

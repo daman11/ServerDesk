@@ -115,7 +115,7 @@ internal static class FileDeletionChecks
             raw.SymbolicLink(scope+"/keep/valuable.txt",scope+"/rename-link");
             Wait(connection.RenameAsync(scope+"/rename-link",scope+"/renamed-link",default));
             if(!Entry(scope+"/renamed-link").IsSymbolicLink || raw.ReadAllText(scope+"/keep/valuable.txt")!="outside selected tree")throw new Exception("Rename moved the link target");
-            try { Wait(connection.ChmodAsync(scope+"/renamed-link",Convert.ToInt16("600",8),default)); throw new Exception("Chmod followed a link"); }
+            try { Wait(connection.ChmodAsync(scope+"/renamed-link",600,default)); throw new Exception("Chmod followed a link"); }
             catch(IOException) { }
             Wait(connection.DeleteAsync(Entry(scope+"/renamed-link"),default));
             if(raw.ReadAllText(scope+"/keep/valuable.txt")!="outside selected tree")throw new Exception("Nonrecursive delete removed the link target");

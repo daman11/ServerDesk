@@ -1353,5 +1353,18 @@
   "Nie można uruchomić ServerDesk": "Nie można uruchomić ServerDesk",
   "Oryginalne dane nie zostaną usunięte ani zastąpione pustą bazą. Po zamknięciu aplikacji możesz zabezpieczyć katalog danych i przywrócić sprawdzoną kopię. Instrukcja: docs/database-backups.md.": "Oryginalne dane nie zostaną usunięte ani zastąpione pustą bazą. Po zamknięciu aplikacji możesz zabezpieczyć katalog danych i przywrócić sprawdzoną kopię. Instrukcja: docs/database-backups.md.",
   "Katalog kopii bazy:": "Katalog kopii bazy:",
-  "Przywracanie połączenia SFTP…": "Przywracanie połączenia SFTP…"
+  "Przywracanie połączenia SFTP…": "Przywracanie połączenia SFTP…",
+  "Nie potwierdzono tożsamości serwera SSH. Sprawdź klucz hosta w ustawieniach bezpieczeństwa przed ponowieniem.": "Nie potwierdzono tożsamości serwera SSH. Sprawdź klucz hosta w ustawieniach bezpieczeństwa przed ponowieniem.",
+  "Serwer odrzucił logowanie SFTP. Sprawdź poświadczenia i połącz ponownie sesję SSH przed ponowieniem.": "Serwer odrzucił logowanie SFTP. Sprawdź poświadczenia i połącz ponownie sesję SSH przed ponowieniem.",
+  "Brak uprawnień do odczytu lub zapisu pliku. Sprawdź uprawnienia pliku i katalogu docelowego, a następnie ponów zadanie.": "Brak uprawnień do odczytu lub zapisu pliku. Sprawdź uprawnienia pliku i katalogu docelowego, a następnie ponów zadanie.",
+  "Plik lub katalog jest niedostępny. Odśwież listę i sprawdź ścieżkę przed ponowieniem zadania.": "Plik lub katalog jest niedostępny. Odśwież listę i sprawdź ścieżkę przed ponowieniem zadania.",
+  "Brak miejsca na lokalnym dysku. Zwolnij miejsce i ponów zadanie. Nieukończony plik nie zastępuje pliku docelowego.": "Brak miejsca na lokalnym dysku. Zwolnij miejsce i ponów zadanie. Nieukończony plik nie zastępuje pliku docelowego.",
+  "Przekroczono czas oczekiwania na odpowiedź SFTP. Sprawdź sieć i dostępność serwera. Ponawiany plik jest przesyłany od początku.": "Przekroczono czas oczekiwania na odpowiedź SFTP. Sprawdź sieć i dostępność serwera. Ponawiany plik jest przesyłany od początku.",
+  "Nie udało się rozwiązać nazwy serwera. Sprawdź adres i ustawienia DNS przed ponowieniem.": "Nie udało się rozwiązać nazwy serwera. Sprawdź adres i ustawienia DNS przed ponowieniem.",
+  "Serwer nie przyjmuje połączenia SFTP. Sprawdź port SSH i działanie usługi, a następnie ponów zadanie.": "Serwer nie przyjmuje połączenia SFTP. Sprawdź port SSH i działanie usługi, a następnie ponów zadanie.",
+  "Nie udało się uzgodnić bezpiecznego połączenia SSH. Sprawdź zgodność ustawień serwera i jego tożsamość.": "Nie udało się uzgodnić bezpiecznego połączenia SSH. Sprawdź zgodność ustawień serwera i jego tożsamość.",
+  "Połączenie SFTP zostało przerwane. Sprawdź sieć i ponów zadanie. Jeśli terminal także jest rozłączony, najpierw połącz sesję SSH.": "Połączenie SFTP zostało przerwane. Sprawdź sieć i ponów zadanie. Jeśli terminal także jest rozłączony, najpierw połącz sesję SSH.",
+  "Serwer SFTP odrzucił operację. Sprawdź uprawnienia, ścieżkę i wolne miejsce na serwerze przed ponowieniem. Serwer nie podał jednoznacznej przyczyny.": "Serwer SFTP odrzucił operację. Sprawdź uprawnienia, ścieżkę i wolne miejsce na serwerze przed ponowieniem. Serwer nie podał jednoznacznej przyczyny.",
+  "Nie udało się ukończyć transferu. Sprawdź ścieżki, połączenie i uprawnienia przed ponowieniem.": "Nie udało się ukończyć transferu. Sprawdź ścieżki, połączenie i uprawnienia przed ponowieniem.",
+  "Serwer nie obsługuje wymaganej operacji SFTP. Sprawdź możliwości serwera i wybierz obsługiwany sposób wykonania zadania. Samo ponowienie może nie pomóc.": "Serwer nie obsługuje wymaganej operacji SFTP. Sprawdź możliwości serwera i wybierz obsługiwany sposób wykonania zadania. Samo ponowienie może nie pomóc."
 }

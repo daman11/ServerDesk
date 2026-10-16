@@ -26,7 +26,7 @@ public sealed partial class SftpSession
     },ct);
     public Task<FileEntry> ReadTransferSourceAsync(FileEntry expected,bool resolveLink,CancellationToken ct)=>RunAsync(async()=>
     {
-        var actual=await ReadDeletionFileAsync(expected.FullPath,ct);
+        var actual=await ReadDeletionFileAsync(expected.FullPath,ct,new SftpPathNotFoundException(L.T("Plik lub katalog źródłowy jest niedostępny.")));
         if(actual.IsSymbolicLink!=expected.IsSymbolicLink || actual.IsDirectory!=expected.IsDirectory)throw new IOException(L.T("Źródło transferu zmieniło typ. Odśwież listę i wybierz je ponownie."));
         if(!actual.IsSymbolicLink || !resolveLink)return Entry(actual);
         try

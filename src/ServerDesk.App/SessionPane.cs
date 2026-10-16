@@ -395,7 +395,8 @@ internal sealed partial class SessionPane : WorkspacePane
         if(SingleFile(true) is not {} f || sftp==null)return;
         var mode=await Dialogs.Prompt(owner,L.T("Uprawnienia ósemkowe, np. 644"),f.Permissions); if(mode==null)return;
         if(mode.Length is < 3 or > 4 || mode.Any(c=>c<'0'||c>'7')) throw new ArgumentException(L.T("Niepoprawne uprawnienia."));
-        await sftp.ChmodAsync(f.FullPath,Convert.ToInt16(mode,8),lifetime.Token); await RefreshAsync();
+        // SSH.NET expects the octal digits (e.g. 644), not their base-8 value.
+        await sftp.ChmodAsync(f.FullPath,short.Parse(mode,System.Globalization.CultureInfo.InvariantCulture),lifetime.Token); await RefreshAsync();
     }
     private static void ValidateLocalName(string name)=>LocalFileName.Validate(name);
     private Task UploadAsync()=>UploadFilesAsync(SelectedFiles(false));

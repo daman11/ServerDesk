@@ -1353,5 +1353,18 @@
   "Nie można uruchomić ServerDesk": "Cannot start ServerDesk",
   "Oryginalne dane nie zostaną usunięte ani zastąpione pustą bazą. Po zamknięciu aplikacji możesz zabezpieczyć katalog danych i przywrócić sprawdzoną kopię. Instrukcja: docs/database-backups.md.": "The original data will not be deleted or replaced with an empty database. After closing the app, preserve the data folder and restore a verified backup. Instructions: docs/database-backups.md.",
   "Katalog kopii bazy:": "Database backup folder:",
-  "Przywracanie połączenia SFTP…": "Restoring SFTP connection…"
+  "Przywracanie połączenia SFTP…": "Restoring SFTP connection…",
+  "Nie potwierdzono tożsamości serwera SSH. Sprawdź klucz hosta w ustawieniach bezpieczeństwa przed ponowieniem.": "The SSH server identity could not be verified. Check the host key in security settings before retrying.",
+  "Serwer odrzucił logowanie SFTP. Sprawdź poświadczenia i połącz ponownie sesję SSH przed ponowieniem.": "The server rejected SFTP login. Check your credentials and reconnect the SSH session before retrying.",
+  "Brak uprawnień do odczytu lub zapisu pliku. Sprawdź uprawnienia pliku i katalogu docelowego, a następnie ponów zadanie.": "Permission to read or write the file was denied. Check file and destination folder permissions, then retry the task.",
+  "Plik lub katalog jest niedostępny. Odśwież listę i sprawdź ścieżkę przed ponowieniem zadania.": "The file or folder is unavailable. Refresh the listing and check the path before retrying the task.",
+  "Brak miejsca na lokalnym dysku. Zwolnij miejsce i ponów zadanie. Nieukończony plik nie zastępuje pliku docelowego.": "The local disk is full. Free up space and retry the task. An incomplete file does not replace the destination file.",
+  "Przekroczono czas oczekiwania na odpowiedź SFTP. Sprawdź sieć i dostępność serwera. Ponawiany plik jest przesyłany od początku.": "The SFTP response timed out. Check the network and server availability. A retried file starts from the beginning.",
+  "Nie udało się rozwiązać nazwy serwera. Sprawdź adres i ustawienia DNS przed ponowieniem.": "The server name could not be resolved. Check the address and DNS settings before retrying.",
+  "Serwer nie przyjmuje połączenia SFTP. Sprawdź port SSH i działanie usługi, a następnie ponów zadanie.": "The server refused the SFTP connection. Check the SSH port and service, then retry the task.",
+  "Nie udało się uzgodnić bezpiecznego połączenia SSH. Sprawdź zgodność ustawień serwera i jego tożsamość.": "A secure SSH connection could not be negotiated. Check server compatibility and identity.",
+  "Połączenie SFTP zostało przerwane. Sprawdź sieć i ponów zadanie. Jeśli terminal także jest rozłączony, najpierw połącz sesję SSH.": "The SFTP connection was interrupted. Check the network and retry the task. If the terminal is disconnected too, reconnect the SSH session first.",
+  "Serwer SFTP odrzucił operację. Sprawdź uprawnienia, ścieżkę i wolne miejsce na serwerze przed ponowieniem. Serwer nie podał jednoznacznej przyczyny.": "The SFTP server rejected the operation. Check permissions, the path and free space on the server before retrying. The server did not specify an exact cause.",
+  "Nie udało się ukończyć transferu. Sprawdź ścieżki, połączenie i uprawnienia przed ponowieniem.": "The transfer could not be completed. Check paths, connectivity and permissions before retrying.",
+  "Serwer nie obsługuje wymaganej operacji SFTP. Sprawdź możliwości serwera i wybierz obsługiwany sposób wykonania zadania. Samo ponowienie może nie pomóc.": "The server does not support the required SFTP operation. Check server capabilities and choose a supported way to complete the task. Simply retrying may not help."
 }

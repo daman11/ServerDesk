@@ -17,7 +17,7 @@ $sourceFiles=[Collections.Generic.List[string]]::new()
 function Add-SourceDirectory([string]$Directory) {
     foreach($item in (Get-ChildItem -LiteralPath (Join-Path $repo $Directory) -Force)) {
         if($item.PSIsContainer){if($item.Name -notin @('bin','obj','.git','.tools','artifacts','TestResults')){Add-SourceDirectory ([IO.Path]::GetRelativePath($repo,$item.FullName))}; continue}
-        if($item.Extension -notin @('.cs','.csproj','.json','.props','.targets','.manifest','.svg','.png','.ico','.md','.sh','.ps1','.py','.nsi','.txt','.desktop') -and $item.Name -notin @('LICENSE','COPYING','NOTICE')){throw "Unexpected source file; review before export: $($item.Name)"}
+        if($item.Extension -notin @('.cs','.csproj','.json','.props','.targets','.manifest','.svg','.png','.ico','.md','.sh','.ps1','.py','.nsi','.txt','.desktop','.yml','.yaml') -and $item.Name -notin @('LICENSE','COPYING','NOTICE')){throw "Unexpected source file; review before export: $($item.Name)"}
         $relative=[IO.Path]::GetRelativePath($repo,$item.FullName)
         if($item.Name -match '(?i)integration_key|credential|^\.env' -and $item.Extension -ne '.cs'){throw "Sensitive source candidate: $relative"}
         $destination=Join-Path $source $relative
@@ -26,13 +26,13 @@ function Add-SourceDirectory([string]$Directory) {
         $sourceFiles.Add($relative)
     }
 }
-foreach($directory in @('src','tests','tools','scripts','packaging','third-party','docs')){Add-SourceDirectory $directory}
-foreach($file in @('.gitignore','Directory.Build.props','global.json','ServerDesk.sln','README.md','LICENSE','CHANGELOG.md','CONTRIBUTING.md','SECURITY.md')){Copy-Item -LiteralPath (Join-Path $repo $file) -Destination $source; $sourceFiles.Add($file)}
+foreach($directory in @('src','tests','tools','scripts','packaging','third-party','docs','.github')){Add-SourceDirectory $directory}
+foreach($file in @('.gitignore','.gitattributes','.editorconfig','.gitleaks.toml','AGENTS.md','NuGet.Config','Directory.Build.props','global.json','ServerDesk.sln','README.md','LICENSE','CHANGELOG.md','CONTRIBUTING.md','SECURITY.md')){Copy-Item -LiteralPath (Join-Path $repo $file) -Destination $source; $sourceFiles.Add($file)}
 $sourceManifest=foreach($file in ($sourceFiles | Sort-Object)){(Get-FileHash -LiteralPath (Join-Path $source $file)).Hash.ToLowerInvariant()+'  '+$file.Replace('\','/')}
 $sourceManifest | Set-Content (Join-Path $source 'SOURCE-MANIFEST.sha256') -Encoding utf8
 $sourceName="ServerDesk-$version-source.zip"
 Compress-Archive -LiteralPath $source -DestinationPath (Join-Path $Output $sourceName)
-Copy-Item (Join-Path $repo "docs/release-$version.md") (Join-Path $Output 'RELEASE-NOTES.md')
+Copy-Item (Join-Path $repo "docs/releases/release-$version.md") (Join-Path $Output 'RELEASE-NOTES.md')
 Copy-Item (Join-Path $repo "artifacts/release-verification-$version.md") (Join-Path $Output 'VERIFICATION.md')
 Copy-Item (Join-Path $repo 'LICENSE') $Output
 $files=@($assets)+@($sourceName,'RELEASE-NOTES.md','VERIFICATION.md','LICENSE')

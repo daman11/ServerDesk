@@ -97,7 +97,7 @@ internal static class FileDeletionChecks
     private sealed class InlineProgress(Action<FileDeletionProgress> action) : IProgress<FileDeletionProgress> { public void Report(FileDeletionProgress value)=>action(value); }
     internal static void Network(MainWindow main,ProfileRepository repo,string root,string host,string key)
     {
-        var profile=new ServerProfile { Name="Owned SFTP deletion fixture",Host=host,Port=22222,Username="damian",Authentication=Authentication.PrivateKey,PrivateKeyPath=Path.GetFullPath(key) };
+        var profile=new ServerProfile { Name="Owned SFTP deletion fixture",Host=host,Port=22222,Username=SshTestIdentity.Username,Authentication=Authentication.PrivateKey,PrivateKeyPath=Path.GetFullPath(key) };
         var factory=new SshConnectionFactory(repo) { ConfirmHostKey=(_,_)=>Task.FromResult(true) };
         using var raw=Result(factory.SftpAsync(profile,"serverdesk-test-passphrase",default));
         using var connection=new SftpSession(raw);

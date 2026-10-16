@@ -81,7 +81,7 @@ if(args.Contains("--visual-surfaces")) { VisualSurfaceChecks.Run(window,reposito
 if(args.Contains("--polish")) { PolishChecks.Run(window,repository,root); window.Close(); RedesignChecks.Frames(); return; }
 if(args.Contains("--live-settings"))
 {
-    var profile=new ServerProfile { Name="Live settings test",Host=args[1],Port=22222,Username="damian",Authentication=Authentication.PrivateKey,PrivateKeyPath=Path.GetFullPath(args[2]) };
+    var profile=new ServerProfile { Name="Live settings test",Host=args[1],Port=22222,Username=SshTestIdentity.Username,Authentication=Authentication.PrivateKey,PrivateKeyPath=Path.GetFullPath(args[2]) };
     var factory=new SshConnectionFactory(repository) { ConfirmHostKey=(_,_)=>Task.FromResult(true) };
     using var pane=new SessionPane(window,profile,factory,new ExternalRdpClient(),repository); window.RegisterPane(pane);
     RedesignChecks.Wait(pane.ConnectAsync("serverdesk-test-passphrase",CancellationToken.None)); SettingsLayoutChecks.Network(window,repository,root);
@@ -123,7 +123,7 @@ if(args.Length>=3)
     T Pump<T>(Task<T> task) { var watch=System.Diagnostics.Stopwatch.StartNew(); while(!task.IsCompleted) { if(watch.Elapsed>TimeSpan.FromSeconds(40))throw new TimeoutException("UI operation timed out"); Dispatcher.UIThread.RunJobs(); Thread.Sleep(10); } return task.GetAwaiter().GetResult(); }
     void Wait(Task task) => Pump(task.ContinueWith(t=> { t.GetAwaiter().GetResult(); return true; }));
     void Frames(int count) { for(var i=0;i<count;i++) { Dispatcher.UIThread.RunJobs(); Thread.Sleep(25); } }
-    var profile=new ServerProfile { Name="UI terminal integration",Host=args[1],Port=22222,Username="damian",Authentication=Authentication.PrivateKey,PrivateKeyPath=Path.GetFullPath(args[2]) };
+    var profile=new ServerProfile { Name="UI terminal integration",Host=args[1],Port=22222,Username=SshTestIdentity.Username,Authentication=Authentication.PrivateKey,PrivateKeyPath=Path.GetFullPath(args[2]) };
     var factory=new SshConnectionFactory(repository) { ConfirmHostKey=(_,_)=>Task.FromResult(true) };
     using var connection=new SshTerminalSession(Pump(factory.SshAsync(profile,"serverdesk-test-passphrase",CancellationToken.None)));
     var terminal=new TerminalControl { Process="",FontSize=15,Background=Avalonia.Media.Brushes.Black,Foreground=Avalonia.Media.Brushes.White };
@@ -186,15 +186,3 @@ sealed class TestProcessRdpAdapter : IRdpClient
         return new(Environment.GetEnvironmentVariable("ComSpec")!,["/d","/c","exit 7"],false);
     }
 }
-
-
-
-
-
-
-
-
-
-
-
-

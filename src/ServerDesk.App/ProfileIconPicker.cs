@@ -26,4 +26,3 @@ internal sealed class ProfileIconPicker : Grid
     private void UpdateTemplate()=>choices.ItemTemplate=new FuncDataTemplate<ProfileIconOption>((item,_)=>item==null?new TextBlock():DeskIcons.Labelled(ProfileIcons.Resolve(new ServerProfile { IconId=item.Id,Protocol=protocol }),L.T(item.Label)));
     private void Refresh()=>preview.Glyph=DeskIcons.Resolve(ProfileIcons.Resolve(new ServerProfile { IconId=SelectedId,Protocol=protocol }));
 }
-

@@ -22,7 +22,7 @@ internal static class SessionLifetimeNetworkChecks
         var paths=new AppPaths(Path.Combine(root,"network-"+Guid.NewGuid().ToString("N"))); var repo=new ProfileRepository(paths); Wait(repo.InitializeAsync());
         var factory=new SshConnectionFactory(repo); var main=new MainWindow(new MainViewModel(repo),repo,new CredentialStore(paths),factory,new ExternalRdpClient()); main.Show(); RedesignChecks.Frames(20);
         factory.ConfirmHostKey=(_,_)=>Task.FromResult(true); main.PreviewPreferences(main.Preferences with { ShowMetrics=false });
-        return (main,repo,factory,new ServerProfile { Name="Owned lifecycle fixture",Host=host,Port=22222,Username="damian",Authentication=Authentication.PrivateKey,PrivateKeyPath=Path.GetFullPath(key) });
+        return (main,repo,factory,new ServerProfile { Name="Owned lifecycle fixture",Host=host,Port=22222,Username=SshTestIdentity.Username,Authentication=Authentication.PrivateKey,PrivateKeyPath=Path.GetFullPath(key) });
     }
     private static SessionPane Pane(MainWindow main,ProfileRepository repo,SshConnectionFactory factory,ServerProfile profile)
     { var pane=new SessionPane(main,profile,factory,new ExternalRdpClient(),repo); main.RegisterPane(pane); return pane; }

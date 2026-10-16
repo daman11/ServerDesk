@@ -33,4 +33,3 @@ internal sealed partial class SessionPane
     public static readonly StyledProperty<SessionVisualState> VisualStateProperty=AvaloniaProperty.Register<SessionPane,SessionVisualState>(nameof(VisualState));
     public SessionVisualState VisualState { get=>GetValue(VisualStateProperty); private set=>SetValue(VisualStateProperty,value); }
 }
-

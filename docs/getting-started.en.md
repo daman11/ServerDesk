@@ -21,17 +21,17 @@ For TAR.GZ: `mkdir serverdesk-0.31.1`, then `tar -xzf ServerDesk-0.31.1-linux-x6
 3. For SSH, select Terminal, SFTP or Monitoring. Drag tabs to another pane or detach them into a separate window.
 4. Change themes, interface size, terminal preferences and language in `Menu → Settings`. **Restart the application after changing its language.** Reminders appear in the selected language. Choose **Save and restart**, or save and use **Restart now** in the main window later. Open tabs require confirmation before sessions and transfers disconnect. Cancelling keeps the app open; the saved language loads at the next launch. Tab restoration follows the workspace recovery setting and never connects automatically.
 
-In SSH terminals, **Ctrl+Shift+C** copies a selection (sends nothing without one), **Ctrl+Shift+V** pastes and **Ctrl+C** interrupts the remote process. Escape reaches the remote terminal, including vim's edit-mode exit. The remote PTY follows the panel size when resizing the window. See [terminal changes](release-0.28.0.md).
+In SSH terminals, **Ctrl+Shift+C** copies a selection (sends nothing without one), **Ctrl+Shift+V** pastes and **Ctrl+C** interrupts the remote process. Escape reaches the remote terminal, including vim's edit-mode exit. The remote PTY follows the panel size when resizing the window. See [terminal changes](releases/release-0.28.0.md).
 
 VNC traffic is not encrypted. Use a VPN or an existing secure tunnel; do not expose VNC directly to the Internet.
 
 The welcome dashboard shows up to three recently used connections. Clicking one follows normal sign-in; opening the app never connects automatically. In Settings, **Ctrl+F** finds an option across categories; **Escape** in the search field clears the filter. Searching preserves your draft and Cancel rolls back the appearance preview.
 
-**Local computer** and **Remote · server** headings identify each SFTP side. Color marks the active side for operations/shortcuts; click a heading to focus its list. In a narrow pane, use **Local/Remote** to switch sides. See the [design and interaction changes](release-0.27.0.md).
+**Local computer** and **Remote · server** headings identify each SFTP side. Color marks the active side for operations/shortcuts; click a heading to focus its list. In a narrow pane, use **Local/Remote** to switch sides. See the [design and interaction changes](releases/release-0.27.0.md).
 
 ## SFTP operations and deletion
 
-Use **Copy link contents…** for one symbolic link. Confirm the resolved source and destination; the contents become regular files/directories and nested links are skipped. **Details** shows the resolved target; Enter/double-click opens a linked directory. **Create remote symbolic link…** links to the selected existing target. [Detailed behavior and limits](release-0.27.0.md).
+Use **Copy link contents…** for one symbolic link. Confirm the resolved source and destination; the contents become regular files/directories and nested links are skipped. **Details** shows the resolved target; Enter/double-click opens a linked directory. **Create remote symbolic link…** links to the selected existing target. [Detailed behavior and limits](releases/release-0.27.0.md).
 
 Select files/directories and choose **Delete selected…** or press Delete while the list has focus. The read-only preview identifies the computer/server, full paths and all entries, including hidden contents. **Delete permanently** starts work. Nonempty directories are supported; link targets are not traversed. Cancellation does not undo completed deletions. After an error/disconnection, inspect the result and refresh the list; counts include acknowledged requests. The preview is limited to 20,000 entries and 64 levels.
 

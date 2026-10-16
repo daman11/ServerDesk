@@ -20,4 +20,3 @@ internal static class AuditChecks
         finally { pane.Dispose(); window.Close(); }
     }
 }
-

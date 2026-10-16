@@ -152,13 +152,3 @@ internal sealed partial class SessionPane
         stack.Children.Add(Section("hard-drive","Dyski",diskRows,disks)); stack.Children.Add(Section("network","Sieć",networkSummary,networkRows,network));
     }
 }
-
-
-
-
-
-
-
-
-
-

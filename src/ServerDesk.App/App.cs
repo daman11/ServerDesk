@@ -41,4 +41,3 @@ public sealed class App : Application
         base.OnFrameworkInitializationCompleted();
     }
 }
-

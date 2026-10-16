@@ -1,6 +1,8 @@
 #!/usr/bin/env bash
 set -euo pipefail
-cd "$(dirname "$0")/../.tools/linux-ssh"
+repo="$(cd "$(dirname "$0")/.." && pwd)"
+mkdir -p "$repo/.tools/linux-ssh"
+cd "$repo/.tools/linux-ssh"
 mkdir -p lists/partial
 apt-get -o "Dir::State::lists=$(pwd)/lists" -o "Dir::Cache::pkgcache=" -o "Dir::Cache::srcpkgcache=" update
 apt-get -o "Dir::State::lists=$(pwd)/lists" download openssh-server libwrap0 libnss-wrapper

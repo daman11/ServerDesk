@@ -7,7 +7,7 @@ if(args.Length<2) throw new ArgumentException("Usage: probe host private-key [po
 var root=Path.GetFullPath("artifacts/network-probe"); Directory.CreateDirectory(root);
 var runId=Guid.NewGuid().ToString("N");
 var repository=new ProfileRepository(new AppPaths(Path.Combine(root,"data-"+runId))); await repository.InitializeAsync();
-var profile=new ServerProfile { Name="Ubuntu integration test",Host=args[0],Port=args.Length>2?int.Parse(args[2]):22222,Username=args.Length>3?args[3]:"damian",Authentication=Authentication.PrivateKey,PrivateKeyPath=Path.GetFullPath(args[1]) };
+var profile=new ServerProfile { Name="Ubuntu integration test",Host=args[0],Port=args.Length>2?int.Parse(args[2]):22222,Username=args.Length>3?args[3]:SshTestIdentity.Username,Authentication=Authentication.PrivateKey,PrivateKeyPath=Path.GetFullPath(args[1]) };
 const string passphrase="serverdesk-test-passphrase";
 var factory=new SshConnectionFactory(repository); var prompts=0;
 factory.ConfirmHostKey=(challenge,ct)=> { prompts++; Console.WriteLine("TEST host-key prompt: "+challenge.Fingerprint); return Task.FromResult(true); };

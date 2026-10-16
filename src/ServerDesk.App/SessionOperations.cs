@@ -63,8 +63,3 @@ internal sealed partial class SessionPane
         if(IsConnected || IsRdpLoggedIn) { if(IsActive)state.Text=ConnectionStatus; StatusChanged?.Invoke(); }
     }
 }
-
-
-
-
-

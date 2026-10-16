@@ -25,7 +25,7 @@ internal static class SftpLinkChecks
         foreach(var language in new[]{"pl","en"})
         {
             AppText.SetLanguage(language);
-            var profile=new ServerProfile { Name="MVP SFTP links",Host=host,Port=22222,Username="damian",Authentication=Authentication.PrivateKey,PrivateKeyPath=Path.GetFullPath(key) };
+            var profile=new ServerProfile { Name="MVP SFTP links",Host=host,Port=22222,Username=SshTestIdentity.Username,Authentication=Authentication.PrivateKey,PrivateKeyPath=Path.GetFullPath(key) };
             var factory=new SshConnectionFactory(repo) { ConfirmHostKey=(_,_)=>Task.FromResult(true) };
             using var pane=new SessionPane(main,profile,factory,new ExternalRdpClient(),repo);
             var window=new Window { Width=1200,Height=820,Content=pane }; window.Show(); Wait(pane.ConnectAsync("serverdesk-test-passphrase",default)); Wait(pane.ShowAsync(1));

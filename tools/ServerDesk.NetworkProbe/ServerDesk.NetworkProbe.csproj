@@ -1,1 +1,1 @@
-<Project Sdk="Microsoft.NET.Sdk"><PropertyGroup><OutputType>Exe</OutputType></PropertyGroup><ItemGroup><ProjectReference Include="../../src/ServerDesk.Infrastructure/ServerDesk.Infrastructure.csproj" /></ItemGroup></Project>
+<Project Sdk="Microsoft.NET.Sdk"><PropertyGroup><OutputType>Exe</OutputType></PropertyGroup><ItemGroup><ProjectReference Include="../../src/ServerDesk.Infrastructure/ServerDesk.Infrastructure.csproj" /></ItemGroup><ItemGroup><Compile Include="../Shared/SshTestIdentity.cs" Link="SshTestIdentity.cs" /></ItemGroup></Project>

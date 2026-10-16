@@ -36,5 +36,3 @@ internal static class HardeningChecks
         Console.WriteLine("PASS dynamic font/spacing/control-height resources, persisted sort, real history query and visible appearance failure");
     }
 }
-
-

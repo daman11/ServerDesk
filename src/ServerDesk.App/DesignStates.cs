@@ -55,7 +55,3 @@ internal static partial class DesignSystem
     private static Style WithSetters(this Style style,IEnumerable<Setter> setters)
     { foreach(var setter in setters)style.Setters.Add(setter); return style; }
 }
-
-
-
-

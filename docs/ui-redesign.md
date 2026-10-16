@@ -4,4 +4,4 @@ Interfejs 0.3 używa programatycznych widoków C#, domyślnych kontrolek Fluent 
 
 Kierunek: kompaktowe środowisko administratora, activity bar 48 px, drzewo połączeń, przewijane zakładki, spokojne powierzchnie i cienki pasek statusu. Logika transmisji i przechowywanie profili pozostają istniejące. Nowe zasoby kolorystyczne i geometria ikon są wspólne dla całej aplikacji.
 
-Implementacja i wyniki weryfikacji: [wydanie 0.4.0](release-0.4.0.md). Zrzuty przed i po przechowuje katalog artifacts; narzędzie tools/ServerDesk.UiSmoke odtwarza scenariusze.
+Implementacja i wyniki weryfikacji: [wydanie 0.4.0](releases/release-0.4.0.md). Zrzuty przed i po przechowuje katalog artifacts; narzędzie tools/ServerDesk.UiSmoke odtwarza scenariusze.

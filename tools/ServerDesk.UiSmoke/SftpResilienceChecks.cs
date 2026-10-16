@@ -21,7 +21,7 @@ internal static class SftpResilienceChecks
     {
         using var trace=new TextWriterTraceListener(Console.Out); Trace.Listeners.Add(trace);
         using var proxy=new SftpFaultProxy(host,22222);
-        var direct=new ServerProfile { Name="Resilience fixture",Host=host,Port=22222,Username="damian",Authentication=Authentication.PrivateKey,PrivateKeyPath=Path.GetFullPath(key) };
+        var direct=new ServerProfile { Name="Resilience fixture",Host=host,Port=22222,Username=SshTestIdentity.Username,Authentication=Authentication.PrivateKey,PrivateKeyPath=Path.GetFullPath(key) };
         var profile=direct with { Host="127.0.0.1",Port=proxy.Port };
         var factory=new SshConnectionFactory(repo) { ConfirmHostKey=(_,_)=>Task.FromResult(true) };
         using var inspection=new SftpSession(Result(factory.SftpAsync(direct,"serverdesk-test-passphrase",default)));

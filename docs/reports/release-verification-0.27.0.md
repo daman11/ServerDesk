@@ -1,0 +1,39 @@
+# ServerDesk 0.27.0 — weryfikacja pierwotnego MVP, 2026-10-15
+
+## Zmiana funkcjonalna
+
+Podstawowy menedżer plików SSH/SFTP: rozwiązywanie i prezentacja celów dowiązań, nawigacja do katalogu, tworzenie zdalnego dowiązania do istniejącego celu, osobna akcja kopiowania zwykłej zawartości po pokazaniu rzeczywistego źródła/miejsca zapisu. Standardowa rekurencja nie śledzi linków; ma limity liczby wpisów/głębokości i kontrolę aktywnych przodków. Źródła są odczytywane ponownie, a dowiązany cel transferu jest odrzucany. Odświeżenie pokazuje rzeczywisty zdalny katalog, także dla względnego wejścia. Lista lokalna potrafi wyświetlić zerwany link bez czytania długości celu.
+
+[Instrukcja i dokładna semantyka](../releases/release-0.27.0.md). [Stan pierwotnych kryteriów MVP](../mvp-status.md). Wydanie nie ogłasza zakończenia całego MVP.
+
+Nowe pliki produkcyjne: `TransferTraversal.cs`, `LocalTransferSource.cs`, `SftpTransferSource.cs`, `SftpLinkOperations.cs`. Zmiany istniejących: `SftpSession.cs`, `SessionPane.cs`, `SftpSelection.cs`, `SftpBrowser.cs`, `FilePresentation.cs`, `FileSelection.cs`, `DeskIcons.cs` i katalogi PL/EN. Dodano testy `TransferTraversalTests.cs`, scenariusz `SftpLinkChecks.cs` i izolowane sprzątanie baz `DatabaseTestCleanup.cs`. Nie dodano zależności ani zmian schematu. Operacje używają publicznego SSH.NET, nie własnego protokołu SFTP ani komend powłoki aplikacji.
+
+## Kompilacja i testy
+
+- **448/448 testów jednostkowych Windows**, zero pominiętych. Release rozwiązania i UiSmoke: zero błędów/ostrzeżeń. Siedem nowych przypadków obejmuje limit wpisów, cancel, limit głębokości, cykl aktywnego przodka, ponowne aliasy, wielkość liter Windows/Linux i odczyt zwykłych lokalnych źródeł.
+- Pierwszy pełny przebieg ujawnił niezależną od SFTP kolizję fixture: globalny `ClearAllPools` w Dispose testów bazy mógł zamknąć natywny uchwyt SQLite innego równoległego testu. Zastąpiono go `ClearPool` konkretnej, własnej bazy we wszystkich takich fixture. Zachowano równoległe wykonywanie testów; pełny zestaw po poprawce przeszedł. Zmiana dotyczy sprzątania testów, nie wyłączania puli aplikacji.
+- **Linux Ubuntu 24.04.4/WSL: 7/7 tych samych testów transferów, 30/30 sortowania i 66/66 Network Tools**. Dokładne źródła jednostkowe są linkowane do samodzielnego UiSmoke (`--transfer-backend`, `--sorting-backend`, `--network-backend`); bez SDK Linux.
+- **Rzeczywisty OpenSSH/SFTP Windows i Linux, PL/EN:** link do pliku/katalogu, link względny, zerwany i zapętlony; odczyt rozwiązanego celu, nawigacja i szczegóły. Względna ścieżka katalogu po odświeżeniu jest pokazana jako poprawna lokalizacja absolutna.
+- Potwierdzenie kopiowania zawiera rzeczywiste źródło i cel lokalny. Anulowanie nie tworzy pliku ani zadania. Test zmienia alias po wyświetleniu podglądu na plik o **innej zawartości**; transfer korzysta z wcześniej pokazanej ścieżki i właściwych bajtów. Powstaje zwykły plik, nie lokalny link.
+- Kopiowanie celu katalogowego zachowuje zwykłe dzieci, pomija link do aktywnego przodka i kończy się statusem pominięć. UI tworzy zdalne dowiązanie z literalnym apostrofem i Unicode w nazwie. Zajęta nazwa, także zerwany link, jest odrzucana.
+- Próba uploadu na istniejący link oraz użycia linku jako katalogu docelowego jest odrzucana; link i oryginalne bajty jego celu pozostają bez zmian. **Linux dodatkowo:** lokalne linki plikowe/katalogowe/zerwane, upload ich rozwiązanej zawartości, pominięcie zagnieżdżonego cyklu i odmowa downloadu na lokalny link. Test Windows nie wymaga tworzenia lokalnego linku ani podniesienia uprawnień.
+- **Regresja rzeczywistego SFTP Windows/Linux:** 1 MiB w obie strony z porównaniem zawartości, niezależne filtry/sortowanie/zaznaczenie, ścieżki/skróty, odmowa nadpisania, kolejka, anulowanie wraz z oczekującym pytaniem, retry na pierwotny cel po zmianie paneli, odzyskanie błędu, zwijanie/czyszczenie i limit 50 zakończonych zadań.
+- **Dodatkowe grupowe transfery Windows:** pliki i katalogi z SHA-256, wszystkie cele przechwycone przed pracą, maksymalnie dwa aktywne transfery, odmowa nadpisania, cancel-all, retry, błąd pojedynczego elementu bez blokowania pozostałych i odzyskanie slotów.
+- **Usuwanie na własnym fixture OpenSSH:** pliki ukryte/rekurencja, unlink/rename linku plikowego/katalogowego/zerwanego bez modyfikacji celu, odmowa chmod na linku, podmieniony przodek, częściowe anulowanie i utrata połączenia po potwierdzonym usunięciu, Delete na prawdziwej liście i niezmienny zakres mimo zmiany paneli. Każdy test tworzy własny katalog `/tmp/serverdesk-…-<GUID>`; serwer został zatrzymany po wszystkich przebiegach.
+- **Pełna regresja głównego UI:** pięć motywów i kontrast, SVG/ikony, klawiatura/wskaźnik, 900×600, skale renderera 150/200%, ustawienia, personalizacja, split/floating/redock, przywracanie bez poświadczeń/automatycznego łączenia, przełącznik sesji i adapter procesu RDP. Dodatkowe `--sorting`: naturalne nazwy/IP/foldery, oba kierunki, Ostatnie/Ulubione, SQLite write lock bez blokowania UI, persistence oraz klikalne nagłówki SFTP/zaznaczenie w PL/EN, Graphite/Light, font16 i małych oknach.
+
+Logi: `artifacts/mvp-0270-*.txt`; zrzuty nowych akcji w `artifacts/mvp-0270-links` i `artifacts/mvp-0270-linux-links`; pełne jednostkowe wyniki `artifacts/test-results/unit.trx`. Zrzut potwierdzenia obejrzano w Graphite/font16; tekst zawija się, a akcje są dostępne przy szerokości 680 px. Testy mają własne dane/klucze; nie używają prywatnego RDP, haseł ani danych serwerów użytkownika.
+
+## Gotowe paczki
+
+- Windows EXE **0.27.0.0** ma poprawny manifest Windows 10/11, asInvoker/uiAccess=false. Natywny host RDP zachowuje HWND przy split/floating/redock/resize i zwalnia go po zamknięciu; bez logowania do serwera.
+- Trzy odizolowane starty gotowego EXE: korekta pozycji poza ekranem, odtworzenie maksymalizacji, fallback po nieobecnym monitorze i czyste zamknięcie. Linux 0.27.0 otworzył własne natywne okno WSLg; proces i dane testu posprzątano.
+- Instalator: ścieżka ze spacjami i polskimi znakami, realna baza, uruchomienie/zamknięcie, odmowa aktualizacji/deinstalacji działającego programu, zachowanie danych i obcych plików, zgodność bajtów payloadu, usuwanie tylko plików programu. `/NOREGISTER` zachowuje istniejącą instalację/rejestrację i skróty użytkownika.
+- Linux TAR/DEB: wszystkie **330 plików** zgodne z payloadem, wersja 0.27.0/amd64, prawa wykonania, root ownership w DEB, launcher/desktop entry. Paczki zawierają także aktualny `docs/mvp-status.md`. Windows ZIP i oba payloady przeszły kontrolę metadata, pełnych notices/licencji, kompletności i wykluczenia prywatnych danych/pliku kompilacji.
+- Zestaw: Setup/ZIP/TAR/DEB, źródła MIT, instrukcja, raport i SHA-256. Siedem wcześniejszych zamrożonych wydań 0.23.0–0.26.0 zachowuje poprawne sumy. Końcową kontrolę zestawu wykonuje `scripts/test-release-content.ps1 -ReleaseDirectory artifacts/releases/0.27.0`.
+
+## Ograniczenia i następny etap
+
+Kopiowanie zawartości wybranego celu nie oznacza przenoszenia samych obiektów dowiązań. Zagnieżdżone linki są celowo pomijane; po błędzie/limicie pozostaje wcześniejsza zakończona część transferu. Sprawdzenia metadanych nie stanowią transakcji przeciw każdemu równoczesnemu podmienieniu ścieżki. Utrata sieci może pozostawić zdalny .part; serwery bez bezpiecznego atomic rename mogą odmówić nadpisania.
+
+Nie wykonano w tym etapie nowego logowania RDP, rzeczywistego SSH hasłem, vim/htop/MC/fish/zsh ani testów sprzętowego Serial. Linux oznacza Ubuntu/WSLg; Windows 10, KDE/KWallet, Fedora/Debian, fizyczny X11/Wayland i mieszane DPI nadal wymagają osobnej akceptacji. Skale renderera nie są testem fizycznych monitorów. Następny etap pierwotnego zakresu: terminal SSH i jego macierz rzeczywistych aplikacji/logowania, następnie większe sesje/listy i pozostałe platformy. [Pełny stan MVP](../mvp-status.md), [ograniczenia bety](../known-issues.md).

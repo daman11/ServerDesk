@@ -6,6 +6,7 @@
     <LangVersion>latest</LangVersion>
     <Deterministic>true</Deterministic>
     <UseSharedCompilation>false</UseSharedCompilation>
+    <RestorePackagesWithLockFile>true</RestorePackagesWithLockFile>
     <Version>0.31.1</Version>
     <RuntimeIdentifiers>win-x64;linux-x64</RuntimeIdentifiers>
     <Product>ServerDesk</Product>
@@ -15,7 +16,3 @@
     <Description>ServerDesk — SSH, SFTP, RDP, VNC and serial workspace. Public beta.</Description>
   </PropertyGroup>
 </Project>
-
-
-
-

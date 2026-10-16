@@ -15,7 +15,10 @@ chmod 600 "$work/host_key"
 # NSS wrapper presents a temporary alias of the ordinary WSL uid, with a hash in
 # this private passwd file. No useradd/passwd/PAM/system-service changes are made.
 fixture_hash="$(printf '%s' 'ServerDesk-fixture-only-0280!' | openssl passwd -6 -stdin)"
-fixture_uid="$(id -u damian)"; fixture_gid="$(id -g damian)"
+fixture_os_user="${SERVERDESK_TEST_OS_USER:-${SUDO_USER:-$(id -un)}}"
+fixture_uid="$(id -u "$fixture_os_user")"; fixture_gid="$(id -g "$fixture_os_user")"
+[[ "$fixture_uid" != 0 ]] || { echo 'Run with sudo from an ordinary account, or set SERVERDESK_TEST_OS_USER to a non-root test account.' >&2; exit 1; }
+listen_address="${SERVERDESK_TEST_LISTEN_ADDRESS:-127.0.0.1}"
 chown "$fixture_uid:$fixture_gid" "$work/home"
 cp /etc/passwd "$work/passwd"; cp /etc/group "$work/group"
 printf 'serverdesk_fixture:%s:%s:%s:ServerDesk test:%s:/bin/bash\n' "$fixture_hash" "$fixture_uid" "$fixture_gid" "$work/home" >> "$work/passwd"
@@ -23,7 +26,7 @@ printf 'sshd:x:65534:65534:isolated SSH privilege separation:/run/sshd:/usr/sbin
 chmod 600 "$work/passwd"
 cat > "$work/sshd_config" <<EOF
 Port 22223
-ListenAddress 0.0.0.0
+ListenAddress $listen_address
 HostKey $work/host_key
 PidFile $work/sshd.pid
 PasswordAuthentication yes

@@ -76,6 +76,3 @@ internal static class TerminalAppearance
         for(var i=0;i<16;i++)terminal.Terminal.Write($"\u001b]4;{i};{p[i+2]}\u001b\\");
     }
 }
-
-
-

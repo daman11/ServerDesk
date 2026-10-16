@@ -6,7 +6,7 @@ foreach($runtime in @('win-x64','linux-x64')) {
     $directory=Join-Path $repo "artifacts/$runtime-$version"
     $release=Get-Content "$directory/RELEASE.json" -Raw | ConvertFrom-Json
     if($release.version -ne $version -or $release.runtime -ne $runtime -or $release.license -ne 'MIT'){throw 'Wrong payload metadata'}
-    foreach($required in @('LICENSE','CHANGELOG.md','SECURITY.md','THIRD-PARTY-NOTICES.md','DEPENDENCIES.json','DOTNET-LICENSE.txt','DOTNET-THIRD-PARTY-NOTICES.txt','LUCIDE-LICENSE.txt','MARCUSW-VNC-LICENSE.txt','licenses/inter-LICENSE.txt','licenses/nsis-COPYING.txt','docs/getting-started.md','docs/getting-started.en.md','docs/known-issues.md',"docs/release-$version.md","docs/release-verification-$version.md")){if(-not (Test-Path -LiteralPath "$directory/$required")){throw "Missing $required in $runtime"}}
+    foreach($required in @('LICENSE','CHANGELOG.md','SECURITY.md','THIRD-PARTY-NOTICES.md','DEPENDENCIES.json','DOTNET-LICENSE.txt','DOTNET-THIRD-PARTY-NOTICES.txt','LUCIDE-LICENSE.txt','MARCUSW-VNC-LICENSE.txt','licenses/inter-LICENSE.txt','licenses/nsis-COPYING.txt','docs/getting-started.md','docs/getting-started.en.md','docs/known-issues.md',"docs/releases/release-$version.md","docs/reports/release-verification-$version.md")){if(-not (Test-Path -LiteralPath "$directory/$required")){throw "Missing $required in $runtime"}}
     $inventory=Get-Content "$directory/DEPENDENCIES.json" -Raw | ConvertFrom-Json
     foreach($package in $inventory.packages){foreach($notice in $package.notices){if(-not (Test-Path -LiteralPath "$directory/$notice")){throw "Missing notice for $($package.id)"}}}
     foreach($file in (Get-ChildItem $directory -Recurse -File)) {
@@ -37,7 +37,7 @@ if($ReleaseDirectory) {
     try {
         foreach($entry in $source.Entries){if($entry.FullName -match '(?i)(^|/)(\.tools|artifacts|bin|obj|\.git|credentials|logs)(/|$)|integration_key|\.(db|sqlite|trx|pem|pfx|key|exe|dll|pdb)$'){throw "Private/build file in source: $($entry.FullName)"}}
         $prefix="ServerDesk-$version/"
-        foreach($required in @('LICENSE','Directory.Build.props','src/ServerDesk.App/packages.lock.json','src/ServerDesk.Infrastructure/packages.lock.json','tests/ServerDesk.Tests/packages.lock.json','SOURCE-MANIFEST.sha256')){if(-not $source.GetEntry($prefix+$required)){throw "Missing source file: $required"}}
+        foreach($required in @('LICENSE','AGENTS.md','.editorconfig','.gitattributes','NuGet.Config','.github/workflows/ci.yml','docs/README.md','docs/github.md','Directory.Build.props','src/ServerDesk.App/packages.lock.json','src/ServerDesk.Infrastructure/packages.lock.json','tests/ServerDesk.Tests/packages.lock.json','SOURCE-MANIFEST.sha256')){if(-not $source.GetEntry($prefix+$required)){throw "Missing source file: $required"}}
         $reader=[IO.StreamReader]::new($source.GetEntry($prefix+'SOURCE-MANIFEST.sha256').Open())
         try{$manifest=$reader.ReadToEnd()}finally{$reader.Dispose()}
         foreach($line in ($manifest -split '\r?\n' | Where-Object {$_})) {

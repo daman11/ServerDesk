@@ -65,4 +65,3 @@ internal static partial class Dialogs
     }
     public static Task<ServerProfile?> Edit(Window owner,ServerProfile? profile,IEnumerable<string> folders) => ProfileEditorDialog.Show(owner,profile,folders);
 }
-

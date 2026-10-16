@@ -204,17 +204,3 @@ public sealed partial class MainWindow : Window
         await pane.ShowRestoredPanelAsync();
     }
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-

@@ -71,4 +71,3 @@ public sealed class CredentialStore(AppPaths paths) : ICredentialStore
         return ProtectedData.Unprotect(encrypted,null,DataProtectionScope.CurrentUser);
     }
 }
-

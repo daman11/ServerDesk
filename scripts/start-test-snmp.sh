@@ -7,9 +7,9 @@ if [[ -f "$root/pid" ]] && kill -0 "$(cat "$root/pid")" 2>/dev/null; then echo '
 export LD_LIBRARY_PATH="$root/root/usr/lib/x86_64-linux-gnu:$PWD/.tools/linux-ssh/root/usr/lib/x86_64-linux-gnu:${LD_LIBRARY_PATH:-}"
 export SNMP_PERSISTENT_DIR="$root/state"
 export MIBS=''
-test_ip="$(hostname -I | awk '{print $1}')"
+test_ip="${SERVERDESK_TEST_LISTEN_ADDRESS:-127.0.0.1}"
 cat > "$root/snmpd.conf" <<EOF
-agentaddress udp:127.0.0.1:21161,udp:$test_ip:21161
+agentaddress udp:$test_ip:21161
 sysName ServerDesk-SNMP-fixture
 sysLocation isolated-test-agent
 rouser fixture-none noauth .1

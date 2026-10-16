@@ -42,8 +42,3 @@ internal static class RedesignChecks
         Console.WriteLine("PASS section filters, sidebar shortcuts, 900x600, 150/200% render scaling, appearance persistence and independent terminal palettes");
     }
 }
-
-
-
-
-

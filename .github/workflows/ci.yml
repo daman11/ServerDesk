@@ -1,0 +1,73 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+    tags: ['v*']
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ci-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+env:
+  DOTNET_CLI_TELEMETRY_OPTOUT: '1'
+  DOTNET_NOLOGO: '1'
+
+jobs:
+  build-test:
+    name: Build and test (${{ matrix.os }})
+    runs-on: ${{ matrix.os }}
+    timeout-minutes: 20
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [windows-2025, ubuntu-24.04]
+    defaults:
+      run:
+        shell: pwsh
+    steps:
+      - name: Checkout
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - name: Install .NET SDK
+        uses: actions/setup-dotnet@a98b56852c35b8e3190ac28c8c2271da59106c68 # v6.0.0
+        with:
+          global-json-file: global.json
+      - name: Install Linux UI libraries
+        if: runner.os == 'Linux'
+        shell: bash
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y --no-install-recommends fontconfig libice6 libsm6 libx11-6 libxext6 libxrender1 libxrandr2 libxi6 libxcursor1 libxcb-shape0 libxcb-render0 libxcb-xfixes0
+      - name: Check repository content
+        run: ./scripts/check-repository.ps1
+      - name: Restore locked dependencies
+        run: dotnet restore ServerDesk.sln --locked-mode
+      - name: Build
+        run: dotnet build ServerDesk.sln -c Release --no-restore -m:1
+      - name: Unit tests
+        run: dotnet test tests/ServerDesk.Tests -c Release --no-build --logger 'trx;LogFileName=unit.trx' --results-directory artifacts/test-results
+      - name: Build UI smoke harness
+        run: dotnet build tools/ServerDesk.UiSmoke -c Release -m:1 -p:RestoreLockedMode=true -o artifacts/ci-harness
+      - name: Headless UI smoke
+        run: |
+          foreach ($scenario in @('restart-design', 'localization', 'security', 'stability', 'protocols')) {
+            dotnet artifacts/ci-harness/ServerDesk.UiSmoke.dll "artifacts/ci-$scenario" "--$scenario"
+            if ($LASTEXITCODE -ne 0) { throw "UI smoke failed: $scenario" }
+          }
+      - name: Upload test reports and rendered UI
+        if: always()
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+        with:
+          name: test-results-${{ matrix.os }}
+          path: |
+            artifacts/test-results/*.trx
+            artifacts/ci-*/*.png
+          if-no-files-found: ignore
+          retention-days: 7

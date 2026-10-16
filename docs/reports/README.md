@@ -1,0 +1,7 @@
+# Verification and historical reviews
+
+Current imported release: [0.31.1 verification](release-verification-0.31.1.md).
+
+Repository maintenance: [Git/GitHub preparation, 2026-10-16](repository-preparation-2026-10-16.md).
+
+This directory preserves release verification, security/design reviews and earlier requirements audits. Reports describe the tested build and environment at the stated date; consult [known issues](../known-issues.md) for current limits. Plain paths in historical records can refer to the original package layout.

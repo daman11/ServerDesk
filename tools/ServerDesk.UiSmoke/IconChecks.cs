@@ -55,5 +55,3 @@ internal static class IconChecks
         Console.WriteLine("PASS all bundled SVG hashes/primitives/bounds, 16/24px dark/light rendering, inherited foreground, session-state icons, live icon update, icon picker save and disposal before terminal realization");
     }
 }
-
-

@@ -81,5 +81,3 @@ internal sealed partial class SessionPane
         });
     }
 }
-
-

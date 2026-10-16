@@ -1,0 +1,40 @@
+name: Bug report
+description: Report a reproducible ServerDesk problem
+title: '[Bug]: '
+body:
+  - type: markdown
+    attributes:
+      value: Please remove passwords, keys, tokens and private connection details. Report security vulnerabilities privately as described in SECURITY.md.
+  - type: input
+    id: version
+    attributes:
+      label: ServerDesk version
+      placeholder: 0.31.1
+    validations:
+      required: true
+  - type: input
+    id: environment
+    attributes:
+      label: OS, display scaling and application language
+      placeholder: Windows 11 x64, 100%, English
+    validations:
+      required: true
+  - type: dropdown
+    id: area
+    attributes:
+      label: Area
+      options: [SSH, SFTP, RDP, VNC, Serial, Network Tools, UI or settings, Installation or startup]
+    validations:
+      required: true
+  - type: textarea
+    id: reproduction
+    attributes:
+      label: Steps to reproduce
+      description: Describe a minimal example, expected behavior and what happened instead.
+    validations:
+      required: true
+  - type: textarea
+    id: diagnostics
+    attributes:
+      label: Optional logs or screenshots
+      description: Include only the relevant, redacted portion.

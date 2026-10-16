@@ -112,4 +112,3 @@ internal static class RdpInteractionCheck
         return error==null && checks.All(c=>c.Pass)?0:1;
     }
 }
-

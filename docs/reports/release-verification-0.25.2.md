@@ -1,0 +1,31 @@
+# ServerDesk 0.25.2 — weryfikacja 2026-10-15
+
+## Zakres
+
+Poprawki pierwotnych funkcji programu: sortowanie zapisanych połączeń/folderów oraz lokalnych i zdalnych plików w sesji SSH/SFTP. Naturalne nazwy, liczbowe IP/porty, właściwe adresy Serial, jawny kierunek, respektowanie wyboru w Ostatnich/Ulubionych, atomowe zapamiętywanie i widoczne wartości adresu/daty. SFTP ma klikalne nagłówki, zgodne strzałki/listy, zachowanie zaznaczenia, rozszerzenia w kolumnie Typ i poprawne traktowanie nieznanego rozmiaru katalogu/dat. [Instrukcja i semantyka](../releases/release-0.25.2.md).
+
+Nowe pliki: `src/ServerDesk.Core/NaturalStringComparer.cs`, `src/ServerDesk.Infrastructure/ProfileOrderingRepository.cs`, `src/ServerDesk.App/ConnectionSorting.cs`, `tests/ServerDesk.Tests/SortingTests.cs`, `tools/ServerDesk.UiSmoke/SortingChecks.cs`. Zmiany: `ProfileOrdering.cs`, `FileListing.cs`, `MainViewModel.cs`, `MainWindow.cs`, `WorkspaceLayout.cs`, `SftpBrowser.cs`, `FilePresentation.cs`, katalogi PL/EN i istniejące narzędzia testowe. Brak nowych zależności i zmian implementacji protokołów.
+
+## Wyniki testów
+
+- **Windows: 441/441 testów**, zero pominiętych. Release rozwiązania i UiSmoke: zero błędów/ostrzeżeń. 18 nowych przypadków obejmuje naturalne liczby (także dłuższe niż zakresy liczbowe), spójność porównania, PL/EN, IPv4/IPv6 i równoważne zapisy, porty, DNS, COM, nazwy protokołów, daty, katalogi/nieznane wartości i migrację/utrwalanie ustawień.
+- **Linux: 30/30 tych samych testów sortowania/list plików/historii** — dokładne pliki SortingTests, FileListingTests i ProfileOrderingTests uruchamiane przez self-contained UiSmoke `--sorting-backend` jako zwykły użytkownik Ubuntu 24.04.4/WSL. To rzeczywiste testy z asercjami, bez osobnej atrapy backendu i bez instalowania SDK na Linux.
+- **UI Windows i Linux/WSLg:** prawdziwe kontrolki połączeń i SFTP; naturalne zagnieżdżone foldery, nazwy i IP; obydwa kierunki; Ostatnie/Ulubione; zachowanie wybranego profilu; odświeżenie; seria szybkich zmian i poprawny ostatni wybór po zamknięciu/restarcie. PL/EN, Graphite/Light, font16, panel połączeń 220 px przy oknie 900 px. Wartość użyta do sortowania jest widoczna pod nazwą.
+- Zapis sortowania jest wykonywany poza UI i serializowany; kontrolowany test z blokadą zapisu SQLite potwierdza, że wybór i renderowanie pozostają responsywne. Po zwolnieniu blokady ostatni wybór zostaje zapisany; zakończenie aplikacji czeka na zapis.
+- **UI SFTP:** każdy panel niezależny, nagłówki nazwa/rozmiar/typ/data, zmiana kierunku drugim kliknięciem, zgodność z listą/strzałkami, reset do rosnącego przy innym kryterium, Enter i wybór panelu przez fokus. Dwa zaznaczone pliki pozostają wybrane po sortowaniu/ponownym filtrowaniu. Układy 650/1400 px, PL/EN, Graphite/Light, font16.
+- **Rzeczywisty SSH/SFTP Windows i Linux:** własny tymczasowy OpenSSH, logowanie jednorazowym kluczem z passphrase; naturalna kolejność plików lokalnych i przesłanych zdalnych `file1`, `file2`, `file10`, odwrócenie nagłówkiem i zachowanie kierunku po sieciowym odświeżeniu. 1 MiB przesłany w obie strony z porównaniem zawartości. Osobne filtry/sortowanie/zaznaczenie, nawigacja/klawisze, odmowa nadpisania, anulowanie kolejki i aktywnego pytania, ponowienie na pierwotny cel, odzyskanie błędu, zwijanie/czyszczenie kolejki i limit 50 zakończonych zadań. Każdy przebieg używa własnego katalogu z GUID; serwer fixture po testach zatrzymano.
+- **Regresja:** pełny główny UiSmoke (pięć motywów i kontrast, SVG/ikony, klawisze/wskaźnik, filtry, 900×600 i renderer 150/200%, ustawienia, sortowanie/historia, ścieżki SFTP, personalizacja, split/floating/redock i odzyskiwanie bez poświadczeń/łączenia, przełącznik sesji, proces RDP z adapterem). Dodatkowo `--sftp-focus`, `--transfer-overview`, `--file-deletion`, `--protocols`, `--app-polish`, `--network-tools`: fokus/skróty, transfery, usuwanie na własnych danych, cztery protokoły, rzeczywisty lokalny VNC/zerwanie, brak portu Serial, ustawienia/dialogi i wszystkie dziewięć Network Tools.
+
+Logi: `artifacts/sorting-0252-*.txt`, zrzuty w odpowiadających katalogach, TRX w `artifacts/test-results`. Dane użytkownika i poświadczenia jego serwerów nie są używane przez te testy.
+
+## Gotowe paczki
+
+- Windows EXE **0.25.2.0** ma zweryfikowany manifest Windows 10/11 (asInvoker, uiAccess=false). Natywny host RDP utworzono w gotowym EXE; split/floating/redock/resize zachowuje HWND, a zamknięcie go zwalnia. Test nie łączył się do zdalnego pulpitu.
+- Trzy odizolowane starty gotowej aplikacji: poprawienie pozycji poza ekranem, przywrócenie maksymalizacji, fallback po nieobecnym monitorze i czyste zamknięcie. Sprawdzono rzeczywiste granice okna Windows. Linux 0.25.2 otworzył nowe natywne okno pod WSLg z własnymi danymi; proces i dane testowe posprzątano.
+- Instalator: instalacja w ścieżce ze spacjami i polskimi znakami, uruchomienie, aktualizacja/zachowanie danych, odmowa zmiany zablokowanych plików, bajtowa zgodność z payloadem i usuwanie wyłącznie plików aplikacji. Istniejąca rejestracja i skróty użytkownika zostały zachowane; testy odbyły się z `/NOREGISTER`.
+- Linux TAR/DEB: wszystkie **329 plików** odpowiada payloadowi, poprawna wersja/architektura, prawa wykonania i właściciel root w DEB, launcher i desktop entry. Windows ZIP i oba payloady sprawdzono pod kątem metadata, kompletności i pełnych notices/licencji oraz braku prywatnych danych i plików kompilacji.
+- Zestaw wydania obejmuje Setup/ZIP/TAR/DEB, źródła MIT, opis zmian, ten raport i sumy SHA-256. Poprzednie wersje pozostają w osobnych katalogach; kontrola ich sum potwierdza zachowanie opublikowanych zestawów.
+
+## Ograniczenia
+
+Linux oznacza Ubuntu/WSLg, nie pełną macierz dystrybucji i fizycznych monitorów. Skale 150/200% w UiSmoke są skalowaniem renderera; nie stanowią testu fizycznego mieszanego DPI. W tym wydaniu nie wykonywano logowania do prywatnego RDP ani testów sprzętowego Serial. Protokół Serial pozostaje dotychczasową implementacją; naprawiono jedynie sortowanie jego widocznego adresu. Brak nowych gwarancji dotyczących wszystkich serwerów SSH, utraty sieci i wielogodzinnych sesji. Obowiązują [known-issues.md](../known-issues.md), w tym brak podpisu zaufanego wydawcy i automatycznych aktualizacji.

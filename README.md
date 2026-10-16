@@ -2,7 +2,7 @@
 
 Native Windows/Linux workspace for SSH, SFTP, RDP, VNC and serial connections. Built with C#, .NET 10 and Avalonia 12. Free and open source under the [MIT license](LICENSE).
 
-**Publiczna beta — rozwój MVP.** [Instrukcja PL](docs/getting-started.md) · [English guide](docs/getting-started.en.md) · [Known issues / ograniczenia](docs/known-issues.md) · [Changelog](CHANGELOG.md).
+**Publiczna beta — rozwój MVP.** [Instrukcja PL](docs/getting-started.md) · [English guide](docs/getting-started.en.md) · [Documentation index](docs/README.md) · [Known issues / ograniczenia](docs/known-issues.md) · [Changelog](CHANGELOG.md).
 
 ## Downloads and installation
 
@@ -40,6 +40,8 @@ Close the app and back up its data before upgrading. Windows Setup and Linux pac
 
 ## Development
 
+Install the SDK specified in `global.json` and Git. The repository restores from nuget.org with tracked lockfiles; `.tools` is optional local tooling and is not needed for a clean checkout.
+
 ```sh
 dotnet restore ServerDesk.sln --locked-mode
 dotnet build ServerDesk.sln -c Release --no-restore -m:1
@@ -48,6 +50,21 @@ dotnet run --project src/ServerDesk.App
 ```
 
 Source archive: [CONTRIBUTING.md](CONTRIBUTING.md), [development notes](docs/development.md), [release procedure](docs/releasing.md), [full user manual](docs/user-manual.md). Binary packages include the quick-start documentation; development and historical reports are in the source archive.
+
+## Repository layout and version control
+
+```text
+src/             Core models, infrastructure and Avalonia application
+tests/           Unit and bounded loopback tests
+tools/           Optional UI, protocol and native acceptance harnesses
+scripts/         Build, validation, packaging and disposable lab entry points
+packaging/       Windows/Linux packaging assets
+third-party/     Pinned upstream notices and asset provenance
+docs/            Current guides; releases/ and reports/ contain history
+.github/         Windows/Linux CI, issue/PR templates and Dependabot
+```
+
+Git history starts at the imported `v0.31.1` baseline. Keep logical changes in separate commits and release packages outside Git. [Git workflow and first GitHub upload](docs/github.md). No remote is configured until the maintainer selects a repository.
 
 Report bugs to the maintainer/repository from which you obtained the release. Include the version, OS and reproduction steps; remove infrastructure identifiers from logs. Follow [SECURITY.md](SECURITY.md) for private vulnerability reporting. ServerDesk does not implement telemetry or automatic update checks.
 

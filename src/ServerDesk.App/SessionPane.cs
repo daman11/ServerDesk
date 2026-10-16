@@ -273,7 +273,7 @@ internal sealed partial class SessionPane : WorkspacePane
         uploadSelection=Button("Wyślij",UploadAsync); downloadSelection=Button("Pobierz",DownloadAsync);
         bar.Children.Add(uploadSelection); bar.Children.Add(downloadSelection); var operations=new Button { Content=DeskIcons.Labelled("more",L.T("Operacje")),Tag="Operacje" }; operations.ContextMenu=new ContextMenu { ItemsSource=new[]{OperationMenu("Nowy katalog",MkdirAsync),SingleFileMenu(null,"Zmień nazwę",RenameAsync),SingleFileMenu(null,"Przenieś do katalogu",MoveFileAsync),LinkFileMenu(null),SingleFileMenu(true,"Utwórz zdalne dowiązanie…",CreateRemoteLinkAsync),SingleFileMenu(true,"Uprawnienia chmod (zdalny)",ChmodAsync),SingleFileMenu(null,"Szczegóły",FileDetailsAsync),DeleteSelectionMenu(null)} }; operations.Click+=(_,_)=> { UpdateFileSelection(); operations.ContextMenu.Open(operations); }; bar.Children.Add(operations);
         foreach(var control in bar.Children)control.Margin=new Thickness(0,2,6,2);
-        
+
         localPath.KeyDown+=(_,e)=> { if(e.Key==Avalonia.Input.Key.Enter)_ = owner.Safe(RefreshAsync); }; remotePath.KeyDown+=(_,e)=> { if(e.Key==Avalonia.Input.Key.Enter)_ = owner.Safe(RefreshAsync); };
         ConfigureFileTables(); BuildFileFilters(); BuildFileSelection();
         Grid.SetRow(localList,4); files.Children.Add(localList); Grid.SetRow(remoteList,4); Grid.SetColumn(remoteList,2); files.Children.Add(remoteList);
@@ -484,21 +484,3 @@ internal sealed partial class SessionPane : WorkspacePane
     }
     internal Task CloseAsync() { Dispose(); return closed.Task; }
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-

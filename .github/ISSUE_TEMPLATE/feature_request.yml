@@ -1,0 +1,18 @@
+name: Feature request
+description: Suggest a ServerDesk improvement
+title: '[Feature]: '
+body:
+  - type: textarea
+    id: need
+    attributes:
+      label: What workflow would this improve?
+      description: Explain the problem with a concrete example.
+    validations:
+      required: true
+  - type: textarea
+    id: proposal
+    attributes:
+      label: Proposed behavior
+      description: Describe the result you would like and any useful alternatives.
+    validations:
+      required: true

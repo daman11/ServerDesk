@@ -216,16 +216,3 @@ public sealed partial class MainWindow
         var chosen=await Dialogs.Commands(this,commands.Keys); if(chosen!=null)await commands[chosen]();
     }
 }
-
-
-
-
-
-
-
-
-
-
-
-
-

@@ -22,7 +22,7 @@ internal static class MonitoringAcceptanceChecks
         var repo=new ProfileRepository(new AppPaths(Path.Combine(root,"data-"+Guid.NewGuid().ToString("N")))); Wait(repo.InitializeAsync());
         var factory=new SshConnectionFactory(repo); var main=new MainWindow(new MainViewModel(repo),repo,new CredentialStore(new AppPaths(Path.Combine(root,"credentials"))),factory,new ExternalRdpClient()); main.Show(); RedesignChecks.Frames(20);
         factory.ConfirmHostKey=(_,_)=>Task.FromResult(true); main.PreviewPreferences(main.Preferences with { ShowMetrics=false });
-        var profile=new ServerProfile { Name="Monitoring fixture",Host=host,Port=22222,Username="damian",Authentication=Authentication.PrivateKey,PrivateKeyPath=Path.GetFullPath(key) };
+        var profile=new ServerProfile { Name="Monitoring fixture",Host=host,Port=22222,Username=SshTestIdentity.Username,Authentication=Authentication.PrivateKey,PrivateKeyPath=Path.GetFullPath(key) };
         using var shell=Result(factory.SshAsync(profile,"serverdesk-test-passphrase",default));
         using var files=new SftpSession(Result(factory.SftpAsync(profile,"serverdesk-test-passphrase",default)));
         var remote="/tmp/serverdesk-monitoring-"+Guid.NewGuid().ToString("N"); Wait(files.CreateDirectoryAsync(remote,default));

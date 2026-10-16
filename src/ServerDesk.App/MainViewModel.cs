@@ -42,5 +42,3 @@ public sealed partial class MainViewModel(ProfileRepository repository) : Observ
         Servers.ReplaceWith(query);
     }
 }
-
-

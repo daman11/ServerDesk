@@ -97,7 +97,7 @@ internal static class RdpPaneChecks
     }
     internal static void Endpoint(MainWindow main,ProfileRepository repo,string root,string host)
     {
-        var profile=new ServerProfile { Name="RDP endpoint",Protocol=Protocol.RDP,Host=host,Port=3389,Username="Damian" };
+        var profile=new ServerProfile { Name="RDP endpoint",Protocol=Protocol.RDP,Host=host,Port=3389,Username="endpoint-diagnostic" };
         using var pane=new SessionPane(main,profile,new SshConnectionFactory(repo),new ExternalRdpClient(),repo);
         var window=new Window { Width=1000,Height=780,Content=pane }; window.Show(); RedesignChecks.Frames(); Click(Button(window,"Sprawdź serwer"));
         var until=DateTime.UtcNow.AddSeconds(12); while(pane.IsBusy && DateTime.UtcNow<until)RedesignChecks.Frames(1); RedesignChecks.Frames();

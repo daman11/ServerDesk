@@ -96,6 +96,3 @@ internal static partial class DesignSystem
     internal static TextBlock Label(string text,bool secondary=false,double size=DesignTokens.Body)
     { var label=new TextBlock { Text=text,FontSize=size,VerticalAlignment=Avalonia.Layout.VerticalAlignment.Center }; Resource(label,TextBlock.FontSizeProperty,size switch { <=DesignTokens.Micro=>"FontMicro",<=DesignTokens.Caption=>"FontCaption",<=14=>"FontBody",<=18=>"FontSection",<=22=>"FontHeading",_=>"FontTitle" }); Resource(label,TextBlock.ForegroundProperty,secondary?"ForegroundSecondary":"ForegroundPrimary"); return label; }
 }
-
-
-

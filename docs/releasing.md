@@ -11,7 +11,7 @@ Release baseline: **0.31.1 Public Beta**, MIT. Windows x64 is the primary public
 
 ## Version and release gates
 
-1. Change `Directory.Build.props` and update README, CHANGELOG, guides, known issues and release notes. Version numbers identify immutable artifacts. Never replace published files under an existing version.
+1. Start from a clean Git checkout. Change `Directory.Build.props` and update README, CHANGELOG, guides, known issues, `docs/releases/release-VERSION.md` and `docs/reports/release-verification-VERSION.md`. Version numbers identify immutable artifacts. Never replace published files or move a release tag under an existing version.
 2. `dotnet restore ServerDesk.sln --locked-mode`, then `scripts/build.ps1 -Test`. Fix failures before packaging.
 3. Audit dependencies: `dotnet list ServerDesk.sln package --vulnerable --include-transitive --format json`. A successful command is not enough: inspect advisory output and source errors. Retain a dated report. No advisory result is a complete security audit.
 4. Build self-contained payloads sequentially: `scripts/publish.ps1 -Runtime win-x64 -Versioned`, then the same with `linux-x64`. Fresh staging avoids stale files. Notices are generated offline from restored packages and pinned upstream license texts; missing notices fail publication.

@@ -1,5 +1,14 @@
 # Changelog
 
+## Unreleased
+
+- Import the exact 0.31.1 release source into Git and preserve it with an immutable baseline tag.
+- Organize release notes and historical verification reports; add a documentation index and Git/GitHub contributor workflow.
+- Add pinned Windows/Linux CI, issue/PR templates, Dependabot, repository checks and consistent editor/line-ending settings.
+- Pin the tested SDK and public NuGet source; track dependency lockfiles for every developer tool.
+- Remove machine-specific RDP probe paths and SSH lab usernames. Use a disposable NSS alias and loopback listeners by default.
+- Include repository/GitHub metadata in future source exports and follow the reorganized documentation paths when packaging.
+
 ## 0.31.1 — Public Beta — 2026-10-16
 
 - Decode NSIS source and includes explicitly as UTF-8, fixing Polish welcome text and protocol separators in Setup.

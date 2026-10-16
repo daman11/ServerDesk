@@ -21,17 +21,17 @@ Archiwum: `mkdir serverdesk-0.31.1`, następnie `tar -xzf ServerDesk-0.31.1-linu
 3. Dla SSH otwórz Terminal, SFTP lub Monitoring. Kartę możesz przeciągnąć do drugiego panelu albo osobnego okna.
 4. Motyw, wielkość interfejsu, terminal i język zmienisz w `Menu → Ustawienia`. **Zmiana języka wymaga ponownego uruchomienia aplikacji.** Przypomnienie wyświetla się w wybranym języku. Wybierz „Zapisz i uruchom ponownie” lub zapisz i skorzystaj później z przycisku „Uruchom ponownie” w oknie głównym. Przy otwartych kartach potwierdź rozłączenie sesji i transferów. Anulowanie pozostawia aplikację otwartą; przy następnym uruchomieniu wczyta zapisany język. Odtworzenie kart zależy od ustawienia zapamiętywania obszaru pracy i nie loguje automatycznie.
 
-W terminalu SSH: **Ctrl+Shift+C** kopiuje zaznaczenie (bez zaznaczenia nic nie wysyła), **Ctrl+Shift+V** wkleja, a **Ctrl+C** przerywa zdalny proces. Escape działa jako klawisz zdalnego terminala, m.in. do wyjścia z trybu edycji vim. Rozmiar PTY podąża za panelem, także podczas zmiany wielkości okna. [Zmiany terminala](release-0.28.0.md).
+W terminalu SSH: **Ctrl+Shift+C** kopiuje zaznaczenie (bez zaznaczenia nic nie wysyła), **Ctrl+Shift+V** wkleja, a **Ctrl+C** przerywa zdalny proces. Escape działa jako klawisz zdalnego terminala, m.in. do wyjścia z trybu edycji vim. Rozmiar PTY podąża za panelem, także podczas zmiany wielkości okna. [Zmiany terminala](releases/release-0.28.0.md).
 
 VNC nie szyfruje transmisji: używaj VPN lub istniejącego bezpiecznego tunelu. Nie wystawiaj VNC bezpośrednio do Internetu.
 
 Ekran startowy pokazuje do trzech ostatnio używanych połączeń. Kliknięcie uruchamia zwykłe logowanie; samo otwarcie aplikacji nie łączy automatycznie. W ustawieniach użyj **Ctrl+F**, aby znaleźć opcję w dowolnej kategorii; **Escape** w polu czyści filtr. Wpisane zmiany pozostają zachowane przy wyszukiwaniu, a Anuluj cofa podgląd.
 
-Nagłówki **Lokalny komputer** i **Zdalny · serwer** identyfikują strony SFTP. Kolor wyróżnia aktywną stronę dla operacji/skrótów; kliknięcie nagłówka przenosi fokus na listę. W wąskim obszarze przełącz stronę listą **Lokalny/Zdalny**. [Zmiany wyglądu i obsługi](release-0.27.0.md).
+Nagłówki **Lokalny komputer** i **Zdalny · serwer** identyfikują strony SFTP. Kolor wyróżnia aktywną stronę dla operacji/skrótów; kliknięcie nagłówka przenosi fokus na listę. W wąskim obszarze przełącz stronę listą **Lokalny/Zdalny**. [Zmiany wyglądu i obsługi](releases/release-0.27.0.md).
 
 ## Operacje i usuwanie plików w panelu SFTP
 
-Dowiązania mają osobną akcję **Kopiuj zawartość dowiązania…** z potwierdzeniem rozwiązanej ścieżki i miejsca zapisu. Kopiowana jest zwykła zawartość, a zagnieżdżone linki są pomijane. **Szczegóły** pokazują rzeczywisty cel; Enter/dwuklik otwiera dowiązany katalog. **Utwórz zdalne dowiązanie…** tworzy link do wybranego istniejącego celu. [Dokładna obsługa i limity](release-0.27.0.md).
+Dowiązania mają osobną akcję **Kopiuj zawartość dowiązania…** z potwierdzeniem rozwiązanej ścieżki i miejsca zapisu. Kopiowana jest zwykła zawartość, a zagnieżdżone linki są pomijane. **Szczegóły** pokazują rzeczywisty cel; Enter/dwuklik otwiera dowiązany katalog. **Utwórz zdalne dowiązanie…** tworzy link do wybranego istniejącego celu. [Dokładna obsługa i limity](releases/release-0.27.0.md).
 
 Zaznacz pliki/katalogi i wybierz **Usuń zaznaczone…** albo naciśnij Delete na liście. Podgląd pokazuje komputer/serwer, pełne ścieżki i liczbę wszystkich wpisów, także ukrytych. Dopiero **Usuń trwale** rozpoczyna pracę. Można usunąć niepuste katalogi; cele dowiązań pozostają poza operacją. Przerwanie nie cofa wykonanych usunięć. Po błędzie/utracie połączenia sprawdź raport i odśwież listę; licznik obejmuje potwierdzone żądania. Limit podglądu: 20 000 wpisów i 64 poziomy.
 

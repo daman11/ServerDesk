@@ -17,7 +17,7 @@ internal static class SshResponsivenessChecks
     {
         var repo=new ProfileRepository(new AppPaths(Path.Combine(root,"data-"+Guid.NewGuid().ToString("N")))); Wait(repo.InitializeAsync());
         var factory=new SshConnectionFactory(repo) { ConfirmHostKey=(_,_)=>Task.FromResult(true) };
-        var profile=new ServerProfile { Name="Owned responsiveness fixture",Host=host,Port=22222,Username="damian",Authentication=Authentication.PrivateKey,PrivateKeyPath=Path.GetFullPath(key) };
+        var profile=new ServerProfile { Name="Owned responsiveness fixture",Host=host,Port=22222,Username=SshTestIdentity.Username,Authentication=Authentication.PrivateKey,PrivateKeyPath=Path.GetFullPath(key) };
         var measurements=new List<double>();
         foreach(var sftp in new[]{false,true})
         {

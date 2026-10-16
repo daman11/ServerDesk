@@ -1,0 +1,20 @@
+title = "ServerDesk secret scanning"
+
+[extend]
+useDefault = true
+
+[[allowlists]]
+description = "Public disposable Net-SNMP fixture password; not a user credential"
+targetRules = ["generic-api-key"]
+condition = "AND"
+paths = ['''^tools/ServerDesk.UiSmoke/NetworkSnmpChecks\.cs$''']
+regexTarget = "match"
+regexes = ['''PrivacyPassword:"fixture-priv-2026"''']
+
+[[allowlists]]
+description = "Exact UI constructor expression misclassified as an API key"
+targetRules = ["generic-api-key"]
+condition = "AND"
+paths = ['''^src/ServerDesk.App/ProfileEditorDialog\.cs$''']
+regexTarget = "line"
+regexes = ['''^\s*var vncAuth=new ComboBox \{ Name="VncAuthentication",ItemsSource=new\[\]\{L.T\("Hasło VNC"\),L.T\("Bez uwierzytelniania"\)\},SelectedIndex=\(int\)original.Vnc.Authentication,HorizontalAlignment=HorizontalAlignment.Stretch \};\s*$''']

@@ -77,7 +77,7 @@ internal static class TransferOverviewChecks
 
     internal static void Network(MainWindow main,ProfileRepository repo,string root,string host,string key)
     {
-        var profile=new ServerProfile { Name="SSH transfer overview",Host=host,Port=22222,Username="damian",Authentication=Authentication.PrivateKey,PrivateKeyPath=Path.GetFullPath(key) };
+        var profile=new ServerProfile { Name="SSH transfer overview",Host=host,Port=22222,Username=SshTestIdentity.Username,Authentication=Authentication.PrivateKey,PrivateKeyPath=Path.GetFullPath(key) };
         var factory=new SshConnectionFactory(repo) { ConfirmHostKey=(_,_)=>Task.FromResult(true) };
         using var pane=new SessionPane(main,profile,factory,new ExternalRdpClient(),repo); main.RegisterPane(pane); RedesignChecks.Wait(pane.ConnectAsync("serverdesk-test-passphrase",CancellationToken.None)); RedesignChecks.Wait(pane.ShowAsync(1));
         var inspectionConnection=factory.SftpAsync(profile,"serverdesk-test-passphrase",CancellationToken.None); RedesignChecks.Wait(inspectionConnection);

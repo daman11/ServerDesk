@@ -11,7 +11,8 @@ internal sealed partial class SessionPane
     private readonly TextBlock rdpSummary=DesignSystem.Label(L.T("Gotowy do uruchomienia pulpitu zdalnego."));
     private readonly TextBlock rdpDiagnostic=DesignSystem.Label(L.T("Sprawdzenie dostępności i NLA nastąpi przed uruchomieniem klienta."),true);
     private readonly TextBlock rdpCertificate=DesignSystem.Label("",true,12);
-    private Button? rdpShow,rdpStop,rdpCheck;
+    private Button? rdpShow,rdpStop,rdpCheck,rdpConsole;
+    private bool rdpConsoleAvailable;
     private Button? rdpExternal;
     private TextBlock? rdpHelp;
     private bool rdpHostUnavailable,rdpExternalOverride;
@@ -28,6 +29,8 @@ internal sealed partial class SessionPane
         rdpStop=Button("Rozłącz RDP",StopRdpAsync); rdpStop.Content=DeskIcons.Labelled("log-out",L.T("Rozłącz RDP"));
         rdpCheck=Button("Sprawdź serwer",CheckRdpAsync); rdpCheck.Content=DeskIcons.Labelled("network",L.T("Sprawdź serwer"));
         actions.Children.Add(rdpShow); actions.Children.Add(rdpStop); actions.Children.Add(rdpCheck);
+        rdpConsole=Button("Konsola RDP",()=> { ShowRdpConsole(!terminal.IsVisible); return Task.CompletedTask; });
+        rdpConsole.Name="RdpConsoleToggle"; rdpConsole.IsVisible=false; actions.Children.Add(rdpConsole);
         if(UseEmbeddedRdp)BuildRdpFileDrop(actions);
         if(UseEmbeddedRdp)rdpShow.Content=DeskIcons.Labelled("monitor",L.T("Pulpit"));
         var options=new Button { Content=DeskIcons.Create("more"),Tag="Opcje",Width=30,Classes={"chrome","icon"} }; optionsButton=options;
@@ -53,6 +56,13 @@ internal sealed partial class SessionPane
         if(rdpShow!=null)rdpShow.IsEnabled=active && !stoppingRdp;
         if(rdpStop!=null)rdpStop.IsEnabled=active && !connecting && !stoppingRdp;
         if(rdpCheck!=null)rdpCheck.IsEnabled=!IsBusy && !connecting && !stoppingRdp;
+        if(rdpConsole!=null)
+        {
+            rdpConsole.IsVisible=rdpConsoleAvailable; rdpConsole.IsEnabled=!connecting && !stoppingRdp;
+            var consoleLabel=L.T(terminal.IsVisible?"Podsumowanie RDP":"Konsola RDP");
+            rdpConsole.Content=DeskIcons.Labelled(terminal.IsVisible?"monitor":"square-terminal",consoleLabel);
+            Avalonia.Automation.AutomationProperties.SetName(rdpConsole,consoleLabel); ToolTip.SetTip(rdpConsole,consoleLabel);
+        }
         fullscreen.IsEnabled=clipboard.IsEnabled=!active && !connecting && !stoppingRdp;
         fullscreen.IsVisible=!UseEmbeddedRdp;
         if(rdpFileDrop!=null) { rdpFileDrop.IsVisible=UseEmbeddedRdp; rdpFileDrop.IsEnabled=CanPrepareRdpFiles; }
@@ -62,9 +72,16 @@ internal sealed partial class SessionPane
             var label=UseEmbeddedRdp?L.T("Pulpit"):L.T("Pokaż okno"); rdpShow.Content=DeskIcons.Labelled(UseEmbeddedRdp?"monitor":"external-link",label);
             Avalonia.Automation.AutomationProperties.SetName(rdpShow,label); ToolTip.SetTip(rdpShow,label);
         }
-        if(rdpHelp!=null)rdpHelp.Text=UseEmbeddedRdp?L.T("Pulpit otworzy się w tej zakładce. Możesz przenieść ją do drugiego panelu lub osobnego okna.\nCtrl+Alt+← / Ctrl+Alt+→ oddaje klawiaturę do ServerDesk; Ctrl+Alt+End otwiera zdalny ekran zabezpieczeń.\nPliki upuść na strefę schowka, a następnie wklej w folderze zdalnego Eksploratora.\nCertyfikat wymagający weryfikacji potwierdź w systemowym oknie Windows."):OperatingSystem.IsWindows()?L.T("Pulpit działa w osobnym oknie klienta Windows. Dane logowania i certyfikat potwierdź w jego oknie.\nStan uruchomionego klienta nie potwierdza zalogowania."):L.T("Login, hasło i certyfikat potwierdź w konsoli tej zakładki.\nPulpit działa w osobnym oknie FreeRDP. Stan klienta nie potwierdza zalogowania.");
+        if(rdpHelp!=null)rdpHelp.Text=UseEmbeddedRdp?L.T("Pulpit otworzy się w tej zakładce. Możesz przenieść ją do drugiego panelu lub osobnego okna.\nCtrl+Alt+← / Ctrl+Alt+→ oddaje klawiaturę do ServerDesk; Ctrl+Alt+End otwiera zdalny ekran zabezpieczeń.\nPliki upuść na strefę schowka, a następnie wklej w folderze zdalnego Eksploratora.\nCertyfikat wymagający weryfikacji potwierdź w systemowym oknie Windows."):OperatingSystem.IsWindows()?L.T("Pulpit działa w osobnym oknie klienta Windows. Dane logowania i certyfikat potwierdź w jego oknie.\nStan uruchomionego klienta nie potwierdza zalogowania."):L.T("Login, hasło i certyfikat potwierdź w konsoli tej zakładki lub oknie klienta.\nKonsola RDP zachowuje szczegóły po błędzie. Pulpit działa w osobnym oknie FreeRDP; uruchomiony klient nie potwierdza zalogowania.");
         rdpSummary.Text=connecting?L.T("Uruchamianie klienta RDP…"):stoppingRdp?L.T("Zamykanie klienta RDP…"):active?(UseEmbeddedRdp?L.T("Logowanie RDP w zakładce. Sprawdź także systemowe okno certyfikatu."):L.T("Klient RDP działa. Logowanie i pulpit obsługuje jego okno.")):rdpError.Length>0?rdpError:HasAttemptedConnection?L.T("Klient RDP jest zamknięty. Wybierz Połącz ponownie."):L.T("Gotowy do uruchomienia pulpitu zdalnego.");
         DesignSystem.Resource(rdpSummary,TextBlock.ForegroundProperty,!active && rdpError.Length>0?"Danger":"ForegroundPrimary");
+    }
+    private void ShowRdpConsole(bool visible)
+    {
+        terminal.IsVisible=visible && rdpConsoleAvailable;
+        if(rdpNotice!=null)rdpNotice.IsVisible=!terminal.IsVisible;
+        if(terminal.IsVisible)terminal.Focus();
+        UpdateRdpActions();
     }
     private async Task OpenExternalRdpAsync()
     {
@@ -123,7 +140,8 @@ internal sealed partial class SessionPane
     private void RdpEnded(int code,bool console)
     {
         var result=RdpExitStatus.FromClient(code,console); rdpError=result.IsError?result.Message:"";
-        if(rdpNotice!=null)rdpNotice.IsVisible=true;
+        if(console && rdpConsoleAvailable)ShowRdpConsole(result.IsError);
+        else if(rdpNotice!=null)rdpNotice.IsVisible=true;
         SetStatus(result.Message,"○",result.IsError?SessionVisualState.Failed:SessionVisualState.Closed);
     }
 }

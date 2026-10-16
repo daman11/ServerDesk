@@ -24,8 +24,8 @@ public sealed class RdpTests
     [Fact] public void LinuxArgumentsEnableNlaWithoutCertificateBypassOrPassword()
     {
         var args=RdpConfiguration.FreeRdpArguments(Profile(),new() { Width=1920,Height=1080,Fullscreen=true,Clipboard=false });
-        Assert.Contains("/v:[2001:db8::1]:3390",args); Assert.Contains("/u:admin",args); Assert.Contains("/d:ACME",args); Assert.Contains("/sec:nla",args); Assert.Contains("/size:1920x1080",args); Assert.Contains("/from-stdin:force",args); Assert.Contains("-clipboard",args); Assert.Contains("/f",args);
-        Assert.DoesNotContain(args,x=>x.StartsWith("/p:")||x.Contains("cert:ignore")||x.StartsWith("/drive:"));
+        Assert.Contains("/v:[2001:db8::1]:3390",args); Assert.Contains("/u:admin",args); Assert.Contains("/d:ACME",args); Assert.Contains("/sec:nla",args); Assert.Contains("/size:1920x1080",args); Assert.Contains("-clipboard",args); Assert.Contains("/f",args);
+        Assert.DoesNotContain(args,x=>x.StartsWith("/p:")||x.StartsWith("/cert:")||x.StartsWith("/from-stdin")||x.StartsWith("/drive:"));
     }
     [Theory][InlineData(0,900)][InlineData(8000,900)][InlineData(1600,0)][InlineData(1600,5000)]
     public void InvalidResolutionsAreRejected(int width,int height)=>Assert.Throws<ArgumentException>(()=>new RdpOptions { Width=width,Height=height }.Validate());

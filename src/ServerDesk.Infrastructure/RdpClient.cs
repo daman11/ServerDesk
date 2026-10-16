@@ -20,7 +20,9 @@ public static class RdpConfiguration
     public static string[] FreeRdpArguments(ServerProfile profile,RdpOptions options)
     {
         profile.Validate(); options.Validate(); var identity=RdpIdentity.Parse(profile.Username,profile.Domain);
-        var args=new List<string> { $"/v:{Address(profile)}",$"/size:{options.Width}x{options.Height}","/sec:nla","/from-stdin:force",options.Clipboard?"+clipboard":"-clipboard" };
+        // The client runs in an interactive PTY. /from-stdin also disables its
+        // certificate trust prompt, so let the client request credentials normally.
+        var args=new List<string> { $"/v:{Address(profile)}",$"/size:{options.Width}x{options.Height}","/sec:nla",options.Clipboard?"+clipboard":"-clipboard" };
         if(identity.User.Length>0)args.Add("/u:"+identity.User);
         if(identity.Domain.Length>0)args.Add("/d:"+identity.Domain);
         if(options.DynamicResolution)args.Add("/dynamic-resolution"); else args.Add("/smart-sizing");

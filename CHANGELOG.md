@@ -2,6 +2,10 @@
 
 ## Unreleased
 
+- Keep FreeRDP certificate confirmation interactive by removing `/from-stdin:force` from PTY launches; retain NLA and normal certificate verification.
+- Preserve the RDP console after client errors and add a console/summary toggle with Polish/English guidance.
+- Add client-side resize edges and a visible corner grip for the Linux main window; hide the grips when maximized or resizing is disabled.
+
 - Replace the generic connection-time credential-save error with an explicit choice to connect without another save attempt or cancel. Explain Linux Secret Service requirements in PL/EN while preserving the existing secure storage backend.
 - Add focused missing-helper/read-only-store UI coverage and a real disposable SSH recovery check; document troubleshooting for Linux password storage.
 

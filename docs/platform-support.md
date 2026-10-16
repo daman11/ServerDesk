@@ -41,6 +41,18 @@ Do ustalenia przyczyny uruchom preflight w tej samej zwykłej sesji graficznej c
 
 Samo `present` przy zmiennej środowiskowej nie rozstrzyga przyczyny błędu. Do zgłoszenia wystarczą powyższe trzy niesekretne linie; nie dołączaj haseł ani eksportu portfela. Poprawka komunikatu nie zastępuje konfiguracji systemowego Secret Service.
 
+### RDP: błąd TLS/NLA i pytanie o certyfikat
+
+Zielony wynik „Serwer RDP dostępny” potwierdza odpowiedź negocjacji i deklarowane NLA. Nie oznacza zweryfikowanego certyfikatu ani poprawnego logowania. Dokładny błąd klienta pozostaje w **Konsoli RDP**; przyciskiem w pasku sesji można przełączać ją z **Podsumowaniem RDP**. Po błędzie konsola jest widoczna, a po ponownym połączeniu służy do nowych pytań klienta.
+
+Wcześniej ServerDesk uruchamiał FreeRDP w PTY z `/from-stdin:force`. Ten tryb blokuje interaktywne pytanie o niezaufany certyfikat w [FreeRDP 2.11.5](https://github.com/FreeRDP/FreeRDP/blob/2.11.5/client/common/client.c#L419) oraz [3.16.0](https://github.com/FreeRDP/FreeRDP/blob/3.16.0/client/common/client.c#L616). Bieżący build usuwa ten parametr: dane logowania i decyzję o certyfikacie obsługuje zwykły interaktywny klient. Zachowuje `/sec:nla`; nie dodaje `cert:ignore`, automatycznego zaufania ani hasła w argumentach procesu.
+
+Przy pytaniu klienta porównaj odcisk z zaufanym źródłem. W konsolowym pytaniu `Y/T/N` można odmówić przez `N`, a `T` oznacza zaufanie na tę próbę. Nie potwierdzaj zmienionego certyfikatu bez sprawdzenia. Usunięcie parametru przywraca możliwość odpowiedzi; nie rozwiązuje wszystkich błędów zgodności TLS, CredSSP ani kont Windows. Po odrzuceniu certyfikatu błąd połączenia jest oczekiwany.
+
+### Zmiana rozmiaru głównego okna na Linux
+
+Własny pasek tytułu zachowuje przyciski minimalizacji, maksymalizacji/przywrócenia i zamknięcia. Build roboczy dodaje do głównego okna obszary przeciągania przy wszystkich krawędziach i narożnikach oraz widoczny uchwyt w prawym dolnym rogu. Jeżeli okno jest zmaksymalizowane, najpierw wybierz **Maksymalizuj / przywróć**. Uchwyty są wtedy przywracane; zmiana rozmiaru zachowuje dotychczasowe minima dopasowane do ekranu. Nie dodano pasków przewijania do całego obszaru pracy.
+
 ## Ręczna akceptacja na Kali lub innym docelowym desktopie
 
 Wykorzystaj osobne konto/VM i jednorazowe profile. Można uruchomić aplikację z osobnym katalogiem danych przez `SERVERDESK_DATA_HOME`; nie kopiuj osobistej bazy ani haseł do zgłoszenia.

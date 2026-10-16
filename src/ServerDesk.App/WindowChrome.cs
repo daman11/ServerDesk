@@ -11,6 +11,32 @@ namespace ServerDesk.App;
 
 public sealed partial class MainWindow
 {
+    private void BuildResizeEdges()
+    {
+        // With the custom titlebar X11/XWayland has no WM-drawn frame. Keep
+        // explicit client-side hit areas instead of relying on that missing frame.
+        var edges=new List<Border>();
+        void Edge(WindowEdge edge,WindowDecorationsElementRole role,HorizontalAlignment horizontal,VerticalAlignment vertical,double width,double height,StandardCursorType cursor,Thickness margin)
+        {
+            var grip=new Border { Name="WindowResize"+edge,Width=width,Height=height,HorizontalAlignment=horizontal,VerticalAlignment=vertical,Margin=margin,Background=Brushes.Transparent,Cursor=new Cursor(cursor),ZIndex=100 };
+            WindowDecorationProperties.SetElementRole(grip,role);
+            grip.PointerPressed+=(_,e)=> { if(CanResize && WindowState==WindowState.Normal && e.GetCurrentPoint(grip).Properties.IsLeftButtonPressed) { BeginResizeDrag(edge,e); e.Handled=true; } };
+            Grid.SetColumnSpan(grip,4); Grid.SetRowSpan(grip,3); layout.Children.Add(grip); edges.Add(grip);
+        }
+        Edge(WindowEdge.North,WindowDecorationsElementRole.ResizeN,HorizontalAlignment.Stretch,VerticalAlignment.Top,double.NaN,6,StandardCursorType.SizeNorthSouth,new(14,0,14,0));
+        Edge(WindowEdge.South,WindowDecorationsElementRole.ResizeS,HorizontalAlignment.Stretch,VerticalAlignment.Bottom,double.NaN,6,StandardCursorType.SizeNorthSouth,new(14,0,14,0));
+        Edge(WindowEdge.West,WindowDecorationsElementRole.ResizeW,HorizontalAlignment.Left,VerticalAlignment.Stretch,6,double.NaN,StandardCursorType.SizeWestEast,new(0,14,0,14));
+        Edge(WindowEdge.East,WindowDecorationsElementRole.ResizeE,HorizontalAlignment.Right,VerticalAlignment.Stretch,6,double.NaN,StandardCursorType.SizeWestEast,new(0,14,0,14));
+        Edge(WindowEdge.NorthWest,WindowDecorationsElementRole.ResizeNW,HorizontalAlignment.Left,VerticalAlignment.Top,14,14,StandardCursorType.TopLeftCorner,default);
+        Edge(WindowEdge.NorthEast,WindowDecorationsElementRole.ResizeNE,HorizontalAlignment.Right,VerticalAlignment.Top,14,14,StandardCursorType.TopRightCorner,default);
+        Edge(WindowEdge.SouthWest,WindowDecorationsElementRole.ResizeSW,HorizontalAlignment.Left,VerticalAlignment.Bottom,14,14,StandardCursorType.BottomLeftCorner,default);
+        Edge(WindowEdge.SouthEast,WindowDecorationsElementRole.ResizeSE,HorizontalAlignment.Right,VerticalAlignment.Bottom,14,14,StandardCursorType.BottomRightCorner,default);
+        var mark=new PathIcon { Data=Geometry.Parse("M 2,10 L 10,2 L 11,3 L 3,11 Z M 6,10 L 10,6 L 11,7 L 7,11 Z"),Width=10,Height=10,Margin=new Thickness(0,0,2,2),HorizontalAlignment=HorizontalAlignment.Right,VerticalAlignment=VerticalAlignment.Bottom,IsHitTestVisible=false };
+        DesignSystem.Resource(mark,PathIcon.ForegroundProperty,"ForegroundSecondary"); edges[^1].Child=mark;
+        ToolTip.SetTip(edges[^1],L.T("Przeciągnij, aby zmienić rozmiar okna"));
+        void Visibility() { foreach(var edge in edges)edge.IsVisible=CanResize && WindowState==WindowState.Normal; }
+        PropertyChanged+=(_,e)=> { if(e.Property==CanResizeProperty || e.Property==WindowStateProperty)Visibility(); }; Visibility();
+    }
     private void BuildWindowCaptions(Grid titlebar)
     {
         var captions=new StackPanel { Name="WindowCaptionButtons",Orientation=Orientation.Horizontal,HorizontalAlignment=HorizontalAlignment.Right };

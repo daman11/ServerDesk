@@ -37,7 +37,7 @@ public sealed partial class MainWindow : Window
     public MainWindow(MainViewModel vm,ProfileRepository repository,ICredentialStore credentials,SshConnectionFactory ssh,IRdpClient rdp)
     {
         this.vm=vm; this.repository=repository; this.credentials=credentials; this.ssh=ssh; this.rdp=rdp;
-        Title="ServerDesk"; Width=1320; Height=840; MinWidth=900; MinHeight=600; DataContext=vm;
+        Title="ServerDesk"; Width=1320; Height=840; MinWidth=900; MinHeight=600; CanResize=true; DataContext=vm;
         ExtendClientAreaToDecorationsHint=true;
         ExtendClientAreaTitleBarHeightHint=DesignTokens.HeaderHeight;
         WindowDecorations=WindowDecorations.BorderOnly;
@@ -46,6 +46,7 @@ public sealed partial class MainWindow : Window
         ClosingBehavior=WindowClosingBehavior.OwnerWindowOnly;
         ssh.ConfirmHostKey=(challenge,ct)=> Dispatcher.UIThread.InvokeAsync(()=>Dialogs.Confirm(this,L.T("Weryfikacja klucza SSH"),L.F($"Pierwsze połączenie: {challenge.Host}:{challenge.Port}\n{challenge.Algorithm}\n{challenge.Fingerprint}\n\nPorównaj fingerprint z zaufanym źródłem. Zapisać klucz i kontynuować?"),ct));
         BuildWorkspace();
+        if(OperatingSystem.IsLinux())BuildResizeEdges();
         ConfigureWindowPlacement();
         Activated+=(_,_)=> { if(ActiveSession is {} active && dockState.Location(active.WorkspaceId)==SessionDock.Floating && sessions.FirstOrDefault(p=>WorkspaceState.DockedGroups.Select(dockState.Selected).Contains(p.WorkspaceId)) is {} docked)FocusSession(docked); };
         Opened+=async (_,_)=> { initialization=Safe(InitializeAsync); await initialization; };

@@ -1377,5 +1377,10 @@
   "Nie potwierdzono zapisu hasła": "Nie potwierdzono zapisu hasła",
   "Systemowy magazyn haseł nie potwierdził zapisu. Możesz połączyć się z podanym hasłem bez ponawiania zapisu albo anulować połączenie i odblokować magazyn.": "Systemowy magazyn haseł nie potwierdził zapisu. Możesz połączyć się z podanym hasłem bez ponawiania zapisu albo anulować połączenie i odblokować magazyn.",
   "Linux/KDE: zapisywanie wymaga secret-tool (pakiet libsecret-tools) i działającej usługi Secret Service z odblokowanym portfelem.": "Linux/KDE: zapisywanie wymaga secret-tool (pakiet libsecret-tools) i działającej usługi Secret Service z odblokowanym portfelem.",
-  "Połącz bez zapisywania": "Połącz bez zapisywania"
+  "Połącz bez zapisywania": "Połącz bez zapisywania",
+  "Konsola RDP": "Konsola RDP",
+  "Podsumowanie RDP": "Podsumowanie RDP",
+  "Przeciągnij, aby zmienić rozmiar okna": "Przeciągnij, aby zmienić rozmiar okna",
+  "Login, hasło i certyfikat potwierdź w konsoli tej zakładki lub oknie klienta.\nKonsola RDP zachowuje szczegóły po błędzie. Pulpit działa w osobnym oknie FreeRDP; uruchomiony klient nie potwierdza zalogowania.": "Login, hasło i certyfikat potwierdź w konsoli tej zakładki lub oknie klienta.\nKonsola RDP zachowuje szczegóły po błędzie. Pulpit działa w osobnym oknie FreeRDP; uruchomiony klient nie potwierdza zalogowania.",
+  "Nie udało się uzgodnić TLS/NLA lub zweryfikować certyfikatu. Sprawdź szczegóły w Konsoli RDP i porównaj odcisk certyfikatu z zaufanym źródłem.": "Nie udało się uzgodnić TLS/NLA lub zweryfikować certyfikatu. Sprawdź szczegóły w Konsoli RDP i porównaj odcisk certyfikatu z zaufanym źródłem."
 }

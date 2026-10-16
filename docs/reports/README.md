@@ -12,6 +12,7 @@ Development after 0.37.0: [Linux monitoring compatibility and CPU counters, 2026
 Connection browser: [5,000 profiles, deferred visuals/menus and empty folders, 2026-10-16](browser-scalability-2026-10-16.md).
 Desktop acceptance: [DPI, settings keyboard/accessibility and resource measurements, 2026-10-16](platform-ux-2026-10-16.md).
 Credential-save feedback: [Explicit use-once/cancel and Linux Secret Service guidance, 2026-10-16](credential-save-2026-10-16.md).
+Linux desktop: [FreeRDP certificate prompt, retained console and resize hit areas, 2026-10-16](linux-rdp-resize-2026-10-16.md).
 
 Personalization: [Terminal and SFTP preferences, 2026-10-16](extended-settings-2026-10-16.md).
 

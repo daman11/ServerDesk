@@ -108,7 +108,7 @@ internal sealed partial class SessionPane : WorkspacePane
         BuildTransferQueue();
         BuildOperationStatus(); BuildFiles(); BuildInfo(); DesignSystem.Resource(cpuChart,Polyline.StrokeProperty,"AccentPrimary");
         Loaded+=(_,_)=>_ = ApplyAppearanceAsync(); terminal.Loaded+=(_,_)=>_ = ApplyAppearanceAsync();
-        terminal.ProcessExited+=(_,e)=> { if(Profile.Protocol==Protocol.RDP && disposed==0 && !terminal.IsLive && !stoppingRdp) { terminal.IsVisible=false; RdpEnded(e.ExitCode,true); } };
+        terminal.ProcessExited+=(_,e)=> { if(Profile.Protocol==Protocol.RDP && disposed==0 && !terminal.IsLive && !stoppingRdp)RdpEnded(e.ExitCode,true); };
         foreach(var child in actions.Children)child.Margin=new Thickness(0,2,DesignTokens.Small,2); UpdateConnectionActions();
     }
     private void SetStatus(string text,string glyph,SessionVisualState? visual=null)
@@ -226,7 +226,11 @@ internal sealed partial class SessionPane : WorkspacePane
         var launch=rdp.Prepare(Profile,Profile.Rdp with { Fullscreen=fullscreen.IsChecked==true,Clipboard=clipboard.IsChecked==true });
         if(rdpNotice!=null)rdpNotice.IsVisible=!launch.InteractiveConsole;
         if(launch.InteractiveConsole)
-        { terminal.IsVisible=true; await terminal.LaunchProcess(null,launch.Executable,launch.Arguments); }
+        {
+            rdpConsoleAvailable=true; ShowRdpConsole(true);
+            await terminal.LaunchProcess(null,launch.Executable,launch.Arguments);
+            if(!terminal.IsLive)return;
+        }
         else
         {
             rdpProcess=RdpProcessSession.Start(launch);

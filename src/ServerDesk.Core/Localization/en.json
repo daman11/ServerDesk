@@ -1377,5 +1377,10 @@
   "Nie potwierdzono zapisu hasła": "Password storage was not confirmed",
   "Systemowy magazyn haseł nie potwierdził zapisu. Możesz połączyć się z podanym hasłem bez ponawiania zapisu albo anulować połączenie i odblokować magazyn.": "The system password store did not confirm the save. You can connect using the supplied password without another save attempt, or cancel and unlock the store.",
   "Linux/KDE: zapisywanie wymaga secret-tool (pakiet libsecret-tools) i działającej usługi Secret Service z odblokowanym portfelem.": "Linux/KDE: saving requires secret-tool (the libsecret-tools package) and a working Secret Service with an unlocked wallet.",
-  "Połącz bez zapisywania": "Connect without saving"
+  "Połącz bez zapisywania": "Connect without saving",
+  "Konsola RDP": "RDP console",
+  "Podsumowanie RDP": "RDP summary",
+  "Przeciągnij, aby zmienić rozmiar okna": "Drag to resize the window",
+  "Login, hasło i certyfikat potwierdź w konsoli tej zakładki lub oknie klienta.\nKonsola RDP zachowuje szczegóły po błędzie. Pulpit działa w osobnym oknie FreeRDP; uruchomiony klient nie potwierdza zalogowania.": "Confirm your login, password and certificate in this tab's console or the client window.\nThe RDP console keeps details after an error. The desktop runs in a separate FreeRDP window; a running client does not confirm a successful login.",
+  "Nie udało się uzgodnić TLS/NLA lub zweryfikować certyfikatu. Sprawdź szczegóły w Konsoli RDP i porównaj odcisk certyfikatu z zaufanym źródłem.": "TLS/NLA negotiation or certificate verification failed. Check the RDP console for details and compare the certificate fingerprint with a trusted source."
 }

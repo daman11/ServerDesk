@@ -176,6 +176,7 @@ internal sealed partial class SessionPane : WorkspacePane
     }
     private void ResetConnections()
     {
+        CancelFileViews();
         connectionLifetime.Cancel();
         var oldSsh=session; var oldSftp=sftp; var oldMonitor=monitor; var oldMonitorLoop=monitorLoop;
         var oldRdp=rdpProcess; var oldVnc=vncSession; var oldSerial=serialSession;
@@ -203,7 +204,7 @@ internal sealed partial class SessionPane : WorkspacePane
     private async Task ResetConnectionsAsync()
     {
         ResetConnections();
-        await Task.WhenAll(transferTasks.Append(transportShutdown));
+        await Task.WhenAll(transferTasks.Concat(fileViewTasks).Append(transportShutdown));
     }
     private async Task LaunchRdpAsync()
     {
@@ -334,8 +335,12 @@ internal sealed partial class SessionPane : WorkspacePane
         remotePath.Text=remote;
         if(remote!="/")remoteResult.Insert(0,new("..",RemotePath.Parent(remote),true,false,0,DateTime.MinValue,""));
         localEntries=localResult; remoteEntries=remoteResult;
+        // A background view for a new directory must not leave actionable rows
+        // from the previous directory under the newly displayed path.
+        if(loadedLocalPath!=path)localList.ItemsSource=null;
+        if(loadedRemotePath!=remote)remoteList.ItemsSource=null;
         if(loadedLocalPath!=path)localFilter.Text=""; if(loadedRemotePath!=remote)remoteFilter.Text="";
-        loadedLocalPath=path; loadedRemotePath=remote; FilterFiles();
+        loadedLocalPath=path; loadedRemotePath=remote; await FilterFilesAsync();
         } finally { refreshGate.Release(); }
     }
     private bool RemoteSelected => fileTarget.SelectedIndex==1;

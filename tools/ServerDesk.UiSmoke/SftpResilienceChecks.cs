@@ -83,7 +83,7 @@ internal static class SftpResilienceChecks
             var remoteList=Field<ListBox>(pane,"remoteList"); Field<TextBox>(pane,"remotePath").Text=remote+"/many"; clock.Restart(); Wait(Call(pane,"RefreshAsync")); clock.Stop();
             if(remoteList.ItemCount!=5001 || remoteList.Items.OfType<FileEntry>().Skip(1).First().Name!="file0.txt")throw new Exception("Large directory UI count/order incorrect");
             remoteList.SelectedItem=remoteList.Items.OfType<FileEntry>().Single(e=>e.Name=="file4000.txt"); Field<TextBox>(pane,"remoteFilter").Text="file4000";
-            RedesignChecks.Frames(3);
+            RedesignChecks.Frames(3); Wait(Field<Task>(pane,"fileViewUpdate"));
             if(remoteList.ItemCount!=2 || remoteList.SelectedItem is not FileEntry { Name:"file4000.txt" })throw new Exception($"Large directory filter lost selected identity: count={remoteList.ItemCount}, selected={(remoteList.SelectedItem as FileEntry)?.Name}, filter={Field<TextBox>(pane,"remoteFilter").Text}");
             Field<TextBox>(pane,"remoteFilter").Text="";
             Console.WriteLine($"PASS real 5000-entry SFTP directory: complete listing, natural order and retained filtered selection; refresh {clock.ElapsedMilliseconds}ms");

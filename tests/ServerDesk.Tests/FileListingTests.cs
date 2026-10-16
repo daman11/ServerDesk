@@ -24,6 +24,44 @@ public sealed class FileListingTests
     { Assert.Equal(new[]{"..","żółć.TXT"},FileListing.Apply(Entries," ŻÓŁĆ ",false).Select(e=>e.Name)); }
     [Fact] public void HiddenFilterDoesNotMutateTheSource()
     { Assert.Contains(FileListing.Apply(Entries,"secret",true),e=>e.Name==".secret"); Assert.Equal(7,Entries.Length); Assert.Single(FileListing.Apply(Entries,"secret",false)); }
+    [Fact] public void PreCancelledListingDoesNotEnumerate()
+    {
+        using var cancel=new CancellationTokenSource(); cancel.Cancel();
+        IEnumerable<FileEntry> Source() { throw new Exception("Source must not be read"); }
+        // Delay execution of the source until the listing actually requests it.
+        IEnumerable<FileEntry> Deferred() { foreach(var entry in Source())yield return entry; }
+        var error=Assert.Throws<OperationCanceledException>(()=>FileListing.Apply(Deferred(),"",true,ct:cancel.Token));
+        Assert.Equal(cancel.Token,error.CancellationToken);
+    }
+    [Fact] public void CancellationStopsEnumerationBeforeReadingTheRest()
+    {
+        using var cancel=new CancellationTokenSource(); var visited=0;
+        IEnumerable<FileEntry> Source()
+        {
+            for(var i=0;i<1000;i++) { visited++; if(i==4)cancel.Cancel(); yield return Entry("file"+i); }
+        }
+        Assert.Throws<OperationCanceledException>(()=>FileListing.Apply(Source(),"",true,ct:cancel.Token));
+        Assert.Equal(5,visited);
+    }
+    [Fact] public void SortCancellationIsReportedWithTheOriginalToken()
+    {
+        using var cancel=new CancellationTokenSource();
+        IEnumerable<FileEntry> Source()
+        {
+            for(var i=1000;i>0;i--)yield return Entry("file"+i);
+            cancel.Cancel(); // Enumeration has finished; cancellation is observed by the sort.
+        }
+        var error=Assert.Throws<OperationCanceledException>(()=>FileListing.Apply(Source(),"",true,ct:cancel.Token));
+        Assert.Equal(cancel.Token,error.CancellationToken);
+    }
+    [Theory]
+    [InlineData(FileSort.Name)] [InlineData(FileSort.Size)] [InlineData(FileSort.Modified)] [InlineData(FileSort.Type)]
+    public void CancellableSortPreservesOrdering(FileSort mode)
+    {
+        using var cancel=new CancellationTokenSource();
+        foreach(var descending in new[]{false,true})
+            Assert.Equal(FileListing.Apply(Entries,"",true,mode,descending),FileListing.Apply(Entries,"",true,mode,descending,cancel.Token));
+    }
     [Fact] public void MixedOutcomesCannotReportFullSuccess()
     {
         var skipped=new TransferOutcome(Skipped:1); Assert.Equal(TransferState.Skipped,skipped.State);

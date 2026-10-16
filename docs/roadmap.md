@@ -1,5 +1,7 @@
 Pierwotne MVP: aktualna tabela kryteriów i brakującej weryfikacji znajduje się w [mvp-status.md](mvp-status.md).
 
+Bieżący etap w Git po 0.31.1: filtrowanie i sortowanie dużych list SFTP w tle, anulowanie starszych wyników i bezpieczne zamykanie. Sprawdzono widoki po 50 000 wpisów na panel Windows/Linux oraz rzeczywisty katalog 5000 plików OpenSSH. [Zakres pomiarów](reports/sftp-large-file-views-2026-10-16.md). Paczki 0.31.1 pozostają zamrożone.
+
 Wydanie 0.29.0 usprawnia większe listy połączeń oraz transfery przy utracie sieci: ograniczony postęp/bufor uploadu, anulowanie, zachowanie oryginałów i retry. Testy obejmują 1000 profili oraz rzeczywisty katalog 5000 plików. [Zmiany](releases/release-0.29.0.md).
 
 Wydanie 0.28.0 dopracowuje terminal SSH: Escape na Windows, bezpieczne kopiowanie bez zaznaczenia, negocjacja PTY i kolejka resize poza interfejsem oraz rzeczywiste testy hasła/klawiatury/aplikacji. [Zmiany](releases/release-0.28.0.md).

@@ -118,19 +118,19 @@ internal sealed partial class SessionPane
         if(path==null)return Task.CompletedTask;
         (remote?remotePath:localPath).Text=path; return RefreshAsync();
     }
-    private void FilterFiles()
+    private void FilterFiles()=>_ = owner.Safe(FilterFilesAsync);
+    private void PublishFileViews(IReadOnlyList<FileEntry> local,IReadOnlyList<FileEntry> remote)
     {
-        void Apply(ListBox list,List<FileEntry> entries,TextBox filter,ComboBox sort,bool descending,TextBlock empty)
+        void Apply(ListBox list,IReadOnlyList<FileEntry> result,TextBox filter,TextBlock empty)
         {
             var selected=list.SelectedItems?.OfType<FileEntry>().ToArray()??[];
-            var result=FileListing.Apply(entries,filter.Text,hidden.IsChecked==true,(FileSort)Math.Max(0,sort.SelectedIndex),descending);
             var retained=FileSelection.Retain(result,selected,list==localList);
             list.ItemsSource=result; list.SelectedItems!.Clear(); foreach(var entry in retained)list.SelectedItems.Add(entry);
             empty.Text=string.IsNullOrWhiteSpace(filter.Text)?L.T("Brak plików. Włącz „Ukryte”, aby sprawdzić wszystkie wpisy."):L.T("Brak wyników. Zmień lub wyczyść filtr.");
             ToolTip.SetTip(filter,L.F($"Widoczne wpisy: {result.Count(e=>e.Name!="..")}. Filtr dotyczy nazw w bieżącym katalogu."));
         }
         changingFileSelection=true;
-        try { Apply(localList,localEntries,localFilter,localSort,localDescending,localEmpty); Apply(remoteList,remoteEntries,remoteFilter,remoteSort,remoteDescending,remoteEmpty); }
+        try { Apply(localList,local,localFilter,localEmpty); Apply(remoteList,remote,remoteFilter,remoteEmpty); }
         finally { changingFileSelection=false; UpdateFileSelection(); }
         UpdateFileSortControls(); AdaptFiles();
     }

@@ -2,6 +2,8 @@
 
 ## Unreleased
 
+- Filter and sort large local/SFTP directory views off the UI thread, coalesce rapid edits, cancel obsolete sorts and drain view work on reconnect/close. Preserve selection and prevent stale results from replacing a newer directory.
+- Add 50,000-entry-per-panel acceptance checks in Polish/English on Windows/Linux and include them in CI.
 - Add safe generated-artifact cleanup with preview, release/report retention, process/shortcut protection and no-follow link deletion.
 - Import the exact 0.31.1 release source into Git and preserve it with an immutable baseline tag.
 - Organize release notes and historical verification reports; add a documentation index and Git/GitHub contributor workflow.

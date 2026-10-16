@@ -18,7 +18,7 @@ internal sealed partial class SessionPane
             await connectionGate.WaitAsync(); connectionGate.Release();
             await appearanceGate.WaitAsync(); appearanceGate.Release();
             await refreshGate.WaitAsync(); refreshGate.Release();
-            await Task.WhenAll(transferTasks.Concat([transportShutdown,durationLoop,historyWrite]));
+            await Task.WhenAll(transferTasks.Concat(fileViewTasks).Concat([transportShutdown,durationLoop,historyWrite]));
         }
         catch(Exception ex) { failure=ex; }
         finally { connectionLifetime.Dispose(); lifetime.Dispose(); }

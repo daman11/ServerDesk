@@ -33,6 +33,7 @@ AppBuilder.Configure<App>().UseHeadless(new AvaloniaHeadlessPlatformOptions { Us
 if(args.Contains("--brand-assets")) { BrandAssets.Generate(root); return; }
 if(args.Contains("--ssh-acceptance")) { SshAcceptanceChecks.Run(root,args[1]); return; }
 if(args.Contains("--large-browser")) { LargeBrowserChecks.Run(root); return; }
+if(args.Contains("--large-file-views")) { LargeFileViewChecks.Run(root); return; }
 if(args.Contains("--ssh-responsiveness")) { SshResponsivenessChecks.Run(root,args[1],args[2]); return; }
 if(args.Contains("--monitoring-acceptance")) { MonitoringAcceptanceChecks.Run(root,args[1],args[2]); return; }
 if(args.Contains("--session-lifecycle")) { SessionLifecycleChecks.Run(root); if(args.Length>=4)SessionLifetimeNetworkChecks.Run(root,args[1],args[2]); return; }

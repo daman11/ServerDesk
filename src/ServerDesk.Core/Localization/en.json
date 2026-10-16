@@ -577,6 +577,7 @@
   "Wczytywanie SFTP…": "Loading SFTP…",
   "Wczytywanie historii…": "Loading history…",
   "Wczytywanie listy plików…": "Loading file list…",
+  "Filtrowanie i sortowanie plików…": "Filtering and sorting files…",
   "Wczytywanie pierwszych danych serwera…": "Loading initial server data…",
   "Weryfikacja klucza SSH": "SSH host key verification",
   "Widoczne wpisy: {0}. Filtr dotyczy nazw w bieżącym katalogu.": "Visible entries: {0}. The filter applies to names in the current directory.",

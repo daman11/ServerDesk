@@ -1,4 +1,4 @@
-# Pierwotne MVP — stan po etapie 0.31.1
+# Pierwotne MVP — wydanie 0.31.1 i bieżące prace w Git
 
 Ta lista odnosi się do pierwotnej specyfikacji ServerDesk i jej kryteriów gotowości (§21). Nie zalicza dodatkowych Network Tools, VNC ani Serial jako zastępstwa funkcji SSH/SFTP/Server Info/RDP. Historyczny audyt 0.4.0 pozostaje zapisem tamtego stanu.
 
@@ -18,6 +18,8 @@ Ta lista odnosi się do pierwotnej specyfikacji ServerDesk i jej kryteriów goto
 | Ciemny i jasny motyw, wygodny UI | Pięć motywów, czcionka/gęstość/akcent, ikony/grafiki, PL/EN, ustawienia z wyszukiwaniem, responsywność i poprawianie położenia okna poza ekranem. | Czytniki ekranu, zmiany motywu OS w pracy, fizyczne DPI i pozostałe kombinacje sprzętu. |
 
 ## Wykonany etap
+
+Bieżące zmiany po 0.31.1 przenoszą filtrowanie i sortowanie list od 2000 wpisów poza UI. Szybkie zmiany są łączone, nieaktualne obliczenia anulowane, a reconnect i zamknięcie czekają na ich zakończenie. Test widoków obejmuje po 50 000 wpisów w obu panelach na Windows i Linux/WSL, a rzeczywisty OpenSSH — katalog 5000 plików oraz utratę transportu i anulowanie transferu. Nie oznacza to testu odczytu 50 000 zdalnych plików ani wielogodzinnej sesji. [Weryfikacja zmian](reports/sftp-large-file-views-2026-10-16.md).
 
 Etap 0.31.0 przenosi przygotowanie klucza z passphrase oraz pełny odczyt monitoringu poza UI. Server Info zachowuje dostępne sekcje przy brakach narzędzi i praw odczytu, pokazuje niedostępne dane bez fikcyjnego zera oraz czyści stary wykres i parametry. Testy obejmują odczyt rzeczywistych danych przez ograniczony PATH i własne pliki z odmową dostępu, powrót danych oraz PL/EN. Zachowano poprawki cyklu życia i dokowania z 0.30.0. [Zakres](releases/release-0.31.0.md).
 

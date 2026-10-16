@@ -15,7 +15,7 @@ internal static partial class DesignSystem
 {
     internal static Border Card(Control content,Thickness? padding=null)
     {
-        var card=new Border { Child=content,Padding=padding??new Thickness(18),CornerRadius=new CornerRadius(8),BorderThickness=new Thickness(1),ClipToBounds=true };
+        var card=new Border { Child=content,Padding=padding??new Thickness(18),CornerRadius=new CornerRadius(10),BorderThickness=new Thickness(1),ClipToBounds=true };
         Resource(card,Border.BackgroundProperty,"BackgroundSecondary"); Resource(card,Border.BorderBrushProperty,"BorderDefault"); return card;
     }
     internal static Control PageHeading(string glyph,string title,string? subtitle=null)
@@ -53,10 +53,13 @@ internal static partial class DesignSystem
         Add(s=>s.OfType<TabItem>().Class("page-navigation").Class(":focus-visible"),R(TabItem.BorderBrushProperty,"AccentPrimary"));
         Add(s=>s.OfType<TabItem>().Class("settings-category"),new Setter(TabItem.WidthProperty,184d),new Setter(TabItem.MinHeightProperty,44d),new Setter(TabItem.MarginProperty,new Thickness(8,4)),new Setter(TabItem.HorizontalContentAlignmentProperty,HorizontalAlignment.Stretch));
         Add(s=>s.OfType<ListBoxItem>(),new Setter(ListBoxItem.CornerRadiusProperty,new CornerRadius(5)));
-        Add(s=>s.OfType<ListBox>().Class("sftp-list").Descendant().OfType<ListBoxItem>().Class(":selected").Template().OfType<ContentPresenter>().Name("PART_ContentPresenter"),R(ContentPresenter.BackgroundProperty,"SurfaceSelected"));
-        Add(s=>s.OfType<ListBox>().Class("sftp-list").Descendant().OfType<ListBoxItem>().Class(":selected").Class(":pointerover").Template().OfType<ContentPresenter>().Name("PART_ContentPresenter"),R(ContentPresenter.BackgroundProperty,"SurfaceSelected"));
-        Add(s=>s.OfType<ListBox>().Class("network-results").Descendant().OfType<ListBoxItem>().Class(":selected").Template().OfType<ContentPresenter>().Name("PART_ContentPresenter"),R(ContentPresenter.BackgroundProperty,"SurfaceSelected"));
-        Add(s=>s.OfType<ListBox>().Class("network-results").Descendant().OfType<ListBoxItem>().Class(":selected").Class(":pointerover").Template().OfType<ContentPresenter>().Name("PART_ContentPresenter"),R(ContentPresenter.BackgroundProperty,"SurfaceSelected"));
+        Add(s=>s.OfType<TextBox>().Class("code-preview"),R(TextBox.BackgroundProperty,"BackgroundPrimary"),R(TextBox.FontSizeProperty,"FontCaption"),new Setter(TextBox.PaddingProperty,new Thickness(10)),new Setter(TextBox.FontWeightProperty,FontWeight.Normal));
+        foreach(var listClass in new[]{"command-list","sftp-list","network-results"})
+        {
+            Add(s=>s.OfType<ListBox>().Class(listClass).Descendant().OfType<ListBoxItem>(),new Setter(ListBoxItem.MarginProperty,new Thickness(0,2)),R(ListBoxItem.ForegroundProperty,"ForegroundPrimary"));
+            Add(s=>s.OfType<ListBox>().Class(listClass).Descendant().OfType<ListBoxItem>().Class(":selected").Template().OfType<ContentPresenter>().Name("PART_ContentPresenter"),R(ContentPresenter.BackgroundProperty,"SurfaceSelected"),R(ContentPresenter.ForegroundProperty,"ForegroundPrimary"));
+            Add(s=>s.OfType<ListBox>().Class(listClass).Descendant().OfType<ListBoxItem>().Class(":selected").Class(":pointerover").Template().OfType<ContentPresenter>().Name("PART_ContentPresenter"),R(ContentPresenter.BackgroundProperty,"SurfaceSelected"));
+        }
         Add(s=>s.OfType<TreeViewItem>(),new Setter(TreeViewItem.CornerRadiusProperty,new CornerRadius(5)));
         Add(s=>s.OfType<ContextMenu>(),new Setter(ContextMenu.CornerRadiusProperty,new CornerRadius(8)),new Setter(ContextMenu.BorderThicknessProperty,new Thickness(1)),R(ContextMenu.BorderBrushProperty,"BorderDefault"),new Setter(ContextMenu.PaddingProperty,new Thickness(5)));
         Add(s=>s.OfType<MenuItem>(),new Setter(MenuItem.CornerRadiusProperty,new CornerRadius(5)),new Setter(MenuItem.PaddingProperty,new Thickness(10,7)));

@@ -1,0 +1,7 @@
+# ServerDesk 0.36.1 — zakres weryfikacji, 2026-10-16
+
+Zakres: wygląd panelu komend, ustawień i wspólnych list/kart. Akceptacja obejmuje PL/EN, pięć motywów panelu komend, 920×620, czcionki 13/16 i rozwinięty/zamknięty profil, widoczność akcji i rozdzielenie listy od karty szczegółów. Scenariusz design-refresh sprawdza ustawienia 960×720/680×500, wyszukiwanie, podgląd/anulowanie, nagłówek z wyszukiwarką, SFTP przy 650/1400 px oraz układ powitalny. Oba scenariusze wykonujemy na Windows i Linux, z izolowanymi danymi, bez połączeń z zapisanymi serwerami użytkownika.
+
+Bramki wydania: locked restore, Release build, cały zestaw jednostkowy, macierz istniejących scenariuszy UI, advisory NuGet, natywny host RDP opublikowanego EXE bez logowania, startup/restart, kodowanie Setup, izolowana instalacja/upgrade/uninstall, zgodność payloadów ZIP/TAR/DEB oraz budowanie i testy źródeł wyeksportowanych z czystego commita. Rejestracja Apps/Start jest pomijana, jeżeli istnieje instalacja użytkownika.
+
+Faktyczne wyniki dopisujemy po wykonaniu do VERIFICATION.md paczki. Dowody: artifacts/reports/release-0.36.1/. Paczki mają wersję 0.36.1 i SHA źródłowego commita; zestaw zawiera dziesięć plików. Wcześniejsze 180 zamrożonych plików pozostaje bez zmian. Nie dodano zależności ani migracji bazy. Nie jest to nowy test sprzętowego Serial, rzeczywistego RDP, IME ani mieszanych monitorów DPI. [Ograniczenia](../known-issues.md).

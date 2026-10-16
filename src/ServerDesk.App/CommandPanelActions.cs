@@ -22,6 +22,7 @@ internal sealed partial class CommandPanel
         if(selected==null) { detail.Children.Add(Dialogs.Text(L.T("Wybierz komendę, aby zobaczyć opis, parametry i podgląd."))); SetButtons(false); return; }
         var c=selected; if(target?.CanAcceptCommands==true)ticket=new(target.WorkspaceId,target.CommandConnectionId,c.Id);
         var title=DesignSystem.Label(c.Title,false,16); title.TextWrapping=Avalonia.Media.TextWrapping.Wrap; detail.Children.Add(title);
+        title.FontWeight=Avalonia.Media.FontWeight.SemiBold;
         detail.Children.Add(preview); detail.Children.Add(validation);
         detail.Children.Add(Dialogs.Text(c.Detail,12));
         var metadata=Dialogs.Text(c.Platform+" · "+c.Shell+" · "+Risk(c.Risk)+" · "+L.T("Uprawnienia")+": "+c.Privileges+"\n"+CategoryLabel(c.Category)+(c.Subcategory.Length>0?" / "+c.Subcategory:"")+" · "+(c.Origin==CommandOrigin.BuiltIn?L.T("Wbudowana"):L.T("Własna")),12);
@@ -59,7 +60,9 @@ internal sealed partial class CommandPanel
     {
         if(selected==null) { SetButtons(false); return; }
         favorite.IsEnabled=!working; edit.IsEnabled=!working&&!libraryLocked&&selected.Origin==CommandOrigin.User; duplicate.IsEnabled=!working&&!libraryLocked;
-        favorite.Content=DeskIcons.Labelled("star",L.T(state.Favorites.Contains(selected.Id)?"Usuń z ulubionych":"Ulubione"));
+        var isFavorite=state.Favorites.Contains(selected.Id);
+        favorite.Classes.Set("active",isFavorite); favorite.Classes.Add("segment");
+        var favoriteLabel=L.T(isFavorite?"Usuń z ulubionych":"Ulubione"); ToolTip.SetTip(favorite,favoriteLabel); Avalonia.Automation.AutomationProperties.SetName(favorite,favoriteLabel);
         try
         {
             var rendered=Render(); validation.Text=""; preview.Text=rendered.ContainsSecret?L.T("Podgląd ukryty: komenda zawiera sekret. Wartości nie są zapisywane."):rendered.Text;
@@ -67,8 +70,8 @@ internal sealed partial class CommandPanel
             var compatible=CommandCatalog.Scope(selected,target?.Profile.Id,target?.Profile.Folder??"")&&CommandCatalog.Supports(selected,target?.KnownCommandEnvironment??environment);
             compatible&=target?.KnownCommandEnvironment is not { Platform:not CommandPlatform.General } actual || CommandCatalog.Supports(selected,actual)&&selected.Tools.All(t=>actual.Tool(t)!=ToolAvailability.NotDetected)&&SessionPane.CompatibleShell(rendered.Shell,actual.Shell);
             insert.IsEnabled=execute.IsEnabled=!working&&ticket!=null&&target?.CanAcceptCommands==true&&!rendered.IsMultiline&&!rendered.ContainsSecret&&compatible&&(environment.Shell!=CommandShell.Any||selected.Shell==CommandShell.Any);
-            ToolTip.SetTip(insert,L.T("Wstawia bez Enter. Sprawdź bieżący wiersz i program w terminalu."));
-            ToolTip.SetTip(execute,L.T("Pokaż pełną komendę i potwierdź wysłanie Enter do wskazanej sesji."));
+            ToolTip.SetTip(insert,L.T(target?.CanAcceptCommands!=true?"Kopiowanie dostępne. Wstawianie i wykonanie wymagają aktywnego terminala SSH.":"Wstawia bez Enter. Sprawdź bieżący wiersz i program w terminalu."));
+            ToolTip.SetTip(execute,L.T(target?.CanAcceptCommands!=true?"Kopiowanie dostępne. Wstawianie i wykonanie wymagają aktywnego terminala SSH.":"Pokaż pełną komendę i potwierdź wysłanie Enter do wskazanej sesji."));
             if(rendered.IsMultiline)notice.Text=L.T("Skrypt wieloliniowy: podgląd i kopiowanie. Wstawianie bez wykonania nie jest gwarantowane.");
             else if(rendered.ContainsSecret)notice.Text=L.T("Sekretne parametry są dostępne tylko do kopiowania; nie wysyłamy ich do historii powłoki.");
         }

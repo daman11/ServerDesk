@@ -40,6 +40,8 @@ internal static class CommandPanelChecks
             Wait(repo.SaveApplicationSettingsAsync(Result(repo.ApplicationSettingsAsync()) with { Preferences=new() { Language=language } }));
             var main=new MainWindow(new(repo),repo,vault,new(repo),new ExternalRdpClient()); main.Show(); RedesignChecks.Frames(20); Wait(main.OpenCommandsPanelAsync()); RedesignChecks.Frames(8);
             var panel=Named<CommandPanel>(main,"CommandsPanel"); var list=Named<ListBox>(panel,"CommandList"); if(list.ItemCount<40)throw new Exception("Offline library not loaded");
+            var contextOptions=Named<Expander>(panel,"CommandContextOptions"); if(contextOptions.IsExpanded)throw new Exception("Profile settings hide command browsing by default");
+            contextOptions.IsExpanded=true; RedesignChecks.Frames(3);
             Select(panel,"linux.net.listeners"); if(main.GetVisualDescendants().OfType<Button>().Single(b=>b.Tag as string=="Wstaw").IsEnabled)throw new Exception("Offline Insert enabled");
             Wait(panel.DispatchAsync("copy")); if(Result(main.Clipboard!.TryGetTextAsync())!="ss -tulpn")throw new Exception("Offline Copy failed");
             var draft=new CommandDefinition { Id="user.editor-fixture",Origin=CommandOrigin.User,Name="Custom fixture",Category="Team/Files",Template="echo {{text}}",Shell=CommandShell.Bash,Parameters=[new() { Key="text",Default="hello" }] };
@@ -53,10 +55,25 @@ internal static class CommandPanelChecks
             var mode=Named<ComboBox>(panel,"CommandMode"); mode.SelectedIndex=1; Named<ComboBox>(panel,"CommandSystem").SelectedItem="windows11"; Named<ComboBox>(panel,"CommandShell").SelectedItem=CommandShell.PowerShell; RedesignChecks.Frames(8);
             Select(panel,"windows.ps.listeners"); if(panel.Environment.Platform!=CommandPlatform.Windows)throw new Exception("Manual Windows profile failed");
             Named<TextBox>(panel,"CommandSearch").Text="otwarte porty"; RedesignChecks.Frames(15); if(list.ItemCount<1)throw new Exception("Polish search failed in "+language); Named<TextBox>(panel,"CommandSearch").Text=""; RedesignChecks.Frames(15);
-            foreach(var theme in new[]{"dark","light"}) { DesignSystem.Apply(theme); RedesignChecks.Frames(8); main.CaptureRenderedFrame()!.Save(Path.Combine(root,$"commands-{language}-{theme}.png")); }
+            contextOptions.IsExpanded=false;
+            foreach(var theme in new[]{"dark","light","graphite","nord","midnight"}) { DesignSystem.Apply(theme); RedesignChecks.Frames(8); main.CaptureRenderedFrame()!.Save(Path.Combine(root,$"commands-{language}-{theme}.png")); }
             main.Width=920; main.Height=620; RedesignChecks.Frames(8); main.CaptureRenderedFrame()!.Save(Path.Combine(root,$"commands-{language}-compact.png"));
             var preview=Named<TextBox>(panel,"CommandPreview"); var footer=panel.GetVisualDescendants().OfType<Button>().Single(b=>b.Tag as string=="Wstaw");
             if(preview.Bounds.Width<=0||footer.TranslatePoint(default,main) is not {} p||p.Y+footer.Bounds.Height>main.Bounds.Height)throw new Exception("Commands footer outside compact window");
+            var preferences=main.CurrentPreferences;
+            foreach(var font in new[]{13,16})foreach(var expanded in new[]{false,true})
+            {
+                main.PreviewPreferences(preferences with { InterfaceFontSize=font }); contextOptions.IsExpanded=expanded; RedesignChecks.Frames(6);
+                foreach(var button in panel.GetVisualDescendants().OfType<Button>().Where(b=>b.Tag as string is "Kopiuj" or "Wstaw" or "Wykonaj" or "Ulubione" or "Edytuj" or "Duplikuj"))
+                {
+                    var point=button.TranslatePoint(default,main)!.Value;
+                    if(point.X<0||point.Y<0||point.X+button.Bounds.Width>main.ClientSize.Width+.5||point.Y+button.Bounds.Height>main.ClientSize.Height+.5)throw new Exception("Command action clipped at font "+font);
+                }
+                var card=Named<Border>(panel,"CommandDetailCard");
+                if(list.Bounds.Height<70 || card.Bounds.Height<85 || list.TranslatePoint(default,panel)!.Value.Y+list.Bounds.Height>card.TranslatePoint(default,panel)!.Value.Y+.5)throw new Exception("Command list/detail overlap");
+                main.CaptureRenderedFrame()!.Save(Path.Combine(root,$"commands-{language}-compact-font{font}-profile{expanded}.png"));
+            }
+            main.PreviewPreferences(preferences); contextOptions.IsExpanded=false;
             // RDP and Serial never call discovery and never obtain shell capability.
             foreach(var protocol in new[]{Protocol.RDP,Protocol.Serial})
             {
@@ -84,7 +101,7 @@ internal static class CommandPanelChecks
         var transport=(SshTerminalSession)typeof(SessionPane).GetField("session",BindingFlags.Instance|BindingFlags.NonPublic)!.GetValue(one)!;
         var quoted=Result(transport.ProbeAsync(rendered.Text,CancellationToken.None)); if(quoted.ExitCode!=0||quoted.Output!=quoteValue)throw new Exception("Real remote Bash did not preserve parameter as literal data");
         Wait(one.DiscoverCommandsAsync(true)); if(SshAcceptanceChecks.Text(terminal).TrimEnd()!=before.TrimEnd())throw new Exception("Discovery polluted interactive terminal");
-        Wait(main.OpenCommandsPanelAsync()); RedesignChecks.Frames(8); var panel=Named<CommandPanel>(main,"CommandsPanel"); Select(panel,"general.hostname");
+        Wait(main.OpenCommandsPanelAsync()); RedesignChecks.Frames(8); var panel=Named<CommandPanel>(main,"CommandsPanel"); Named<Expander>(panel,"CommandContextOptions").IsExpanded=true; RedesignChecks.Frames(3); Select(panel,"general.hostname");
         RedesignChecks.Frames(5); var rowBefore=terminal.Terminal.Buffer.YBase+terminal.Terminal.Buffer.Y;
         Wait(panel.DispatchAsync("insert")); RedesignChecks.Frames(10); var after=SshAcceptanceChecks.Text(terminal); if(!after.Contains("hostname"))throw new Exception("Insert did not reach terminal");
         if(terminal.Terminal.Buffer.YBase+terminal.Terminal.Buffer.Y!=rowBefore)throw new Exception("Insert sent a newline / executed a command");

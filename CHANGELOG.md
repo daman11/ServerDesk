@@ -2,6 +2,14 @@
 
 ## Unreleased
 
+## 0.36.1 — Public Beta — 2026-10-16
+
+- Refine Commands with a calmer selection surface, a separate command preview card and three fixed dispatch actions. Move favorite/edit/duplicate to accessible header icons.
+- Collapse system profile options initially and bound the scrollable filter area, preserving list, preview and action space in small windows and with larger interface text.
+- Use a compact responsive Settings header, clearer section dividers, quieter field captions and consistent rounded cards across the application.
+- Match command, SFTP and Network Tools selection colors to all five application themes. Preserve keyboard focus and existing command confirmation safeguards.
+- Extend visual acceptance for PL/EN, all themes, compact windows, expanded profiles and interface font 16.
+
 ## 0.36.0 — Public Beta — 2026-10-16
 
 - Add one shared Commands panel for the offline Smart Cheat Sheet, user snippets, favorites, optional ID-only recent history and Polish/English search.

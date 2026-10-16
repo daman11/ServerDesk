@@ -66,6 +66,12 @@ internal static class DesignRefreshChecks
         var original=repo.ApplicationSettingsAsync().GetAwaiter().GetResult(); var runtime=main.CurrentPreferences;
         var task=Dialogs.Settings(main,repo,()=>Task.CompletedTask); RedesignChecks.Frames(); var window=main.OwnedWindows.Single();
         var search=Named<TextBox>(window,"SettingsSearch"); var categories=Named<TabControl>(window,"SettingsCategories"); var tabs=categories.Items.OfType<TabItem>().ToArray();
+        foreach(var theme in new[]{"graphite","light"})
+        {
+            DesignSystem.Apply(theme); RedesignChecks.Frames(); InViewport(search,window);
+            if(search.TranslatePoint(default,window)!.Value.X<500)throw new Exception("Wide settings header did not place search beside title");
+            window.CaptureRenderedFrame()!.Save(Path.Combine(root,$"settings-appearance-{language}-{theme}.png"));
+        }
         categories.SelectedIndex=1; RedesignChecks.Frames(); var font=Setting<NumericUpDown>(window,"Rozmiar czcionki terminala"); font.Value=19;
         categories.SelectedIndex=0; RedesignChecks.Frames(); Setting<NumericUpDown>(window,"Rozmiar tekstu interfejsu").Value=16;
         search.Text="cpu"; RedesignChecks.Frames(); if(categories.SelectedIndex!=4 || tabs.Count(t=>t.IsVisible)!=1 || !Setting<CheckBox>(window,"CPU").IsEffectivelyVisible)throw new Exception("Search did not expose matching monitoring category");

@@ -1,6 +1,6 @@
 # Local data and privacy / Dane lokalne i prywatność
 
-ServerDesk 0.36.0 does not implement analytics, telemetry, a cloud account, automatic update checks or crash-report uploads. Network connections are made for the protocols and servers selected by the user. This statement covers ServerDesk; operating-system components and external clients have their own behavior.
+ServerDesk 0.36.1 does not implement analytics, telemetry, a cloud account, automatic update checks or crash-report uploads. Network connections are made for the protocols and servers selected by the user. This statement covers ServerDesk; operating-system components and external clients have their own behavior.
 
 The local database stores server addresses, usernames, folders, preferences, trusted SSH host fingerprints scoped to host and port, workspace state and connection history. Trust entries can outlive a saved profile and are excluded from profile exports. Version 0.33.0 provides Settings → Security → Trusted SSH keys to inspect or remove an individual entry. Custom artwork and diagnostic logs are also stored locally. Logs do not intentionally record passwords or terminal contents, but can contain connection identifiers and errors; review and redact before sharing.
 

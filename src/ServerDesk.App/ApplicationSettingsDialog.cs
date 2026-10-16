@@ -25,21 +25,22 @@ internal static partial class Dialogs
         error.PropertyChanged+=(_,e)=> { if(e.Property==TextBlock.TextProperty)error.IsVisible=!string.IsNullOrEmpty(error.Text); };
         StackPanel Page(string icon,string title,string detail)
         {
-            var page=new StackPanel { Spacing=18,Margin=new Thickness(22) };
+            var page=new StackPanel { Spacing=16,Margin=new Thickness(20) };
             page.Children.Add(DesignSystem.PageHeading(icon,L.T(title),L.T(detail))); searchIndex.Page(page,title+" "+L.T(title)); return page;
         }
         StackPanel Section(StackPanel page,string glyph,string title)
         {
             var fields=new StackPanel { Spacing=12 };
             var heading=DeskIcons.Labelled(glyph,L.T(title),17,"AccentPrimary");
-            var content=new StackPanel { Spacing=14,Children={heading,fields} };
+            var rule=new Border { Height=1 }; DesignSystem.Resource(rule,Border.BackgroundProperty,"BorderDefault");
+            var content=new StackPanel { Spacing=14,Children={heading,rule,fields} };
             var card=DesignSystem.Card(content); card.Classes.Add("settings-card");
             page.Children.Add(card); searchIndex.Section(page,card,fields,title+" "+L.T(title)); return fields;
         }
         void Label(StackPanel panel,string label,Control control)
         {
             var originalLabel=label; label=L.T(label);
-            var caption=DesignSystem.Label(label); caption.TextWrapping=TextWrapping.Wrap;
+            var caption=DesignSystem.Label(label,true); caption.TextWrapping=TextWrapping.Wrap;
             var row=new Grid { Classes={"setting-field"},ColumnDefinitions=new ColumnDefinitions("*,240"),RowDefinitions=new RowDefinitions("Auto,Auto"),ColumnSpacing=20,RowSpacing=6,Children={caption,control} };
             Grid.SetColumn(control,1);
             row.SizeChanged+=(_,_)=>
@@ -209,7 +210,15 @@ internal static partial class Dialogs
         AutomationProperties.SetName(search,L.T("Szukaj ustawień")); search.InnerLeftContent=new Border { Child=DeskIcons.Create("search",15,"ForegroundSecondary"),Margin=new Thickness(8,0,0,0) };
         var clearSearch=DeskIcons.Button("close","Wyczyść wyszukiwanie ustawień",()=> { search.Text=""; search.Focus(); },26); clearSearch.IsVisible=false; search.InnerRightContent=clearSearch;
         var searchCount=DesignSystem.Label("",true,12); searchCount.Name="SettingsSearchCount"; searchCount.IsVisible=false;
-        var headerBody=new StackPanel { Spacing=12,Children={DesignSystem.PageHeading("settings",L.T("Ustawienia"),L.T("Dostosuj wygląd i sposób pracy ServerDesk.")),search,searchCount} };
+        var headerTitle=DesignSystem.PageHeading("settings",L.T("Ustawienia"),L.T("Dostosuj wygląd i sposób pracy ServerDesk."));
+        var searchArea=new StackPanel { Spacing=6,VerticalAlignment=VerticalAlignment.Center,Children={search,searchCount} };
+        var headerBody=new Grid { ColumnDefinitions=new("*,330"),RowDefinitions=new("Auto,Auto"),ColumnSpacing=24,Children={headerTitle,searchArea} }; Grid.SetColumn(searchArea,1);
+        headerBody.SizeChanged+=(_,_)=>
+        {
+            var stacked=headerBody.Bounds.Width<760 || DesignSystem.Preferences.InterfaceFontSize>14;
+            Grid.SetColumn(searchArea,stacked?0:1); Grid.SetRow(searchArea,stacked?1:0);
+            headerBody.ColumnDefinitions[1].Width=new GridLength(stacked?0:330); headerBody.ColumnSpacing=stacked?0:24; headerBody.RowSpacing=stacked?12:0;
+        };
         var header=new Border { Padding=new Thickness(22,16),Child=headerBody,BorderThickness=new Thickness(0,0,0,1) };
         DesignSystem.Resource(header,Border.BorderBrushProperty,"BorderDefault");
         var emptySearch=DesignSystem.Label(L.T("Brak pasujących ustawień. Zmień lub wyczyść wyszukiwanie."),true); emptySearch.Name="SettingsSearchEmpty"; emptySearch.TextWrapping=TextWrapping.Wrap; emptySearch.Margin=new Thickness(28); emptySearch.HorizontalAlignment=HorizontalAlignment.Center; emptySearch.VerticalAlignment=VerticalAlignment.Center; emptySearch.IsVisible=false;

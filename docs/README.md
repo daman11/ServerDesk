@@ -7,6 +7,7 @@
 | Ograniczenia i prywatność | [Known issues](known-issues.md), [Privacy](privacy.md), [Security policy](../SECURITY.md) |
 | Architektura i rozwój | [Architecture](architecture.md), [Development and tests](development.md), [Contributing](../CONTRIBUTING.md) |
 | Repozytorium i GitHub | [Git workflow and first upload](github.md) |
+| Pliki robocze i miejsce na dysku | [Artifact retention and cleanup](artifacts.md) |
 | Wydania | [Release procedure](releasing.md), [Release notes](releases/README.md), [Verification reports](reports/README.md) |
 | Zakres projektu | [Stan MVP](mvp-status.md), [Roadmap](roadmap.md), [UI](ui-redesign.md), [Icons](icons.md) |
 | RDP i zależności | [RDP integration](rdp-integration.md), [RDP matrix](rdp-test-matrix.md), [Dependencies](dependencies.md) |

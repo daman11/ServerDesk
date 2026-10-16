@@ -2,6 +2,7 @@
 
 ## Unreleased
 
+- Add safe generated-artifact cleanup with preview, release/report retention, process/shortcut protection and no-follow link deletion.
 - Import the exact 0.31.1 release source into Git and preserve it with an immutable baseline tag.
 - Organize release notes and historical verification reports; add a documentation index and Git/GitHub contributor workflow.
 - Add pinned Windows/Linux CI, issue/PR templates, Dependabot, repository checks and consistent editor/line-ending settings.

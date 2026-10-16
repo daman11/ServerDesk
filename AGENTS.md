@@ -21,6 +21,7 @@ The maintainer wants ongoing work versioned in Git. Inspect `git status` before 
 - Restore locked dependencies, build `ServerDesk.sln` in Release, and run relevant tests. See `CONTRIBUTING.md` and `.github/workflows/ci.yml` for exact commands.
 - Keep `packages.lock.json` files tracked and update them deliberately when dependencies change.
 - Never commit local SDKs, downloaded tools, generated packages, databases, logs, credentials or private keys. Lab passwords in source are documented disposable test constants.
+- Reuse current stopped harness builds where practical. Keep selected final evidence in `artifacts/reports/` and clean disposable output with `scripts/clean-artifacts.ps1`; see `docs/artifacts.md`. Preserve frozen releases.
 - Keep upstream notices and branded assets byte-for-byte where hashes are pinned. Respect `.gitattributes` and `.editorconfig`.
 - Run integration/hardware tests only against explicit disposable fixtures, never against a maintainer's saved production connections or credentials.
 - Keep Markdown links and packaging documentation paths valid after moving files. Packaging source exports must include GitHub/repository configuration.

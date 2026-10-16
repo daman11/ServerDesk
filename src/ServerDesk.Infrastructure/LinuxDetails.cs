@@ -44,7 +44,7 @@ public sealed record SystemInfo(string Hostname,string Distribution,string Kerne
 }
 public sealed record NetworkDetails(IReadOnlyList<NetworkInterfaceInfo> Interfaces,string Gateways,string Dns)
 {
-    public static NetworkDetails Parse(string addressJson,string routeJson,string resolv)
+    public static NetworkDetails Parse(string addressJson,string routeJson,string resolv,string route6Json="",string addressText="",string linkText="",string routeText="",string route6Text="")
     {
         var interfaces=new List<NetworkInterfaceInfo>(); var gateways=new List<string>();
         static string Field(JsonElement e,string key) => e.TryGetProperty(key,out var p)&&p.ValueKind==JsonValueKind.String?p.GetString()??"":"";
@@ -66,14 +66,21 @@ public sealed record NetworkDetails(IReadOnlyList<NetworkInterfaceInfo> Interfac
             }
         }
         catch(JsonException) { }
-        try
+        if(interfaces.Count==0)interfaces.AddRange(NetworkTextParser.Interfaces(addressText,linkText));
+        void Routes(string json,string fallback)
         {
-            using var document=JsonDocument.Parse(routeJson);
-            if(document.RootElement.ValueKind==JsonValueKind.Array)foreach(var route in document.RootElement.EnumerateArray())
-                if(route.ValueKind==JsonValueKind.Object && Field(route,"gateway") is { Length:>0 } gateway)gateways.Add(gateway+" · "+Field(route,"dev"));
+            var before=gateways.Count;
+            try
+            {
+                using var document=JsonDocument.Parse(json);
+                if(document.RootElement.ValueKind==JsonValueKind.Array)foreach(var route in document.RootElement.EnumerateArray())
+                    if(route.ValueKind==JsonValueKind.Object && Field(route,"gateway") is { Length:>0 } gateway)gateways.Add(gateway+" · "+Field(route,"dev"));
+            }
+            catch(JsonException) { }
+            if(gateways.Count==before)gateways.AddRange(NetworkTextParser.Gateways(fallback));
         }
-        catch(JsonException) { }
+        Routes(routeJson,routeText); Routes(route6Json,route6Text);
         var dns=resolv.Split('\n').Select(line=>line.Split('#',2)[0].Split((char[]?)null,StringSplitOptions.RemoveEmptyEntries)).Where(parts=>parts.Length>=2&&parts[0]=="nameserver").Select(parts=>parts[1]).Distinct();
-        return new(interfaces,string.Join("; ",gateways),string.Join(", ",dns));
+        return new(interfaces,string.Join("; ",gateways.Distinct()),string.Join(", ",dns));
     }
 }

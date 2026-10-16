@@ -8,6 +8,8 @@ Workspace panels: [Three/four panels and preferences, 2026-10-16](four-panel-wor
 
 Current release: [0.37.0 verification](release-verification-0.37.0.md). Imported Git baseline: [0.31.1 verification](release-verification-0.31.1.md).
 
+Development after 0.37.0: [Linux monitoring compatibility and CPU counters, 2026-10-16](monitoring-compatibility-2026-10-16.md).
+
 Personalization: [Terminal and SFTP preferences, 2026-10-16](extended-settings-2026-10-16.md).
 
 Repository maintenance: [Git/GitHub preparation, 2026-10-16](repository-preparation-2026-10-16.md).

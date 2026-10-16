@@ -26,7 +26,8 @@ Małe kroki kończą się commitem, celowanymi sprawdzeniami i EXE do uruchomien
 - [x] Profile: zachowanie zaznaczonego folderu przy sort/reload, usuwanie zaznaczenia ukrytego profilu i blokada Enter przed przebudową; PL/EN.
 - [x] Profile: tymczasowe rozwijanie wyników wyszukiwania bez nadpisywania zwykłego stanu folderów; sortowanie i zwinięcie odtwarzane po restarcie.
 - [ ] Profile: większe drzewa oraz rzeczywiste gesty drag and drop i fizyczna klawiatura. Automatyczne testy drzewa i sortowania nie zastępują tych prób.
-- [ ] Monitoring: reprezentatywne dystrybucje, uprawnienia i brak opcjonalnych poleceń.
+- [x] Monitoring, zmiany robocze po 0.37.0: fallback starszego iproute2 bez JSON, bramy IPv4/IPv6 oraz odrzucanie niespójnej próbki CPU bez fałszywego 0%. Celowane testy parserów i własny OpenSSH z kontrolą PL/EN; [zakres i ograniczenia](reports/monitoring-compatibility-2026-10-16.md).
+- [ ] Monitoring: reprezentatywne dystrybucje, uprawnienia i pozostałe formaty/braki narzędzi. Test wrappera iproute2 nie zastępuje rzeczywistych starszych dystrybucji ani akceptacji routingu IPv6.
 - [ ] Sesje: wielogodzinna praca, powtarzane otwieranie/reconnect/zamykanie i pomiary zasobów.
 
 ## 3. RDP, VNC i Serial — do domknięcia akceptacji

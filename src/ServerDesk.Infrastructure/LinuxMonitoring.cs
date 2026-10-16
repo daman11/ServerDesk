@@ -14,8 +14,11 @@ public sealed record CpuCounters(ulong Total, ulong Idle)
     }
     public double? Usage(CpuCounters? previous)
     {
-        if (previous == null || Total <= previous.Total || Idle < previous.Idle) return null;
-        return Math.Clamp(100d * (1 - (double)(Idle-previous.Idle)/(Total-previous.Total)),0,100);
+        if (previous == null || Total <= previous.Total || Idle < previous.Idle || Idle>Total || previous.Idle>previous.Total) return null;
+        var total=Total-previous.Total; var idle=Idle-previous.Idle;
+        // Hotplug/reset or non-atomic kernel counters can make a delta inconsistent.
+        // Treat that interval as unavailable instead of clamping it to fake 0% usage.
+        return idle>total?null:100d*(1-(double)idle/total);
     }
 }
 public sealed record MemoryInfo(long Total, long Available, long SwapTotal, long SwapFree)
@@ -69,8 +72,19 @@ public sealed class LinuxMonitoring(SshClient client) : IDisposable
         printf '__NET__\n'; ip -brief address 2>/dev/null; ip link 2>/dev/null; ip route show default 2>/dev/null; cat /etc/resolv.conf 2>/dev/null
         printf '__LOAD__\n'; cat /proc/loadavg
         printf '__TOPOLOGY__\n'; lscpu -p=SOCKET,CORE,CPU 2>/dev/null
-        printf '__IPJSON__\n'; ip -json address 2>/dev/null
-        printf '__ROUTES__\n'; ip -json route show default 2>/dev/null
+        printf '__IPJSON__\n'
+        if ! ip -json address 2>/dev/null; then
+            printf '__IPTEXT__\n'; ip -o address show 2>/dev/null
+            printf '__LINKTEXT__\n'; ip -o link show 2>/dev/null
+        fi
+        printf '__ROUTES__\n'
+        if ! ip -json route show default 2>/dev/null; then
+            printf '__ROUTETEXT__\n'; ip route show default 2>/dev/null
+        fi
+        printf '__ROUTES6__\n'
+        if ! ip -6 -json route show default 2>/dev/null; then
+            printf '__ROUTETEXT6__\n'; ip -6 route show default 2>/dev/null
+        fi
         printf '__DNS__\n'; cat /etc/resolv.conf 2>/dev/null
         printf '__TRAFFIC__\n'; cat /proc/net/dev 2>/dev/null
         printf '__CLOCK__\n'; date '+%H:%M' 2>/dev/null

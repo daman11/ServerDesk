@@ -2,6 +2,10 @@
 
 ## Unreleased
 
+- Keep Linux monitoring network details on older iproute2 without JSON support, using validated one-line addresses/link details and separate IPv4/IPv6 route fallbacks.
+- Show IPv6 default gateways alongside IPv4; ignore duplicate gateways and malformed fallback rows without discarding other metrics.
+- Treat inconsistent CPU counter intervals as unavailable rather than showing a misleading 0%; resume after a valid pair of samples. Add focused parser and real OpenSSH/UI regression coverage.
+
 ## 0.37.0 — Public Beta — 2026-10-16
 
 - Preserve selected folders across connection-tree sorting and refresh. Clear filtered server selections and check live filters before Enter/double-click can start a connection.

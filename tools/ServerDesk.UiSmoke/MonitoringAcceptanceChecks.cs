@@ -34,6 +34,27 @@ internal static class MonitoringAcceptanceChecks
             using var normal=new LinuxMonitoring(Result(factory.SshAsync(profile,"serverdesk-test-passphrase",default)));
             var complete=Result(normal.SampleAsync(default)); RedesignChecks.Frames(5); complete=Result(normal.SampleAsync(default));
             if(!complete.CpuAvailable || complete.CpuPercent==null || complete.Memory.Total<=0 || complete.UnavailableSections.Count>0)throw new Exception("Normal fixture metrics are incomplete");
+            Execute($$"""
+                set -eu
+                cat > '{{remote}}/bin/ip' <<'SERVERDESK_IP_WRAPPER'
+                #!/bin/sh
+                for argument do
+                    case "$argument" in -json|-j) exit 1 ;; esac
+                done
+                exec "$SERVERDESK_FIXTURE_IP" "$@"
+                SERVERDESK_IP_WRAPPER
+                chmod 700 '{{remote}}/bin/ip'
+                """);
+            var legacyText=Execute("SERVERDESK_FIXTURE_IP=$(command -v ip); export SERVERDESK_FIXTURE_IP; PATH='"+remote+"/bin':\"$PATH\"; "+LinuxMonitoring.Command);
+            var legacy=new MonitoringSampleParser().Parse(legacyText,1);
+            foreach(var expected in complete.NetworkDetails.Interfaces)
+            {
+                var actual=legacy.NetworkDetails.Interfaces.SingleOrDefault(n=>n.Name==expected.Name);
+                if(actual!=expected)throw new Exception("Legacy ip fallback lost interface addresses, state or MAC: "+expected.Name);
+            }
+            if(legacy.NetworkDetails.Interfaces.Count!=complete.NetworkDetails.Interfaces.Count || legacy.NetworkDetails.Gateways!=complete.NetworkDetails.Gateways || legacy.UnavailableSections.Count>0)throw new Exception("Legacy ip fallback lost routes or other metrics");
+            Wait(files.DeleteAsync(new("ip",remote+"/bin/ip",false,false,0,DateTime.Now,""),default));
+            Console.WriteLine("PASS real OpenSSH monitoring with ip wrapper refusing JSON: text fallback retains interfaces, IPv4/IPv6 addresses, link states, MACs and available default routes");
             var minimalText=Execute("PATH='"+remote+"/bin'; "+LinuxMonitoring.Command);
             var minimal=new MonitoringSampleParser().Parse(minimalText,1);
             if(!minimal.CpuAvailable || minimal.Memory.Total!=complete.Memory.Total || minimal.DiskDetails.Count!=0 || minimal.Topology!=null || minimal.NetworkDetails.Interfaces.Count!=0)throw new Exception("Missing command fixture did not retain CPU/RAM or report missing details");
@@ -60,6 +81,8 @@ internal static class MonitoringAcceptanceChecks
                 }
                 Render(pane,noMemory); bar.Render(noMemory,DateTimeOffset.UtcNow,"",true,900); RedesignChecks.Frames(2);
                 if(bar.GetVisualDescendants().OfType<TextBlock>().Single(t=>t.Name=="Metric_ram").Text!="RAM —" || Field<ProgressBar>(pane,"ramBar").IsVisible)throw new Exception("Unavailable RAM rendered fake numbers");
+                Render(pane,legacy); RedesignChecks.Frames(2);
+                if(Field<StackPanel>(pane,"networkRows").Children.Count!=legacy.NetworkDetails.Interfaces.Count || Field<TextBlock>(pane,"network").IsVisible || !Field<TextBlock>(pane,"networkSummary").Text!.Contains(legacy.NetworkDetails.Gateways))throw new Exception("Legacy ip data did not reach the monitoring view");
                 Render(pane,complete); if(Field<TextBlock>(pane,"metricsNotice").IsVisible || !Field<ProgressBar>(pane,"cpuBar").IsVisible)throw new Exception("Recovered metrics did not restore normal UI");
                 Wait(pane.CloseAsync()); if(pane.LatestSnapshot!=null || Field<ProgressBar>(pane,"ramBar").IsVisible || Field<StackPanel>(pane,"diskRows").Children.Count!=0)throw new Exception("Close retained old visible metrics"); window.Close(); RedesignChecks.Frames(2);
             }
@@ -70,7 +93,7 @@ internal static class MonitoringAcceptanceChecks
         {
             AppText.SetLanguage("pl"); DesignSystem.Apply("dark"); main.Close(); RedesignChecks.Frames();
             foreach(var entry in Result(files.ListAsync(remote+"/bin",default)))
-            { if(!entry.IsSymbolicLink || !entry.FullPath.StartsWith(remote+"/bin/",StringComparison.Ordinal))throw new Exception("Unexpected owned fixture entry"); Wait(files.DeleteAsync(entry,default)); }
+            { if(!entry.FullPath.StartsWith(remote+"/bin/",StringComparison.Ordinal) || !entry.IsSymbolicLink && (entry.Name!="ip" || entry.IsDirectory))throw new Exception("Unexpected owned fixture entry"); Wait(files.DeleteAsync(entry,default)); }
             Wait(files.DeleteAsync(new("bin",remote+"/bin",true,false,0,DateTime.Now,""),default));
             foreach(var entry in Result(files.ListAsync(remote,default)))
             { if(entry.IsDirectory || !entry.FullPath.StartsWith(remote+"/",StringComparison.Ordinal))throw new Exception("Unexpected fixture entry"); Wait(files.DeleteAsync(entry,default)); }

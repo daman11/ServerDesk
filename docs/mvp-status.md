@@ -2,6 +2,8 @@
 
 0.37.0 stabilizuje dane, SFTP i przeglądarkę połączeń: sprawdzone kopie SQLite, ręczne odzyskiwanie SFTP, wskazówki błędów i plików częściowych oraz zachowanie zaznaczenia i zwiniętych folderów. [Wydanie](releases/release-0.37.0.md), [zakres weryfikacji](reports/release-verification-0.37.0.md).
 
+Zmiany robocze po 0.37.0 poprawiają monitoring: odczyt sieci bez JSON na starszym iproute2, domyślne bramy IPv6 obok IPv4 i pomijanie niespójnego przedziału CPU zamiast fałszywego 0%. Celowane testy obejmują parsery, własny OpenSSH, PL/EN i powrót monitoringu po zerwaniu jego transportu. [Dokładny zakres](reports/monitoring-compatibility-2026-10-16.md); bez nowego wydania paczek i bez deklaracji pełnej macierzy dystrybucji.
+
 0.36.2 uzupełnia ikony i ujednolica nazwy istniejących modułów oraz dodaje audyt kompletności akcji. Nie rozszerza zakresu protokołów MVP.
 
 0.36.1 porządkuje wygląd komend, ustawień i wspólnych list. Dodaje kontrolę układu małego okna z większą czcionką; zakres istniejących funkcji MVP opisano poniżej.

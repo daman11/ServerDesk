@@ -21,6 +21,6 @@ Database work runs off the dispatcher, with three-second command timeouts. Contr
 - Existing Windows settings-layout, restart-design and localization acceptance passed with the fifth category, including saved/cancelled preferences, restart semantics and compact layouts.
 - The offline manager scenario is included in the Windows/Linux CI matrix. Network acceptance remains opt-in against an explicitly owned fixture.
 
-These tests use disposable databases, headless clipboard/UI events and a local OpenSSH server. They do not validate every physical input/display, SSH implementation or remote trust rotation policy. The manager does not prove server identity; administrators must compare fingerprints through an independent trusted channel.
+The compact-layout test also checks heading geometry/text height and action-button bounds to catch clipping at font16. These tests use disposable databases, headless clipboard/UI events and a local OpenSSH server. They do not validate every physical input/display, SSH implementation or remote trust rotation policy. The manager does not prove server identity; administrators must compare fingerprints through an independent trusted channel.
 
 Local evidence is under `artifacts/reports/mvp-trusted-hosts/`; generated databases, binaries and logs remain ignored by Git.

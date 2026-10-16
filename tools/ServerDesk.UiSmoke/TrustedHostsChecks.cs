@@ -67,6 +67,12 @@ internal static class TrustedHostsChecks
             foreach(var width in new[]{520,800})
             {
                 dialog.Width=width; dialog.Height=560; RedesignChecks.Frames();
+                foreach(var text in dialog.GetVisualDescendants().OfType<TextBlock>().Where(text=>text.Text==AppText.T("Zaufane klucze SSH")))
+                {
+                    var point=text.TranslatePoint(default,dialog)!.Value;
+                    if(point.X<0 || point.Y<0 || point.X+text.Bounds.Width>dialog.ClientSize.Width+1 || point.Y+text.Bounds.Height>dialog.ClientSize.Height+1 || text.TextLayout.Height>text.Bounds.Height+1)
+                        throw new Exception("Trusted host heading is clipped");
+                }
                 foreach(var name in new[]{"TrustedHostsCopy","TrustedHostsForget"})
                 {
                     var button=Named<Button>(dialog,name); var point=button.TranslatePoint(default,dialog)!.Value;

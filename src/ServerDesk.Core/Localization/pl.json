@@ -1086,5 +1086,11 @@
   "Uruchomić ponownie ServerDesk?": "Uruchomić ponownie ServerDesk?",
   "Język po restarcie: {0}. Możesz uruchomić aplikację ponownie teraz lub później.": "Język po restarcie: {0}. Możesz uruchomić aplikację ponownie teraz lub później.",
   "Zapisz i uruchom aplikację ponownie teraz lub wybierz Zapisz i zrób to później.": "Zapisz i uruchom aplikację ponownie teraz lub wybierz Zapisz i zrób to później.",
-  "Nie udało się uruchomić nowej instancji. Aplikacja pozostaje otwarta. Możesz zamknąć ją i uruchomić ręcznie.": "Nie udało się uruchomić nowej instancji. Aplikacja pozostaje otwarta. Możesz zamknąć ją i uruchomić ręcznie."
+  "Nie udało się uruchomić nowej instancji. Aplikacja pozostaje otwarta. Możesz zamknąć ją i uruchomić ręcznie.": "Nie udało się uruchomić nowej instancji. Aplikacja pozostaje otwarta. Możesz zamknąć ją i uruchomić ręcznie.",
+  "Wstecz · Alt+←": "Wstecz · Alt+←",
+  "Dalej · Alt+→": "Dalej · Alt+→",
+  "Katalog nadrzędny · Alt+↑": "Katalog nadrzędny · Alt+↑",
+  "Katalog domowy · Alt+Home": "Katalog domowy · Alt+Home",
+  "Najpierw otwórz katalog, zatwierdzając ścieżkę klawiszem Enter.": "Najpierw otwórz katalog, zatwierdzając ścieżkę klawiszem Enter.",
+  "Enter: otwórz katalog · Escape: przywróć otwarty katalog.": "Enter: otwórz katalog · Escape: przywróć otwarty katalog."
 }

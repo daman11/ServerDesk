@@ -1,18 +1,20 @@
-# ServerDesk 0.32.0 — pierwsze kroki
+# ServerDesk 0.33.0 — pierwsze kroki
+
+W panelu SFTP użyj Wstecz/Dalej lub Alt+←/→, Alt+↑ dla katalogu nadrzędnego i Alt+Home dla domowego. Ctrl+L wybiera ścieżkę, Enter ją otwiera, a Escape przywraca poprzednio otwarty katalog. Historia jest osobna dla obu paneli i znika przy ponownym połączeniu.
 
 Bezpłatna aplikacja open source na licencji MIT. **Publiczna beta**; zakres testów i ograniczenia: [known-issues.md](known-issues.md). English: [getting-started.en.md](getting-started.en.md).
 
 ## Windows x64
 
-Uruchom `ServerDesk-0.32.0-win-x64-Setup.exe`. Instalator działa dla bieżącego użytkownika, dodaje skrót w menu Start i wpis na liście zainstalowanych aplikacji. Nie wymaga osobnej instalacji .NET. Dostępny jest też ZIP: rozpakuj **całe archiwum** do osobnego katalogu i uruchom `ServerDesk.App.exe`.
+Uruchom `ServerDesk-0.33.0-win-x64-Setup.exe`. Instalator działa dla bieżącego użytkownika, dodaje skrót w menu Start i wpis na liście zainstalowanych aplikacji. Nie wymaga osobnej instalacji .NET. Dostępny jest też ZIP: rozpakuj **całe archiwum** do osobnego katalogu i uruchom `ServerDesk.App.exe`.
 
-Wydanie nie ma podpisu zaufanego wydawcy. Pobieraj je z zaufanego źródła; nie wyłączaj ochrony Windows. Sumę paczki możesz porównać z `SHA256SUMS.txt` poleceniem `Get-FileHash .\ServerDesk-0.32.0-win-x64-Setup.exe -Algorithm SHA256`. Suma obok pliku potwierdza zgodność pobrania, ale sama nie potwierdza tożsamości wydawcy.
+Wydanie nie ma podpisu zaufanego wydawcy. Pobieraj je z zaufanego źródła; nie wyłączaj ochrony Windows. Sumę paczki możesz porównać z `SHA256SUMS.txt` poleceniem `Get-FileHash .\ServerDesk-0.33.0-win-x64-Setup.exe -Algorithm SHA256`. Suma obok pliku potwierdza zgodność pobrania, ale sama nie potwierdza tożsamości wydawcy.
 
 ## Linux x64
 
-Ubuntu/Debian: `sudo apt install ./serverdesk_0.32.0_amd64.deb`, następnie uruchom ServerDesk z menu lub poleceniem `serverdesk`. Do zapamiętywania haseł potrzebny jest `libsecret-tools` oraz odblokowany Secret Service (np. GNOME Keyring). Do RDP zainstaluj FreeRDP dla swojej dystrybucji.
+Ubuntu/Debian: `sudo apt install ./serverdesk_0.33.0_amd64.deb`, następnie uruchom ServerDesk z menu lub poleceniem `serverdesk`. Do zapamiętywania haseł potrzebny jest `libsecret-tools` oraz odblokowany Secret Service (np. GNOME Keyring). Do RDP zainstaluj FreeRDP dla swojej dystrybucji.
 
-Archiwum: `mkdir serverdesk-0.32.0`, następnie `tar -xzf ServerDesk-0.32.0-linux-x64.tar.gz -C serverdesk-0.32.0` i `./serverdesk-0.32.0/ServerDesk.App`. W razie braków bibliotek sprawdź zależności w pakiecie DEB lub [development.md](development.md). Testy Linux wykonano pod WSLg; pozostałe środowiska wymagają weryfikacji.
+Archiwum: `mkdir serverdesk-0.33.0`, następnie `tar -xzf ServerDesk-0.33.0-linux-x64.tar.gz -C serverdesk-0.33.0` i `./serverdesk-0.33.0/ServerDesk.App`. W razie braków bibliotek sprawdź zależności w pakiecie DEB lub [development.md](development.md). Testy Linux wykonano pod WSLg; pozostałe środowiska wymagają weryfikacji.
 
 ## Pierwsze połączenie
 

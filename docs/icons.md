@@ -1,6 +1,6 @@
 # Ikony ServerDesk
 
-Interfejs używa lokalnego podzbioru 66 ikon Lucide 1.55.0 z commitu `70562c1ee1c4fdcf736fe97bc893fb8511927934`. Oryginalne SVG znajdują się w `src/ServerDesk.App/Assets/Icons`; źródło i skróty SHA-256 w `third-party/lucide/manifest.json`. Pełna licencja ISC oraz wymagane notice MIT dla ikon pochodzących z Feather znajdują się w `third-party/lucide/LICENSE` i paczkach dystrybucyjnych. [Upstream](https://github.com/lucide-icons/lucide), [licencja](https://lucide.dev/license).
+Interfejs używa lokalnego podzbioru 68 ikon Lucide 1.55.0 z commitu `70562c1ee1c4fdcf736fe97bc893fb8511927934`. Oryginalne SVG znajdują się w `src/ServerDesk.App/Assets/Icons`; źródło i skróty SHA-256 w `third-party/lucide/manifest.json`. Pełna licencja ISC oraz wymagane notice MIT dla ikon pochodzących z Feather znajdują się w `third-party/lucide/LICENSE` i paczkach dystrybucyjnych. [Upstream](https://github.com/lucide-icons/lucide), [licencja](https://lucide.dev/license).
 
 DeskIcon rysuje geometrię na siatce 24×24, z obrysem 2 jednostki i zaokrąglonymi końcami/łączeniami. Geometrie są buforowane. Podstawowe rozmiary to 16 px w akcjach/wierszach oraz 20–24 px w nawigacji i podglądzie. Kolor wynika z Foreground kontrolki lub dynamicznego zasobu motywu, więc ikona reaguje na hover, aktywację i disabled. Renderer nie korzysta z czcionki ikon ani pobierania z sieci. Akceptuje wyłącznie osadzone SVG i ograniczony zestaw prymitywów; wyklucza DTD, resolver oraz transformacje.
 

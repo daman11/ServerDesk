@@ -2,6 +2,15 @@
 
 ## Unreleased
 
+## 0.33.0 — Public Beta — 2026-10-16
+
+- Add independent local/remote SFTP Back, Forward, Parent and Home controls, Alt+Left/Right/Up/Home shortcuts and Escape to restore an unsubmitted path.
+- Keep at most 100 successfully loaded directories per panel in memory. Commit history only after both directory reads succeed, preserve forward navigation on refresh/failure and clear history on reconnect/close.
+- Restore confirmed paths after failed navigation; disable stale file rows immediately while paths are edited or reads are pending. Transfers, new directories and link destinations require confirmed directory paths.
+- Capture refresh inputs before waiting for the gate and reject superseded queued reads; retain existing large-list filtering and transfer cancellation behavior.
+- Fit full-width paths, navigation buttons and horizontally scrolling breadcrumbs in narrow panels; add two icons from the existing pinned Lucide revision and PL/EN text.
+- Add nine unit cases, Windows/Linux layout and real OpenSSH/SFTP acceptance, plus CI coverage. Bound the UI harness wait helper so a missing completion cannot block indefinitely.
+
 ## 0.32.0 — Public Beta — 2026-10-16
 
 - Restore the local release cadence: finish user-visible changes with versioned packages, verification and an immutable Git tag; add a read-only check that detects code ahead of its release or mismatched packaged source.

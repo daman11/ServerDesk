@@ -96,29 +96,29 @@ internal sealed partial class SessionPane
     {
         files.RowDefinitions=new RowDefinitions("Auto,Auto,Auto,Auto,*,Auto");
         fileSplitter=new GridSplitter { ResizeDirection=GridResizeDirection.Columns,HorizontalAlignment=HorizontalAlignment.Stretch }; Grid.SetColumn(fileSplitter,1); Grid.SetRow(fileSplitter,1); Grid.SetRowSpan(fileSplitter,4); files.Children.Add(fileSplitter); fileSplitter.DragCompleted+=(_,_)=>_ = owner.Safe(async()=> { var total=files.ColumnDefinitions[0].ActualWidth+files.ColumnDefinitions[2].ActualWidth; if(total>0) { localShare=Math.Clamp(files.ColumnDefinitions[0].ActualWidth/total,.2,.8); await repository.SetSettingAsync("sftpLocalShare",localShare.ToString(System.Globalization.CultureInfo.InvariantCulture)); } });
-        var upLocal=DeskIcons.Button("up","Lokalny katalog nadrzędny",()=>_ = owner.Safe(()=>NavigateParentAsync(false)));
-        var upRemote=DeskIcons.Button("up","Zdalny katalog nadrzędny",()=>_ = owner.Safe(()=>NavigateParentAsync(true)));
-        foreach(var pair in new[]{(localPath,upLocal,0),(remotePath,upRemote,2)})
+        foreach(var pair in new[]{(Path:localPath,Column:0),(Path:remotePath,Column:2)})
         {
-            var pathRow=new Grid { ColumnDefinitions=new ColumnDefinitions("Auto,*"),RowDefinitions=new RowDefinitions("Auto,Auto,Auto"),RowSpacing=6,Margin=new Thickness(6,6,6,4) };
-            var heading=FilePanelHeading(pair.Item3==2); Grid.SetColumnSpan(heading,2); pathRow.Children.Add(heading); Grid.SetRow(pair.Item2,1); pathRow.Children.Add(pair.Item2);
-            pathRow.GotFocus+=(_,_)=>fileTarget.SelectedIndex=pair.Item3==2?1:0;
-            pathRow.AddHandler(Avalonia.Input.InputElement.PointerPressedEvent,(_,_)=>fileTarget.SelectedIndex=pair.Item3==2?1:0,Avalonia.Interactivity.RoutingStrategies.Tunnel);
+            var remote=pair.Column==2;
+            var pathRow=new Grid { ColumnDefinitions=new ColumnDefinitions("*"),RowDefinitions=new RowDefinitions("Auto,Auto,Auto"),RowSpacing=4,Margin=new Thickness(6,6,6,4) };
+            pathRow.Children.Add(FilePanelHeading(remote));
+            pathRow.GotFocus+=(_,_)=>fileTarget.SelectedIndex=remote?1:0;
+            pathRow.AddHandler(Avalonia.Input.InputElement.PointerPressedEvent,(_,_)=>fileTarget.SelectedIndex=remote?1:0,Avalonia.Interactivity.RoutingStrategies.Tunnel);
             // Paths remain editable, serving as a compact navigation bar for deep directory hierarchies.
-            Grid.SetColumn(pair.Item1,1); Grid.SetRow(pair.Item1,1); pathRow.Children.Add(pair.Item1);
-            var crumbs=new StackPanel { Orientation=Orientation.Horizontal,Spacing=DesignTokens.Tight }; var crumbScroll=new ScrollViewer { Content=crumbs,HorizontalScrollBarVisibility=Avalonia.Controls.Primitives.ScrollBarVisibility.Hidden,VerticalScrollBarVisibility=Avalonia.Controls.Primitives.ScrollBarVisibility.Disabled }; Grid.SetColumnSpan(crumbScroll,2); Grid.SetRow(crumbScroll,2); pathRow.Children.Add(crumbScroll);
+            Grid.SetRow(pair.Path,1); pathRow.Children.Add(pair.Path);
+            var crumbs=new StackPanel { Orientation=Orientation.Horizontal,Spacing=DesignTokens.Tight }; var crumbScroll=new ScrollViewer { Content=crumbs,HorizontalScrollBarVisibility=Avalonia.Controls.Primitives.ScrollBarVisibility.Hidden,VerticalScrollBarVisibility=Avalonia.Controls.Primitives.ScrollBarVisibility.Disabled };
+            var navigation=FileNavigationBar(remote,crumbScroll); Grid.SetRow(navigation,2); pathRow.Children.Add(navigation);
             void Breadcrumbs()
             {
-                crumbs.Children.Clear(); var remote=pair.Item3==2; var path=pair.Item1.Text??"";
+                crumbs.Children.Clear(); var path=pair.Path.Text??"";
                 foreach(var crumb in PathNavigation.Breadcrumbs(path,remote))
                 {
                     if(crumbs.Children.Count>0)crumbs.Children.Add(DesignSystem.Label("/",true,DesignTokens.Micro));
-                    var button=Dialogs.Button(crumb.Label,()=>_ = owner.Safe(async()=> { pair.Item1.Text=crumb.Path; await RefreshAsync(); }));
+                    var button=Dialogs.Button(crumb.Label,()=>_ = owner.Safe(()=>NavigateFilesAsync(remote,crumb.Path)));
                     button.Classes.Add("icon"); button.MaxWidth=100; button.MinHeight=24; ToolTip.SetTip(button,crumb.Path); crumbs.Children.Add(button);
                 }
             }
-            pair.Item1.TextChanged+=(_,_)=>Breadcrumbs(); Breadcrumbs();
-            Grid.SetRow(pathRow,1); Grid.SetColumn(pathRow,pair.Item3); files.Children.Add(pathRow);
+            pair.Path.TextChanged+=(_,_)=>Breadcrumbs(); Breadcrumbs();
+            Grid.SetRow(pathRow,1); Grid.SetColumn(pathRow,pair.Column); files.Children.Add(pathRow);
         }
         BuildFileRows();
         foreach(var pair in new[]{(localEmpty,0),(remoteEmpty,2)}) { pair.Item1.HorizontalAlignment=HorizontalAlignment.Center; pair.Item1.VerticalAlignment=VerticalAlignment.Center; pair.Item1.MaxWidth=300; pair.Item1.TextWrapping=TextWrapping.Wrap; Grid.SetRow(pair.Item1,4); Grid.SetColumn(pair.Item1,pair.Item2); files.Children.Add(pair.Item1); }

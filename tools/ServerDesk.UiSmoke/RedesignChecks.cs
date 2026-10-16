@@ -14,7 +14,7 @@ using Iciclecreek.Terminal;
 internal static class RedesignChecks
 {
     internal static void Frames(int count=12) { for(var i=0;i<count;i++) { Dispatcher.UIThread.RunJobs(); Thread.Sleep(20); } }
-    internal static void Wait(Task task) { var until=DateTime.UtcNow.AddSeconds(40); while(!task.IsCompleted && DateTime.UtcNow<until)Frames(1); task.GetAwaiter().GetResult(); }
+    internal static void Wait(Task task) { var until=DateTime.UtcNow.AddSeconds(40); while(!task.IsCompleted && DateTime.UtcNow<until)Frames(1); if(!task.IsCompleted)throw new TimeoutException("UI fixture task did not complete within 40 seconds"); task.GetAwaiter().GetResult(); }
     internal static void Run(MainWindow window,ProfileRepository repository,string root)
     {
         double Luminance(string hex) { var c=Color.Parse(hex); double Channel(byte value) { var s=value/255d; return s<=.04045?s/12.92:Math.Pow((s+.055)/1.055,2.4); } return .2126*Channel(c.R)+.7152*Channel(c.G)+.0722*Channel(c.B); }

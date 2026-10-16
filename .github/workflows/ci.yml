@@ -57,7 +57,7 @@ jobs:
         run: dotnet build tools/ServerDesk.UiSmoke -c Release -m:1 -p:RestoreLockedMode=true -o artifacts/ci-harness
       - name: Headless UI smoke
         run: |
-          foreach ($scenario in @('restart-design', 'localization', 'security', 'stability', 'protocols', 'large-file-views', 'trusted-hosts', 'terminal-search')) {
+          foreach ($scenario in @('restart-design', 'localization', 'security', 'stability', 'protocols', 'large-file-views', 'trusted-hosts', 'terminal-search', 'sftp-navigation')) {
             dotnet artifacts/ci-harness/ServerDesk.UiSmoke.dll "artifacts/ci-$scenario" "--$scenario"
             if ($LASTEXITCODE -ne 0) { throw "UI smoke failed: $scenario" }
           }

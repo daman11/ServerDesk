@@ -1086,5 +1086,11 @@
   "Uruchomić ponownie ServerDesk?": "Restart ServerDesk?",
   "Język po restarcie: {0}. Możesz uruchomić aplikację ponownie teraz lub później.": "Language after restart: {0}. You can restart the app now or later.",
   "Zapisz i uruchom aplikację ponownie teraz lub wybierz Zapisz i zrób to później.": "Save and restart the app now, or select Save and restart it later.",
-  "Nie udało się uruchomić nowej instancji. Aplikacja pozostaje otwarta. Możesz zamknąć ją i uruchomić ręcznie.": "The new instance could not be started. The app remains open. You can close it and start it manually."
+  "Nie udało się uruchomić nowej instancji. Aplikacja pozostaje otwarta. Możesz zamknąć ją i uruchomić ręcznie.": "The new instance could not be started. The app remains open. You can close it and start it manually.",
+  "Wstecz · Alt+←": "Back · Alt+Left",
+  "Dalej · Alt+→": "Forward · Alt+Right",
+  "Katalog nadrzędny · Alt+↑": "Parent directory · Alt+Up",
+  "Katalog domowy · Alt+Home": "Home directory · Alt+Home",
+  "Najpierw otwórz katalog, zatwierdzając ścieżkę klawiszem Enter.": "Open the directory first by confirming its path with Enter.",
+  "Enter: otwórz katalog · Escape: przywróć otwarty katalog.": "Enter: open directory · Escape: restore the open directory."
 }

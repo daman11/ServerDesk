@@ -181,7 +181,7 @@ internal sealed partial class SessionPane : WorkspacePane
         connectionLifetime.Cancel();
         var oldSsh=session; var oldSftp=sftp; var oldMonitor=monitor; var oldMonitorLoop=monitorLoop;
         var oldRdp=rdpProcess; var oldVnc=vncSession; var oldSerial=serialSession;
-        session=null; sftp=null; monitor=null; monitorLoop=Task.CompletedTask;
+        session=null; sftp=null; monitor=null; monitorLoop=Task.CompletedTask; ResetFileNavigation();
         // Kill an owned PTY before detaching it; Kill requires a realized terminal template.
         if(Profile.Protocol==Protocol.RDP && terminal.IsLive)terminal.Kill();
         var detached=terminal.DetachConnection();
@@ -259,7 +259,7 @@ internal sealed partial class SessionPane : WorkspacePane
         ct.ThrowIfCancellationRequested(); terminal.IsVisible=panel==0; files.IsVisible=panel==1; info.IsVisible=panel==2; infoActive=panel==2; SelectPanel(panel);
         if(panel==1)
         {
-            if(sftp==null) { var client=await factory.SftpAsync(Profile,secret,ct); if(ct.IsCancellationRequested) { client.Dispose(); return; } sftp=new SftpSession(client); remotePath.Text=sftp.WorkingDirectory; }
+            if(sftp==null) { var client=await factory.SftpAsync(Profile,secret,ct); if(ct.IsCancellationRequested) { client.Dispose(); return; } sftp=new SftpSession(client); remoteHome=sftp.WorkingDirectory; remotePath.Text=remoteHome; }
             await RefreshAsync();
         }
         if(panel==2 && monitor==null)
@@ -276,7 +276,22 @@ internal sealed partial class SessionPane : WorkspacePane
         bar.Children.Add(uploadSelection); bar.Children.Add(downloadSelection); var operations=new Button { Content=DeskIcons.Labelled("more",L.T("Operacje")),Tag="Operacje" }; operations.ContextMenu=new ContextMenu { ItemsSource=new[]{OperationMenu("Nowy katalog",MkdirAsync),SingleFileMenu(null,"Zmień nazwę",RenameAsync),SingleFileMenu(null,"Przenieś do katalogu",MoveFileAsync),LinkFileMenu(null),SingleFileMenu(true,"Utwórz zdalne dowiązanie…",CreateRemoteLinkAsync),SingleFileMenu(true,"Uprawnienia chmod (zdalny)",ChmodAsync),SingleFileMenu(null,"Szczegóły",FileDetailsAsync),DeleteSelectionMenu(null)} }; operations.Click+=(_,_)=> { UpdateFileSelection(); operations.ContextMenu.Open(operations); }; bar.Children.Add(operations);
         foreach(var control in bar.Children)control.Margin=new Thickness(0,2,6,2);
 
-        localPath.KeyDown+=(_,e)=> { if(e.Key==Avalonia.Input.Key.Enter)_ = owner.Safe(RefreshAsync); }; remotePath.KeyDown+=(_,e)=> { if(e.Key==Avalonia.Input.Key.Enter)_ = owner.Safe(RefreshAsync); };
+        localPath.Name="SftpLocalPath"; remotePath.Name="SftpRemotePath";
+        foreach(var remote in new[]{false,true})
+        {
+            var path=remote?remotePath:localPath;
+            ToolTip.SetTip(path,L.T("Enter: otwórz katalog · Escape: przywróć otwarty katalog."));
+            path.KeyDown+=(_,e)=>
+            {
+                if(e.Key==Avalonia.Input.Key.Enter) { e.Handled=true; _=owner.Safe(()=>NavigateFilesAsync(remote,path.Text??"")); }
+                else if(e.Key==Avalonia.Input.Key.Escape && (remote?loadedRemotePath:loadedLocalPath).Length>0)
+                {
+                    e.Handled=true; if(remote)remoteNavigationTarget=null; else localNavigationTarget=null;
+                    path.Text=remote?loadedRemotePath:loadedLocalPath; (remote?remoteList:localList).Focus();
+                }
+            };
+            path.PropertyChanged+=(_,e)=> { if(e.Property==TextBox.TextProperty)UpdateFileNavigation(); };
+        }
         ConfigureFileTables(); BuildFileFilters(); BuildFileSelection();
         Grid.SetRow(localList,4); files.Children.Add(localList); Grid.SetRow(remoteList,4); Grid.SetColumn(remoteList,2); files.Children.Add(remoteList);
         localList.DoubleTapped+=(_,_)=>_ = owner.Safe(()=>OpenDirectoryAsync(false));
@@ -286,7 +301,7 @@ internal sealed partial class SessionPane : WorkspacePane
         foreach(var list in new[] { localList,remoteList })
         {
             DragDrop.SetAllowDrop(list,true);
-            DragDrop.AddDragOverHandler(list,(_,e)=> { var dragged=e.DataTransfer.TryGetValue(FileFormat); e.DragEffects=IsConnected && (dragged!=null && dragged.Session==this && dragged.Entries.Count>0 && !dragged.Entries.Any(f=>f.IsSymbolicLink) && dragged.Remote!=(list==remoteList) || list==remoteList && e.DataTransfer.Contains(DataFormat.File))?DragDropEffects.Copy:DragDropEffects.None; e.Handled=true; });
+            DragDrop.AddDragOverHandler(list,(_,e)=> { var dragged=e.DataTransfer.TryGetValue(FileFormat); e.DragEffects=IsConnected && fileRefreshes==0 && FilePathConfirmed(list==remoteList) && (dragged!=null && dragged.Session==this && dragged.Entries.Count>0 && !dragged.Entries.Any(f=>f.IsSymbolicLink) && dragged.Remote!=(list==remoteList) || list==remoteList && e.DataTransfer.Contains(DataFormat.File))?DragDropEffects.Copy:DragDropEffects.None; e.Handled=true; });
             DragDrop.AddDropHandler(list,(_,e)=>
             {
                 if(!IsConnected) { e.Handled=true; return; }
@@ -313,15 +328,18 @@ internal sealed partial class SessionPane : WorkspacePane
     private async Task RefreshAsync()
     {
         var source=sftp; if(source==null) return;
-        var ct=connectionLifetime.Token;
+        var ct=connectionLifetime.Token; var pathInput=localPath.Text??""; var remoteInput=remotePath.Text??"/";
+        var localTarget=localNavigationTarget; var remoteTarget=remoteNavigationTarget;
+        var entered=false; fileRefreshes++; UpdateFileNavigation();
         using var busy=BeginBusy(L.T("Wczytywanie listy plików…"));
-        await refreshGate.WaitAsync(ct);
         try {
+        await refreshGate.WaitAsync(ct); entered=true;
         ct.ThrowIfCancellationRequested();
-        var path=localPath.Text??"";
-        var remote=remotePath.Text??"/";
+        if(!ReferenceEquals(sftp,source) || remotePath.Text!=remoteInput || localPath.Text!=pathInput)return;
+        var path=pathInput;
+        var remote=remoteInput;
         if(string.IsNullOrWhiteSpace(path)||string.IsNullOrWhiteSpace(remote))throw new ArgumentException(L.T("Podaj ścieżkę lokalnego i zdalnego katalogu."));
-        var remoteInput=remote;
+        path=Path.TrimEndingDirectorySeparator(Path.GetFullPath(path));
         remote=await source.ResolveDirectoryAsync(remote,ct);
         var localResult=await Task.Run(()=>
         {
@@ -332,8 +350,8 @@ internal sealed partial class SessionPane : WorkspacePane
         },ct);
         if(Directory.GetParent(path) is {} parent) localResult.Insert(0,new("..",parent.FullName,true,false,0,DateTime.MinValue,""));
         var remoteResult=await source.ListAsync(remote,ct); ct.ThrowIfCancellationRequested();
-        if(!ReferenceEquals(sftp,source) || remotePath.Text!=remoteInput || localPath.Text!=path)return;
-        remotePath.Text=remote;
+        if(!ReferenceEquals(sftp,source) || remotePath.Text!=remoteInput || localPath.Text!=pathInput)return;
+        localPath.Text=path; remotePath.Text=remote;
         if(remote!="/")remoteResult.Insert(0,new("..",RemotePath.Parent(remote),true,false,0,DateTime.MinValue,""));
         localEntries=localResult; remoteEntries=remoteResult;
         // A background view for a new directory must not leave actionable rows
@@ -341,15 +359,26 @@ internal sealed partial class SessionPane : WorkspacePane
         if(loadedLocalPath!=path)localList.ItemsSource=null;
         if(loadedRemotePath!=remote)remoteList.ItemsSource=null;
         if(loadedLocalPath!=path)localFilter.Text=""; if(loadedRemotePath!=remote)remoteFilter.Text="";
-        loadedLocalPath=path; loadedRemotePath=remote; await FilterFilesAsync();
-        } finally { refreshGate.Release(); }
+        loadedLocalPath=path; loadedRemotePath=remote;
+        localNavigation.Commit(path,localTarget); remoteNavigation.Commit(remote,remoteTarget); localNavigationTarget=remoteNavigationTarget=null;
+        await FilterFilesAsync();
+        } catch {
+            if(ReferenceEquals(sftp,source))
+            {
+                if(localPath.Text==pathInput && loadedLocalPath.Length>0) { localPath.Text=loadedLocalPath; localNavigationTarget=null; }
+                if(remotePath.Text==remoteInput && loadedRemotePath.Length>0) { remotePath.Text=loadedRemotePath; remoteNavigationTarget=null; }
+                if(FilePathConfirmed(false) && FilePathConfirmed(true))FilterFiles();
+            }
+            throw;
+        } finally { if(entered)refreshGate.Release(); fileRefreshes--; UpdateFileNavigation(); }
     }
     private bool RemoteSelected => fileTarget.SelectedIndex==1;
     private async Task MkdirAsync()
     {
+        var remote=RemoteSelected; var directory=FileDirectory(remote);
         var name=await Dialogs.Prompt(owner,L.T("Nazwa nowego katalogu")); if(name==null || sftp==null)return;
-        if(RemoteSelected) await sftp.CreateDirectoryAsync(RemotePath.Join(remotePath.Text??"/",name),lifetime.Token);
-        else { ValidateLocalName(name); Directory.CreateDirectory(Path.Combine(localPath.Text??"",name)); } await RefreshAsync();
+        if(remote) await sftp.CreateDirectoryAsync(RemotePath.Join(directory,name),lifetime.Token);
+        else { ValidateLocalName(name); Directory.CreateDirectory(Path.Combine(directory,name)); } await RefreshAsync();
     }
     private async Task RenameAsync()
     {

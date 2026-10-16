@@ -1,6 +1,6 @@
 # ServerDesk
 
-Natywny klient administracyjny C# / .NET 10 / Avalonia 12 dla Windows i Linux. Wersja 0.32.0 Public Beta; [status MVP](mvp-status.md), [ograniczenia](known-issues.md) i [zmiany tego wydania](releases/release-0.32.0.md).
+Natywny klient administracyjny C# / .NET 10 / Avalonia 12 dla Windows i Linux. Wersja 0.33.0 Public Beta; [status MVP](mvp-status.md), [ograniczenia](known-issues.md) i [zmiany tego wydania](releases/release-0.33.0.md).
 
 ## Uruchomienie
 
@@ -10,7 +10,7 @@ Od wersji 0.32.0: **Menu → Ustawienia → Bezpieczeństwo → Zaufane klucze S
 
 Windows: rozpakuj całe archiwum wydania Windows i uruchom `ServerDesk.App.exe`. Nie przenoś samego EXE — wydanie zawiera biblioteki natywne. Nie wymaga instalacji .NET. Wersja przenośna domyślnie zapisuje konfigurację w `%APPDATA%\ServerDesk`.
 
-Linux: rozpakuj archiwum, wykonaj `chmod +x ServerDesk.App` i `./ServerDesk.App`. Alternatywnie zainstaluj DEB: `sudo apt install ./serverdesk_0.32.0_amd64.deb`. Na Fedora użyj archiwum. Wymagane są biblioteki X11/fontconfig (szczegóły w dokumentacji). WSLg służył do części testów; nie zastępuje testów na fizycznym Kubuntu/Fedora.
+Linux: rozpakuj archiwum, wykonaj `chmod +x ServerDesk.App` i `./ServerDesk.App`. Alternatywnie zainstaluj DEB: `sudo apt install ./serverdesk_0.33.0_amd64.deb`. Na Fedora użyj archiwum. Wymagane są biblioteki X11/fontconfig (szczegóły w dokumentacji). WSLg służył do części testów; nie zastępuje testów na fizycznym Kubuntu/Fedora.
 
 Okno zapamiętuje normalny rozmiar i maksymalizację, a przy starcie mieści się w obszarze roboczym monitora. Po odłączeniu monitora wraca na ekran główny. Nie trzeba usuwać zapisanej konfiguracji.
 
@@ -18,6 +18,7 @@ Język / Language: **Ustawienia → Wygląd → Język aplikacji / Language**. P
 
 ## Podstawowa obsługa
 
+- SFTP od 0.33.0: każdy panel ma Wstecz/Dalej, katalog nadrzędny i domowy; Alt+←/→/↑/Home steruje aktywnym panelem. Enter zatwierdza ścieżkę, Escape w jej polu przywraca otwarty katalog i fokus listy. Niedokończona ścieżka blokuje stare wiersze i cele operacji; błędny odczyt przywraca ostatnie poprawne katalogi. Do 100 wpisów historii na panel pozostaje tylko w pamięci karty, do reconnect/zamknięcia. Odświeżenie i błąd nie usuwają gałęzi Dalej. Oba panele nadal są odczytywane wspólnie. [Zakres](releases/release-0.33.0.md).
 - Edytor serwera dzieli ustawienia na **Połączenie**, **Wygląd**, **Organizacja** i **Pulpit RDP** (dla RDP). Nagłówek pokazuje bieżący podgląd, przyciski zapisu pozostają widoczne podczas przewijania, a błędy pojawiają się przy polach. Klucz SSH i istniejący folder można wybrać przyciskiem przy polu.
 - W panelu połączeń wybierz Wszystkie / SSH / RDP / VNC / Serial. Kilka słów wyszukuje jednocześnie w nazwie, adresie, loginie, domenie, tagach, opisie, folderze, protokole i porcie. Licznik pokazuje liczbę pasujących serwerów; foldery mają własne liczniki. Escape usuwa tekst zapytania, a „Wyczyść filtry” przywraca wszystkie protokoły.
 - Dodaj serwer, login, protokół, port i folder, np. `Produkcja/Linux`. Pole „Ikona serwera” zawiera automatyczną ikonę SSH/RDP oraz 14 ikon ról serwera. Edycja zmienia ikonę także w otwartej zakładce; oznaczenie protokołu pozostaje widoczne w drzewie. Hasło lub passphrase podaje się podczas połączenia. Prywatny klucz pozostaje na dysku użytkownika.

@@ -32,7 +32,7 @@ internal sealed partial class SessionPane
         FileEntry resolved;
         using(BeginBusy(L.T("Sprawdzanie celu dowiązania…")))resolved=await ResolveLinkAsync(remote,entry,ct);
         // Queue the approved resolved source and destination, not the live link.
-        var target=remote?LocalFileName.InDirectory(localPath.Text??"",entry.Name):RemotePath.Join(await sftp.ResolveDirectoryAsync(remotePath.Text??"/",ct),entry.Name);
+        var target=remote?LocalFileName.InDirectory(FileDirectory(false),entry.Name):RemotePath.Join(FileDirectory(true),entry.Name);
         var message=L.F($"Serwer: {Profile.Endpoint}\nDowiązanie: {entry.FullPath}\nRzeczywisty cel: {resolved.FullPath}\nKopiuj do: {target}\n\nZostanie skopiowana zawartość celu jako zwykły plik lub katalog. Cel może znajdować się poza katalogiem dowiązania. Dowiązania wewnątrz katalogu będą pomijane; obiekty dowiązań nie są tworzone.");
         if(!await Dialogs.Confirm(owner,L.T("Kopiować zawartość dowiązania?"),message,ct))return;
         ct.ThrowIfCancellationRequested(); if(!IsConnected || disposed!=0)return;
@@ -42,7 +42,7 @@ internal sealed partial class SessionPane
     private async Task CreateRemoteLinkAsync()
     {
         if(SingleFile(true) is not {} entry || sftp==null || !IsConnected)return;
-        var ct=connectionLifetime.Token; var connection=sftp; var directory=await connection.ResolveDirectoryAsync(remotePath.Text??"/",ct);
+        var ct=connectionLifetime.Token; var connection=sftp; var directory=FileDirectory(true);
         FileEntry target;
         using(BeginBusy(L.T("Sprawdzanie celu dowiązania…")))target=await connection.ReadTransferSourceAsync(entry,true,ct);
         var name=await Dialogs.Prompt(owner,L.F($"Nazwa nowego dowiązania do {target.FullPath}"),entry.Name+".link");

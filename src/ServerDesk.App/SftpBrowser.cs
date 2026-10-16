@@ -53,6 +53,7 @@ internal sealed partial class SessionPane
         files.AddHandler(KeyDownEvent,(_,e)=>
         {
             if(!files.IsVisible)return;
+            if(fileRefreshes>0 && e.KeyModifiers==KeyModifiers.Alt && e.Key is Key.Left or Key.Right or Key.Up or Key.Home) { e.Handled=true; return; }
             if(e.Key==Key.F5) { e.Handled=true; _=owner.Safe(RefreshAsync); }
             else if(e.Key==Key.Delete && e.KeyModifiers==KeyModifiers.None && (localList.IsKeyboardFocusWithin || remoteList.IsKeyboardFocusWithin))
             { e.Handled=true; _=owner.Safe(DeleteFileAsync); }
@@ -66,6 +67,8 @@ internal sealed partial class SessionPane
             { (remoteList.IsKeyboardFocusWithin?remoteList:localList).SelectedItems!.Clear(); e.Handled=true; }
             else if(e.Key==Key.L && e.KeyModifiers==KeyModifiers.Control) { var path=RemoteSelected?remotePath:localPath; path.Focus(); path.SelectAll(); e.Handled=true; }
             else if(e.Key==Key.Up && e.KeyModifiers==KeyModifiers.Alt) { e.Handled=true; _=owner.Safe(()=>NavigateParentAsync(RemoteSelected)); }
+            else if(e.KeyModifiers==KeyModifiers.Alt && e.Key is Key.Left or Key.Right) { e.Handled=true; _=owner.Safe(()=>NavigateFileHistoryAsync(RemoteSelected,e.Key==Key.Right)); }
+            else if(e.Key==Key.Home && e.KeyModifiers==KeyModifiers.Alt) { e.Handled=true; _=owner.Safe(()=>NavigateFileHomeAsync(RemoteSelected)); }
             else if(e.Key==Key.Enter && (localList.IsKeyboardFocusWithin || remoteList.IsKeyboardFocusWithin)) { e.Handled=true; _=owner.Safe(()=>OpenDirectoryAsync(remoteList.IsKeyboardFocusWithin)); }
         },RoutingStrategies.Tunnel);
     }
@@ -110,13 +113,14 @@ internal sealed partial class SessionPane
             entry=await ResolveLinkAsync(remote,entry,connectionLifetime.Token);
         }
         if(!entry.IsDirectory)return;
-        (remote?remotePath:localPath).Text=entry.FullPath; await RefreshAsync();
+        await NavigateFilesAsync(remote,entry.FullPath);
     }
     private Task NavigateParentAsync(bool remote)
     {
-        var path=remote?RemotePath.Parent(remotePath.Text??"/"):Directory.GetParent(localPath.Text??"")?.FullName;
+        var directory=FileDirectory(remote);
+        var path=remote?RemotePath.Parent(directory):Directory.GetParent(directory)?.FullName;
         if(path==null)return Task.CompletedTask;
-        (remote?remotePath:localPath).Text=path; return RefreshAsync();
+        return NavigateFilesAsync(remote,path);
     }
     private void FilterFiles()=>_ = owner.Safe(FilterFilesAsync);
     private void PublishFileViews(IReadOnlyList<FileEntry> local,IReadOnlyList<FileEntry> remote)

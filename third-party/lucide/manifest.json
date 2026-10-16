@@ -263,6 +263,14 @@
     {
       "sha256": "78c732e34e232db63af06a2330b4448045cfdf49b48b59f2d31922df54c7bb17",
       "name": "archive"
+    },
+    {
+      "sha256": "c5f4b88076108eb1a0d95336e1aa7e7bb1419a3a92af96f6247d88cd3456f933",
+      "name": "arrow-left"
+    },
+    {
+      "sha256": "28216c479005731ef5e382e7d8627eda2b129b019eb1f3d9de9f5915576d448e",
+      "name": "house"
     }
   ],
   "version": "1.55.0",

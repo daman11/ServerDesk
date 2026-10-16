@@ -1,5 +1,7 @@
 Pierwotne MVP: aktualna tabela kryteriów i brakującej weryfikacji znajduje się w [mvp-status.md](mvp-status.md).
 
+Wydanie 0.33.0: dopracowana nawigacja SFTP i potwierdzane ścieżki — niezależne historie paneli, Wstecz/Dalej, nadrzędny/domowy, obsługa błędnego odczytu i ochrona celów operacji. [Zakres](reports/sftp-navigation-2026-10-16.md).
+
 Wydanie 0.32.0: lokalne wyszukiwanie historii SSH/Serial, logiczne trafienia przez zawinięcia, kontrola skrótów i osobny pasek bez zasłaniania zawartości. [Zakres](reports/terminal-search-2026-10-16.md).
 
 Wydanie 0.32.0: zarządzanie zapisanym zaufaniem SSH w ustawieniach, bez automatycznego akceptowania zmienionych kluczy. [Testy i zakres](reports/ssh-trust-management-2026-10-16.md).

@@ -25,7 +25,7 @@ Dodawaj tylko pliki należące do konkretnej zmiany. Dla poprawek używaj `fix:`
 git remote add origin URL_REPOZYTORIUM
 git remote -v
 git push -u origin main
-git push origin v0.31.1 v0.32.0
+git push origin v0.31.1 v0.32.0 v0.33.0
 ```
 
 Jeżeli `origin` już istnieje, najpierw sprawdź jego adres zamiast dodawać drugi. Utworzone wcześniej repozytorium z własnymi commitami wymaga uzgodnienia historii; nie zastępuj jej wymuszonym pushem. Samo przygotowanie projektu lokalnie nie publikuje kodu ani paczek.
@@ -42,6 +42,6 @@ Przed publikacją można powtórzyć skan historii przez `gitleaks git --redact 
 
 ## Kolejne wydania
 
-Numer aplikacji jest w `Directory.Build.props`. Bump dotyczy nowego wydania, nie każdego pośredniego commita. Po zakończeniu zamówionego etapu zmian użytkowych przygotuj również lokalne paczki i tag; sam commit nie kończy wydania. Bieżące wydanie to 0.32.0; następne poprawki mogą otrzymać 0.32.1, a większy etap 0.33.0. Postępuj według [procedury wydania](releasing.md), zapisz zmiany w CHANGELOG i dodaj nowe notatki/raport. Przed zakończeniem uruchom `scripts/check-release-state.ps1 -RequireCurrentRelease`. Publikacja na GitHub nadal wymaga polecenia użytkownika.
+Numer aplikacji jest w `Directory.Build.props`. Bump dotyczy nowego wydania, nie każdego pośredniego commita. Po zakończeniu zamówionego etapu zmian użytkowych przygotuj również lokalne paczki i tag; sam commit nie kończy wydania. Bieżące wydanie to 0.33.0; następne poprawki mogą otrzymać 0.33.1, a większy etap 0.34.0. Postępuj według [procedury wydania](releasing.md), zapisz zmiany w CHANGELOG i dodaj nowe notatki/raport. Przed zakończeniem uruchom `scripts/check-release-state.ps1 -RequireCurrentRelease`. Publikacja na GitHub nadal wymaga polecenia użytkownika.
 
 Po weryfikacji konkretnego commita utwórz nowy tag `vMAJOR.MINOR.PATCH` i wypchnij wyłącznie ten tag. Na GitHub utwórz release beta/prerelease z Setup, ZIP, DEB, TAR.GZ, źródłami i SHA-256. Gotowe paczki są załącznikami Releases, a nie plikami w historii Git. Obecne wydania w ignorowanym `artifacts/releases/` pozostają lokalne do chwili oddzielnej publikacji.

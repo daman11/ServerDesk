@@ -1,4 +1,4 @@
-# Pierwotne MVP — wydanie 0.32.0
+# Pierwotne MVP — wydanie 0.33.0
 
 Ta lista odnosi się do pierwotnej specyfikacji ServerDesk i jej kryteriów gotowości (§21). Nie zalicza dodatkowych Network Tools, VNC ani Serial jako zastępstwa funkcji SSH/SFTP/Server Info/RDP. Historyczny audyt 0.4.0 pozostaje zapisem tamtego stanu.
 
@@ -19,6 +19,8 @@ Ta lista odnosi się do pierwotnej specyfikacji ServerDesk i jej kryteriów goto
 
 ## Wykonany etap
 
+Wydanie 0.33.0 rozwija przeglądanie SFTP: Wstecz/Dalej, nadrzędny/domowy, skróty, osobne historie do 100 wpisów i zatwierdzanie ścieżek. Błędny odczyt przywraca poprzednie katalogi; operacje nie używają niezatwierdzonego tekstu. Windows/Linux przeszły rzeczywiste testy OpenSSH/SFTP oraz kontrolę wąskich paneli. [Weryfikacja](reports/sftp-navigation-2026-10-16.md).
+
 Wydanie 0.32.0 dodaje lokalne wyszukiwanie w dostępnym buforze SSH/Serial: Ctrl+Shift+F, wielkość liter, całe słowa, nawigację, powrót do bieżącego tekstu i oznaczenie nieaktualnych wyników po nowym wyjściu. Trafienie przez zawinięcie jest liczone raz. Testy obejmują bufor, małe panele i rzeczywiste SSH; nie zastępują fizycznej macierzy klawiatury i portów Serial. [Weryfikacja](reports/terminal-search-2026-10-16.md).
 
 Wydanie 0.32.0 dodaje **Ustawienia → Bezpieczeństwo → Zaufane klucze SSH**. Użytkownik może sprawdzić i skopiować odcisk oraz usunąć jeden wpis po potwierdzeniu. Usuwanie porównuje także odcisk, aby nie usunąć klucza zmienionego w innym oknie. Zmieniony klucz pozostaje blokowany, a po usunięciu zaufania następne połączenie wymaga ponownej weryfikacji. [Zakres i testy](reports/ssh-trust-management-2026-10-16.md).
@@ -34,6 +36,6 @@ Etap 0.31.0 przenosi przygotowanie klucza z passphrase oraz pełny odczyt monito
 3. Rozszerzenie macierzy RDP oraz docelowe osadzanie Linux; obecny fallback FreeRDP pozostaje jawnie opisany.
 4. Pozostałe serwery SSH/SFTP, fizyczne gesty/mysz terminalowa i szersza macierz protokołów klawiatury.
 
-Nie ogłaszamy pełnego MVP za zakończone na podstawie samego istnienia kontrolek lub zielonej kompilacji. Wyniki tego etapu i granice testów zapisuje [raport weryfikacji](reports/release-verification-0.32.0.md).
+Nie ogłaszamy pełnego MVP za zakończone na podstawie samego istnienia kontrolek lub zielonej kompilacji. Wyniki tego etapu i granice testów zapisuje [raport weryfikacji](reports/release-verification-0.33.0.md).
 
 Poprawka 0.31.1 naprawia kodowanie instalatora oraz dodaje przypomnienia w docelowym języku i bezpieczny restart z ustawień/okna głównego. [Zakres poprawki](releases/release-0.31.1.md).

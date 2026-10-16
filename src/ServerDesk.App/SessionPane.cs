@@ -98,6 +98,7 @@ internal sealed partial class SessionPane : WorkspacePane
         {
             BuildRdpControls(actions);
         }
+        BuildTerminalSearch(actions);
         Grid.SetRow(terminal,2); Children.Add(terminal); files.IsVisible=false; Grid.SetRow(files,2); Children.Add(files); Grid.SetRow(info,2); Children.Add(info);
         if(additionalNotice!=null) { Children.Remove(additionalNotice); Children.Add(additionalNotice); }
         if(profile.Protocol==Protocol.VNC)terminal.IsVisible=false;
@@ -159,7 +160,7 @@ internal sealed partial class SessionPane : WorkspacePane
         if(Profile.Protocol is Protocol.VNC or Protocol.Serial) { await ConnectAdditionalAsync(ct); return; }
         terminal.IsVisible=true; files.IsVisible=info.IsVisible=false; infoActive=false; SelectPanel(0);
         var client=await factory.SshAsync(Profile,secret,ct);
-        try { ct.ThrowIfCancellationRequested(); terminal.ApplyTemplate(); terminal.Terminal.Reset(); TerminalAppearance.Apply(terminal,await repository.SettingAsync("terminalPalette",ct)??TerminalAppearance.Names[0],(int)terminal.FontSize,preferences.TerminalFontFamily); session=await SshTerminalSession.CreateAsync(client,ct); terminal.AttachConnection(session); session.Resize(terminal.Terminal.Cols,terminal.Terminal.Rows); terminal.Focus(); connectionStarted=Stopwatch.GetTimestamp(); SetStatus(L.F($"● SSH · {Profile.Username}@{Profile.Host}:{Profile.Port} · połączono"),"●"); _=ObserveEndAsync(session); if(owner.Preferences.ShowMetrics && owner.Preferences.ShowStatusBar)_=StartMonitoringAsync(ct); }
+        try { ct.ThrowIfCancellationRequested(); terminal.ApplyTemplate(); terminalSearch?.Reset(); terminal.Terminal.Reset(); TerminalAppearance.Apply(terminal,await repository.SettingAsync("terminalPalette",ct)??TerminalAppearance.Names[0],(int)terminal.FontSize,preferences.TerminalFontFamily); session=await SshTerminalSession.CreateAsync(client,ct); terminal.AttachConnection(session); session.Resize(terminal.Terminal.Cols,terminal.Terminal.Rows); terminal.Focus(); connectionStarted=Stopwatch.GetTimestamp(); SetStatus(L.F($"● SSH · {Profile.Username}@{Profile.Host}:{Profile.Port} · połączono"),"●"); _=ObserveEndAsync(session); if(owner.Preferences.ShowMetrics && owner.Preferences.ShowStatusBar)_=StartMonitoringAsync(ct); }
         catch { client.Dispose(); throw; }
     }
     public Task ReconnectAsync(string? replacementSecret=null) => ConnectAsync(replacementSecret??secret,lifetime.Token);
@@ -484,7 +485,7 @@ internal sealed partial class SessionPane : WorkspacePane
     public override void Dispose()
     {
         if(Interlocked.Exchange(ref disposed,1)!=0)return;
-        lifetime.Cancel(); secret=""; ResetConnections(); terminal.Dispose();
+        lifetime.Cancel(); secret=""; ResetConnections(); terminalSearch?.Dispose(); terminal.Dispose();
         _=CompleteCloseAsync();
     }
     internal Task CloseAsync() { Dispose(); return closed.Task; }

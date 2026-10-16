@@ -20,7 +20,8 @@ internal sealed partial class SessionPane
         operationText.TextTrimming=Avalonia.Media.TextTrimming.CharacterEllipsis;
         operationStatus.Children.Add(operationIndicator); Grid.SetColumn(operationText,1); operationStatus.Children.Add(operationText);
         var dismiss=DeskIcons.Button("close","Ukryj komunikat",()=> { appearanceWarning=""; RenderOperationStatus(); }); Grid.SetColumn(dismiss,2); operationStatus.Children.Add(dismiss);
-        Grid.SetRow(operationStatus,1); Children.Add(operationStatus);
+        var auxiliary=new StackPanel { Children={operationStatus} }; if(terminalSearch!=null)auxiliary.Children.Add(terminalSearch);
+        Grid.SetRow(auxiliary,1); Children.Add(auxiliary);
     }
     private IDisposable BeginBusy(string message)
     {

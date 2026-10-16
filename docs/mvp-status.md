@@ -19,6 +19,8 @@ Ta lista odnosi się do pierwotnej specyfikacji ServerDesk i jej kryteriów goto
 
 ## Wykonany etap
 
+Bieżący etap terminala dodaje lokalne wyszukiwanie w dostępnym buforze SSH/Serial: Ctrl+Shift+F, wielkość liter, całe słowa, nawigację, powrót do bieżącego tekstu i oznaczenie nieaktualnych wyników po nowym wyjściu. Trafienie przez zawinięcie jest liczone raz. Testy obejmują bufor, małe panele i rzeczywiste SSH; nie zastępują fizycznej macierzy klawiatury i portów Serial. [Weryfikacja](reports/terminal-search-2026-10-16.md).
+
 Bieżący etap zarządzania SSH dodaje **Ustawienia → Bezpieczeństwo → Zaufane klucze SSH**. Użytkownik może sprawdzić i skopiować odcisk oraz usunąć jeden wpis po potwierdzeniu. Usuwanie porównuje także odcisk, aby nie usunąć klucza zmienionego w innym oknie. Zmieniony klucz pozostaje blokowany, a po usunięciu zaufania następne połączenie wymaga ponownej weryfikacji. [Zakres i testy](reports/ssh-trust-management-2026-10-16.md).
 
 Bieżące zmiany po 0.31.1 przenoszą filtrowanie i sortowanie list od 2000 wpisów poza UI. Szybkie zmiany są łączone, nieaktualne obliczenia anulowane, a reconnect i zamknięcie czekają na ich zakończenie. Test widoków obejmuje po 50 000 wpisów w obu panelach na Windows i Linux/WSL, a rzeczywisty OpenSSH — katalog 5000 plików oraz utratę transportu i anulowanie transferu. Nie oznacza to testu odczytu 50 000 zdalnych plików ani wielogodzinnej sesji. [Weryfikacja zmian](reports/sftp-large-file-views-2026-10-16.md).

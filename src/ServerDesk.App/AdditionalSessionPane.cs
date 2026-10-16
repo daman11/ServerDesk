@@ -50,7 +50,7 @@ internal sealed partial class SessionPane
         else
         {
             serialSession=await SerialTerminalSession.OpenAsync(Profile.Serial,ct); ct.ThrowIfCancellationRequested();
-            terminal.IsVisible=true; terminal.ApplyTemplate(); terminal.Terminal.Reset(); terminal.AttachConnection(serialSession); terminal.Focus(); completion=serialSession.Completion; observed=serialSession;
+            terminal.IsVisible=true; terminal.ApplyTemplate(); terminalSearch?.Reset(); terminal.Terminal.Reset(); terminal.AttachConnection(serialSession); terminal.Focus(); completion=serialSession.Completion; observed=serialSession;
         }
         if(additionalNotice!=null)additionalNotice.IsVisible=false;
         connectionStarted=Stopwatch.GetTimestamp(); SetStatus(L.F($"{Profile.Protocol} · {Profile.Endpoint} · połączono"),"●");

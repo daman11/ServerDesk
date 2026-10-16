@@ -2,6 +2,8 @@
 
 ## Unreleased
 
+- Add local scrollback search to SSH/Serial terminals: Ctrl+Shift+F, literal/case/whole-word matching, previous/next navigation, Unicode and wrapped-line matches, bounded result counts, refresh after output and a return-to-current-output action.
+- Keep search/status rows separate from terminal content, clear search on reconnect/close and consume local key releases so Kitty input cannot leak search shortcuts to the remote host.
 - Add Settings → Security → Trusted SSH keys with host/port/fingerprint search, fingerprint copying and explicitly confirmed removal of one reviewed key. Compare the stored fingerprint when deleting so a stale dialog cannot remove a replacement key.
 - Keep changed SSH keys blocked and point the error to trust management. Verify renewed SSH/SFTP trust, preservation of live sessions and busy-database recovery on isolated fixtures.
 - Filter and sort large local/SFTP directory views off the UI thread, coalesce rapid edits, cancel obsolete sorts and drain view work on reconnect/close. Preserve selection and prevent stale results from replacing a newer directory.

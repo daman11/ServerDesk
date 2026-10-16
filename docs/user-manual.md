@@ -4,6 +4,8 @@ Natywny klient administracyjny C# / .NET 10 / Avalonia 12 dla Windows i Linux. W
 
 ## Uruchomienie
 
+W bieżących zmianach po 0.31.1: w terminalu SSH lub Serial użyj lupy albo **Ctrl+Shift+F**, aby przeszukać dostępną historię. **Enter / Shift+Enter** w polu wyszukiwania oraz **F3 / Shift+F3** przy otwartym pasku przechodzą między wynikami; **Escape** w pasku zamyka go i oddaje fokus terminalowi. Dostępne są wielkość liter i całe słowa. Szukanie jest dosłowne, bez wyrażeń regularnych. Trafienie przez miękkie zawinięcie liczy się raz. Nowe wyjście oznacza wyniki jako wymagające odświeżenia; wybierz przycisk odświeżania lub przejdź do następnego wyniku. Strzałka w prawo wraca do bieżącego tekstu. Zwykłe Ctrl+F pozostaje skrótem zdalnego programu. Zapytanie jest tylko w danej karcie, bez zapisu na dysku; nowe połączenie i zamknięcie karty je czyszczą. Wyszukiwanie nie obejmuje historii usuniętej już z bufora.
+
 W bieżących zmianach rozwojowych po 0.31.1: **Menu → Ustawienia → Bezpieczeństwo → Zaufane klucze SSH → Zarządzaj kluczami…** pokazuje zapamiętane hosty i porty oraz ich odciski SHA-256. Możesz wyszukać wpis, skopiować odcisk lub usunąć zaufanie do jednego hosta po osobnym potwierdzeniu. Najpierw potwierdź tożsamość serwera z administratorem. Zmiana działa od razu, także po anulowaniu ustawień; nie rozłącza otwartej sesji. Następne połączenie SSH/SFTP wymaga ponownego porównania odcisku. Sam komunikat o zmianie klucza nie daje możliwości zaakceptowania go. Starsze paczki 0.31.1 nie zawierają tego panelu.
 
 Windows: rozpakuj całe archiwum wydania Windows i uruchom `ServerDesk.App.exe`. Nie przenoś samego EXE — wydanie zawiera biblioteki natywne. Nie wymaga instalacji .NET. Wersja przenośna domyślnie zapisuje konfigurację w `%APPDATA%\ServerDesk`.

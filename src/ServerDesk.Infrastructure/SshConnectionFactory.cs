@@ -29,7 +29,7 @@ public sealed class SshConnectionFactory(ProfileRepository repository)
             e.CanTrust = false;
             if (previous == fingerprint) { e.CanTrust = true; return; }
             // Changed host keys are never replaced through a connection prompt.
-            if (previous != null) throw new InvalidOperationException(L.F($"ZMIANA KLUCZA HOSTA {profile.Host}:{profile.Port}. Zapisany: {previous}, otrzymany: {fingerprint}. Sprawdź tożsamość serwera przed usunięciem zaufania."));
+            if (previous != null) throw new InvalidOperationException(L.F($"ZMIANA KLUCZA HOSTA {profile.Host}:{profile.Port}. Zapisany: {previous}, otrzymany: {fingerprint}. Sprawdź tożsamość serwera przed usunięciem zaufania.")+"\n"+L.T("Zaufaniem zarządzisz w Ustawienia → Bezpieczeństwo → Zaufane klucze SSH."));
             if (ConfirmHostKey?.Invoke(new(profile.Host, profile.Port, e.HostKeyName, fingerprint, null), ct).GetAwaiter().GetResult() == true)
             { accepted = fingerprint; e.CanTrust = true; }
         };

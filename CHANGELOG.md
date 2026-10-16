@@ -2,6 +2,8 @@
 
 ## Unreleased
 
+- Add Settings → Security → Trusted SSH keys with host/port/fingerprint search, fingerprint copying and explicitly confirmed removal of one reviewed key. Compare the stored fingerprint when deleting so a stale dialog cannot remove a replacement key.
+- Keep changed SSH keys blocked and point the error to trust management. Verify renewed SSH/SFTP trust, preservation of live sessions and busy-database recovery on isolated fixtures.
 - Filter and sort large local/SFTP directory views off the UI thread, coalesce rapid edits, cancel obsolete sorts and drain view work on reconnect/close. Preserve selection and prevent stale results from replacing a newer directory.
 - Add 50,000-entry-per-panel acceptance checks in Polish/English on Windows/Linux and include them in CI.
 - Add safe generated-artifact cleanup with preview, release/report retention, process/shortcut protection and no-follow link deletion.

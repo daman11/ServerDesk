@@ -19,6 +19,8 @@ Ta lista odnosi się do pierwotnej specyfikacji ServerDesk i jej kryteriów goto
 
 ## Wykonany etap
 
+Bieżący etap zarządzania SSH dodaje **Ustawienia → Bezpieczeństwo → Zaufane klucze SSH**. Użytkownik może sprawdzić i skopiować odcisk oraz usunąć jeden wpis po potwierdzeniu. Usuwanie porównuje także odcisk, aby nie usunąć klucza zmienionego w innym oknie. Zmieniony klucz pozostaje blokowany, a po usunięciu zaufania następne połączenie wymaga ponownej weryfikacji. [Zakres i testy](reports/ssh-trust-management-2026-10-16.md).
+
 Bieżące zmiany po 0.31.1 przenoszą filtrowanie i sortowanie list od 2000 wpisów poza UI. Szybkie zmiany są łączone, nieaktualne obliczenia anulowane, a reconnect i zamknięcie czekają na ich zakończenie. Test widoków obejmuje po 50 000 wpisów w obu panelach na Windows i Linux/WSL, a rzeczywisty OpenSSH — katalog 5000 plików oraz utratę transportu i anulowanie transferu. Nie oznacza to testu odczytu 50 000 zdalnych plików ani wielogodzinnej sesji. [Weryfikacja zmian](reports/sftp-large-file-views-2026-10-16.md).
 
 Etap 0.31.0 przenosi przygotowanie klucza z passphrase oraz pełny odczyt monitoringu poza UI. Server Info zachowuje dostępne sekcje przy brakach narzędzi i praw odczytu, pokazuje niedostępne dane bez fikcyjnego zera oraz czyści stary wykres i parametry. Testy obejmują odczyt rzeczywistych danych przez ograniczony PATH i własne pliki z odmową dostępu, powrót danych oraz PL/EN. Zachowano poprawki cyklu życia i dokowania z 0.30.0. [Zakres](releases/release-0.31.0.md).

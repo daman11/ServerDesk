@@ -64,6 +64,12 @@ internal static partial class Dialogs
         var terminalPage=Page("ssh","Terminal","Kolory i czcionka sesji terminalowych.");
         var workspacePage=Page("layers","Obszar pracy","Panele, karty i zachowanie przy uruchamianiu.");
         var monitoringPage=Page("chart-no-axes-combined","Monitoring","Parametry serwera i informacje na pasku statusu.");
+        var securityPage=Page("key","Bezpieczeństwo","Tożsamość serwerów i zapisane zaufanie SSH.");
+        var trustSection=Section(securityPage,"key","Weryfikacja serwerów SSH");
+        Window? settingsOwner=null;
+        var manageTrust=Button("Zarządzaj kluczami…",async()=> { if(settingsOwner!=null)await TrustedHosts(settingsOwner,repository); }); manageTrust.Name="ManageTrustedHosts";
+        Label(trustSection,"Zaufane klucze SSH",manageTrust);
+        trustSection.Children.Add(Text(L.T("Usunięcie zaufania wymaga osobnego potwierdzenia i działa od razu, niezależnie od zapisu ustawień. Następne połączenie wymaga ponownego porównania odcisku."),12));
         var languageSection=Section(appearancePage,"globe","Język interfejsu");
         var language=new ComboBox { Name="ApplicationLanguage",ItemsSource=new[]{"Polski","English"},SelectedIndex=p.Language=="en"?1:0,HorizontalAlignment=HorizontalAlignment.Stretch };
         Label(languageSection,"Język aplikacji / Language",language);
@@ -133,7 +139,7 @@ internal static partial class Dialogs
             return new TabItem { Classes={"page-navigation","settings-category"},Header=DeskIcons.Labelled(glyph,L.T(title)),Content=scroll };
         }
         var categories=new TabControl { Name="SettingsCategories",TabStripPlacement=Dock.Left,Padding=new Thickness(0),ItemsSource=new[] {
-            Category("settings","Wygląd",appearancePage),Category("ssh","Terminal",terminalPage),Category("layers","Obszar pracy",workspacePage),Category("chart-no-axes-combined","Monitoring",monitoringPage)
+            Category("settings","Wygląd",appearancePage),Category("ssh","Terminal",terminalPage),Category("layers","Obszar pracy",workspacePage),Category("chart-no-axes-combined","Monitoring",monitoringPage),Category("key","Bezpieczeństwo",securityPage)
         },SelectedIndex=0 };
         DesignSystem.Resource(categories,TabControl.BackgroundProperty,"BackgroundSecondary");
         AutomationProperties.SetName(categories,L.T("Kategorie ustawień"));
@@ -167,10 +173,11 @@ internal static partial class Dialogs
         };
         var body=new DockPanel(); DockPanel.SetDock(header,Dock.Top); body.Children.Add(header); DockPanel.SetDock(footerSurface,Dock.Bottom); body.Children.Add(footerSurface); body.Children.Add(categoryHost);
         var dialog=new Window { Title=L.T("Ustawienia ServerDesk"),Width=960,Height=720,MinWidth=680,MinHeight=500,WindowStartupLocation=WindowStartupLocation.CenterOwner,Content=body };
+        settingsOwner=dialog;
         void ResizeNavigation()
         {
             var compact=dialog.Bounds.Width<820;
-            var icons=new[]{"settings","ssh","layers","chart-no-axes-combined"}; var names=new[]{"Wygląd","Terminal","Obszar pracy","Monitoring"};
+            var icons=new[]{"settings","ssh","layers","chart-no-axes-combined","key"}; var names=new[]{"Wygląd","Terminal","Obszar pracy","Monitoring","Bezpieczeństwo"};
             var index=0;
             foreach(var category in categories.Items.OfType<TabItem>())
             {

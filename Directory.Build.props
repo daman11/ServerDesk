@@ -1,0 +1,21 @@
+<Project>
+  <PropertyGroup>
+    <TargetFramework>net10.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+    <LangVersion>latest</LangVersion>
+    <Deterministic>true</Deterministic>
+    <UseSharedCompilation>false</UseSharedCompilation>
+    <Version>0.31.1</Version>
+    <RuntimeIdentifiers>win-x64;linux-x64</RuntimeIdentifiers>
+    <Product>ServerDesk</Product>
+    <Authors>ServerDesk contributors</Authors>
+    <Copyright>Copyright (c) 2026 ServerDesk contributors</Copyright>
+    <PackageLicenseExpression>MIT</PackageLicenseExpression>
+    <Description>ServerDesk — SSH, SFTP, RDP, VNC and serial workspace. Public beta.</Description>
+  </PropertyGroup>
+</Project>
+
+
+
+

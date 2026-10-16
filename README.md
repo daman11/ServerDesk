@@ -1,0 +1,54 @@
+# ServerDesk — 0.31.1 Public Beta
+
+Native Windows/Linux workspace for SSH, SFTP, RDP, VNC and serial connections. Built with C#, .NET 10 and Avalonia 12. Free and open source under the [MIT license](LICENSE).
+
+**Publiczna beta — rozwój MVP.** [Instrukcja PL](docs/getting-started.md) · [English guide](docs/getting-started.en.md) · [Known issues / ograniczenia](docs/known-issues.md) · [Changelog](CHANGELOG.md).
+
+## Downloads and installation
+
+| System | Package | Start |
+|---|---|---|
+| Windows x64 | `ServerDesk-0.31.1-win-x64-Setup.exe` | Run Setup; current-user installation and Start menu shortcut |
+| Windows x64 portable | `ServerDesk-0.31.1-win-x64.zip` | Extract everything; run `ServerDesk.App.exe` |
+| Linux x64 DEB | `serverdesk_0.31.1_amd64.deb` | `sudo apt install ./serverdesk_0.31.1_amd64.deb` |
+| Linux x64 archive | `ServerDesk-0.31.1-linux-x64.tar.gz` | Extract into a new directory; run `./ServerDesk.App` |
+| Source | `ServerDesk-0.31.1-source.zip` | .NET 10 SDK required |
+
+The binary packages include .NET. Linux additionally needs its system X11/fontconfig libraries, Secret Service for remembered passwords and an installed FreeRDP client for RDP. Linux verification used Ubuntu/WSLg; other desktop/distribution combinations are experimental. ARM/macOS packages are not provided.
+
+This beta is unsigned. Obtain it from a trusted release source and compare its SHA-256 with `SHA256SUMS.txt`. A checksum beside the download does not independently authenticate the publisher. No public download repository is configured in this source snapshot.
+
+## Features
+
+- SSH terminal, SFTP transfer queue, batch/recursive deletion with preview and Linux monitoring.
+- Larger connection lists with batched updates; bounded transfer progress and tested cancellation/retry under network loss.
+- SSH VT keyboard fixes, background PTY setup and coalesced resizing; real password/OpenSSH terminal acceptance checks.
+- SFTP symbolic-link navigation/details, remote link creation and explicit copying of resolved contents, with bounded directory traversal and protected link destinations.
+- Nine [Network Tools](docs/network-tools.md): Ping, Traceroute/MTR, DNS, TCP scanner, Wake-on-LAN, HTTP, TLS, subnet calculator and SNMP v2c/v3; standalone targets and editable server context.
+- Embedded Windows RDP; external Linux FreeRDP; embedded VNC; serial terminal.
+- Split panes, detachable tabs and workspace recovery without automatic connections.
+- Server/folder icons, colors, custom artwork, five themes and configurable interface/terminal.
+- Polish and English UI, destination-language reminders and Save and restart in Settings.
+- Responsive welcome dashboard with recent connections, searchable settings (Ctrl+F) and clear active local/remote SFTP panel headings.
+- Verified SSH host keys, optional local password storage, JSON profile import/export without secrets.
+
+**VNC is unencrypted.** Protect it with a VPN or an existing secure tunnel. Read [known issues](docs/known-issues.md) before using this beta for your own workflows.
+
+Original MVP acceptance and remaining verification: [mvp-status.md](docs/mvp-status.md).
+
+Close the app and back up its data before upgrading. Windows Setup and Linux package removal preserve user data. ZIP/TAR updates should be extracted into a new directory. See the [upgrade/backup guide](docs/getting-started.en.md) and [local-data/privacy notes](docs/privacy.md).
+
+## Development
+
+```sh
+dotnet restore ServerDesk.sln --locked-mode
+dotnet build ServerDesk.sln -c Release --no-restore -m:1
+dotnet test tests/ServerDesk.Tests -c Release --no-build
+dotnet run --project src/ServerDesk.App
+```
+
+Source archive: [CONTRIBUTING.md](CONTRIBUTING.md), [development notes](docs/development.md), [release procedure](docs/releasing.md), [full user manual](docs/user-manual.md). Binary packages include the quick-start documentation; development and historical reports are in the source archive.
+
+Report bugs to the maintainer/repository from which you obtained the release. Include the version, OS and reproduction steps; remove infrastructure identifiers from logs. Follow [SECURITY.md](SECURITY.md) for private vulnerability reporting. ServerDesk does not implement telemetry or automatic update checks.
+
+Bundled components have separate licenses. Their full texts and a dependency inventory are included in each binary package. Source notices are under `third-party/`; restored package/runtime notices are gathered during publishing.

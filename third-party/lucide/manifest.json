@@ -1,0 +1,272 @@
+{
+  "assets": [
+    {
+      "sha256": "f7bea54b609dc488f3b848995014041846b2443fd2a880653e9e583d7a034f61",
+      "name": "server"
+    },
+    {
+      "sha256": "1fd2b783881ed8b0675995910fe98625789119e390420931eca6ddbc91c17932",
+      "name": "square-terminal"
+    },
+    {
+      "sha256": "d1a443233345724859de8e4fb48968ba91e885e12ddbd710701548bd91b39428",
+      "name": "monitor"
+    },
+    {
+      "sha256": "f0d92b94b797a8ab7d4c4ae33c3236c47f64068351b4e14bdb5014ee42898a39",
+      "name": "folder"
+    },
+    {
+      "sha256": "ee57452b40e71df310214091dd9da1941a397c83197b8ff8d7ae66dd4242578b",
+      "name": "folder-open"
+    },
+    {
+      "sha256": "c59da86b889569387db28e69ad00a89f96af22863ad9eea9aa12c4876a14338c",
+      "name": "star"
+    },
+    {
+      "sha256": "3ebfd99b89133920de4081ddc846ed8b1496556abdc74b448734937a22072eb8",
+      "name": "clock-arrow-left"
+    },
+    {
+      "sha256": "d15411438095bac7cab0cf91f18cadfbde2ca752284c06b4b3642c4695b1774e",
+      "name": "arrow-up-down"
+    },
+    {
+      "sha256": "0ae27fd0f81999229e3127ac96c5b32edfea448e291d509e76212b917551d66b",
+      "name": "settings"
+    },
+    {
+      "sha256": "7f6af73bf1ff6c4bca3f18351c8d1bdec6749c0c2530c4de5da85d520c21df17",
+      "name": "plus"
+    },
+    {
+      "sha256": "4a9cdab38fbb96162e7dace28e33f4ca0e49d8963a6162abc3d4691b7d675117",
+      "name": "x"
+    },
+    {
+      "sha256": "2e10dd403c85a24f163d59fc6151aa21147fe9402e1305dfc8979208caee8944",
+      "name": "refresh-cw"
+    },
+    {
+      "sha256": "029f67b9e3eeb7ddf7c7c499b174c50388725e8ea50d4ea59ed7dbaf8d61cb82",
+      "name": "panel-left"
+    },
+    {
+      "sha256": "283d371c2e433817bb9c0c8310caa6c77fa4177c0f4f1168d9c83b97af7389dc",
+      "name": "search"
+    },
+    {
+      "sha256": "8c22c25874c80bb062bef985d207d8f1d4a4d7847237d0a8cf720a3235968518",
+      "name": "arrow-up"
+    },
+    {
+      "sha256": "bc977a64eb96f3e9c1041ffd09a3fceb70e3e65c02b571f76064062ed31f3cb9",
+      "name": "info"
+    },
+    {
+      "sha256": "5a17fc2afb01f2889deee2c90c95e37b8eb942f5ffd625b028c87995b46e87ab",
+      "name": "link-2"
+    },
+    {
+      "sha256": "28a34022ed00177eb1f218eea5d2b7af30d09b529187fe32219e4dd8ea2b9740",
+      "name": "cloud"
+    },
+    {
+      "sha256": "471eb14bc8d144896a82dfc4aa9daf350f769f0896f4bef33e50aabdbb51130d",
+      "name": "database"
+    },
+    {
+      "sha256": "8a41c445ba181b69b4ccf652f46fec5df0f410d64fff5e2cc202600b4862c633",
+      "name": "container"
+    },
+    {
+      "sha256": "ce16d0a955e3581cda17f6b2fd5c5bc2034b405f9cecc31c8ebb8495b4afc1bb",
+      "name": "layers"
+    },
+    {
+      "sha256": "626be730feea1e5ea7539fbf78b4a3fcb927ce5d7dc43364f2216908672ac792",
+      "name": "network"
+    },
+    {
+      "sha256": "6266881cf691541259ea5e07e5e40ffeba1f61b95c76707d967ebe7827414428",
+      "name": "router"
+    },
+    {
+      "sha256": "324363c40f54e4ca843de0ad1d023b063b70a26a83bb2e0a9e9f4aad9af37378",
+      "name": "hard-drive"
+    },
+    {
+      "sha256": "be32f6a86df7cbe43a83c439dd8849e5bcf5145e484d23420c20d8b98a78e82b",
+      "name": "shield"
+    },
+    {
+      "sha256": "83235d4a0352d74234f949c9fc23f89c65ff165f1b6d54a90e5f0ea5bfc2c3d7",
+      "name": "code"
+    },
+    {
+      "sha256": "82c6b8fa0b8e8d775ec9becd86f74a4e50bff7bee4c81f7362de45348504f14d",
+      "name": "globe"
+    },
+    {
+      "sha256": "b8389056d3b7125670b60a4bd03e6d4ecc440e228f4140e7b66c4e97dcb0dc70",
+      "name": "laptop"
+    },
+    {
+      "sha256": "ec83bb69ec029d367d749afc445b39c8e95891ebf99b0400652677c2b149b99c",
+      "name": "cpu"
+    },
+    {
+      "sha256": "9214439ac142c10156434542908436087fb174c71c46e30cfb46971c56ba33d2",
+      "name": "memory-stick"
+    },
+    {
+      "sha256": "2f8a708c357488cfde7428d9b055b9bb4a99c08dc71e9296da03ecc19291c4ab",
+      "name": "chart-no-axes-combined"
+    },
+    {
+      "sha256": "42816ee1fa0e9d3b82272a97615c1e562b0e9de64780ebf21963bc1db0ceffd1",
+      "name": "upload"
+    },
+    {
+      "sha256": "3daeee13ded5a3afa2198b1bb4e2262d163922f97d96ac6ff9953e8ed4fe039d",
+      "name": "download"
+    },
+    {
+      "sha256": "76d62eb7796ce6c7e303c437464923de2d1ae19a5c8d010f8b36dfc1d6180890",
+      "name": "folder-plus"
+    },
+    {
+      "sha256": "7e1ca7a6f5c1eb949671df762f2baadd32f5bd841d43153c3a15279af7d78d0c",
+      "name": "pencil"
+    },
+    {
+      "sha256": "27299f69ad7c6272be64b1b8e2d48cbd6dcf0ef0d4f92827a1affa945c91700e",
+      "name": "trash"
+    },
+    {
+      "sha256": "ea80e566c7a12628a447cb53179b19aea4f60b9143e2becd0d0f20bf260e5718",
+      "name": "copy"
+    },
+    {
+      "sha256": "d2e4e6df0b2fecf97a95ef244f9031fb7c1deae0c9401df2a11d93379e8d361f",
+      "name": "clipboard-paste"
+    },
+    {
+      "sha256": "f8cdea843754ed360e36b04bf6aa2c2b3610935dd39ffc685a36c4d0a05be248",
+      "name": "key-round"
+    },
+    {
+      "sha256": "ee9d56a7fec4b20dd6689546d41f68219ea8cbd67f99bd17a1bdaff5be6edb53",
+      "name": "save"
+    },
+    {
+      "sha256": "f1ea60ee7f303887033d9b05c9b8c903b31c01dc2d8d15082f5c4d1a8899aa6a",
+      "name": "file-braces"
+    },
+    {
+      "sha256": "80c1d2a429824e86166775e3f81e84bd9e5630ed5da85d209eb87d91ccd3e936",
+      "name": "log-in"
+    },
+    {
+      "sha256": "f24b5b45c05a3acc346af8095408f6ba197ff58ea1641a4f2cb25a9702d2c0ac",
+      "name": "log-out"
+    },
+    {
+      "sha256": "4f495cc72013ffdfec677f03b33a150f7b4dd741979283fd6853a09024bca112",
+      "name": "ellipsis"
+    },
+    {
+      "sha256": "2758143d7b2434e4aa7307dfd34405c87909ff4052f21b5f3f40d45224b4f19b",
+      "name": "chevron-right"
+    },
+    {
+      "sha256": "7f33acc9a77a61659531044525fc008edebe215bf4dcf1c789c8674ad3277db0",
+      "name": "check"
+    },
+    {
+      "sha256": "4866f38b8560d410f21e3226413e0b77997b6dfbb6931fadfe0a0d5aef9ffeb4",
+      "name": "triangle-alert"
+    },
+    {
+      "sha256": "ce3e98b7a03b78c0071131df42466e4e1ff5187fccad30e739ec9ce951cf685a",
+      "name": "circle-alert"
+    },
+    {
+      "sha256": "9711e045a5999f8a3b0782eb88e09b04e0559bc7b379dcc0a4ae645223e10345",
+      "name": "circle-check"
+    },
+    {
+      "sha256": "9b964be491a821be8ffd714baf3b94ca2d70af789bddcfc1bda6bde250d89187",
+      "name": "circle-dashed"
+    },
+    {
+      "sha256": "3891241b8c3bfc3a8a930078f26ffc5a7e9763da6d0162ace2050b28d4c1d1fe",
+      "name": "external-link"
+    },
+    {
+      "sha256": "fc0b8b7590d1d9e9bb0112c5c2e15a78ade0bfeca6d6f8c79fbbe149236d74be",
+      "name": "lock-keyhole"
+    },
+    {
+      "sha256": "6771297be65225d462c930865b6f9ee1617aa453885be4c8116a7512a77ac2b6",
+      "name": "timer"
+    },
+    {
+      "sha256": "499039795d7412d67664ff79d2eb6b7412e746b24c18c8fd8aba383c24ddada0",
+      "name": "file"
+    },
+    {
+      "sha256": "8ac619671f53653a483c2d5e2e6afe6d009c3198918cf76632e2cb4abf0d6721",
+      "name": "file-code"
+    },
+    {
+      "sha256": "52ca55846c202335fb870c8aa23e9345630ec10489303756d62e750f7109605c",
+      "name": "file-text"
+    },
+    {
+      "sha256": "203682f219d2f51c1a9e43c9b74c045ceae1b4f72c016a11e3670edee6725999",
+      "name": "file-archive"
+    },
+    {
+      "sha256": "619c9db58c879dce6250376ba67d9c9102ca6dbb3b1efb9294c9f180e22273a5",
+      "name": "image"
+    },
+    {
+      "sha256": "5157f3fe5460485200dc3ee2e07dd43486c940bd03c5e244a6e96b8a5cb71652",
+      "name": "file-key"
+    },
+    {
+      "sha256": "f5213e08b45b4cb44cd9424001289c292509c53dd3cbee698ad5a25e4dc5a9c5",
+      "name": "file-cog"
+    },
+    {
+      "sha256": "3a991bd47beaf9874fba6fdf87bbba442970a89b5e6aa391558bc8b0a00a0513",
+      "name": "circle"
+    },
+    {
+      "sha256": "c263f6a08a089c06ad40f408ad5da9100359ab52d379e6c571cd7c5bd74eaa87",
+      "name": "circle-dot"
+    },
+    {
+      "sha256": "bcd8788901e6f29e1b231a81ba5e707d083d06cb4848a28f29407fab4f8e0b64",
+      "name": "circle-x"
+    },
+    {
+      "sha256": "288397fdb73bb4f783cf9eabb726ff47357df1d4e3f1201dd748090579f108b9",
+      "name": "arrow-right"
+    },
+    {
+      "sha256": "422afd22efd4b7474ee50fcdc42c37cdee1c170a81a2eb339df7ecd0d0dc3578",
+      "name": "folder-input"
+    },
+    {
+      "sha256": "78c732e34e232db63af06a2330b4448045cfdf49b48b59f2d31922df54c7bb17",
+      "name": "archive"
+    }
+  ],
+  "version": "1.55.0",
+  "source": "https://github.com/lucide-icons/lucide",
+  "commit": "70562c1ee1c4fdcf736fe97bc893fb8511927934",
+  "project": "Lucide"
+}

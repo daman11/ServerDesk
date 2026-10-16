@@ -1,0 +1,26 @@
+# ServerDesk 0.31.1 Public Beta — known issues
+
+This is a public beta. Keep a backup before upgrading and validate the workflows you need in a test environment.
+
+| Platform | Distribution | Verification |
+|---|---|---|
+| Windows 11 x64 | Setup EXE / portable ZIP, self-contained | Local native startup and embedded RDP host; automated UI and protocol fixtures |
+| Windows 10 x64 (22H2) | Same package | Compatibility target; no separate physical Windows 10 acceptance run |
+| Ubuntu x64 | DEB / TAR.GZ, self-contained | Linux processes, native window and protocol fixtures under WSLg; no full physical desktop acceptance run |
+| Other Linux desktops/distributions | TAR.GZ may work with the required native libraries | Experimental; Kubuntu/KWallet, Fedora, Wayland and mixed-monitor behavior need wider testing |
+| ARM / macOS / 32-bit | No release package | Unsupported by this release |
+
+- **VNC:** classic password/no-authentication RFB only. No TLS/VeNCrypt or server identity verification; protect the connection with a VPN or an existing tunnel. No VNC clipboard or file transfer. Tight and ZRLE are disabled; Raw/CopyRect/ZLib are used.
+- **RDP:** embedded on Windows. Linux launches an installed FreeRDP client. AD/Microsoft accounts, all remote clipboard formats, physical drag and drop and mixed-DPI monitors are not fully covered by the acceptance matrix. There is no bundled FreeRDP binary.
+- **Serial:** software and pseudo-terminal tests; broad physical adapter/hardware testing remains outstanding. Linux users need permissions for their device (often the `dialout` group).
+- **SSH input:** real password/key OpenSSH, vim/nano/top/htop/MC/bash/zsh/fish and synthetic keyboard/clipboard events were tested on Windows and Ubuntu/WSL. Physical AltGr/IME/layout combinations, terminal mouse gestures and all extended keyboard-protocol options need further acceptance. A committed UTF-8 text test does not validate a physical input method.
+- **Monitoring:** Linux /proc and standard command formats are assumed. Missing CPU/RAM/df/ip/lscpu sections are marked individually; MemFree is an explicitly labelled estimate. A lost established monitoring connection retries after a 30-second backoff plus the configured sample interval. An initial monitoring connection error can be retried by opening Monitoring. Passphrase preparation runs off the UI, but an already-started third-party key read/derivation must finish before cancellation can release its resources. Restricted-PATH fixtures do not replace acceptance on every distribution.
+- **SFTP:** symbolic-link details/navigation, remote creation and explicit copying of a selected resolved target's contents are supported. Recreating link objects across platforms is unsupported; nested links remain skipped. Transfers have a 20,000-entry/64-level limit per job; partial completed work is preserved after a failure. Deletion/rename preserve links themselves; checks do not protect against every concurrent filesystem race. A lost connection can leave a remote temporary `.part` file. A server without safe atomic rename may refuse an overwrite and preserve the original file.
+- **Credentials:** Windows DPAPI is tied to the Windows user/machine. Linux persistence needs `secret-tool` and an unlocked Secret Service. KWallet compatibility depends on its Secret Service interface. A JSON profile export does not include passwords or private keys.
+- **Workspace:** tabs are restored without automatically connecting. Long sessions, large server trees, accessibility and every physical keyboard/display combination need wider user feedback.
+- **Language restart:** active tabs require confirmation before sessions/transfers disconnect. The replacement waits up to two minutes for the old process to exit. If shutdown hangs beyond that limit, close the old instance and start the app manually; the selected language is already saved.
+- **Transfer limits:** the upload acknowledgement window is 256 KiB; high-latency throughput may be lower than an unconstrained pipeline. Cancellation/loss tests use a controlled loopback relay and OpenSSH on Windows/Ubuntu WSL, rather than every physical WAN failure. A stuck transfer's dedicated connection is closed; retry starts from zero. Remote temporary files can remain if cleanup cannot reach the server.
+- **Updates:** manual installation. There is no automatic updater or telemetry. The beta is not signed with a trusted publisher certificate; Windows may display an unknown-publisher/SmartScreen prompt. Obtain it from a trusted release source. Do not disable operating-system protection.
+- **Network Tools:** Linux ICMP without raw-socket permissions requires system iputils-ping. Traceroute/MTR uses ICMP TTL, with rate-limit/filtering caveats. TLS inspection does not check revocation or audit all protocols. HTTP responses are bounded to 2 MiB; SNMP WALK to 2000 OIDs. Secure collections require an unlocked OS credential store. Network Tools and Net-SNMP v3 were tested on Windows and Ubuntu/WSL; physical WAN routes and hardware WoL were not comprehensively tested. See [all limits](network-tools.md).
+
+Please include version, OS, language and a minimal reproduction when reporting a problem. Do not include secrets or unredacted connection data.

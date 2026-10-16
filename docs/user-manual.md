@@ -1,0 +1,71 @@
+# ServerDesk
+
+Natywny klient administracyjny C# / .NET 10 / Avalonia 12 dla Windows i Linux. Wersja 0.31.1 Public Beta; [status MVP](mvp-status.md), [ograniczenia](known-issues.md) i [zmiany tego wydania](release-0.31.1.md).
+
+## Uruchomienie
+
+Windows: rozpakuj całe archiwum wydania Windows i uruchom `ServerDesk.App.exe`. Nie przenoś samego EXE — wydanie zawiera biblioteki natywne. Nie wymaga instalacji .NET. Wersja przenośna domyślnie zapisuje konfigurację w `%APPDATA%\ServerDesk`.
+
+Linux: rozpakuj archiwum, wykonaj `chmod +x ServerDesk.App` i `./ServerDesk.App`. Alternatywnie zainstaluj DEB: `sudo apt install ./serverdesk_0.31.1_amd64.deb`. Na Fedora użyj archiwum. Wymagane są biblioteki X11/fontconfig (szczegóły w dokumentacji). WSLg służył do części testów; nie zastępuje testów na fizycznym Kubuntu/Fedora.
+
+Okno zapamiętuje normalny rozmiar i maksymalizację, a przy starcie mieści się w obszarze roboczym monitora. Po odłączeniu monitora wraca na ekran główny. Nie trzeba usuwać zapisanej konfiguracji.
+
+Język / Language: **Ustawienia → Wygląd → Język aplikacji / Language**. Przypomnienie pojawia się w wybranym języku. Użyj „Zapisz i uruchom ponownie” lub zapisz i później kliknij „Uruchom ponownie” w głównym oknie. Przy otwartych kartach potwierdź rozłączenie sesji i transferów. Anulowanie restartu lub ukrycie komunikatu pozostawia sesje aktywne. Po angielsku: **Settings → Appearance → Application language / Język**, **Save and restart**, **Restart now**. Nazwy serwerów, pliki i treść terminala pozostają bez zmian.
+
+## Podstawowa obsługa
+
+- Edytor serwera dzieli ustawienia na **Połączenie**, **Wygląd**, **Organizacja** i **Pulpit RDP** (dla RDP). Nagłówek pokazuje bieżący podgląd, przyciski zapisu pozostają widoczne podczas przewijania, a błędy pojawiają się przy polach. Klucz SSH i istniejący folder można wybrać przyciskiem przy polu.
+- W panelu połączeń wybierz Wszystkie / SSH / RDP / VNC / Serial. Kilka słów wyszukuje jednocześnie w nazwie, adresie, loginie, domenie, tagach, opisie, folderze, protokole i porcie. Licznik pokazuje liczbę pasujących serwerów; foldery mają własne liczniki. Escape usuwa tekst zapytania, a „Wyczyść filtry” przywraca wszystkie protokoły.
+- Dodaj serwer, login, protokół, port i folder, np. `Produkcja/Linux`. Pole „Ikona serwera” zawiera automatyczną ikonę SSH/RDP oraz 14 ikon ról serwera. Edycja zmienia ikonę także w otwartej zakładce; oznaczenie protokołu pozostaje widoczne w drzewie. Hasło lub passphrase podaje się podczas połączenia. Prywatny klucz pozostaje na dysku użytkownika.
+- W edytorze wybierz kolor z palety lub wpisz `#RRGGBB`; pusty kolor usuwa znacznik. „Importuj grafikę” przyjmuje PNG/JPEG/WebP do 4 MiB i tworzy ikonę 128×128 z zachowaniem proporcji oraz przezroczystości. Własna grafika zastępuje ikonę z listy. „Usuń grafikę” przywraca wybraną ikonę wektorową. Kolor i grafika są zapisane w profilu oraz eksporcie JSON, także dla duplikatów.
+- Menu **Układ** przełącza jeden panel, panele obok siebie albo jeden nad drugim. Przeciągnij zakładkę do drugiego panelu lub skorzystaj z jej menu „Dokuj do panelu 1/2”. Separator reguluje proporcje. „Odłącz do osobnego okna” przenosi tę samą sesję. Zamknięcie tego okna dokuje ją do panelu 1; przycisk zamknięcia sesji rozłącza po potwierdzeniu. „Przywróć wszystkie odpięte sesje” jest w Układ. Ctrl+Tab / Ctrl+Shift+Tab przełącza zakładki w aktywnym panelu. Zapamiętany układ nie uruchamia połączeń przy starcie.
+- Ctrl+Shift+L lub lupa w nagłówku otwiera wyszukiwarkę wszystkich sesji. Szukaj po nazwie, adresie, loginie, panelu albo stanie; Enter aktywuje kartę lub osobne okno.
+- Karty i układ zapisują się automatycznie po 600 ms bez kolejnej zmiany oraz przy zamknięciu. Po restarcie wraca do 128 kart zapisanych profili, z podziałem i osobnymi oknami, także z ostatniego ukończonego zapisu przed awarią procesu. Każda czeka na **Połącz**; połączenia i poświadczenia są uruchamiane dopiero po kliknięciu. Quick Connect bez zapisanego profilu nie jest zapamiętywany. Przywracanie wyłączysz w Ustawieniach. Restart działającej sesji jest w Opcje → Uruchom ponownie sesję i wymaga potwierdzenia.
+- Wygląd: pięć motywów (ServerDesk Dark, Midnight, Graphite, Nord, ServerDesk Light) i Follow System. Ustawienia zawierają osobną paletę terminala. Ctrl+Shift+N tworzy połączenie, Ctrl+Tab przełącza sesję, Ctrl+B ukrywa sidebar, Ctrl+Shift+P otwiera paletę poleceń. Z terminala użyj Ctrl+Shift+B / Ctrl+Shift+W; Ctrl+B / Ctrl+W należą wtedy do zdalnych aplikacji.
+- Podczas łączenia użyj „Anuluj łączenie”, aby przerwać oczekiwanie. Anulowana próba pozostawia kartę gotową do ponowienia i nie trafia do historii. Osadzone logowanie RDP można anulować także po uruchomieniu kontrolki. Otwarcie fizycznego portu Serial zależy od sterownika; jego natywne wywołanie musi zakończyć się przed zwolnieniem zasobów.
+- SSH: porównaj fingerprint przy pierwszym połączeniu; zaakceptowany klucz zostanie zapamiętany. Zmieniony klucz blokuje połączenie. Nie akceptuj go bez niezależnej weryfikacji administratora.
+- Terminal: emulator xterm, zakładki, kopiowanie/wklejanie i wielkość czcionki. SFTP i Server Info uruchamiają oddzielne połączenia z tymi samymi danymi logowania. Po utracie połączenia użyj „Połącz ponownie” w tej samej zakładce. „Opcje → Poświadczenia” pozwala skorygować poświadczenie na czas tej sesji. Stan połączenia pokazuje ikona zakładki, a panel czas trwania.
+- Połączenia: wybierz sortowanie po nazwie, adresie, protokole lub ostatnim połączeniu. Historia potwierdzonych połączeń SSH, osadzonego RDP, VNC i Serial jest dostępna w Menu i menu kontekstowym serwera; ma wyszukiwanie, filtr protokołu i stronicowanie. Nowe wpisy zachowują nazwę, adres i protokół z chwili połączenia. Przycisk Połącz jest zablokowany po zmianie celu lub usunięciu profilu. Stare wpisy korzystają z obecnych danych profilu. Zewnętrzny klient RDP nie potwierdza logowania i nie trafia do historii.
+- SFTP: Ctrl/Shift+klik zaznacza grupę plików lub katalogów, Ctrl+A wybiera widoczne, Escape czyści. Wyślij/Pobierz i przeciąganie obejmują całe zaznaczenie; liczniki są pod panelami. Odświeżanie i sortowanie zachowują wybór. Każdy panel ma filtr nazw i sortowanie. Dwuklik lub Enter otwiera katalog; Alt+↑ przechodzi wyżej, Ctrl+L wybiera ścieżkę aktywnego panelu, F5 odświeża. Fokus/kliknięcie panelu ustawia cel Lokalny/Zdalny; operacje są też w menu kontekstowym listy. Wyślij/Pobierz i przeciąganie tworzą transfery z limitem 2. Kolejkę można zwinąć, anulować zadanie, ponowić błąd/anulowanie lub wyczyścić zakończone wpisy (historia do 50). Ponowienie zachowuje pierwotne ścieżki. Pasek postępu dotyczy bieżącego pliku. Odmowa nadpisania daje status pominięcia. Usuń zaznaczone… / Delete otwiera podgląd trwałego usunięcia całego zaznaczenia, także niepustych katalogów. Potwierdzenie, postęp/przerwanie i raport częściowy są w osobnym dialogu; cel dowiązania nie jest usuwany. Nadpisywanie wymaga potwierdzenia. Zwykły transfer pomija dowiązania w katalogach i podaje ich liczbę. Dla jednego linku użyj Kopiuj zawartość dowiązania…: potwierdzenie pokazuje rozwiązane źródło i miejsce zapisu, a wynik jest zwykłym plikiem/katalogiem. Szczegóły pokazują rzeczywisty cel; Enter/dwuklik otwiera dowiązany katalog. Utwórz zdalne dowiązanie… dodaje link do istniejącego celu. Rekurencja ma limit 20 000 wpisów/64 poziomów na zadanie; obiekty dowiązań nie są przenoszone między systemami.
+- Transfery: panel na pasku bocznym pokazuje zadania SFTP z otwartych kart SSH. Ma własne wyszukiwanie pliku/serwera/ścieżek, filtr statusu, postęp, anulowanie i ponawianie oraz przejście do źródłowej kolejki. Wyczyść zakończone usuwa historię w obu miejscach. Historia znika po zamknięciu karty. Schowek/przekierowania RDP nie są zadaniami SFTP. Filtry połączeń pozostają zachowane oddzielnie.
+- Server Info: dane rzeczywiste z SSH, bez agenta i bez sudo. CPU pojawia się po drugiej próbce; odświeżanie wstrzymuje się dla nieaktywnego panelu. Dyski mają indywidualne paski zajętości; sieć prezentuje IPv4/IPv6/MAC/stan, bramę i DNS. Topologia CPU jest odczytywana przez lscpu, o ile polecenie jest dostępne.
+- RDP: w edycji profilu wybierz **osobne okno** albo **W zakładce ServerDesk (Windows)**. Osadzony pulpit obsługuje split view, dokowanie i zmianę rozmiaru; zielony stan oznacza potwierdzone logowanie, a pasek pokazuje czas sesji. Hasło podaje się w ServerDesk, z opcjonalnym zapisem w DPAPI. Windows nadal obsługuje potwierdzenie niezaufanego certyfikatu. Stare profile domyślnie otwierają mstsc; Linux używa osobnego okna FreeRDP także dla profili zapisanych w trybie zakładki. Przed startem aplikacja sprawdza serwer i NLA. „Sprawdź serwer” odczytuje TLS/SHA-256 bez poświadczeń. „Pulpit”/„Pokaż okno”, „Rozłącz RDP” i Opcje sterują sesją. Rozdzielczość, skalowanie, schowek i tryb zapisują się w profilu. Pełny ekran jest opcją klienta zewnętrznego, przekazanie folderu — FreeRDP/Linux. NLA i weryfikacja certyfikatu pozostają włączone. Stan zewnętrznego klienta nie potwierdza logowania. Lokalne konto i rzeczywisty obraz osadzonego RDP zweryfikowano na Windows 11; szczegóły w `docs/release-0.16.0.md`.
+- Pliki do osadzonego RDP Windows: upuść je na strefę „Pliki → schowek RDP” nad pulpitem lub wybierz przyciskiem. Następnie wybierz folder w zdalnym Eksploratorze i wklej Ctrl+V. Schowek musi być włączony; limit zestawu to poniżej 2 GiB. W profilu ustawisz miejsce obsługi skrótów Windows i opcjonalne ponawianie po utracie sieci (do 5 prób). Szczegółowa macierz wykonanych i pozostałych testów: `docs/rdp-test-matrix.md`.
+- Import/Eksport: JSON zawiera profile, foldery, ustawienia połączeń i własne ikony bez sekretów, do 32 MiB. Import tworzy nowe identyfikatory, więc nie podłącza istniejących lokalnych haseł.
+
+- VNC: wybierz protokół VNC i adres/port (domyślnie 5900). Pulpit działa w zakładce, obsługuje mysz/klawiaturę, dopasowanie, rozmiar rzeczywisty, podgląd, Ctrl+Alt+Del i dokowanie. Ctrl+Alt+← / → oddaje fokus do aplikacji. Profil jawnie wybiera hasło VNC lub brak uwierzytelniania. Standardowy VNC nie szyfruje transmisji; TLS/VeNCrypt, konta systemowe, schowek i transfery VNC nie są obsługiwane. Użyj zaufanej sieci/VPN/istniejącego tunelu. Szybkie połączenie: `vnc://host:5900`. Szczegóły i ograniczenia biblioteki alpha: `docs/release-0.18.0.md`.
+- Serial: wybierz port COM lub urządzenie Linux, prędkość, bity danych/stopu, parzystość i sterowanie przepływem. Port można wykryć przyciskiem lub wpisać ręcznie. DTR i RTS są domyślnie wyłączone. Połącz otwiera urządzenie w terminalu; Rozłącz zwalnia port. Na Linux wymagane są uprawnienia do danego urządzenia. Szybkie połączenie: `serial://COM3?baud=9600` albo `serial:///dev/ttyUSB0?baud=115200`.
+
+## Network Tools
+
+**Network Tools**: dziewięć narzędzi na lewym pasku i w menu kontekstowym serwera. Działają na ręcznie podanym celu bez zapisanych połączeń; karty obsługują split/dokowanie, Start/Stop/Restart, historię i eksport. [Pełna instrukcja Network Tools](network-tools.md).
+
+## Magazyn danych
+
+Windows: SQLite i szyfrowane DPAPI poświadczenia w `%APPDATA%\ServerDesk`. Linux: `$XDG_DATA_HOME/serverdesk` (domyślnie `~/.local/share/serverdesk`); konfiguracja w `$XDG_CONFIG_HOME/serverdesk` (domyślnie `~/.config/serverdesk`). Linux używa `secret-tool` / Secret Service. GNOME Keyring sprawdzono w izolowanym teście rzeczywistym. Gdy brak odblokowanego magazynu, podaj hasło przy połączeniu bez zapisywania. KWallet wymaga działającego interfejsu Secret Service — kompatybilność konkretnej instalacji KDE nie została zweryfikowana. Brak własnego sejfu z kluczem zaszytym w kodzie.
+
+Zmiennej `SERVERDESK_DATA_HOME` można użyć do izolacji danych testowych lub trybu portable. Nie wskazuj współdzielonego, niezaufanego katalogu. Logi rotują codziennie, zachowują 7 plików i nie zapisują treści terminala ani sekretów.
+
+## Budowanie
+
+Wymagane .NET SDK 10. `global.json` dopuszcza nowsze feature bands .NET 10.
+
+```powershell
+./scripts/build.ps1 -Test
+./scripts/publish.ps1 -Runtime win-x64
+./scripts/publish.ps1 -Runtime linux-x64
+```
+
+```bash
+bash scripts/build.sh
+bash scripts/publish.sh linux-x64
+bash scripts/package-deb.sh
+```
+
+SDK pobrane na potrzeby tej pracy znajduje się w `.tools/dotnet`, poza plikami dystrybucji. Skrypty PowerShell używają go, jeśli jest dostępne. Dane i testowe klucze `.tools` nie wchodzą do paczek.
+
+Dokumentacja: `docs/architecture.md`, `docs/development.md`, `docs/test-report.md`, `docs/roadmap.md`, `docs/dependencies.md`.
+
+
+
+

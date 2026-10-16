@@ -1,0 +1,143 @@
+[
+  {
+    "file": "avalonia-LICENSE.txt",
+    "packages": [
+      "Avalonia",
+      "Avalonia.*"
+    ],
+    "source": "https://github.com/AvaloniaUI/Avalonia/blob/a8dd6417fd8918570edefdbecd92d16ac7620069/licence.md",
+    "sha256": "213814d306090074d234d760239ff0f67eb9b8d20eefb4d5631bb39dbe0b769b",
+    "description": null
+  },
+  {
+    "file": "terminal-LICENSE.txt",
+    "packages": [
+      "Iciclecreek.Avalonia.Terminal"
+    ],
+    "source": "https://github.com/tomlm/Iciclecreek.Avalonia.Terminal/blob/c030c1f4953a335db4ab5b04e0a3e9d1c0b7a3df/LICENSE",
+    "sha256": "60957c2a4732512d8f4f86a8511181d435605a4872a1d4ec0456f6fe302d3ed5",
+    "description": null
+  },
+  {
+    "file": "pty-LICENSE.txt",
+    "packages": [
+      "Porta.Pty"
+    ],
+    "source": "https://github.com/tomlm/Porta.Pty/blob/0186b604bf40161f199823fe5cdb2dfa02c37bea/LICENSE",
+    "sha256": "60957c2a4732512d8f4f86a8511181d435605a4872a1d4ec0456f6fe302d3ed5",
+    "description": null
+  },
+  {
+    "file": "xterm-LICENSE.txt",
+    "packages": [
+      "XTerm.NET"
+    ],
+    "source": "https://github.com/tomlm/XTerm.NET/blob/64a882782667340f353c115be3e7891456efc13c/LICENSE",
+    "sha256": "60957c2a4732512d8f4f86a8511181d435605a4872a1d4ec0456f6fe302d3ed5",
+    "description": null
+  },
+  {
+    "file": "wcwidth-LICENSE.txt",
+    "packages": [
+      "Wcwidth"
+    ],
+    "source": "https://github.com/spectreconsole/wcwidth/blob/64a3f523d5dc27124e04ff9079137ac2c5c72143/LICENSE.md",
+    "sha256": "29f03aba55e0761c5cb75a266839cd5cd25f013514fbe034bfb5a9b7529e8cce",
+    "description": null
+  },
+  {
+    "file": "microcom-LICENSE.txt",
+    "packages": [
+      "MicroCom.Runtime"
+    ],
+    "source": "https://github.com/kekekeks/MicroCom/blob/28850f85fb586488828ab7267ed4a87e8c970b51/LICENSE",
+    "sha256": "6ee769c9ac4dac9abb16b98b1341e9528ff9f4ab685481410d3376d14148f3a9",
+    "description": null
+  },
+  {
+    "file": "sshnet-LICENSE.txt",
+    "packages": [
+      "SSH.NET"
+    ],
+    "source": "https://github.com/sshnet/SSH.NET/blob/7b2fd3dbf2c86a80a7b06cea020aa5f821c9902e/LICENSE",
+    "sha256": "84c79a38515de2833a7c353395e04056c0cbd77545d450fe216d569e1570b78e",
+    "description": null
+  },
+  {
+    "file": "dbus-LICENSE.txt",
+    "packages": [
+      "Tmds.DBus.Protocol"
+    ],
+    "source": "https://github.com/tmds/Tmds.DBus/blob/282acebca8d4e4e3ba211646ac650911ee94edfd/COPYING",
+    "sha256": "aca3b49277abcc7886ccb2f115603a9f5b15fc3f96019a10c00f2974098b210c",
+    "description": null
+  },
+  {
+    "file": "serilog-LICENSE.txt",
+    "packages": [
+      "Serilog"
+    ],
+    "source": "https://github.com/serilog/serilog/blob/v4.2.0/LICENSE",
+    "sha256": "73ba74dfaa520b49a401b5d21459a8523a146f3b7518a833eea5efa85130bf68",
+    "description": null
+  },
+  {
+    "file": "serilog-file-LICENSE.txt",
+    "packages": [
+      "Serilog.Sinks.File"
+    ],
+    "source": "https://github.com/serilog/serilog-sinks-file/blob/23c732a8658a0df2a5434fe69b0011800b14f0da/LICENSE",
+    "sha256": "b40930bbcf80744c86c46a12bc9da056641d722716c378f5659b9e555ef833e1",
+    "description": null
+  },
+  {
+    "file": "sqlitepcl-LICENSE.txt",
+    "packages": [
+      "SQLitePCLRaw.*"
+    ],
+    "source": "https://github.com/ericsink/SQLitePCL.raw/blob/v2.1.12/LICENSE.TXT",
+    "sha256": "cfc7749b96f63bd31c3c42b5c471bf756814053e847c10f3eb003417bc523d30",
+    "description": null
+  },
+  {
+    "file": "conpty-LICENSE.txt",
+    "packages": [
+      "Microsoft.Windows.Console.ConPTY"
+    ],
+    "source": "https://github.com/microsoft/terminal/blob/main/LICENSE",
+    "sha256": "5d177f23ecfeb0ea8e050b6a5a16355e1ae9a0b286436ca8f83ed08b3795be6b",
+    "description": null
+  },
+  {
+    "file": "inter-LICENSE.txt",
+    "packages": [],
+    "source": "https://github.com/rsms/inter/blob/v3.19/LICENSE.txt",
+    "sha256": "4d7d9c95e7d7f2f0ebf76d5e0b344826b74e903a34028ee18ab54bb639e45906",
+    "description": "Inter font bundled by Avalonia.Fonts.Inter; SIL Open Font License 1.1"
+  },
+  {
+    "file": "nsis-COPYING.txt",
+    "packages": [],
+    "source": "https://nsis.sourceforge.io/Docs/AppendixI.html",
+    "sha256": "388357c1215ff403c5ebde3a5ecd273e68f8b79a579996775245d1ee65442aba",
+    "description": "NSIS 3.13 installer stub, zlib compression; compiler ZIP SHA256 ba63dffc4410ee89193e1cb5a41989991bd77c61068da17e3156d136b7b0b3d8"
+  },
+  {
+    "file": "dnsclient-LICENSE.txt",
+    "packages": [
+      "DnsClient"
+    ],
+    "source": "https://raw.githubusercontent.com/MichaCo/DnsClient.NET/f1e7ca33d713dc3bc70e7b3664aa3a2b6c090d5d/LICENSE",
+    "sha256": "b40930bbcf80744c86c46a12bc9da056641d722716c378f5659b9e555ef833e1",
+    "description": "License from the exact NuGet source commit."
+  },
+  {
+    "file": "sharpsnmp-LICENSE.txt",
+    "packages": [
+      "Lextm.SharpSnmpLib"
+    ],
+    "source": "https://raw.githubusercontent.com/lextudio/sharpsnmplib/6f6937b81e6bb14dae890c8ee7e0642323907d33/LICENSE",
+    "sha256": "0567a02c77d84418ccf8556261836eb7edf8b0ec93146ff08b6d763210b29c9d",
+    "description": "License from the exact NuGet source commit."
+  }
+]

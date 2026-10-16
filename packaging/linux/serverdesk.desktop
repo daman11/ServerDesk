@@ -1,0 +1,10 @@
+[Desktop Entry]
+Type=Application
+Name=ServerDesk
+Comment=SSH, SFTP, RDP, VNC and serial workspace (public beta)
+Comment[pl]=SSH, SFTP, RDP, VNC i porty szeregowe (publiczna beta)
+Exec=/opt/serverdesk/ServerDesk.App
+Icon=serverdesk
+Terminal=false
+Categories=Network;RemoteAccess;
+StartupWMClass=ServerDesk.App

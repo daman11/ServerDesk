@@ -1,0 +1,177 @@
+using Microsoft.Data.Sqlite;
+using ServerDesk.Core;
+using System.Text.Json;
+
+namespace ServerDesk.Infrastructure;
+
+public sealed partial class ProfileRepository
+{
+    private readonly string connectionString;
+    private static readonly JsonSerializerOptions Json = new() { WriteIndented = true };
+    public ProfileRepository(AppPaths paths) => connectionString = new SqliteConnectionStringBuilder { DataSource = Path.Combine(paths.Data, "serverdesk.db") }.ToString();
+    private async Task<SqliteConnection> Open(CancellationToken ct)
+    {
+        var db = new SqliteConnection(connectionString); await db.OpenAsync(ct);
+        return db;
+    }
+    public async Task InitializeAsync(CancellationToken ct = default)
+    {
+        await using var db = await Open(ct);
+        using var transaction=db.BeginTransaction();
+        using var cmd = db.CreateCommand();
+        cmd.Transaction=transaction;
+        cmd.CommandText="PRAGMA user_version";
+        var version=Convert.ToInt32(await cmd.ExecuteScalarAsync(ct));
+        if(version>3) throw new InvalidDataException(L.T("Baza pochodzi z nowszej wersji ServerDesk."));
+        cmd.CommandText = "CREATE TABLE IF NOT EXISTS profiles(id TEXT PRIMARY KEY, json TEXT NOT NULL); CREATE TABLE IF NOT EXISTS folders(path TEXT PRIMARY KEY); CREATE TABLE IF NOT EXISTS folder_icons(path TEXT PRIMARY KEY,icon TEXT NOT NULL); CREATE TABLE IF NOT EXISTS hostkeys(host TEXT NOT NULL,port INTEGER NOT NULL,fingerprint TEXT NOT NULL,PRIMARY KEY(host,port)); CREATE TABLE IF NOT EXISTS settings(key TEXT PRIMARY KEY,value TEXT NOT NULL); CREATE TABLE IF NOT EXISTS history(id INTEGER PRIMARY KEY,profile TEXT NOT NULL,time TEXT NOT NULL);";
+        await cmd.ExecuteNonQueryAsync(ct);
+        cmd.CommandText="PRAGMA table_info(history)";
+        var hasSnapshot=false;
+        await using(var columns=await cmd.ExecuteReaderAsync(ct))while(await columns.ReadAsync(ct))if(columns.GetString(1)=="snapshot")hasSnapshot=true;
+        if(!hasSnapshot) { cmd.CommandText="ALTER TABLE history ADD COLUMN snapshot TEXT"; await cmd.ExecuteNonQueryAsync(ct); }
+        cmd.CommandText="PRAGMA user_version=3"; await cmd.ExecuteNonQueryAsync(ct); await transaction.CommitAsync(ct);
+    }
+    public async Task<List<ServerProfile>> ListAsync(CancellationToken ct = default)
+    {
+        await using var db = await Open(ct); using var cmd = db.CreateCommand(); cmd.CommandText = "SELECT json FROM profiles";
+        await using var reader = await cmd.ExecuteReaderAsync(ct); var list = new List<ServerProfile>();
+        while (await reader.ReadAsync(ct)) list.Add(JsonSerializer.Deserialize<ServerProfile>(reader.GetString(0))!);
+        return list.OrderByDescending(x => x.Favorite).ThenBy(x => x.Folder).ThenBy(x => x.Name).ToList();
+    }
+    public async Task SaveAsync(ServerProfile profile, CancellationToken ct = default)
+    {
+        profile.Validate(); await Execute("INSERT INTO profiles VALUES($id,$json) ON CONFLICT(id) DO UPDATE SET json=excluded.json", ct, ("$id", profile.Id.ToString()), ("$json", JsonSerializer.Serialize(profile)));
+        if (profile.Folder.Length > 0) await AddFolderAsync(profile.Folder, ct);
+    }
+    public Task DeleteAsync(Guid id, CancellationToken ct = default) => Execute("DELETE FROM profiles WHERE id=$id", ct, ("$id", id.ToString()));
+    public async Task MoveToFolderAsync(Guid id,string path,CancellationToken ct=default)
+    {
+        if(path.Length>0)await AddFolderAsync(path,ct);
+        await Execute("UPDATE profiles SET json=json_set(json,'$.Folder',$folder) WHERE id=$id",ct,("$folder",path),("$id",id.ToString()));
+    }
+    public Task AddFolderAsync(string path, CancellationToken ct = default)
+    {
+        ProfileFolder.Validate(path);
+        return AddAncestors(path,ct);
+    }
+    private async Task AddAncestors(string path,CancellationToken ct)
+    { foreach(var ancestor in ProfileFolder.Ancestors(path))await Execute("INSERT OR IGNORE INTO folders VALUES($path)",ct,("$path",ancestor)); }
+    public async Task DeleteFolderAsync(string path,CancellationToken ct=default)
+    {
+        var profiles=await ListAsync(ct); if(profiles.Any(x=>x.Folder==path || x.Folder.StartsWith(path+"/",StringComparison.Ordinal))) throw new InvalidOperationException(L.T("Folder zawiera serwery. Przenieś je przed usunięciem."));
+        var folders=(await FoldersAsync(ct)).Where(x=>x==path || x.StartsWith(path+"/",StringComparison.Ordinal)).ToArray();
+        await using var db=await Open(ct); await using var transaction=await db.BeginTransactionAsync(ct);
+        foreach(var folder in folders) { using var cmd=db.CreateCommand(); cmd.Transaction=(SqliteTransaction)transaction; cmd.CommandText="DELETE FROM folder_icons WHERE path=$path; DELETE FROM folders WHERE path=$path"; cmd.Parameters.AddWithValue("$path",folder); await cmd.ExecuteNonQueryAsync(ct); } await transaction.CommitAsync(ct);
+    }
+    public async Task RenameFolderAsync(string path,string target,CancellationToken ct=default)
+    {
+        ProfileFolder.Validate(path); ProfileFolder.Validate(target);
+        if(string.IsNullOrWhiteSpace(path) || string.IsNullOrWhiteSpace(target) || target.Split('/').Any(x=>string.IsNullOrWhiteSpace(x)||x is "." or "..") || target.StartsWith(path+"/",StringComparison.Ordinal)) throw new ArgumentException(L.T("Niepoprawny folder docelowy."));
+        var folders=await FoldersAsync(ct); if(!folders.Contains(path))throw new InvalidOperationException(L.T("Folder nie istnieje.")); if(folders.Contains(target))throw new InvalidOperationException(L.T("Folder docelowy już istnieje."));
+        var profiles=(await ListAsync(ct)).Where(x=>x.Folder==path || x.Folder.StartsWith(path+"/",StringComparison.Ordinal)).ToArray();
+        foreach(var folder in folders.Where(x=>x==path || x.StartsWith(path+"/",StringComparison.Ordinal)))ProfileFolder.Validate(target+folder[path.Length..]);
+        await using var db=await Open(ct); await using var transaction=await db.BeginTransactionAsync(ct);
+        foreach(var folder in folders.Where(x=>x==path || x.StartsWith(path+"/",StringComparison.Ordinal)))
+        { using var cmd=db.CreateCommand(); cmd.Transaction=(SqliteTransaction)transaction; cmd.CommandText="UPDATE folder_icons SET path=$target WHERE path=$old; UPDATE folders SET path=$target WHERE path=$old"; cmd.Parameters.AddWithValue("$target",target+folder[path.Length..]); cmd.Parameters.AddWithValue("$old",folder); await cmd.ExecuteNonQueryAsync(ct); }
+        foreach(var profile in profiles) { using var cmd=db.CreateCommand(); cmd.Transaction=(SqliteTransaction)transaction; cmd.CommandText="UPDATE profiles SET json=$json WHERE id=$id"; cmd.Parameters.AddWithValue("$id",profile.Id.ToString()); cmd.Parameters.AddWithValue("$json",JsonSerializer.Serialize(profile with { Folder=target+profile.Folder[path.Length..] })); await cmd.ExecuteNonQueryAsync(ct); }
+        await transaction.CommitAsync(ct); await AddAncestors(target,ct);
+    }
+    public async Task<List<string>> FoldersAsync(CancellationToken ct = default)
+    {
+        await using var db = await Open(ct); using var cmd = db.CreateCommand(); cmd.CommandText = "SELECT path FROM folders ORDER BY path";
+        await using var r = await cmd.ExecuteReaderAsync(ct); var result = new List<string>(); while (await r.ReadAsync(ct)) result.Add(r.GetString(0)); return result;
+    }
+    public async Task ConnectedAsync(ServerProfile profile, CancellationToken ct = default)
+    {
+        var snapshot=ConnectionHistorySnapshot.Capture(profile); var time=DateTimeOffset.UtcNow.ToString("O");
+        await using var db=await Open(ct); using var transaction=db.BeginTransaction(); using var cmd=db.CreateCommand(); cmd.Transaction=transaction;
+        cmd.CommandText="INSERT INTO history(profile,time,snapshot) VALUES($id,$time,$snapshot)"; cmd.Parameters.AddWithValue("$id",profile.Id.ToString()); cmd.Parameters.AddWithValue("$time",time); cmd.Parameters.AddWithValue("$snapshot",JsonSerializer.Serialize(snapshot)); await cmd.ExecuteNonQueryAsync(ct);
+        cmd.CommandText="SELECT json FROM profiles WHERE id=$id"; var stored=await cmd.ExecuteScalarAsync(ct) as string;
+        // A live session can retain an old destination after the profile is edited.
+        // Preserve that history without marking a different destination as connected.
+        if(stored!=null && snapshot.Matches(JsonSerializer.Deserialize<ServerProfile>(stored)!))
+        { cmd.CommandText="UPDATE profiles SET json=json_set(json,'$.LastConnected',$time) WHERE id=$id"; await cmd.ExecuteNonQueryAsync(ct); }
+        await transaction.CommitAsync(ct);
+    }
+    public async Task<List<ConnectionHistoryEntry>> HistoryAsync(int limit=100,long? beforeId=null,Guid? profileId=null,CancellationToken ct=default,Protocol? protocol=null,string? search=null)
+    {
+        if(limit is <1 or >1000)throw new ArgumentOutOfRangeException(nameof(limit));
+        if(protocol!=null && !Enum.IsDefined(protocol.Value))throw new ArgumentOutOfRangeException(nameof(protocol));
+        var terms=(search??"").Split((char[]?)null,StringSplitOptions.RemoveEmptyEntries);
+        await using var db=await Open(ct); using var cmd=db.CreateCommand();
+        db.CreateFunction<string?,bool>("sd_history_matches",text=>terms.All(t=>(text??"").Contains(t,StringComparison.OrdinalIgnoreCase)),isDeterministic:true);
+        cmd.CommandText="""
+            SELECT h.id,h.profile,h.time,p.json,h.snapshot FROM history h LEFT JOIN profiles p ON p.id=h.profile
+            WHERE ($before IS NULL OR h.id<$before) AND ($profile IS NULL OR h.profile=$profile)
+              AND ($protocol IS NULL OR COALESCE(json_extract(h.snapshot,'$.Protocol'),json_extract(p.json,'$.Protocol'))=$protocol)
+              AND ($unfiltered OR sd_history_matches(
+                COALESCE(json_extract(h.snapshot,'$.Name'),json_extract(p.json,'$.Name'),'')||' '||
+                COALESCE(json_extract(h.snapshot,'$.Endpoint'),json_extract(p.json,'$.Host'),'')||' '||
+                COALESCE(json_extract(h.snapshot,'$.User'),json_extract(p.json,'$.Username'),'')||' '||
+                CASE COALESCE(json_extract(h.snapshot,'$.Protocol'),json_extract(p.json,'$.Protocol')) WHEN 0 THEN 'SSH' WHEN 1 THEN 'RDP' WHEN 2 THEN 'VNC' WHEN 3 THEN 'Serial' ELSE '' END))
+            ORDER BY h.id DESC LIMIT $limit
+            """;
+        cmd.Parameters.AddWithValue("$before",(object?)beforeId??DBNull.Value); cmd.Parameters.AddWithValue("$profile",(object?)profileId?.ToString()??DBNull.Value); cmd.Parameters.AddWithValue("$limit",limit);
+        cmd.Parameters.AddWithValue("$protocol",protocol.HasValue?(int)protocol.Value:DBNull.Value); cmd.Parameters.AddWithValue("$unfiltered",terms.Length==0);
+        await using var reader=await cmd.ExecuteReaderAsync(ct); var result=new List<ConnectionHistoryEntry>();
+        while(await reader.ReadAsync(ct))result.Add(new(reader.GetInt64(0),Guid.Parse(reader.GetString(1)),DateTimeOffset.Parse(reader.GetString(2),System.Globalization.CultureInfo.InvariantCulture),reader.IsDBNull(3)?null:JsonSerializer.Deserialize<ServerProfile>(reader.GetString(3))) { Snapshot=reader.IsDBNull(4)?null:JsonSerializer.Deserialize<ConnectionHistorySnapshot>(reader.GetString(4)) });
+        return result;
+    }
+    public Task<string?> HostKeyAsync(string host, int port, CancellationToken ct = default) => Scalar("SELECT fingerprint FROM hostkeys WHERE host=$host AND port=$port", ct, ("$host", host.ToLowerInvariant()), ("$port", port));
+    public async Task TrustHostAsync(string host, int port, string fingerprint, CancellationToken ct = default)
+    {
+        await Execute("INSERT OR IGNORE INTO hostkeys VALUES($host,$port,$fp)",ct,("$host",host.ToLowerInvariant()),("$port",port),("$fp",fingerprint));
+        if(await HostKeyAsync(host,port,ct)!=fingerprint) throw new InvalidOperationException(L.T("Klucz hosta zmienił się podczas nawiązywania równoległego połączenia."));
+    }
+    public Task<string?> SettingAsync(string key, CancellationToken ct = default) => Scalar("SELECT value FROM settings WHERE key=$key", ct, ("$key", key));
+    public Task SetSettingAsync(string key, string value, CancellationToken ct = default) => Execute("INSERT INTO settings VALUES($key,$value) ON CONFLICT(key) DO UPDATE SET value=excluded.value", ct, ("$key", key), ("$value", value));
+    private async Task Execute(string sql, CancellationToken ct, params (string, object)[] parameters)
+    {
+        await using var db = await Open(ct); using var cmd = db.CreateCommand(); cmd.CommandText = sql;
+        foreach (var (key,value) in parameters) cmd.Parameters.AddWithValue(key,value); await cmd.ExecuteNonQueryAsync(ct);
+    }
+    private async Task<string?> Scalar(string sql, CancellationToken ct, params (string, object)[] parameters)
+    {
+        await using var db = await Open(ct); using var cmd = db.CreateCommand(); cmd.CommandText = sql;
+        foreach (var (key,value) in parameters) cmd.Parameters.AddWithValue(key,value); return await cmd.ExecuteScalarAsync(ct) as string;
+    }
+    public async Task ExportAsync(Stream stream, CancellationToken ct = default)
+    {
+        var bytes=JsonSerializer.SerializeToUtf8Bytes(new ConfigurationExport(2,await ListAsync(ct),await FoldersAsync(ct)) { FolderIcons=await FolderIconsAsync(ct) },Json);
+        if(bytes.Length>StreamLimits.ConfigurationBytes)throw new InvalidDataException(L.T("Eksport przekracza limit 32 MiB. Zmniejsz liczbę własnych grafik."));
+        await stream.WriteAsync(bytes,ct);
+    }
+    public async Task ImportAsync(Stream stream, CancellationToken ct = default)
+    {
+        var bytes=await StreamLimits.ReadAsync(stream,StreamLimits.ConfigurationBytes,ct);
+        var data = JsonSerializer.Deserialize<ConfigurationExport>(bytes, Json) ?? throw new InvalidDataException(L.T("Pusty eksport."));
+        if (data.Version is not (1 or 2) || data.Servers == null || data.Folders == null || data.Servers.Count > 10000 || data.Folders.Count>10000 || data.FolderIcons is { Count:>10000 }) throw new InvalidDataException(L.T("Nieobsługiwany eksport."));
+        foreach (var p in data.Servers) { ct.ThrowIfCancellationRequested(); if(p==null)throw new InvalidDataException(L.T("Niepoprawne dane profilu.")); p.Validate(); }
+        foreach (var folder in data.Folders)
+        { try { ProfileFolder.Validate(folder); } catch(ArgumentException ex) { throw new InvalidDataException(ex.Message,ex); } }
+        var importedFolders=new HashSet<string>(StringComparer.Ordinal);
+        foreach(var folder in data.Folders.Concat(data.Servers.Select(x=>x.Folder)).Where(x=>x.Length>0))
+        {
+            ct.ThrowIfCancellationRequested();
+            foreach(var ancestor in ProfileFolder.Ancestors(folder))
+                if(importedFolders.Add(ancestor) && importedFolders.Count>10000)throw new InvalidDataException(L.T("Import może zawierać do 10 000 folderów, łącznie z folderami nadrzędnymi."));
+        }
+        foreach(var (path,icon) in data.FolderIcons??[]) { if(!importedFolders.Contains(path))throw new InvalidDataException(L.T("Ikona odwołuje się do nieznanego folderu.")); ProfileIcons.Validate(icon); }
+        await using var db = await Open(ct); await using var transaction = await db.BeginTransactionAsync(ct);
+        foreach (var p in data.Servers)
+        {
+            // Imported profiles get new identities; never reuse a local credential reference.
+            var imported = p with { Id = Guid.NewGuid(), LastConnected = null };
+            using var cmd = db.CreateCommand(); cmd.Transaction = (SqliteTransaction)transaction; cmd.CommandText = "INSERT INTO profiles VALUES($id,$json)"; cmd.Parameters.AddWithValue("$id", imported.Id.ToString()); cmd.Parameters.AddWithValue("$json", JsonSerializer.Serialize(imported)); await cmd.ExecuteNonQueryAsync(ct);
+        }
+        foreach (var folder in importedFolders)
+        { using var cmd = db.CreateCommand(); cmd.Transaction = (SqliteTransaction)transaction; cmd.CommandText = "INSERT OR IGNORE INTO folders VALUES($p)"; cmd.Parameters.AddWithValue("$p", folder); await cmd.ExecuteNonQueryAsync(ct); }
+        // A merge into an existing folder keeps its explicitly chosen local icon.
+        foreach(var (path,icon) in data.FolderIcons??[]) { using var cmd=db.CreateCommand(); cmd.Transaction=(SqliteTransaction)transaction; cmd.CommandText="INSERT OR IGNORE INTO folder_icons VALUES($p,$icon)"; cmd.Parameters.AddWithValue("$p",path); cmd.Parameters.AddWithValue("$icon",icon); await cmd.ExecuteNonQueryAsync(ct); }
+        await transaction.CommitAsync(ct);
+    }
+    public sealed record ConfigurationExport(int Version, List<ServerProfile> Servers, List<string> Folders)
+    {
+        public Dictionary<string,string>? FolderIcons { get; init; }
+    }
+}

@@ -97,4 +97,18 @@ public sealed class TransferErrorMessagesTests : IDisposable
         Assert.Equal(target,TransferErrorMessages.Describe(new ArgumentException(target)));
     }
     public void Dispose()=>AppText.SetLanguage("pl");
+
+    [Theory]
+    [InlineData("pl",true)] [InlineData("pl",false)]
+    [InlineData("en",true)] [InlineData("en",false)]
+    public void Cleanup_guidance_preserves_exact_path_and_warns_that_retry_keeps_older_files(string language,bool remote)
+    {
+        AppText.SetLanguage(language);
+        const string path="/owned/żółć {0}/.serverdesk-123.part";
+        var detail=TransferErrorMessages.DescribeCleanup(new(path,remote));
+        Assert.Contains(path,detail);
+        Assert.Contains(language=="en"?"Retrying does not remove":"Ponowienie nie usuwa",detail);
+        Assert.Contains(remote?(language=="en"?"on the server:":"na serwerze:"):(language=="en"?"on this computer:":"na komputerze:"),detail);
+        if(language=="en")Assert.DoesNotContain("Nie potwierdzono",detail);
+    }
 }

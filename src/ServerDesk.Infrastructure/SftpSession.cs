@@ -9,6 +9,8 @@ public sealed partial class SftpSession(SftpClient client) : IDisposable,IAsyncD
     private readonly SemaphoreSlim gate = new(1);
     private readonly ConnectionInfo connectionInfo=client.ConnectionInfo;
     private int disposed;
+    private readonly List<TransferCleanupWarning> cleanupWarnings=[];
+    public IReadOnlyList<TransferCleanupWarning> CleanupWarnings=>cleanupWarnings.ToArray();
     public bool IsConnected
     {
         get { try { return Volatile.Read(ref disposed)==0 && client.IsConnected; } catch(ObjectDisposedException) { return false; } }
@@ -90,13 +92,14 @@ public sealed partial class SftpSession(SftpClient client) : IDisposable,IAsyncD
         using var file = File.OpenRead(local); var clock = Stopwatch.StartNew(); var length=file.Length;
         if(!overwrite && await client.ExistsAsync(remote,ct)) throw new IOException(L.T("Zdalny plik już istnieje — nadpisanie nie zostało potwierdzone."));
         var temporary=RemotePath.Join(RemotePath.Parent(remote),".serverdesk-"+Guid.NewGuid().ToString("N")+".part");
+        var attempted=false; var published=false;
         try
         {
             using var input=new AcknowledgedReadStream(file);
             var report=new ProgressBridge<UploadFileProgressReport>(p=> { input.Acknowledge((long)p.TotalBytesUploaded); if(!ct.IsCancellationRequested)progress.Report(new((long)p.TotalBytesUploaded,length,p.TotalBytesUploaded/Math.Max(.01,clock.Elapsed.TotalSeconds))); });
             EventHandler<Renci.SshNet.Common.ExceptionEventArgs> failure=(_,e)=>input.Fail(e.Exception);
             client.ErrorOccurred+=failure;
-            try { await client.UploadFileAsync(input, temporary, false, report, ct); }
+            try { attempted=true; await client.UploadFileAsync(input, temporary, false, report, ct); }
             finally { client.ErrorOccurred-=failure; }
             ct.ThrowIfCancellationRequested();
             if(file.Position!=length || (await client.GetAttributesAsync(temporary,ct)).Size!=length)
@@ -105,13 +108,32 @@ public sealed partial class SftpSession(SftpClient client) : IDisposable,IAsyncD
             // failure leaves the original file intact rather than deleting it first.
             await ValidateTransferTargetAsync(remote,false,ct);
             client.RenameFile(temporary,remote,overwrite);
+            published=true;
         }
         finally
         {
-            using var cleanup=new CancellationTokenSource(TimeSpan.FromSeconds(2));
-            try { if(client.IsConnected && await client.ExistsAsync(temporary,cleanup.Token))await client.DeleteFileAsync(temporary,cleanup.Token); }
-            catch(Exception ex) when(ex is Renci.SshNet.Common.SshException or IOException or ObjectDisposedException or OperationCanceledException)
-            { Trace.TraceWarning("SFTP temporary upload cleanup failed: {0}",ex.GetType().Name); }
+            if(attempted && !published)
+            {
+                using var cleanup=new CancellationTokenSource(TimeSpan.FromSeconds(2));
+                try
+                {
+                    if(IsConnected)
+                    {
+                        try
+                        {
+                            var partial=await ReadDeletionFileAsync(temporary,cleanup.Token,new Renci.SshNet.Common.SftpPathNotFoundException());
+                            if(partial.IsDirectory)throw InvalidTransferTarget();
+                            // Delete the exact leaf entry, including a replaced
+                            // symlink; SftpClient.DeleteFileAsync resolves its target.
+                            await partial.DeleteAsync(cleanup.Token);
+                        }
+                        catch(Renci.SshNet.Common.SftpPathNotFoundException) { /* Already absent. */ }
+                    }
+                    else cleanupWarnings.Add(new(temporary,true));
+                }
+                catch(Exception ex) when(ex is Renci.SshNet.Common.SshException or IOException or ObjectDisposedException or OperationCanceledException)
+                { cleanupWarnings.Add(new(temporary,true)); Trace.TraceWarning("SFTP temporary upload cleanup failed: {0}",ex.GetType().Name); }
+            }
         }
     },ct);
     public Task DownloadAsync(string remote, string local, bool overwrite, IProgress<TransferProgress> progress, CancellationToken ct) => RunTransferAsync(async () =>
@@ -120,10 +142,12 @@ public sealed partial class SftpSession(SftpClient client) : IDisposable,IAsyncD
         var length=(await client.GetAttributesAsync(remote,ct)).Size; var clock=Stopwatch.StartNew();
         // Download to a sibling file, publish only after a complete successful transfer.
         var temporary = local + ".serverdesk-" + Guid.NewGuid().ToString("N") + ".part";
+        var created=false; var published=false;
         try
         {
             using (var file = new FileStream(temporary, FileMode.CreateNew, FileAccess.Write,FileShare.None,65536,true))
             {
+                created=true;
                 var input=await client.OpenAsync(remote,FileMode.Open,FileAccess.Read,ct);
                 try
                 {
@@ -146,13 +170,16 @@ public sealed partial class SftpSession(SftpClient client) : IDisposable,IAsyncD
                 ct.ThrowIfCancellationRequested();
                 if(file.Length!=length)throw new IOException(L.T("Rozmiar pobranego pliku zmienił się podczas transferu. Plik docelowy pozostał bez zmian."));
             }
-            ct.ThrowIfCancellationRequested(); File.Move(temporary,local,overwrite);
+            ct.ThrowIfCancellationRequested(); File.Move(temporary,local,overwrite); published=true;
         }
         finally
         {
-            try { if(File.Exists(temporary))File.Delete(temporary); }
-            catch(Exception ex) when(ex is IOException or UnauthorizedAccessException)
-            { Trace.TraceWarning("SFTP temporary download cleanup failed: {0}",ex.GetType().Name); }
+            if(created && !published)
+            {
+                try { File.Delete(temporary); }
+                catch(Exception ex) when(ex is IOException or UnauthorizedAccessException)
+                { cleanupWarnings.Add(new(temporary,false)); Trace.TraceWarning("SFTP temporary download cleanup failed: {0}",ex.GetType().Name); }
+            }
         }
     },ct);
     public void Dispose()

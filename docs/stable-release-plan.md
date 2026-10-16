@@ -18,8 +18,11 @@ Małe kroki kończą się commitem, celowanymi sprawdzeniami i EXE do uruchomien
 - [x] Regresja kolejki SFTP: zatrzymane odświeżanie listy nie zajmuje slotów kopiowania; błąd odświeżania zachowuje sukces transferu; anulowanie zadania oczekującego i ponowienie po utracie SSH do pierwotnego celu sprawdzone na własnym OpenSSH.
 - [x] Ręczne odzyskiwanie wykrytego zerwania połączenia przeglądania SFTP przez Odśwież/F5 bez resetu terminala, historii i filtrów; odmowa zmienionego klucza hosta i anulowanie przy zamknięciu sprawdzone na własnym OpenSSH.
 - [x] Komunikaty błędów transferów PL/EN z instrukcjami ponowienia i poprawne chmod; rzeczywista odmowa zapisu oraz zniknięcie źródła zachowują istniejące cele, a retry po naprawie uprawnień kończy się zgodnymi bajtami na własnym OpenSSH. [Zakres i ograniczenia](reports/transfer-errors-2026-10-16.md).
+- [x] Ostrzeżenie o niepotwierdzonym sprzątaniu `.part` z dokładną ścieżką, zachowane także po udanym retry; bez automatycznego usuwania starszych plików częściowych. Sprzątanie podmienionego dowiązania zachowuje jego cel.
+- [x] Filtr błędów/anulowanych/ostrzeżeń i wyszukiwanie pełnych opisów/ścieżek w Transferach; czytelny komunikat o anulowaniu i ponowieniu od początku w PL/EN.
+- [x] Celowana macierz przerwania uploadu i anulowania downloadu na własnym OpenSSH: zachowanie oryginałów, SHA-256 po retry, cicha utrata sieci, zwolnienie slotów i ręczne sprzątanie tylko wskazanego `.part`. [Zakres i ograniczenia](reports/sftp-interruption-2026-10-16.md).
 - [ ] SSH: fizyczna klawiatura/AltGr/IME, zaznaczanie i mysz, aplikacje pełnoekranowe, uśpienie i reconnect.
-- [ ] SFTP: transfery na opóźnionym łączu, brak miejsca/uprawnień, przerwania w różnych fazach, integralność i zachowanie oryginałów, obsługa pozostałych `.part`.
+- [ ] SFTP: rzeczywiste WAN, brak miejsca/quota, pozostałe fazy przerwania, inne serwery SFTP i pozostałe `.part` po awaryjnym zamknięciu procesu. Powyższe celowane próby nie zamykają pełnej macierzy.
 - [ ] Profile: regresja sortowania, filtrów, drzew folderów i rzeczywistych gestów drag and drop.
 - [ ] Monitoring: reprezentatywne dystrybucje, uprawnienia i brak opcjonalnych poleceń.
 - [ ] Sesje: wielogodzinna praca, powtarzane otwieranie/reconnect/zamykanie i pomiary zasobów.

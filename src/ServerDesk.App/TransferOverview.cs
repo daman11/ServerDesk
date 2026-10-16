@@ -16,7 +16,7 @@ public sealed partial class MainWindow
     private readonly StackPanel transferRows=new() { Spacing=8,Margin=new Thickness(10,0,10,10) };
     private readonly Dictionary<Guid,TransferOverviewRow> transferViews=[];
     private readonly TextBox transferSearch=new() { PlaceholderText=L.T("Szukaj pliku lub serwera"),Margin=new Thickness(0,0,0,8) };
-    private readonly ComboBox transferFilter=new() { ItemsSource=new[]{L.T("Wszystkie zadania"),L.T("Aktywne"),L.T("Zakończone"),L.T("Błędy i anulowane")},SelectedIndex=0,HorizontalAlignment=HorizontalAlignment.Stretch,Classes={"quiet-select"} };
+    private readonly ComboBox transferFilter=new() { ItemsSource=new[]{L.T("Wszystkie zadania"),L.T("Aktywne"),L.T("Zakończone"),L.T("Błędy, anulowane i ostrzeżenia")},SelectedIndex=0,HorizontalAlignment=HorizontalAlignment.Stretch,Classes={"quiet-select"} };
     private readonly TextBlock transferCount=DesignSystem.Label("",true,11);
     private readonly TextBlock transferEmptyTitle=DesignSystem.Label("",false,16);
     private readonly TextBlock transferEmptyHint=DesignSystem.Label("",true,12);
@@ -76,13 +76,13 @@ public sealed partial class MainWindow
             // Retain controls during progress updates so scrolling and keyboard focus stay put.
             if(index>=transferRows.Children.Count || !ReferenceEquals(transferRows.Children[index],row.View)) { transferRows.Children.Remove(row.View); transferRows.Children.Insert(index,row.View); }
             row.Server.Text=pane.PresentationProfile.Name+" · SFTP"; row.Status.Text=job.Status; row.Detail.Text=job.Detail;
-            DesignSystem.Resource(row.Status,TextBlock.ForegroundProperty,job.State==TransferState.Failed?"Danger":job.State==TransferState.Completed?"Success":"ForegroundSecondary");
+            DesignSystem.Resource(row.Status,TextBlock.ForegroundProperty,job.State==TransferState.Failed?"Danger":job.HasCleanupWarning?"Warning":job.State==TransferState.Completed?"Success":"ForegroundSecondary");
             row.Progress.IsVisible=job.IsActive; row.Progress.IsIndeterminate=job.Indeterminate && job.IsActive; row.Progress.Value=job.Progress;
             row.Cancel.IsVisible=job.IsActive; row.Cancel.IsEnabled=job.CanCancel;
             row.Retry.IsVisible=job.State is TransferState.Failed or TransferState.Cancelled; row.Retry.IsEnabled=job.CanRetry;
             ToolTip.SetTip(row.View,pane.PresentationProfile.Name+"\n"+job.Label+"\n"+job.Paths+"\n"+job.Status+"\n"+job.Detail);
-            var matchesStatus=transferFilter.SelectedIndex switch { 1=>job.IsActive,2=>!job.IsActive,3=>job.State is TransferState.Failed or TransferState.Cancelled,_=>true };
-            var text=pane.PresentationProfile.Name+" "+pane.Profile.Host+" "+job.Label+" "+job.Paths;
+            var matchesStatus=transferFilter.SelectedIndex switch { 1=>job.IsActive,2=>!job.IsActive,3=>job.State is TransferState.Failed or TransferState.Cancelled || job.HasCleanupWarning,_=>true };
+            var text=pane.PresentationProfile.Name+" "+pane.Profile.Host+" "+job.Label+" "+job.Paths+" "+job.Detail;
             row.View.IsVisible=matchesStatus && words.All(word=>text.Contains(word,StringComparison.OrdinalIgnoreCase)); if(row.View.IsVisible)visible++;
         }
         var active=jobs.Count(item=>item.Job.IsActive); var finished=jobs.Length-active;

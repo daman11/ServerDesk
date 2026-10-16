@@ -8,6 +8,10 @@ namespace ServerDesk.Infrastructure;
 
 public static class TransferErrorMessages
 {
+    public static string DescribeCleanup(TransferCleanupWarning warning)=>
+        (warning.Remote?L.F($"Możliwy plik częściowy na serwerze: {warning.Path}"):L.F($"Możliwy plik częściowy na komputerze: {warning.Path}"))+"\n"+
+        L.T("Nie potwierdzono usunięcia pliku częściowego. Sprawdź wskazaną ścieżkę przed ręcznym usunięciem; na serwerze włącz Ukryte. Ponowienie nie usuwa wcześniejszych plików częściowych.");
+
     public static string Describe(Exception error)
     {
         ArgumentNullException.ThrowIfNull(error);

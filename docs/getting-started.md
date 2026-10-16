@@ -43,6 +43,10 @@ Nagłówki **Lokalny komputer** i **Zdalny · serwer** identyfikują strony SFTP
 
 ## Operacje i usuwanie plików w panelu SFTP
 
+**Wersja rozwojowa — pliki częściowe:** przy zerwanym uploadzie lub błędzie lokalnego sprzątania zadanie może pokazać „sprawdź plik częściowy”. Pełny opis/podpowiedź zawiera dokładną ścieżkę. Na serwerze włącz **Ukryte**, sprawdź plik i użyj zwykłego usuwania z podglądem. Program nie usuwa automatycznie starszych `.part`, które mogą należeć do innych transferów. **Ponów** zaczyna plik od początku i ponownie pyta o nadpisanie; ukończone pliki katalogu pozostają na miejscu po anulowaniu.
+
+Ostrzeżenie o wcześniejszej próbie pozostaje w historii także po udanym ponowieniu. Nie jest to ponowne sprawdzenie istnienia pliku; po ręcznym posprzątaniu możesz wyczyścić zakończone zadanie. Filtr **Błędy, anulowane i ostrzeżenia** obejmuje takie zadania, a wyszukiwanie transferów uwzględnia także pełne opisy i ścieżki plików częściowych. Historia znika po zamknięciu karty.
+
 **Ustawienia → Terminal → Kursor i historia**: wybierz kreskę, blok lub podkreślenie i miganie kursora. Podgląd działa od razu; Anuluj przywraca poprzedni wybór. Limit historii 0–100 000 wierszy obowiązuje przy kolejnym połączeniu SSH/Serial i nie usuwa bieżącej historii (0 wyłącza historię). Program zdalny może zmieniać kursor.
 
 **Ustawienia → SFTP**: wskaż lokalny katalog startowy (puste pole oznacza domowy), ukryte pliki, aktywny panel i osobne sortowanie/kierunki obu stron. Opcje obowiązują przy pierwszym otwarciu SFTP w karcie. Zapis ustawień i reconnect tej samej karty zachowują wybór w przeglądarce; nowa karta użyje nowych opcji. Gdy katalog startowy jest niedostępny, aplikacja otwiera domowy i pokazuje komunikat. [Opis wydania](releases/release-0.35.0.md).

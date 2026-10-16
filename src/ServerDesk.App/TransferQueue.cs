@@ -21,6 +21,8 @@ internal sealed partial class SessionPane
         public TransferState State { get; set; }=TransferState.Queued;
         public bool IsActive=>State is TransferState.Queued or TransferState.Connecting or TransferState.Running;
         public CancellationTokenSource? Cancellation { get; set; }
+        public List<TransferCleanupWarning> CleanupWarnings { get; }=[];
+        public string FullDetail=>Detail.Text+(IsActive && CleanupWarnings.Count>0?"\n"+string.Join("\n",CleanupWarnings.Select(TransferErrorMessages.DescribeCleanup)):"");
         public Border View { get; set; }=null!;
         public TextBlock Status { get; set; }=null!;
         public TextBlock Detail { get; set; }=null!;
@@ -83,12 +85,13 @@ internal sealed partial class SessionPane
         using var cancel=CancellationTokenSource.CreateLinkedTokenSource(connectionLifetime.Token);
         transferJobs.Remove(job); transferJobs.Add(job); jobList.Children.Remove(job.View); jobList.Children.Insert(0,job.View);
         job.Cancellation=cancel; job.State=TransferState.Queued; job.Detail.Text=L.T("Oczekiwanie na wolne miejsce"); job.Bar.Value=0; job.Bar.IsVisible=true; job.Bar.IsIndeterminate=true;
-        transfers.Add(cancel); UpdateTransferQueue(); var acquired=false; var finished=false; var refresh=false;
+        transfers.Add(cancel); UpdateTransferQueue(); var acquired=false; var finished=false; var refresh=false; SftpSession? transferConnection=null;
         try
         {
             await MainWindow.TransferSlots.WaitAsync(cancel.Token); acquired=true;
             job.State=TransferState.Connecting; job.Detail.Text=L.T("Nawiązywanie połączenia SFTP…"); UpdateTransferQueue();
             await using var connection=new SftpSession(await factory.SftpAsync(Profile,secret,cancel.Token));
+            transferConnection=connection;
             job.State=TransferState.Running; UpdateTransferQueue();
             var last=Stopwatch.StartNew();
             using var report=new CoalescingProgress<FileTransferUpdate>(action=>Avalonia.Threading.Dispatcher.UIThread.Post(action,Avalonia.Threading.DispatcherPriority.Background),update=>
@@ -97,18 +100,29 @@ internal sealed partial class SessionPane
                 if(finished || cancel.IsCancellationRequested || last.ElapsedMilliseconds<100 && p.Bytes!=p.Total)return;
                 last.Restart(); job.Bar.IsIndeterminate=false; job.Bar.Value=p.Total==0?0:Math.Clamp(100d*p.Bytes/p.Total,0,100);
                 job.Detail.Text=L.F($"Bieżący plik: {update.Name} · {FormatBytes(p.Bytes)} / {FormatBytes(p.Total)} · {FormatBytes((long)p.BytesPerSecond)}/s");
-                ToolTip.SetTip(job.Detail,job.Detail.Text);
+                ToolTip.SetTip(job.Detail,job.FullDetail);
             });
             var outcome=await job.Action(connection,report,cancel.Token); cancel.Token.ThrowIfCancellationRequested(); finished=true;
             job.State=outcome.State; job.Detail.Text=L.F($"Pliki: {outcome.Files} · katalogi: {outcome.Directories} · pominięte: {outcome.Skipped}");
             job.Bar.Value=100; job.Bar.IsIndeterminate=false;
             refresh=true;
         }
-        catch(Exception) when(cancel.IsCancellationRequested) { job.State=TransferState.Cancelled; job.Detail.Text=L.T("Możesz ponowić zadanie po połączeniu sesji."); }
+        catch(Exception) when(cancel.IsCancellationRequested)
+        {
+            job.State=TransferState.Cancelled;
+            job.Detail.Text=L.T("Anulowano. Ukończone pliki pozostają na miejscu. Ponów przesyła plik od początku; nadpisanie wymaga potwierdzenia.");
+            if(!IsConnected)job.Detail.Text+=" "+L.T("Możesz ponowić zadanie po połączeniu sesji.");
+        }
         catch(Exception ex) { job.State=TransferState.Failed; job.Detail.Text=TransferErrorMessages.Describe(ex); ToolTip.SetTip(job.Detail,job.Detail.Text); owner.ReportBackgroundError(L.T("Transfer SFTP nie powiódł się."),ex); }
         finally
         {
             finished=true; job.Cancellation=null; transfers.Remove(cancel); if(acquired)MainWindow.TransferSlots.Release();
+            if(transferConnection!=null)
+                foreach(var warning in transferConnection.CleanupWarnings)
+                    if(!job.CleanupWarnings.Contains(warning))job.CleanupWarnings.Add(warning);
+            // Retain warnings from earlier attempts even if a retry succeeds.
+            // A fresh transfer never removes an older attempt's temporary file.
+            foreach(var warning in job.CleanupWarnings)job.Detail.Text+="\n"+TransferErrorMessages.DescribeCleanup(warning);
             job.Bar.IsIndeterminate=false; job.Bar.IsVisible=false;
             // Keep active work and the 50 most recent terminal jobs. Only finished rows may be evicted.
             foreach(var old in transferJobs.Where(j=>!j.IsActive).Reverse().Skip(50).ToArray()) { transferJobs.Remove(old); jobList.Children.Remove(old.View); }
@@ -144,21 +158,22 @@ internal sealed partial class SessionPane
         foreach(var job in transferJobs)
         {
             job.Status.Text=job.State switch { TransferState.Queued=>L.T("W kolejce"),TransferState.Connecting=>L.T("Łączenie…"),TransferState.Running=>L.T("Przesyłanie…"),TransferState.Completed=>L.T("Zakończony"),TransferState.CompletedWithSkips=>L.T("Zakończony z pominięciami"),TransferState.Skipped=>L.T("Pominięty"),TransferState.Cancelled=>L.T("Anulowany"),_=>L.T("Błąd") };
-            DesignSystem.Resource(job.Status,TextBlock.ForegroundProperty,job.State==TransferState.Failed?"Danger":job.State==TransferState.Completed?"Success":"ForegroundSecondary");
-            ToolTip.SetTip(job.Detail,job.Detail.Text);
-            ToolTip.SetTip(job.View,job.Paths+"\n"+job.Status.Text+"\n"+job.Detail.Text);
+            if(job.CleanupWarnings.Count>0)job.Status.Text+=L.T(" · sprawdź plik częściowy");
+            DesignSystem.Resource(job.Status,TextBlock.ForegroundProperty,job.State==TransferState.Failed?"Danger":job.CleanupWarnings.Count>0?"Warning":job.State==TransferState.Completed?"Success":"ForegroundSecondary");
+            ToolTip.SetTip(job.Detail,job.FullDetail);
+            ToolTip.SetTip(job.View,job.Paths+"\n"+job.Status.Text+"\n"+job.FullDetail);
         }
         UpdateTransferActions();
-        var active=transferJobs.Count(j=>j.IsActive); var failed=transferJobs.Count(j=>j.State==TransferState.Failed);
-        transfer.Text=L.F($"Transfery · aktywne {active} · zakończone {transferJobs.Count-active}")+(failed>0?L.F($" · błędy {failed}"):"");
+        var active=transferJobs.Count(j=>j.IsActive); var failed=transferJobs.Count(j=>j.State==TransferState.Failed); var cleanup=transferJobs.Count(j=>j.CleanupWarnings.Count>0);
+        transfer.Text=L.F($"Transfery · aktywne {active} · zakończone {transferJobs.Count-active}")+(failed>0?L.F($" · błędy {failed}"):"")+(cleanup>0?L.F($" · ostrzeżenia {cleanup}"):"");
         ToolTip.SetTip(transfer,transfer.Text+L.T("\nDwa transfery jednocześnie w całej aplikacji. Historia: do 50 zakończonych zadań."));
         transferFooter.IsVisible=transferJobs.Count>0; queueScroll.IsVisible=queueExpanded;
         queueToggle.Content=DeskIcons.Create(queueExpanded?"arrow-up":"chevron-right"); queueCancel.IsEnabled=active>0; queueClear.IsEnabled=transferJobs.Any(j=>!j.IsActive);
         StatusChanged?.Invoke();
     }
     internal void ExpandTransferQueue() { queueExpanded=true; UpdateTransferQueue(); }
-    internal sealed record TransferSnapshot(Guid Id,string Label,string Paths,string Status,string Detail,TransferState State,bool IsActive,bool CanCancel,bool CanRetry,double Progress,bool Indeterminate);
-    internal IReadOnlyList<TransferSnapshot> TransferSnapshots=>transferJobs.AsEnumerable().Reverse().Select(job=>new TransferSnapshot(job.Id,job.Label,job.Paths,job.Status.Text??"",job.Detail.Text??"",job.State,job.IsActive,job.Cancel.IsEnabled,job.Retry.IsVisible && job.Retry.IsEnabled,job.Bar.Value,job.Bar.IsIndeterminate)).ToArray();
+    internal sealed record TransferSnapshot(Guid Id,string Label,string Paths,string Status,string Detail,TransferState State,bool IsActive,bool CanCancel,bool CanRetry,double Progress,bool Indeterminate,bool HasCleanupWarning);
+    internal IReadOnlyList<TransferSnapshot> TransferSnapshots=>transferJobs.AsEnumerable().Reverse().Select(job=>new TransferSnapshot(job.Id,job.Label,job.Paths,job.Status.Text??"",job.FullDetail,job.State,job.IsActive,job.Cancel.IsEnabled,job.Retry.IsVisible && job.Retry.IsEnabled,job.Bar.Value,job.Bar.IsIndeterminate,job.CleanupWarnings.Count>0)).ToArray();
     internal void CancelTransfer(Guid id)
     {
         var job=transferJobs.FirstOrDefault(j=>j.Id==id);

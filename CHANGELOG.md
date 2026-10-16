@@ -2,6 +2,9 @@
 
 ## Unreleased
 
+- Surface unconfirmed SFTP temporary-file cleanup with exact local/remote paths, warning status and queue counts; retain earlier cleanup warnings after a successful retry without deleting older partial files automatically.
+- Include successful transfers with cleanup warnings in the attention filter and make transfer details searchable. Explain cancellation, completed files and restart-from-zero retry in PL/EN.
+- Unlink the exact remote temporary entry during cleanup, preserving the target if that leaf was replaced by a symlink.
 - Explain SFTP transfer failures in Polish/English with recovery guidance for permissions, missing paths, authentication, timeouts, connection errors and known local disk-full codes. Preserve host-key and integrity safeguards; wrap queue details with full tooltips.
 - Correct the chmod prompt to pass octal digits to SSH.NET without converting them twice. Report a disappeared transfer source separately from deletion-preview changes, retaining link/ancestor validation.
 - Let explicit SFTP Refresh/F5 and reopening the file panel replace a detected broken browser connection while retaining the live SSH terminal, paths, filters, selections and navigation history.

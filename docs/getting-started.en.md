@@ -43,6 +43,10 @@ The welcome dashboard shows up to three recently used connections. Clicking one 
 
 ## SFTP operations and deletion
 
+**Development builds — partial files:** after a lost upload connection or failed local cleanup, a job may show “check partial file”. Its full detail/tooltip contains the exact path. Enable **Hidden** on the server, inspect the file and use normal deletion with preview. Older `.part` files are never swept automatically; they may belong to other transfers. **Retry** starts the file from the beginning and asks again before overwriting. Files already completed in a directory remain in place after cancellation.
+
+An earlier cleanup warning stays in history after a successful retry. It does not recheck whether the file still exists; after manual cleanup, clear the finished job. **Failed, cancelled and warnings** includes these jobs, and transfer search also matches full details and partial-file paths. History is retained only while the tab remains open.
+
 **Settings → Terminal → Cursor and history**: choose a bar, block or underline and cursor blinking. Cursor preview is immediate; Cancel restores the previous choice. The 0–100,000-line history limit applies to the next SSH/Serial connection and preserves the current buffer (0 disables history). Remote applications can change the cursor.
 
 **Settings → SFTP**: choose an absolute local start directory (empty means home), hidden-file visibility, active panel and independent sorting/direction for each side. These defaults apply the first time SFTP is opened in a tab. Saving preferences and reconnecting that tab retain its browser choices; a new tab uses the new defaults. An unavailable start directory falls back to home with a notification. [Release notes](releases/release-0.35.0.md).

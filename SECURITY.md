@@ -1,6 +1,6 @@
 # Security reporting and support
 
-The current public beta is **0.31.1**. Earlier development builds are superseded. There is no long-term support commitment for beta releases; use the most recent published version.
+ServerDesk is in public beta. The source version is defined in [Directory.Build.props](Directory.Build.props); development commits may be ahead of the last packaged release. There is no long-term support commitment for beta releases; use the most recent published version.
 
 Report a suspected vulnerability privately to the maintainer who supplied your release. A dedicated reporting address and public repository have not been configured in this source snapshot. Do not post passwords, private keys, credential stores, databases, usable connection details or a proof of concept against another person's server in a public issue. A report should describe the affected version, prerequisites, impact and a minimal reproduction against your own test environment.
 

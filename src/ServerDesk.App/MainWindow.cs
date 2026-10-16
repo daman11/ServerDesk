@@ -92,7 +92,7 @@ public sealed partial class MainWindow : Window
     internal void ReportBackgroundError(string message,Exception ex) { Log.Error("Błąd ustawień tła typu {Type}; {Stack}",ex.GetType().Name,ex.StackTrace); vm.Status=message; }
     private async Task InitializeAsync()
     {
-        await repository.InitializeAsync(lifetime.Token);
+        if(!await InitializeDatabaseForStartupAsync())return;
         await RestoreMainPlacementAsync();
         PreviewPreferences(await repository.PreferencesAsync(lifetime.Token));
         UpdateLanguageRestartNotice(preferences.Language);

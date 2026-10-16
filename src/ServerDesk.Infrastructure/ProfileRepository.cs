@@ -8,21 +8,55 @@ public sealed partial class ProfileRepository
 {
     private readonly string connectionString;
     private static readonly JsonSerializerOptions Json = new() { WriteIndented = true };
-    public ProfileRepository(AppPaths paths) => connectionString = new SqliteConnectionStringBuilder { DataSource = Path.Combine(paths.Data, "serverdesk.db") }.ToString();
+    private readonly string databasePath;
+    public string DatabaseBackupDirectory { get; }
+    private readonly SemaphoreSlim initializationGate=new(1);
+    public ProfileRepository(AppPaths paths)
+    {
+        databasePath=Path.Combine(paths.Data,"serverdesk.db");
+        DatabaseBackupDirectory=Path.Combine(paths.Data,"backups");
+        connectionString=new SqliteConnectionStringBuilder { DataSource=databasePath }.ToString();
+    }
     private async Task<SqliteConnection> Open(CancellationToken ct)
     {
-        var db = new SqliteConnection(connectionString); await db.OpenAsync(ct);
-        return db;
+        var db = new SqliteConnection(connectionString);
+        try { await db.OpenAsync(ct); return db; }
+        catch { await db.DisposeAsync(); throw; }
     }
     public async Task InitializeAsync(CancellationToken ct = default)
     {
+        await initializationGate.WaitAsync(ct).ConfigureAwait(false);
+        try { await Task.Run(()=>InitializeDatabaseAsync(ct),ct).ConfigureAwait(false); }
+        finally { initializationGate.Release(); }
+    }
+    private async Task InitializeDatabaseAsync(CancellationToken ct)
+    {
         await using var db = await Open(ct);
+        // Take a coherent read snapshot before acquiring a migration write lock.
+        // SQLite's backup API cannot copy from a source with a write transaction.
+        using(var inspection=db.BeginTransaction(deferred:true))
+        {
+            using var inspect=db.CreateCommand(); inspect.Transaction=inspection;
+            inspect.CommandText="PRAGMA user_version";
+            var previous=Convert.ToInt32(await inspect.ExecuteScalarAsync(ct));
+            if(previous>3)throw new InvalidDataException(L.T("Baza pochodzi z nowszej wersji ServerDesk."));
+            inspect.CommandText="PRAGMA quick_check(1)";
+            if(!string.Equals(await inspect.ExecuteScalarAsync(ct) as string,"ok",StringComparison.Ordinal))
+                throw new InvalidDataException(L.T("Kontrola bazy wykryła uszkodzenie. Zamknij aplikację i przywróć sprawdzoną kopię danych. Oryginalna baza nie została usunięta."));
+            if(previous==3)return;
+            inspect.CommandText="SELECT count(*) FROM sqlite_master WHERE type='table' AND name NOT LIKE 'sqlite_%'";
+            if(Convert.ToInt64(await inspect.ExecuteScalarAsync(ct))>0)
+                DatabaseBackups.Create(db,DatabaseBackupDirectory,previous,"before-migration",ct);
+            inspection.Commit();
+        }
+        ct.ThrowIfCancellationRequested();
         using var transaction=db.BeginTransaction();
         using var cmd = db.CreateCommand();
         cmd.Transaction=transaction;
         cmd.CommandText="PRAGMA user_version";
         var version=Convert.ToInt32(await cmd.ExecuteScalarAsync(ct));
         if(version>3) throw new InvalidDataException(L.T("Baza pochodzi z nowszej wersji ServerDesk."));
+        if(version==3)return; // Another instance may have completed the migration.
         cmd.CommandText = "CREATE TABLE IF NOT EXISTS profiles(id TEXT PRIMARY KEY, json TEXT NOT NULL); CREATE TABLE IF NOT EXISTS folders(path TEXT PRIMARY KEY); CREATE TABLE IF NOT EXISTS folder_icons(path TEXT PRIMARY KEY,icon TEXT NOT NULL); CREATE TABLE IF NOT EXISTS hostkeys(host TEXT NOT NULL,port INTEGER NOT NULL,fingerprint TEXT NOT NULL,PRIMARY KEY(host,port)); CREATE TABLE IF NOT EXISTS settings(key TEXT PRIMARY KEY,value TEXT NOT NULL); CREATE TABLE IF NOT EXISTS history(id INTEGER PRIMARY KEY,profile TEXT NOT NULL,time TEXT NOT NULL);";
         await cmd.ExecuteNonQueryAsync(ct);
         cmd.CommandText="PRAGMA table_info(history)";

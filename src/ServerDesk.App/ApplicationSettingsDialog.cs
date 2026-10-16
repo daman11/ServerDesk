@@ -74,6 +74,33 @@ internal static partial class Dialogs
         var manageTrust=Button("Zarządzaj kluczami…",async()=> { if(settingsOwner!=null)await TrustedHosts(settingsOwner,repository); }); manageTrust.Name="ManageTrustedHosts";
         Label(trustSection,"Zaufane klucze SSH",manageTrust);
         trustSection.Children.Add(Text(L.T("Usunięcie zaufania wymaga osobnego potwierdzenia i działa od razu, niezależnie od zapisu ustawień. Następne połączenie wymaga ponownego porównania odcisku."),12));
+        var backupSection=Section(securityPage,"database","Kopie bazy danych");
+        var backupContent=new StackPanel { Spacing=10 };
+        backupContent.Children.Add(Text(L.T("Kopia obejmuje profile, foldery, ustawienia, historię i zaufane klucze SSH. Nie obejmuje haseł, prywatnych kluczy ani zaszyfrowanej treści komend i kolekcji z magazynu systemowego. Zawiera poufne dane infrastruktury — przechowuj ją prywatnie."),12));
+        var backupStatus=Text(L.T("Przed zmianą schematu istniejącej bazy ServerDesk automatycznie tworzy sprawdzoną kopię. Ręczna kopia działa od razu, niezależnie od zapisu ustawień."),12);
+        backupStatus.Name="DatabaseBackupStatus";
+        Button? createBackup=null;
+        createBackup=Button("Utwórz kopię bazy",async()=>
+        {
+            if(createBackup==null || !createBackup.IsEnabled)return;
+            createBackup.IsEnabled=false; backupStatus.Text=L.T("Tworzenie i sprawdzanie kopii bazy…");
+            try
+            {
+                var backup=await repository.CreateDatabaseBackupAsync();
+                backupStatus.Text=L.T("Kopia została utworzona i sprawdzona.")+"\n"+backup.Path;
+            }
+            catch(Exception ex)
+            {
+                Serilog.Log.Error("Database backup failed: {Type}",ex.GetType().Name);
+                backupStatus.Text=L.T("Nie udało się utworzyć kopii. Sprawdź wolne miejsce i uprawnienia katalogu danych. Istniejące kopie pozostają zachowane.");
+            }
+            finally { createBackup.IsEnabled=true; }
+        });
+        createBackup.Name="CreateDatabaseBackup"; createBackup.HorizontalAlignment=HorizontalAlignment.Left;
+        backupContent.Children.Add(createBackup); backupContent.Children.Add(backupStatus);
+        backupSection.Children.Add(backupContent);
+        // Keep the result and privacy notice visible when the action is found by search.
+        searchIndex.Field(backupSection,backupContent,"Kopia lokalnej bazy "+L.T("Kopia lokalnej bazy"));
         var languageSection=Section(appearancePage,"globe","Język interfejsu");
         var language=new ComboBox { Name="ApplicationLanguage",ItemsSource=new[]{"Polski","English"},SelectedIndex=p.Language=="en"?1:0,HorizontalAlignment=HorizontalAlignment.Stretch };
         Label(languageSection,"Język aplikacji / Language",language);

@@ -1336,5 +1336,21 @@
   "Usługi Windows": "Windows services",
   "Usługi Linux": "Linux services",
   "Usługi baz danych": "Database services",
-  "Systemowy DNS": "System DNS"
+  "Systemowy DNS": "System DNS",
+  "Kopie bazy danych": "Database backups",
+  "Kopia lokalnej bazy": "Local database snapshot",
+  "Utwórz kopię bazy": "Create database backup",
+  "Kopia obejmuje profile, foldery, ustawienia, historię i zaufane klucze SSH. Nie obejmuje haseł, prywatnych kluczy ani zaszyfrowanej treści komend i kolekcji z magazynu systemowego. Zawiera poufne dane infrastruktury — przechowuj ją prywatnie.": "A snapshot includes profiles, folders, settings, history and trusted SSH keys. It excludes passwords, private keys and encrypted command and collection contents in the OS credential store. It contains sensitive infrastructure details — keep it private.",
+  "Przed zmianą schematu istniejącej bazy ServerDesk automatycznie tworzy sprawdzoną kopię. Ręczna kopia działa od razu, niezależnie od zapisu ustawień.": "ServerDesk automatically creates a verified snapshot before migrating an existing database schema. Manual backups take effect immediately, independently of saving settings.",
+  "Tworzenie i sprawdzanie kopii bazy…": "Creating and checking database backup…",
+  "Kopia została utworzona i sprawdzona.": "Backup created and checked.",
+  "Nie udało się utworzyć kopii. Sprawdź wolne miejsce i uprawnienia katalogu danych. Istniejące kopie pozostają zachowane.": "Could not create a backup. Check free space and data folder permissions. Existing backups are preserved.",
+  "Nie udało się utworzyć sprawdzonej kopii bazy. Sprawdź wolne miejsce i uprawnienia katalogu danych. Migracja nie została rozpoczęta.": "Could not create a verified database backup. Check free space and data folder permissions. The migration has not started.",
+  "Kontrola bazy wykryła uszkodzenie. Zamknij aplikację i przywróć sprawdzoną kopię danych. Oryginalna baza nie została usunięta.": "The database check detected corruption. Close the app and restore a verified data backup. The original database has not been deleted.",
+  "Nie można odczytać bazy danych. Plik może być uszkodzony lub mieć nieprawidłowy format.": "Cannot read the database. The file may be corrupt or have an invalid format.",
+  "Baza danych jest zajęta. Zamknij inne instancje ServerDesk i spróbuj ponownie.": "The database is busy. Close other ServerDesk instances and try again.",
+  "Nie można otworzyć lub zapisać bazy danych. Sprawdź wolne miejsce i uprawnienia katalogu danych.": "Cannot open or write to the database. Check free space and data folder permissions.",
+  "Nie można uruchomić ServerDesk": "Cannot start ServerDesk",
+  "Oryginalne dane nie zostaną usunięte ani zastąpione pustą bazą. Po zamknięciu aplikacji możesz zabezpieczyć katalog danych i przywrócić sprawdzoną kopię. Instrukcja: docs/database-backups.md.": "The original data will not be deleted or replaced with an empty database. After closing the app, preserve the data folder and restore a verified backup. Instructions: docs/database-backups.md.",
+  "Katalog kopii bazy:": "Database backup folder:"
 }

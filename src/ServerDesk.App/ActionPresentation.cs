@@ -84,7 +84,7 @@ internal static partial class DeskIcons
         "Uruchom RDP" or "Pokaż okno"=>"monitor",
         "Importuj grafikę"=>"image",
         "Wybierz plik" or "Wybierz pliki"=>"folder-open",
-        "Wczytaj kolekcję"=>"archive",
+        "Wczytaj kolekcję" or "Utwórz kopię bazy"=>"archive",
         "Przejdź"=>"arrow-right",
         "Utwórz zdalne dowiązanie…"=>"link",
         "Większa czcionka"=>"font-increase",

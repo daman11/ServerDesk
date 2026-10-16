@@ -2,6 +2,10 @@
 
 ## Unreleased
 
+- Add verified SQLite snapshots before migrating existing databases and a manual backup action under Settings → Security, with Polish/English feedback.
+- Include committed WAL data, preserve completed backups, and stop migrations when snapshot creation fails. Keep schema version 3 unchanged.
+- Explain database startup failures and close without saving workspace/preferences; preserve the original database for recovery. Document snapshot limits and restoration.
+
 ## 0.36.2 — Public Beta — 2026-10-16
 
 - Complete action icons across layout, app, tab, folder, terminal, SFTP and command menus, protocol toolbars, and Network Tools actions.

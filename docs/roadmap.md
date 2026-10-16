@@ -1,4 +1,4 @@
-Pierwotne MVP: aktualna tabela kryteriów i brakującej weryfikacji znajduje się w [mvp-status.md](mvp-status.md).
+Bieżące priorytety i postęp stabilizacji: [Droga do wersji 1.0](stable-release-plan.md). Pierwotne MVP: aktualna tabela kryteriów i brakującej weryfikacji znajduje się w [mvp-status.md](mvp-status.md). Poniższe wpisy opisują historię etapów; dawne listy nie są aktualną listą braków.
 
 0.36.2: kompletność ikon, zgodne etykiety PL/EN i opisy dostępności, osobne skróty menu oraz regresyjny audyt akcji. [Wydanie](releases/release-0.36.2.md).
 

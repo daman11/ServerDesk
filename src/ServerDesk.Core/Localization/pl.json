@@ -1336,5 +1336,21 @@
   "Usługi Windows": "Usługi Windows",
   "Usługi Linux": "Usługi Linux",
   "Usługi baz danych": "Usługi baz danych",
-  "Systemowy DNS": "Systemowy DNS"
+  "Systemowy DNS": "Systemowy DNS",
+  "Kopie bazy danych": "Kopie bazy danych",
+  "Kopia lokalnej bazy": "Kopia lokalnej bazy",
+  "Utwórz kopię bazy": "Utwórz kopię bazy",
+  "Kopia obejmuje profile, foldery, ustawienia, historię i zaufane klucze SSH. Nie obejmuje haseł, prywatnych kluczy ani zaszyfrowanej treści komend i kolekcji z magazynu systemowego. Zawiera poufne dane infrastruktury — przechowuj ją prywatnie.": "Kopia obejmuje profile, foldery, ustawienia, historię i zaufane klucze SSH. Nie obejmuje haseł, prywatnych kluczy ani zaszyfrowanej treści komend i kolekcji z magazynu systemowego. Zawiera poufne dane infrastruktury — przechowuj ją prywatnie.",
+  "Przed zmianą schematu istniejącej bazy ServerDesk automatycznie tworzy sprawdzoną kopię. Ręczna kopia działa od razu, niezależnie od zapisu ustawień.": "Przed zmianą schematu istniejącej bazy ServerDesk automatycznie tworzy sprawdzoną kopię. Ręczna kopia działa od razu, niezależnie od zapisu ustawień.",
+  "Tworzenie i sprawdzanie kopii bazy…": "Tworzenie i sprawdzanie kopii bazy…",
+  "Kopia została utworzona i sprawdzona.": "Kopia została utworzona i sprawdzona.",
+  "Nie udało się utworzyć kopii. Sprawdź wolne miejsce i uprawnienia katalogu danych. Istniejące kopie pozostają zachowane.": "Nie udało się utworzyć kopii. Sprawdź wolne miejsce i uprawnienia katalogu danych. Istniejące kopie pozostają zachowane.",
+  "Nie udało się utworzyć sprawdzonej kopii bazy. Sprawdź wolne miejsce i uprawnienia katalogu danych. Migracja nie została rozpoczęta.": "Nie udało się utworzyć sprawdzonej kopii bazy. Sprawdź wolne miejsce i uprawnienia katalogu danych. Migracja nie została rozpoczęta.",
+  "Kontrola bazy wykryła uszkodzenie. Zamknij aplikację i przywróć sprawdzoną kopię danych. Oryginalna baza nie została usunięta.": "Kontrola bazy wykryła uszkodzenie. Zamknij aplikację i przywróć sprawdzoną kopię danych. Oryginalna baza nie została usunięta.",
+  "Nie można odczytać bazy danych. Plik może być uszkodzony lub mieć nieprawidłowy format.": "Nie można odczytać bazy danych. Plik może być uszkodzony lub mieć nieprawidłowy format.",
+  "Baza danych jest zajęta. Zamknij inne instancje ServerDesk i spróbuj ponownie.": "Baza danych jest zajęta. Zamknij inne instancje ServerDesk i spróbuj ponownie.",
+  "Nie można otworzyć lub zapisać bazy danych. Sprawdź wolne miejsce i uprawnienia katalogu danych.": "Nie można otworzyć lub zapisać bazy danych. Sprawdź wolne miejsce i uprawnienia katalogu danych.",
+  "Nie można uruchomić ServerDesk": "Nie można uruchomić ServerDesk",
+  "Oryginalne dane nie zostaną usunięte ani zastąpione pustą bazą. Po zamknięciu aplikacji możesz zabezpieczyć katalog danych i przywrócić sprawdzoną kopię. Instrukcja: docs/database-backups.md.": "Oryginalne dane nie zostaną usunięte ani zastąpione pustą bazą. Po zamknięciu aplikacji możesz zabezpieczyć katalog danych i przywrócić sprawdzoną kopię. Instrukcja: docs/database-backups.md.",
+  "Katalog kopii bazy:": "Katalog kopii bazy:"
 }

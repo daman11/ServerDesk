@@ -1,5 +1,7 @@
 # Architektura
 
+Prezentacja 0.36.2: ActionPresentation dostarcza wspólne symbole i opisy menu/przycisków, z osobnym InputGesture. Własne geometrie są statyczne; SVG upstream nie są zmieniane. Paleta otrzymuje ikony po identyfikatorze źródłowym, a tłumaczenie opcji narzędzi sieciowych odbywa się wyłącznie w szablonie widoku, zachowując surowe wartości żądań.
+
 Wygląd 0.36.1 pozostaje w istniejącym DesignSystem: wspólne karty i palety zaznaczeń, responsywny nagłówek ustawień i ograniczony obszar filtrów komend. Zmiany nie dodają transportu ani modelu danych.
 
 Komendy od 0.36.0: Core zawiera CommandDefinition, parametry, ryzyko, renderer, CommandCatalog oraz czyste parsery rozpoznania. Wersjonowany JSON jest osadzony i ma wspólną Operation dla wariantów. CommandStore zapisuje szablony przez ICredentialStore w ograniczonych szyfrowanych częściach, a referencje/preferencje/ID historii w istniejących settings SQLite. SshTerminalSession otwiera ograniczone kanały exec istniejącego klienta; SessionCommands wiąże cache z konkretnym transportem. Panel obok sessionHost używa istniejących kontrolek i tematów, bez nowego typu karty. Ticket wysyłki sprawdza identyfikator sesji i generację połączenia po dialogu; multiline i sekrety są copy-only. [Model, rozszerzanie i granice](commands.md).

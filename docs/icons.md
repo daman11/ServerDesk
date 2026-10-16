@@ -1,8 +1,12 @@
 # Ikony ServerDesk
 
+Od 0.36.2 `ActionPresentation.cs` centralizuje ikony i opisy akcji używane przez menu oraz przyciski. Menu mają osobne `InputGesture` (sam napis, bez rejestrowania nowego skrótu). Paleta akcji otrzymuje te same symbole z zachowaniem identyfikacji akcji niezależnej od tłumaczenia. `presentation-consistency` kontroluje kompletność produkcyjnych wywołań oraz dynamicznych menu w PL/EN; dodając akcję, uzupełnij metadane i uruchom ten scenariusz.
+
+Aplikacja ma także dziesięć własnych, statycznych geometrii na siatce 24×24: układy 1/2/3/4, wyrównanie, rozmiar tekstu i start/stop. Powstają bezpośrednio w kodzie na licencji MIT projektu. Są sprawdzane i pokazywane w galerii `--icons`; nie są dopisywane do manifestu upstream ani listy ikon serwerów.
+
 Interfejs używa lokalnego podzbioru 68 ikon Lucide 1.55.0 z commitu `70562c1ee1c4fdcf736fe97bc893fb8511927934`. Oryginalne SVG znajdują się w `src/ServerDesk.App/Assets/Icons`; źródło i skróty SHA-256 w `third-party/lucide/manifest.json`. Pełna licencja ISC oraz wymagane notice MIT dla ikon pochodzących z Feather znajdują się w `third-party/lucide/LICENSE` i paczkach dystrybucyjnych. [Upstream](https://github.com/lucide-icons/lucide), [licencja](https://lucide.dev/license).
 
-DeskIcon rysuje geometrię na siatce 24×24, z obrysem 2 jednostki i zaokrąglonymi końcami/łączeniami. Geometrie są buforowane. Podstawowe rozmiary to 16 px w akcjach/wierszach oraz 20–24 px w nawigacji i podglądzie. Kolor wynika z Foreground kontrolki lub dynamicznego zasobu motywu, więc ikona reaguje na hover, aktywację i disabled. Renderer nie korzysta z czcionki ikon ani pobierania z sieci. Akceptuje wyłącznie osadzone SVG i ograniczony zestaw prymitywów; wyklucza DTD, resolver oraz transformacje.
+DeskIcon rysuje geometrię na siatce 24×24, z obrysem 2 jednostki i zaokrąglonymi końcami/łączeniami. Geometrie są buforowane. Podstawowe rozmiary to 16 px w akcjach/wierszach oraz 20–24 px w nawigacji i podglądzie. Kolor wynika z Foreground kontrolki lub dynamicznego zasobu motywu, więc ikona reaguje na hover, aktywację i disabled. Renderer nie korzysta z czcionki ikon ani pobierania z sieci. Renderuje własne statyczne geometrie i osadzone SVG z ograniczonym zestawem prymitywów; wyklucza DTD, resolver oraz transformacje.
 
 Przyciski z samą ikoną mają tooltip i nazwę dostępności. Ikony akcji są także używane w menu i przyciskach z tekstem. Stan sesji otrzymuje osobny kształt oraz kolor: łączenie, połączenie, zamknięcie, błąd i zewnętrzny klient RDP. Uruchomienie klienta RDP nie oznacza potwierdzonego połączenia.
 
@@ -10,7 +14,7 @@ Profile mają pole `IconId`. Edytor zawiera 15 wyborów: automatyczny oraz 14 r�
 
 Od 0.7.0 można importować własne PNG/JPEG/WebP. Źródło do 4 MiB, 4096 px na bok i 16 mln pikseli jest dekodowane w tle i normalizowane do statycznego PNG 128×128 z zachowaniem proporcji i przezroczystości. Pole `CustomIconPng` zawiera base64 tego PNG, bez ścieżki źródła oraz metadanych zdjęcia. Ikona podróżuje z eksportem JSON (limit konfiguracji 32 MiB). Walidacja sprawdza limit 96 KiB, nagłówek, CRC/chunki PNG i ograniczone rozpakowane wiersze. Duże lub uszkodzone dane są odrzucane przed zapisem/importem. ProfileVisual zwalnia bitmapę po odłączeniu kontrolki i przy zmianie grafiki.
 
-Własna grafika ma pierwszeństwo przed IconId. Jej usunięcie przywraca ikonę z listy. Kolor `#RRGGBB` jest znacznikiem drzewa i górną linią zakładki; pusty kolor usuwa znacznik. Tekst i ikona stanu zachowują kolory motywu. Edycja prezentacji działa w panelach i odpiętych oknach. Import własnych SVG i animacji nie jest obsługiwany.
+Własna grafika ma pierwszeństwo przed IconId. Jej usunięcie przywraca ikonę z listy. Kolor `#RRGGBB` jest znacznikiem drzewa i kolorowym znacznikiem zakładki; pusty kolor usuwa znacznik. Tekst i ikona stanu zachowują kolory motywu. Edycja prezentacji działa w panelach i odpiętych oknach. Import własnych SVG i animacji nie jest obsługiwany.
 
 SFTP rozróżnia katalogi, dowiązania, kod, konfiguracje, JSON, klucze, tekst, archiwa i obrazy. Klasyfikacja korzysta z nazwy pliku i metadanych; nie odczytuje zawartości.
 

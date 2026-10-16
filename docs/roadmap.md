@@ -1,5 +1,7 @@
 Pierwotne MVP: aktualna tabela kryteriów i brakującej weryfikacji znajduje się w [mvp-status.md](mvp-status.md).
 
+0.36.2: kompletność ikon, zgodne etykiety PL/EN i opisy dostępności, osobne skróty menu oraz regresyjny audyt akcji. [Wydanie](releases/release-0.36.2.md).
+
 0.36.1 dopracowuje istniejący interfejs: panel komend, nagłówek i sekcje ustawień, wspólne karty oraz zaznaczenie list w motywach. [Wydanie](releases/release-0.36.1.md).
 
 Wydanie 0.36.0: wspólny panel Command Snippets / Smart Cheat Sheet, 165 wariantów, offline i kontekst SSH, bezpieczne parametry, ulubione i szyfrowane szablony. [Obsługa i rozszerzanie](commands.md), [testy i ograniczenia](reports/commands-2026-10-16.md).

@@ -8,7 +8,7 @@ namespace ServerDesk.App;
 internal static partial class Dialogs
 {
     internal static Button Button(string text, Action action)
-    { var glyph=DeskIcons.ForAction(text); var button=new Button { Content=glyph==null?L.T(text):DeskIcons.Labelled(glyph,L.T(text)),Tag=text,Margin=new Thickness(0),IsCancel=text=="Anuluj",IsDefault=text is "Zapisz" or "Połącz" or "OK" or "Potwierdź" }; Avalonia.Automation.AutomationProperties.SetName(button,L.T(text)); button.Click+=(_,_)=>action(); return button; }
+    { var glyph=DeskIcons.ForAction(text); var button=new Button { Content=glyph==null?L.T(text):DeskIcons.Labelled(glyph,L.T(text)),Tag=text,Margin=new Thickness(0),IsCancel=text=="Anuluj",IsDefault=text is "Zapisz" or "Połącz" or "OK" or "Potwierdź" }; Avalonia.Automation.AutomationProperties.SetName(button,L.T(text)); if(DeskIcons.DescriptionForAction(text) is {} description)ToolTip.SetTip(button,L.T(description)); button.Click+=(_,_)=>action(); return button; }
     internal static TextBlock Text(string text,double size=DesignTokens.Body) { var label=DesignSystem.Label(text,false,size); label.TextWrapping=Avalonia.Media.TextWrapping.Wrap; label.Margin=new Thickness(0,DesignTokens.Small); return label; }
     private static Window Window(string title, Control content)
     {

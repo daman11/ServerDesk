@@ -66,6 +66,7 @@ internal sealed partial class NetworkToolPane : WorkspacePane
         start=Dialogs.Button("Start",()=>_=StartAsync()); stop=Dialogs.Button("Stop",()=>operation?.Cancel()); restart=Dialogs.Button("Restart",()=>_=RestartAsync());
         copy=Dialogs.Button("Kopiuj wyniki",()=>_=GuardAsync(CopyAsync)); export=Dialogs.Button("Eksportuj wyniki",()=>_=GuardAsync(ExportAsync)); start.Classes.Add("primary"); stop.IsEnabled=false; copy.IsEnabled=export.IsEnabled=false;
         exportFormat.ItemsSource=tool==NetworkToolKind.Tls?new[]{"TXT","CSV","JSON","PEM"}:tool==NetworkToolKind.Http?new[]{"TXT","CSV","JSON","Response"}:new[]{"TXT","CSV","JSON"}; exportFormat.SelectedIndex=0;
+        exportFormat.ItemTemplate=OptionTemplate();
         var actions=new WrapPanel { Orientation=Orientation.Horizontal,Children={start,stop,restart,copy,export,exportFormat} }; foreach(var action in actions.Children)action.Margin=new Thickness(0,2,6,2);
         BuildForm();
         if(host.Length>0)UseHost(host);

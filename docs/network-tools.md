@@ -1,12 +1,12 @@
-# Network Tools — ServerDesk 0.29.0
+# Narzędzia sieciowe — ServerDesk 0.36.2
 
 Moduł jest częścią MVP i istniejącego obszaru kart ServerDesk. Działa na ręcznie podanym celu także przy całkowicie pustej liście połączeń. Nie wymaga SSH, RDP ani zapisanego urządzenia. Serial Console pozostaje dotychczasową funkcją połączeń.
 
 ## Uruchamianie
 
-Wybierz ikonę **Network Tools** na lewym pasku albo **Menu → Network Tools**. Kliknij narzędzie, wpisz cel, rozwiń **Parametry** i wybierz **Start**. Każde kliknięcie otwiera nową, niezależną kartę. Można równocześnie badać różne cele, zmieniać parametry, dzielić obszar na panele, przeciągać karty i odpinać je do okna.
+Wybierz ikonę **Narzędzia sieciowe** na lewym pasku albo **Menu → Network Tools**. Kliknij narzędzie, wpisz cel, rozwiń **Parametry** i wybierz **Start**. Każde kliknięcie otwiera nową, niezależną kartę. Można równocześnie badać różne cele, zmieniać parametry, dzielić obszar na panele, przeciągać karty i odpinać je do okna.
 
-Menu kontekstowe zapisanego serwera zawiera **Network Tools** z dziewięcioma narzędziami. Przekazuje adres jako edytowalne pole, bez nawiązywania sesji i bez modyfikacji profilu. HTTP otrzymuje adres HTTPS, kalkulator otrzymuje /32 lub /128 dla IP, a WoL używa adresu IPv4 jako celu pakietu i wymaga ręcznego MAC. Nazwy hostów nie dostarczają automatycznie MAC ani maski sieci.
+Menu kontekstowe zapisanego serwera zawiera **Narzędzia sieciowe** z dziewięcioma narzędziami. Przekazuje adres jako edytowalne pole, bez nawiązywania sesji i bez modyfikacji profilu. HTTP otrzymuje adres HTTPS, kalkulator otrzymuje /32 lub /128 dla IP, a WoL używa adresu IPv4 jako celu pakietu i wymaga ręcznego MAC. Nazwy hostów nie dostarczają automatycznie MAC ani maski sieci.
 
 **Ctrl+Enter** uruchamia; **Escape** zatrzymuje; **F5** zatrzymuje i uruchamia ponownie. Start nie uruchamia drugiej operacji w tej samej karcie. Zamknięcie karty anuluje pracę i zwalnia zasoby. Zamknięcie aplikacji czeka na zakończenie anulowania. Karty diagnostyczne nie są zapisywane jako fikcyjne profile połączeń ani automatycznie uruchamiane po restarcie; cele i kolekcje można ponownie otworzyć z historii.
 
@@ -17,14 +17,14 @@ Podczas operacji sieciowej pola celu/parametrów i wybór historii są zablokowa
 | Narzędzie | Zakres |
 |---|---|
 | Ping | IPv4/IPv6, hostname, tryb ciągły lub liczba pakietów, timeout, interwał i rozmiar danych ICMP; wyniki na żywo, wysłane/odebrane, straty, min/avg/max i wykres z przerwami dla braku odpowiedzi. |
-| Traceroute / MTR | IPv4/IPv6, limit 1–64 hopów, opcjonalne nazwy DNS, pomiar ICMP TTL, powtarzanie cykli, tabela odpowiedzi/strat/RTT dla hopów, zatrzymywanie i eksport. Brak odpowiedzi routera nie jest oznaczany jako dowód awarii. |
-| DNS Lookup | A, AAAA, CNAME, MX, TXT, NS, PTR, SOA, SRV, CAA lub All; systemowe DNS, własne adresy IP/porty, presety Cloudflare/Google/Quad9 i porównanie do czterech resolverów. Każdy wynik zawiera źródło, TTL, czas i RCODE, także NXDOMAIN. PTR zamienia IPv4/IPv6 na domenę reverse. Wpisy własnych resolverów pozostają lokalnie. |
-| Port Scanner | TCP jednego jawnie wskazanego hosta: pojedynczy port, lista i zakresy 1–65535; presety Common/Web/Windows/Linux/Database/Custom, timeout, 1–64 równoległe połączenia, postęp, czas i anulowanie. Open wymaga zestawienia TCP, Closed wymaga Connection refused; pozostałe przypadki są Filtered/Timeout lub Unknown. Nazwa usługi jest wskazówką według portu. |
+| Trasa sieciowa / MTR | IPv4/IPv6, limit 1–64 hopów, opcjonalne nazwy DNS, pomiar ICMP TTL, powtarzanie cykli, tabela odpowiedzi/strat/RTT dla hopów, zatrzymywanie i eksport. Brak odpowiedzi routera nie jest oznaczany jako dowód awarii. |
+| Zapytania DNS | A, AAAA, CNAME, MX, TXT, NS, PTR, SOA, SRV, CAA lub All; systemowe DNS, własne adresy IP/porty, presety Cloudflare/Google/Quad9 i porównanie do czterech resolverów. Każdy wynik zawiera źródło, TTL, czas i RCODE, także NXDOMAIN. PTR zamienia IPv4/IPv6 na domenę reverse. Wpisy własnych resolverów pozostają lokalnie. |
+| Skaner portów | TCP jednego jawnie wskazanego hosta: pojedynczy port, lista i zakresy 1–65535; presety Common/Web/Windows/Linux/Database/Custom, timeout, 1–64 równoległe połączenia, postęp, czas i anulowanie. Open wymaga zestawienia TCP, Closed wymaga Connection refused; pozostałe przypadki są Filtered/Timeout lub Unknown. Nazwa usługi jest wskazówką według portu. |
 | Wake-on-LAN | Walidacja MAC, docelowy IPv4/broadcast, lokalny interfejs/IP i port UDP; rzeczywisty Magic Packet, historia i nazwane ulubione urządzenia. Wysłanie nie potwierdza uruchomienia sprzętu. |
-| HTTP Client | GET/POST/PUT/PATCH/DELETE/HEAD, nagłówki, query, JSON/text/form-urlencoded, Basic/Bearer, timeout i przekierowania; status/czas/rozmiar, nagłówki i odpowiedź. JSON jest formatowany; do 64 KiB/4000 tokenów ma kolorowany, zaznaczalny podgląd. Większe odpowiedzi mają widok tekstowy. Kopiowanie i eksport odpowiedzi oraz bezpieczne kolekcje. |
-| SSL/TLS Inspector | Port i opcjonalne SNI/nazwa walidacji, Subject/Issuer/serial, daty i dni ważności, SAN, podpis, algorytm/rozmiar klucza (gdy dostępny), SHA-256, łańcuch i błędy walidacji, uzgodnione TLS/cipher suite, eksport PEM. Ważność: poprawny, blisko wygaśnięcia, wygasły lub niezaufany. |
-| Subnet Calculator | Automatyczne obliczenia bez sieci, IPv4 CIDR lub maska dziesiętna, network/broadcast/wildcard, zakres hostów i przypadki /31,/32; IPv6: prefiks, pełny/skrócony zapis, zakres i liczba adresów bez broadcast. Podział do 4096 podsieci, pełna lista i eksport. Wpisz np. `192.0.2.10/24`, `192.0.2.10 255.255.255.0` albo `2001:db8::1/64`. -1 wyłącza podział. |
-| SNMP Browser | v2c i v3, IPv4/IPv6/hostname, UDP/timeout/0–3 retries, GET/GETNEXT/WALK/GETBULK. Tabela OID/typ/wartość, popularne sysDescr/sysName/sysUpTime, historia i ulubione OID. v3: użytkownik, kontekst, noAuthNoPriv/authNoPriv/authPriv, SHA-256/384/512 i AES-128. Community i hasła są maskowane. |
+| Klient HTTP | GET/POST/PUT/PATCH/DELETE/HEAD, nagłówki, query, JSON/text/form-urlencoded, Basic/Bearer, timeout i przekierowania; status/czas/rozmiar, nagłówki i odpowiedź. JSON jest formatowany; do 64 KiB/4000 tokenów ma kolorowany, zaznaczalny podgląd. Większe odpowiedzi mają widok tekstowy. Kopiowanie i eksport odpowiedzi oraz bezpieczne kolekcje. |
+| Inspektor TLS | Port i opcjonalne SNI/nazwa walidacji, Subject/Issuer/serial, daty i dni ważności, SAN, podpis, algorytm/rozmiar klucza (gdy dostępny), SHA-256, łańcuch i błędy walidacji, uzgodnione TLS/cipher suite, eksport PEM. Ważność: poprawny, blisko wygaśnięcia, wygasły lub niezaufany. |
+| Kalkulator podsieci | Automatyczne obliczenia bez sieci, IPv4 CIDR lub maska dziesiętna, network/broadcast/wildcard, zakres hostów i przypadki /31,/32; IPv6: prefiks, pełny/skrócony zapis, zakres i liczba adresów bez broadcast. Podział do 4096 podsieci, pełna lista i eksport. Wpisz np. `192.0.2.10/24`, `192.0.2.10 255.255.255.0` albo `2001:db8::1/64`. -1 wyłącza podział. |
+| Przeglądarka SNMP | v2c i v3, IPv4/IPv6/hostname, UDP/timeout/0–3 retries, GET/GETNEXT/WALK/GETBULK. Tabela OID/typ/wartość, popularne sysDescr/sysName/sysUpTime, historia i ulubione OID. v3: użytkownik, kontekst, noAuthNoPriv/authNoPriv/authPriv, SHA-256/384/512 i AES-128. Community i hasła są maskowane. |
 
 ## Historia, kolekcje i prywatność
 

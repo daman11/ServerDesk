@@ -2,6 +2,15 @@
 
 ## Unreleased
 
+## 0.36.2 — Public Beta — 2026-10-16
+
+- Complete action icons across layout, app, tab, folder, terminal, SFTP and command menus, protocol toolbars, and Network Tools actions.
+- Add ten application-owned vector symbols for distinct panel layouts, equal sizing, font size and run/stop; preserve all pinned upstream assets.
+- Align Polish/English module and action names across menus, welcome, sidebar, action palette and network tabs. Separate menu shortcut hints from action titles.
+- Give the action palette row icons and distinguish it from Commands. Align Monitoring and RDP desktop captions with accessibility names.
+- Translate network choice captions while preserving the raw authentication, profile and export values used by backend requests.
+- Add a production action/icon audit and menu/protocol/network screenshots to UI acceptance; include this audit and icon integrity checks in CI.
+
 ## 0.36.1 — Public Beta — 2026-10-16
 
 - Refine Commands with a calmer selection surface, a separate command preview card and three fixed dispatch actions. Move favorite/edit/duplicate to accessible header icons.

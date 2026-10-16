@@ -1,12 +1,12 @@
 # Verification and historical reviews
 
-Current UI polish: [0.36.1 design and verification scope](release-verification-0.36.1.md).
+Current UI presentation: [0.36.2 icon and label verification scope](release-verification-0.36.2.md).
 
 Current command module: [Smart Cheat Sheet / Command Snippets, 2026-10-16](commands-2026-10-16.md).
 
 Workspace panels: [Three/four panels and preferences, 2026-10-16](four-panel-workspace-2026-10-16.md).
 
-Current release: [0.36.1 verification](release-verification-0.36.1.md). Imported Git baseline: [0.31.1 verification](release-verification-0.31.1.md).
+Current release: [0.36.2 verification](release-verification-0.36.2.md). Imported Git baseline: [0.31.1 verification](release-verification-0.31.1.md).
 
 Personalization: [Terminal and SFTP preferences, 2026-10-16](extended-settings-2026-10-16.md).
 

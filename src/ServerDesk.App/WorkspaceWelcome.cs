@@ -36,8 +36,8 @@ public sealed partial class MainWindow
         }
         actions.Children.Add(Entry("plus","Nowe połączenie","Dodaj SSH, RDP, VNC lub Serial","Ctrl+Shift+N",()=>EditAsync(null)));
         actions.Children.Add(Entry("connect","Szybkie połączenie","Adres ssh://, rdp://, vnc:// lub serial://",null,QuickAsync));
-        actions.Children.Add(Entry("network","Network Tools","Diagnostyka sieci bez zapisanego serwera",null,()=>SelectSectionAsync("network")));
-        actions.Children.Add(Entry("square-terminal","Paleta poleceń","Wyszukaj akcję lub ustawienie","Ctrl+Shift+P",CommandsAsync)); body.Children.Add(actions);
+        actions.Children.Add(Entry("network","Narzędzia sieciowe","Diagnostyka sieci bez zapisanego serwera",null,()=>SelectSectionAsync("network")));
+        actions.Children.Add(Entry("square-terminal","Paleta akcji","Wyszukaj akcję lub ustawienie","Ctrl+Shift+P",CommandsAsync)); body.Children.Add(actions);
         var recentHeading=DesignSystem.Label(L.T("Ostatnio używane połączenia")); recentHeading.FontWeight=FontWeight.SemiBold;
         welcomeRecent=new StackPanel { Name="WelcomeRecent",IsVisible=false,Spacing=10,Children={recentHeading,welcomeRecentRows} }; body.Children.Add(welcomeRecent);
         var footer=DesignSystem.Label(L.T("Panel połączeń  Ctrl+B     ·     Otwarte sesje  Ctrl+Shift+L"),true,DesignTokens.Micro); footer.TextWrapping=TextWrapping.Wrap; body.Children.Add(footer);

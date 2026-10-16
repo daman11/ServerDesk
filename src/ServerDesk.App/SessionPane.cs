@@ -88,7 +88,7 @@ internal sealed partial class SessionPane : WorkspacePane
         if(profile.Protocol==Protocol.SSH)
         {
 
-            actions.Children.Add(PanelButton("Terminal",0)); actions.Children.Add(PanelButton("SFTP",1)); actions.Children.Add(PanelButton("Server Info",2));
+            actions.Children.Add(PanelButton("Terminal",0)); actions.Children.Add(PanelButton("SFTP",1)); actions.Children.Add(PanelButton("Monitoring",2));
             actions.Children.Add(Button("Komendy",owner.OpenCommandsPanelAsync));
             var options=new Button { Content=DeskIcons.Create("more"),Tag="Opcje",Width=30,Classes={"chrome","icon"} }; optionsButton=options; ToolTip.SetTip(options,L.T("Opcje sesji")); Avalonia.Automation.AutomationProperties.SetName(options,L.T("Opcje sesji"));
             options.ContextMenu=new ContextMenu { ItemsSource=new[]{OperationMenu("Uruchom ponownie sesję",()=>owner.ReconnectAsync(this)),OperationMenu("Poświadczenia",()=>owner.ReauthenticateAsync(this)),OperationMenu("Kopiuj zaznaczenie",()=>terminal.CopyAsync()),OperationMenu("Wklej",()=>terminal.PasteAsync()),OperationMenu("Większa czcionka",()=> { terminal.FontSize=Math.Min(32,terminal.FontSize+1); return Task.CompletedTask; }),OperationMenu("Mniejsza czcionka",()=> { terminal.FontSize=Math.Max(9,terminal.FontSize-1); return Task.CompletedTask; })} };
@@ -283,7 +283,7 @@ internal sealed partial class SessionPane : WorkspacePane
         var bar=new WrapPanel { Orientation=Orientation.Horizontal,Margin=new Thickness(8,6) }; Grid.SetColumnSpan(bar,3); files.Children.Add(bar);
         bar.Children.Add(Button("Odśwież",RefreshAsync)); bar.Children.Add(hidden); bar.Children.Add(fileTarget); hidden.IsCheckedChanged+=(_,_)=>FilterFiles();
         uploadSelection=Button("Wyślij",UploadAsync); downloadSelection=Button("Pobierz",DownloadAsync);
-        bar.Children.Add(uploadSelection); bar.Children.Add(downloadSelection); var operations=new Button { Content=DeskIcons.Labelled("more",L.T("Operacje")),Tag="Operacje" }; operations.ContextMenu=new ContextMenu { ItemsSource=new[]{OperationMenu("Nowy katalog",MkdirAsync),SingleFileMenu(null,"Zmień nazwę",RenameAsync),SingleFileMenu(null,"Przenieś do katalogu",MoveFileAsync),LinkFileMenu(null),SingleFileMenu(true,"Utwórz zdalne dowiązanie…",CreateRemoteLinkAsync),SingleFileMenu(true,"Uprawnienia chmod (zdalny)",ChmodAsync),SingleFileMenu(null,"Szczegóły",FileDetailsAsync),DeleteSelectionMenu(null)} }; operations.Click+=(_,_)=> { UpdateFileSelection(); operations.ContextMenu.Open(operations); }; bar.Children.Add(operations);
+        bar.Children.Add(uploadSelection); bar.Children.Add(downloadSelection); var operations=new Button { Content=DeskIcons.Labelled("more",L.T("Operacje")),Tag="Operacje" }; Avalonia.Automation.AutomationProperties.SetName(operations,L.T("Operacje")); operations.ContextMenu=new ContextMenu { ItemsSource=new[]{OperationMenu("Nowy katalog",MkdirAsync),SingleFileMenu(null,"Zmień nazwę",RenameAsync),SingleFileMenu(null,"Przenieś do katalogu",MoveFileAsync),LinkFileMenu(null),SingleFileMenu(true,"Utwórz zdalne dowiązanie…",CreateRemoteLinkAsync),SingleFileMenu(true,"Uprawnienia chmod (zdalny)",ChmodAsync),SingleFileMenu(null,"Szczegóły",FileDetailsAsync),DeleteSelectionMenu(null)} }; operations.Click+=(_,_)=> { UpdateFileSelection(); operations.ContextMenu.Open(operations); }; bar.Children.Add(operations);
         foreach(var control in bar.Children)control.Margin=new Thickness(0,2,6,2);
 
         localPath.Name="SftpLocalPath"; remotePath.Name="SftpRemotePath";

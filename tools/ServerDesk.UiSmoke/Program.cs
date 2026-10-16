@@ -38,6 +38,7 @@ if(args.Contains("--sftp-navigation")) { SftpNavigationChecks.Run(root); return;
 if(args.Contains("--extended-settings")) { ExtendedSettingsChecks.Run(root); return; }
 if(args.Contains("--four-panels")) { FourPanelChecks.Run(root); return; }
 if(args.Contains("--commands")) { CommandPanelChecks.Run(root); return; }
+if(args.Contains("--presentation-consistency")) { PresentationConsistencyChecks.Run(root); return; }
 if(args.Contains("--commands-network")) { CommandPanelChecks.Network(root,args[1],args[2]); return; }
 if(args.Contains("--four-panels-network")) { FourPanelChecks.Network(root,args[1],args[2]); return; }
 if(args.Contains("--extended-settings-network")) { ExtendedSettingsChecks.Network(root,args[1],args[2]); return; }
@@ -70,6 +71,7 @@ var window=new MainWindow(vm,repository,new CredentialStore(paths),new SshConnec
 window.Show();
 for(var i=0;i<20;i++) { Dispatcher.UIThread.RunJobs(); Thread.Sleep(25); }
 window.CaptureRenderedFrame()!.Save(Path.Combine(root,"main-dark.png"));
+if(args.Contains("--icons")) { IconChecks.Run(window,repository,root); window.Close(); RedesignChecks.Frames(); return; }
 if(args.Contains("--security")) { SecurityChecks.Run(repository); window.Close(); RedesignChecks.Frames(); return; }
 if(args.Contains("--stability")) { StabilityChecks.Run(repository,root); window.Close(); RedesignChecks.Frames(); return; }
 if(args.Contains("--session-chrome")) { SessionChromeChecks.Preview(window,repository,root); return; }

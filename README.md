@@ -1,4 +1,4 @@
-# ServerDesk — 0.36.1 Public Beta
+# ServerDesk — 0.36.2 Public Beta
 
 Native Windows/Linux workspace for SSH, SFTP, RDP, VNC and serial connections. Built with C#, .NET 10 and Avalonia 12. Free and open source under the [MIT license](LICENSE).
 
@@ -6,15 +6,15 @@ Native Windows/Linux workspace for SSH, SFTP, RDP, VNC and serial connections. B
 
 ## Downloads and installation
 
-0.36.1 refines Commands, Settings and shared list selection. [Release notes](docs/releases/release-0.36.1.md).
+0.36.2 completes action icons and aligns Polish/English module names, menu shortcuts and accessibility captions. [Release notes](docs/releases/release-0.36.2.md).
 
 | System | Package | Start |
 |---|---|---|
-| Windows x64 | `ServerDesk-0.36.1-win-x64-Setup.exe` | Run Setup; current-user installation and Start menu shortcut |
-| Windows x64 portable | `ServerDesk-0.36.1-win-x64.zip` | Extract everything; run `ServerDesk.App.exe` |
-| Linux x64 DEB | `serverdesk_0.36.1_amd64.deb` | `sudo apt install ./serverdesk_0.36.1_amd64.deb` |
-| Linux x64 archive | `ServerDesk-0.36.1-linux-x64.tar.gz` | Extract into a new directory; run `./ServerDesk.App` |
-| Source | `ServerDesk-0.36.1-source.zip` | .NET 10 SDK required |
+| Windows x64 | `ServerDesk-0.36.2-win-x64-Setup.exe` | Run Setup; current-user installation and Start menu shortcut |
+| Windows x64 portable | `ServerDesk-0.36.2-win-x64.zip` | Extract everything; run `ServerDesk.App.exe` |
+| Linux x64 DEB | `serverdesk_0.36.2_amd64.deb` | `sudo apt install ./serverdesk_0.36.2_amd64.deb` |
+| Linux x64 archive | `ServerDesk-0.36.2-linux-x64.tar.gz` | Extract into a new directory; run `./ServerDesk.App` |
+| Source | `ServerDesk-0.36.2-source.zip` | .NET 10 SDK required |
 
 The binary packages include .NET. Linux additionally needs its system X11/fontconfig libraries, Secret Service for remembered passwords and an installed FreeRDP client for RDP. Linux verification used Ubuntu/WSLg; other desktop/distribution combinations are experimental. ARM/macOS packages are not provided.
 

@@ -9,7 +9,7 @@ namespace ServerDesk.App;
 internal sealed partial class SessionPane
 {
     private MenuItem OperationMenu(string label,Func<Task> action)
-    { var item=new MenuItem { Header=L.T(label),Icon=DeskIcons.ForAction(label) is {} glyph?DeskIcons.Create(glyph,16):null }; item.Click+=(_,_)=>_ = owner.Safe(action); return item; }
+    { var item=DeskIcons.ActionMenu(label); item.Click+=(_,_)=>_ = owner.Safe(action); return item; }
     private async Task MoveFileAsync()
     {
         var remote=RemoteSelected;

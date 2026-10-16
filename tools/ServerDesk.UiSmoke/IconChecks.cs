@@ -26,7 +26,7 @@ internal static class IconChecks
         foreach(var theme in new[]{"dark","light"})
         {
             DesignSystem.Apply(theme); var sheet=new WrapPanel { ItemWidth=138,ItemHeight=82,Margin=new Thickness(12) };
-            foreach(var name in DeskIcons.Available.Order())
+            foreach(var name in DeskIcons.Available.Concat(DeskIcons.ApplicationPaths.Keys).Order())
             {
                 var sizes=new StackPanel { Orientation=Orientation.Horizontal,Spacing=12,HorizontalAlignment=HorizontalAlignment.Center,Children={DeskIcons.Create(name,16),DeskIcons.Create(name,24)} };
                 var text=DesignSystem.Label(name,true,DesignTokens.Micro); text.HorizontalAlignment=HorizontalAlignment.Center;

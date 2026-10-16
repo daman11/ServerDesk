@@ -27,7 +27,7 @@ internal class DeskIcon : TemplatedControl
     }
 }
 
-internal static class DeskIcons
+internal static partial class DeskIcons
 {
     private static readonly Assembly Assembly=typeof(DeskIcons).Assembly;
     private const string Prefix="ServerDesk.App.Assets.Icons.";
@@ -37,10 +37,11 @@ internal static class DeskIcons
         ["connections"]="server",["favorite"]="star",["recent"]="clock-arrow-left",["history"]="clock-arrow-left",["transfers"]="arrow-up-down",["ssh"]="square-terminal",["rdp"]="monitor",["serial"]="link-2",["close"]="x",["refresh"]="refresh-cw",["sidebar"]="panel-left",["up"]="arrow-up",["link"]="link-2",["delete"]="trash",["edit"]="pencil",["connect"]="log-in",["disconnect"]="log-out",["more"]="ellipsis",["import"]="download",["export"]="upload",["key"]="key-round",["warning"]="triangle-alert",["error"]="circle-alert",["success"]="circle-check",["unknown"]="circle-dashed",["file-json"]="file-braces"
     };
     internal static IReadOnlyCollection<string> Available=>Names;
-    internal static string Resolve(string name)=>name=="commands"?"square-terminal":Aliases.TryGetValue(name,out var alias)?alias:Names.Contains(name)?name:"file";
+    internal static string Resolve(string name)=>name=="commands"?"square-terminal":Aliases.TryGetValue(name,out var alias)?alias:Names.Contains(name)||ApplicationPaths.ContainsKey(name)?name:"file";
     internal static Geometry Geometry(string name)=>Cache.GetOrAdd(Resolve(name),Load);
     private static Geometry Load(string name)
     {
+        if(ApplicationPaths.TryGetValue(name,out var path))return Avalonia.Media.Geometry.Parse(path);
         using var stream=Assembly.GetManifestResourceStream(Prefix+name+".svg")??throw new InvalidDataException("Missing bundled icon: "+name);
         using var reader=XmlReader.Create(stream,new XmlReaderSettings { DtdProcessing=DtdProcessing.Prohibit,XmlResolver=null });
         var root=XDocument.Load(reader).Root??throw new InvalidDataException("Empty icon");
@@ -80,10 +81,4 @@ internal static class DeskIcons
     }
     internal static Button Button(string icon,string label,Action action,double size=DesignTokens.ControlHeight)
     { var button=new Button { Content=Create(icon),Width=size,Height=size,Classes={"icon","chrome"} }; ToolTip.SetTip(button,L.T(label)); AutomationProperties.SetName(button,L.T(label)); button.Click+=(_,_)=>action(); return button; }
-    internal static string? ForAction(string label)=>label switch {
-        "Kopiuj zawartość dowiązania…"=>"copy","Utwórz zdalne dowiązanie…"=>"link",
-        "Zmień ikonę folderu" or "Domyślna ikona"=>"folder",
-        "Przejdź"=>"arrow-right","Uruchom ponownie sesję"=>"refresh",
-        "Importuj grafikę"=>"image","Usuń grafikę"=>"trash","Jeden panel" or "Dokuj do panelu 1" or "Dokuj do panelu 2" or "Przywróć wszystkie odpięte sesje"=>"panel-left","Panele obok siebie" or "Panele jeden nad drugim"=>"layers","Odłącz do osobnego okna"=>"external-link","Zamknij sesję"=>"x",
-        "Połącz"=>"connect","Połącz ponownie"=>"refresh","Terminal"=>"ssh","SFTP"=>"folder","Server Info"=>"chart-no-axes-combined","Opcje" or "Menu" or "Operacje"=>"more","Odśwież"=>"refresh","Wyślij"=>"upload","Pobierz"=>"download","Anuluj" or "Zamknij" or "Anuluj transfery"=>"close","Zapisz"=>"save","Potwierdź" or "OK"=>"check","Nowe połączenie" or "Nowy serwer" or "Nowy serwer w folderze"=>"plus","Szybkie połączenie"=>"connect","Edytuj"=>"edit","Duplikuj"=>"copy","Ulubiony"=>"favorite","Usuń" or "Usuń zaznaczone…" or "Usuń trwale" or "Usuń serwer" or "Usuń pusty folder" or "Usuń plik / pusty katalog"=>"delete","Przenieś do folderu" or "Przenieś do katalogu"=>"folder-input","Poświadczenia" or "Usuń zapisane hasło"=>"key","Kopiuj zaznaczenie"=>"copy","Wklej"=>"clipboard-paste","Nowy katalog" or "Nowy folder" or "Dodaj folder"=>"folder-plus","Zmień nazwę" or "Zmień nazwę folderu"=>"edit","Uprawnienia chmod (zdalny)"=>"lock-keyhole","Szczegóły" or "O aplikacji"=>"info","Historia połączeń" or "Historia tego serwera"=>"history","Ustawienia" or "Ustawienia wyglądu"=>"settings","Import konfiguracji"=>"import","Eksport konfiguracji"=>"export","Pokaż / ukryj panel boczny"=>"sidebar","Paleta poleceń · Ctrl+Shift+P"=>"square-terminal","Uruchom RDP"=>"rdp",_=>null };
 }

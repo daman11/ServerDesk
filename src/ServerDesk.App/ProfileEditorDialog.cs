@@ -17,7 +17,7 @@ internal static class ProfileEditorDialog
     {
         var original=profile??new ServerProfile();
         var fresh=string.IsNullOrEmpty(original.Name) && string.IsNullOrEmpty(original.Host);
-        var dialog=new Window { Title=fresh?L.T("Nowy serwer"):L.T("Edytuj serwer"),Width=780,Height=740,MinWidth=600,MinHeight=460,WindowStartupLocation=WindowStartupLocation.CenterOwner };
+        var dialog=new Window { Title=fresh?L.T("Nowe połączenie"):L.T("Edytuj połączenie"),Width=780,Height=740,MinWidth=600,MinHeight=460,WindowStartupLocation=WindowStartupLocation.CenterOwner };
         Dialogs.FitToOwnerScreen(dialog,owner);
         var root=new Grid { RowDefinitions=new RowDefinitions("Auto,Auto,*,Auto"),Margin=new Thickness(20) }; dialog.Content=root;
         var pages=new Grid(); Grid.SetRow(pages,2); root.Children.Add(pages);
@@ -119,7 +119,7 @@ internal static class ProfileEditorDialog
         var group=Card(organization,"Miejsce na liście");
         var folder=new TextBox { Text=original.Folder,PlaceholderText=L.T("np. Produkcja/Linux"),Name="ProfileFolder" };
         var folderChoice=DeskIcons.Button("folder","Wybierz istniejący folder",()=> { });
-        var folderMenu=new ContextMenu { ItemsSource=new[]{""}.Concat(folders.Where(f=>f is not ("Wszystkie" or "★ Ulubione" or "◷ Ostatnie") && f.Length>0).Distinct().Order(StringComparer.CurrentCultureIgnoreCase)).Select(path=> { var item=new MenuItem { Header=path.Length==0?L.T("Bez folderu"):path }; item.Click+=(_,_)=>folder.Text=path; return item; }).ToArray() };
+        var folderMenu=new ContextMenu { ItemsSource=new[]{""}.Concat(folders.Where(f=>f is not ("Wszystkie" or "★ Ulubione" or "◷ Ostatnie") && f.Length>0).Distinct().Order(StringComparer.CurrentCultureIgnoreCase)).Select(path=> { var item=new MenuItem { Header=path.Length==0?L.T("Bez folderu"):path,Icon=DeskIcons.Create("folder",16) }; item.Click+=(_,_)=>folder.Text=path; return item; }).ToArray() };
         folderChoice.ContextMenu=folderMenu; folderChoice.Click+=(_,_)=>folderMenu.Open(folderChoice); folder.InnerRightContent=folderChoice;
         group.Children.Add(Field("Folder / podfolder",folder,2,"Użyj /, aby utworzyć podfolder. Puste pole oznacza listę główną."));
         var tags=new TextBox { Text=original.Tags,PlaceholderText=L.T("np. produkcja, linux, baza"),Name="ProfileTags" }; group.Children.Add(Field("Tagi",tags,2));

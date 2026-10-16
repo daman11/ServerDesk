@@ -80,7 +80,7 @@ public sealed partial class MainWindow : Window
         };
     }
     private Button Action(string label,Func<Task> action) => Dialogs.Button(label,()=>_ = Safe(action));
-    private MenuItem Menu(string label,Func<Task> action) { var menu=new MenuItem { Header=L.T(label),Icon=DeskIcons.ForAction(label) is {} glyph?DeskIcons.Create(glyph,16):null }; menu.Click+=(_,_)=>_ = Safe(action); return menu; }
+    private MenuItem Menu(string label,Func<Task> action,string? glyph=null,string? shortcut=null) { var menu=DeskIcons.ActionMenu(label,glyph,shortcut); menu.Click+=(_,_)=>_ = Safe(action); return menu; }
     internal async Task Safe(Func<Task> action)
     {
         try { await action(); }

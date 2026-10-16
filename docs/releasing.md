@@ -1,6 +1,6 @@
 # Building and publishing a release
 
-Release baseline: **0.36.1 Public Beta**, MIT. Windows x64 is the primary public target; Linux x64 has the validation limits described in `known-issues.md`. Development can continue after copying the immutable release directory to the chosen release host.
+Release baseline: **0.36.2 Public Beta**, MIT. Windows x64 is the primary public target; Linux x64 has the validation limits described in `known-issues.md`. Development can continue after copying the immutable release directory to the chosen release host.
 
 ## Build requirements
 
@@ -16,7 +16,7 @@ Release baseline: **0.36.1 Public Beta**, MIT. Windows x64 is the primary public
 3. Audit dependencies: `dotnet list ServerDesk.sln package --vulnerable --include-transitive --format json`. A successful command is not enough: inspect advisory output and source errors. Retain a dated report. No advisory result is a complete security audit.
 4. Build self-contained payloads sequentially: `scripts/publish.ps1 -Runtime win-x64 -Versioned`, then the same with `linux-x64`. Fresh staging avoids stale files. Notices are generated offline from restored packages and pinned upstream license texts; missing notices fail publication.
 5. `scripts/package-windows.ps1` builds the per-user Setup EXE with `/INPUTCHARSET UTF8`. `Unicode true` alone does not control source decoding. Keep `packaging/windows/owned-files.json` in source: it is the cumulative exact-file ledger for uninstall and removal of retired binaries. No recursive deletion of the install directory or user-data directories is used.
-6. In WSL at the repository root: `bash scripts/package-deb.sh 0.36.1`. This creates DEB and versioned TAR.GZ from the versioned Linux payload.
+6. In WSL at the repository root: `bash scripts/package-deb.sh 0.36.2`. This creates DEB and versioned TAR.GZ from the versioned Linux payload.
 7. Run UI smoke (`--restart-design`, `--localization`, `--security`, `--stability`, `--protocols`, `--large-file-views`, `--trusted-hosts`, `--terminal-search`, `--sftp-navigation`, `--extended-settings`, `--four-panels`, `--docking-regression`), published native startup/RDP-host checks, `--published-restart <exe>`, `scripts/test-installer-text.ps1`, `scripts/test-installer.ps1` and `scripts/test-release-content.ps1`. The text check reads the actual compiled welcome page without advancing installation. Installer tests use `/NOREGISTER`, isolated workspace directories and no normal user database or credential store. `/NOREGISTER` skips Start menu/Apps registration; default installation includes both.
 8. `scripts/assemble-release.ps1` collects only approved files, creates the source archive and writes SHA256SUMS/release.json. Review it before publishing. Run `scripts/test-release-content.ps1` again on the assembled set.
 9. Commit the final validated source, rebuild/repackage from that clean commit and repeat the published-payload/installer/content gates before freezing the final set. The content check requires the EXE version and ProductVersion commit to match current source. Create the annotated `vVERSION` tag once and run `scripts/check-release-state.ps1 -RequireCurrentRelease`. The guard requires clean source at that tag, the complete local distribution set, valid SHA-256 digests and packaged source identical to tracked files. If verification changes a source file, make a new commit and rebuild/reassemble before freezing; never retag a frozen release. Link the versioned installer when handing over the result.
@@ -33,7 +33,7 @@ Uninstall removes only owned application files and its matching registration/sho
 
 ## Publication and next versions
 
-The prepared folder is `artifacts/releases/0.36.1`. Publish the Setup EXE, ZIP, DEB, TAR.GZ, source ZIP, release notes, verification report and checksums together. Mark the host release as **prerelease / beta**. A public repository, issue tracker and private security contact must be selected by the maintainer; no destination is fabricated or uploaded automatically.
+The prepared folder is `artifacts/releases/0.36.2`. Publish the Setup EXE, ZIP, DEB, TAR.GZ, source ZIP, release notes, verification report and checksums together. Mark the host release as **prerelease / beta**. A public repository, issue tracker and private security contact must be selected by the maintainer; no destination is fabricated or uploaded automatically.
 
 This build has no trusted Authenticode signature. If signing is introduced, sign payload binaries before ZIP/Setup compilation, sign Setup after compilation, then regenerate checksums and repeat verification. Never claim SHA256 authenticates the publisher.
 

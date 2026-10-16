@@ -57,7 +57,11 @@ internal sealed partial class SessionPane
         fullscreen.IsVisible=!UseEmbeddedRdp;
         if(rdpFileDrop!=null) { rdpFileDrop.IsVisible=UseEmbeddedRdp; rdpFileDrop.IsEnabled=CanPrepareRdpFiles; }
         if(rdpExternal!=null) { rdpExternal.IsVisible=UseEmbeddedRdp && rdpHostUnavailable; rdpExternal.IsEnabled=!active && !connecting && !IsBusy && !stoppingRdp; }
-        if(rdpShow!=null)rdpShow.Content=DeskIcons.Labelled(UseEmbeddedRdp?"monitor":"external-link",UseEmbeddedRdp?L.T("Pulpit"):L.T("Pokaż okno"));
+        if(rdpShow!=null)
+        {
+            var label=UseEmbeddedRdp?L.T("Pulpit"):L.T("Pokaż okno"); rdpShow.Content=DeskIcons.Labelled(UseEmbeddedRdp?"monitor":"external-link",label);
+            Avalonia.Automation.AutomationProperties.SetName(rdpShow,label); ToolTip.SetTip(rdpShow,label);
+        }
         if(rdpHelp!=null)rdpHelp.Text=UseEmbeddedRdp?L.T("Pulpit otworzy się w tej zakładce. Możesz przenieść ją do drugiego panelu lub osobnego okna.\nCtrl+Alt+← / Ctrl+Alt+→ oddaje klawiaturę do ServerDesk; Ctrl+Alt+End otwiera zdalny ekran zabezpieczeń.\nPliki upuść na strefę schowka, a następnie wklej w folderze zdalnego Eksploratora.\nCertyfikat wymagający weryfikacji potwierdź w systemowym oknie Windows."):OperatingSystem.IsWindows()?L.T("Pulpit działa w osobnym oknie klienta Windows. Dane logowania i certyfikat potwierdź w jego oknie.\nStan uruchomionego klienta nie potwierdza zalogowania."):L.T("Login, hasło i certyfikat potwierdź w konsoli tej zakładki.\nPulpit działa w osobnym oknie FreeRDP. Stan klienta nie potwierdza zalogowania.");
         rdpSummary.Text=connecting?L.T("Uruchamianie klienta RDP…"):stoppingRdp?L.T("Zamykanie klienta RDP…"):active?(UseEmbeddedRdp?L.T("Logowanie RDP w zakładce. Sprawdź także systemowe okno certyfikatu."):L.T("Klient RDP działa. Logowanie i pulpit obsługuje jego okno.")):rdpError.Length>0?rdpError:HasAttemptedConnection?L.T("Klient RDP jest zamknięty. Wybierz Połącz ponownie."):L.T("Gotowy do uruchomienia pulpitu zdalnego.");
         DesignSystem.Resource(rdpSummary,TextBlock.ForegroundProperty,!active && rdpError.Length>0?"Danger":"ForegroundPrimary");

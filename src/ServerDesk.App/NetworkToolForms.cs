@@ -3,6 +3,7 @@ using System.Net.Sockets;
 using Avalonia;
 using Avalonia.Automation;
 using Avalonia.Controls;
+using Avalonia.Controls.Templates;
 using Avalonia.Layout;
 using ServerDesk.Core;
 using ServerDesk.Infrastructure;
@@ -10,6 +11,7 @@ using ServerDesk.Infrastructure;
 namespace ServerDesk.App;
 internal sealed partial class NetworkToolPane
 {
+    private static FuncDataTemplate<string> OptionTemplate()=>new((value,_)=>DesignSystem.Label(NetworkToolCatalog.OptionName(value??"")));
     private readonly Dictionary<string,TextBox> secretFields=[];
     private NetworkRequest Defaults()=>new() { Tool=Tool,Port=Tool==NetworkToolKind.Wake?9:Tool==NetworkToolKind.Snmp?161:443,TimeoutMs=Tool is NetworkToolKind.Http or NetworkToolKind.Tls?10000:2000 };
     private string Text(string key)=>((TextBox)fields[key]).Text??"";
@@ -27,7 +29,7 @@ internal sealed partial class NetworkToolPane
     private void Number(string key,string label,int min,int max)
     { var value=(int)typeof(NetworkRequest).GetProperty(key)!.GetValue(Defaults())!; var input=new NumericUpDown { Minimum=min,Maximum=max,Value=value,Increment=1,FormatString="0" }; fields[key]=input; Group(key,label,input); }
     private void Choice(string key,string label,params string[] options)
-    { var value=typeof(NetworkRequest).GetProperty(key)!.GetValue(Defaults()) as string; var input=new ComboBox { ItemsSource=options,SelectedIndex=Math.Max(0,Array.IndexOf(options,value)),HorizontalAlignment=HorizontalAlignment.Stretch }; fields[key]=input; Group(key,label,input); }
+    { var value=typeof(NetworkRequest).GetProperty(key)!.GetValue(Defaults()) as string; var input=new ComboBox { ItemsSource=options,ItemTemplate=OptionTemplate(),SelectedIndex=Math.Max(0,Array.IndexOf(options,value)),HorizontalAlignment=HorizontalAlignment.Stretch }; fields[key]=input; Group(key,label,input); }
     private void Flag(string key,string label)
     { var input=new CheckBox { Content=L.T(label),IsChecked=(bool)typeof(NetworkRequest).GetProperty(key)!.GetValue(Defaults())! }; fields[key]=input; Group(key,"",input); }
     private void Secret(string key,string label,string initial="")
@@ -45,11 +47,11 @@ internal sealed partial class NetworkToolPane
                 Number("MaxHops","Maksymalna liczba hopów",1,64); Number("IntervalMs","Interwał cyklu [ms]",100,60000); Flag("Continuous","Monitoruj cyklicznie (MTR)"); Flag("ResolveNames","Rozwiązuj nazwy routerów"); break;
             case NetworkToolKind.Dns:
                 Choice("RecordType","Typ rekordu",NetworkToolsService.DnsTypes); Number("Retries","Ponowienia",0,3); Input("Resolvers","Resolvery: IP lub IP:port, po przecinku",true,512);
-                var resolver=new ComboBox { ItemsSource=new[]{"System","Cloudflare · 1.1.1.1","Google · 8.8.8.8","Quad9 · 9.9.9.9","Custom DNS"},PlaceholderText=L.T("Wybierz resolver"),HorizontalAlignment=HorizontalAlignment.Stretch }; resolver.SelectionChanged+=(_,_)=> { if(resolver.SelectedIndex is >=0 and <4)((TextBox)fields["Resolvers"]).Text=new[]{"","1.1.1.1","8.8.8.8","9.9.9.9"}[resolver.SelectedIndex]; }; Group("resolverPreset","Szybki wybór DNS",resolver);
+                var resolver=new ComboBox { ItemTemplate=OptionTemplate(),ItemsSource=new[]{"System","Cloudflare · 1.1.1.1","Google · 8.8.8.8","Quad9 · 9.9.9.9","Custom DNS"},PlaceholderText=L.T("Wybierz resolver"),HorizontalAlignment=HorizontalAlignment.Stretch }; resolver.SelectionChanged+=(_,_)=> { if(resolver.SelectedIndex is >=0 and <4)((TextBox)fields["Resolvers"]).Text=new[]{"","1.1.1.1","8.8.8.8","9.9.9.9"}[resolver.SelectedIndex]; }; Group("resolverPreset","Szybki wybór DNS",resolver);
                 rememberedResolvers=new ComboBox { PlaceholderText=L.T("Własny resolver"),HorizontalAlignment=HorizontalAlignment.Stretch }; rememberedResolvers.SelectionChanged+=(_,_)=> { if(rememberedResolvers.SelectedItem is string value)((TextBox)fields["Resolvers"]).Text=value; }; Group("savedResolvers","Ostatnie resolvery",rememberedResolvers); break;
             case NetworkToolKind.Ports:
                 Input("Ports","Porty, np. 22,80,443 lub 8000-8100",false,16384); Number("Concurrency","Równoległe połączenia",1,64);
-                var profile=new ComboBox { ItemsSource=NetworkToolsService.PortProfiles.Keys.Append("Custom").ToArray(),PlaceholderText=L.T("Zestaw portów"),HorizontalAlignment=HorizontalAlignment.Stretch }; profile.SelectionChanged+=(_,_)=> { if(profile.SelectedItem is string name && NetworkToolsService.PortProfiles.TryGetValue(name,out var value))((TextBox)fields["Ports"]).Text=value; }; Group("portProfile","Profil skanowania",profile); break;
+                var profile=new ComboBox { ItemTemplate=OptionTemplate(),ItemsSource=NetworkToolsService.PortProfiles.Keys.Append("Custom").ToArray(),PlaceholderText=L.T("Zestaw portów"),HorizontalAlignment=HorizontalAlignment.Stretch }; profile.SelectionChanged+=(_,_)=> { if(profile.SelectedItem is string name && NetworkToolsService.PortProfiles.TryGetValue(name,out var value))((TextBox)fields["Ports"]).Text=value; }; Group("portProfile","Profil skanowania",profile); break;
             case NetworkToolKind.Wake:
                 Input("Broadcast","Broadcast IPv4"); Number("Port","Port UDP",1,65535); Input("LocalAddress","Lokalny IPv4 (puste: domyślny interfejs)");
                 var interfaces=new ComboBox { ItemsSource=NetworkInterface.GetAllNetworkInterfaces().SelectMany(adapter=>adapter.GetIPProperties().UnicastAddresses.Where(ip=>ip.Address.AddressFamily==AddressFamily.InterNetwork).Select(ip=>new HostChoice(adapter.Name,ip.Address.ToString()))).ToArray(),PlaceholderText=L.T("Wybierz interfejs"),HorizontalAlignment=HorizontalAlignment.Stretch }; interfaces.SelectionChanged+=(_,_)=> { if(interfaces.SelectedItem is HostChoice choice)((TextBox)fields["LocalAddress"]).Text=choice.Host; }; Group("interface","Interfejs sieciowy",interfaces); break;

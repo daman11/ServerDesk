@@ -51,14 +51,14 @@ public sealed partial class MainWindow
         docking.ContextMenu=new ContextMenu { ItemsSource=new[]{Menu("Jeden panel",()=> { SetWorkspaceMode(WorkspaceMode.Single); return Task.CompletedTask; }),Menu("Panele obok siebie",()=> { SetWorkspaceMode(WorkspaceMode.Columns); return Task.CompletedTask; }),Menu("Panele jeden nad drugim",()=> { SetWorkspaceMode(WorkspaceMode.Rows); return Task.CompletedTask; }),Menu("Trzy panele (1 + 2)",()=> { SetWorkspaceMode(WorkspaceMode.Three); return Task.CompletedTask; }),Menu("Cztery panele (2 × 2)",()=> { SetWorkspaceMode(WorkspaceMode.Grid); return Task.CompletedTask; }),Menu("Wyrównaj wielkość paneli",()=> { EqualizeWorkspace(); return Task.CompletedTask; }),Menu("Przywróć wszystkie odpięte sesje",()=> { foreach(var pane in Panes.Where(p=>dockState.Location(p.WorkspaceId)==SessionDock.Floating).ToArray())DockSession(pane,SessionDock.Primary); return Task.CompletedTask; })} };
         docking.Click+=(_,_)=>docking.ContextMenu.Open(docking); titleActions.Children.Add(docking);
         var more=new Button { Content=DeskIcons.Labelled("more","Menu"),Tag="Menu",Classes={"icon","chrome"} };
-        more.ContextMenu=new ContextMenu { ItemsSource=new[]{Menu("Szybkie połączenie",QuickAsync),Menu("Nowy folder",FolderAsync),Menu("Import konfiguracji",ImportAsync),Menu("Eksport konfiguracji",ExportAsync),Menu("Paleta poleceń · Ctrl+Shift+P",CommandsAsync),Menu("Ustawienia",SettingsAsync),Menu("Historia połączeń",()=>HistoryAsync()),Menu("Network Tools",()=>SelectSectionAsync("network")),Menu("Komendy · Smart Cheat Sheet · Ctrl+Shift+K",OpenCommandsPanelAsync),Menu("O aplikacji",AboutAsync)} };
+        more.ContextMenu=new ContextMenu { ItemsSource=new[]{Menu("Szybkie połączenie",QuickAsync),Menu("Nowy folder",FolderAsync),Menu("Import konfiguracji",ImportAsync),Menu("Eksport konfiguracji",ExportAsync),Menu("Paleta akcji",CommandsAsync,shortcut:"Ctrl+Shift+P"),Menu("Ustawienia",SettingsAsync),Menu("Historia połączeń",()=>HistoryAsync()),Menu("Narzędzia sieciowe",()=>SelectSectionAsync("network")),Menu("Komendy",OpenCommandsPanelAsync,shortcut:"Ctrl+Shift+K"),Menu("O aplikacji",AboutAsync)} };
         more.Click+=(_,_)=>more.ContextMenu.Open(more); titleActions.Children.Add(more); Grid.SetColumn(titleActions,2); titlebar.Children.Add(titleActions);
         BuildWindowCaptions(titlebar);
         var header=BuildWorkspaceHeader(titlebar); Grid.SetColumnSpan(header,4); layout.Children.Add(header);
         var activity=new DockPanel(); DesignSystem.Resource(activity,DockPanel.BackgroundProperty,"BackgroundPrimary"); Grid.SetRow(activity,1); layout.Children.Add(activity);
         var bottom=new StackPanel(); DockPanel.SetDock(bottom,Dock.Bottom); activity.Children.Add(bottom);
         var activityList=new StackPanel(); activity.Children.Add(activityList);
-        foreach(var item in new[]{("connections",L.T("Połączenia")),("favorite",L.T("Ulubione")),("recent",L.T("Ostatnie")),("transfers",L.T("Transfery")),("network", "Network Tools"),("commands",L.T("Komendy")),("settings",L.T("Ustawienia"))})
+        foreach(var item in new[]{("connections",L.T("Połączenia")),("favorite",L.T("Ulubione")),("recent",L.T("Ostatnie")),("transfers",L.T("Transfery")),("network", L.T("Narzędzia sieciowe")),("commands",L.T("Komendy")),("settings",L.T("Ustawienia"))})
         {
             var button=DeskIcons.Button(item.Item1,item.Item2,()=>_ = Safe(()=>SelectSectionAsync(item.Item1)),DesignTokens.ActivityButton); button.Margin=new Thickness(3); button.Classes.Add("activity");
             activityButtons[item.Item1]=button; (item.Item1=="settings"?bottom:activityList).Children.Add(button);
@@ -107,7 +107,7 @@ public sealed partial class MainWindow
             if(folders.TryGetValue(path,out var found))return found;
             var slash=path.LastIndexOf('/'); var node=new TreeViewItem { Header=Row(FolderIcons.Resolve(vm.FolderIcons.GetValueOrDefault(path)),slash<0?path:path[(slash+1)..],count:counts.GetValueOrDefault(path)),Tag=path,IsExpanded=!string.IsNullOrWhiteSpace(vm.Search) || !collapsed.Contains(path) };
             node.PropertyChanged+=(_,e)=> { if(e.Property==TreeViewItem.IsExpandedProperty) { if(node.IsExpanded)collapsed.Remove(path); else collapsed.Add(path); } };
-            node.ContextMenu=new ContextMenu { ItemsSource=new[]{Menu("Nowy serwer w folderze",()=>EditAsync(new ServerProfile { Folder=path })),Menu("Zmień ikonę folderu",()=>EditFolderIconAsync(path)),Menu("Zmień nazwę",async()=> { vm.SelectedFolder=path; await RenameFolderAsync(); }),Menu("Usuń pusty folder",async()=> { vm.SelectedFolder=path; await DeleteFolderAsync(); })} };
+            node.ContextMenu=new ContextMenu { ItemsSource=new[]{Menu("Nowe połączenie w folderze",()=>EditAsync(new ServerProfile { Folder=path })),Menu("Zmień ikonę folderu",()=>EditFolderIconAsync(path)),Menu("Zmień nazwę",async()=> { vm.SelectedFolder=path; await RenameFolderAsync(); }),Menu("Usuń pusty folder",async()=> { vm.SelectedFolder=path; await DeleteFolderAsync(); })} };
             DragDrop.SetAllowDrop(node,true);
             DragDrop.AddDragOverHandler(node,(_,e)=> { e.DragEffects=e.DataTransfer.Contains(ServerDrag)?DragDropEffects.Move:DragDropEffects.None; e.Handled=true; });
             DragDrop.AddDropHandler(node,(_,e)=> { if(e.DataTransfer.TryGetValue(ServerDrag) is {} p)_ = Safe(async()=> { await repository.MoveToFolderAsync(p.Id,path); await vm.LoadAsync(); }); e.Handled=true; });
@@ -171,7 +171,7 @@ public sealed partial class MainWindow
         if(section==id && sidebar.IsVisible) { ToggleSidebar(); return; }
         section=id; if(!sidebar.IsVisible)ToggleSidebar();
         connectionTools.IsVisible=connectionHeaderActions.IsVisible=connectionBrowser.IsVisible=id is not ("transfers" or "network"); transferOverview.IsVisible=id=="transfers"; networkBrowserHost.IsVisible=networkBrowser.IsVisible=id=="network";
-        sectionTitle.Text=id switch { "favorite"=>L.T("ULUBIONE"),"recent"=>L.T("OSTATNIE"),"transfers"=>L.T("TRANSFERY"),"network"=>"NETWORK TOOLS",_=>L.T("POŁĄCZENIA") }; UpdateActivity(); QueueTree(); UpdateStatus();
+        sectionTitle.Text=id switch { "favorite"=>L.T("ULUBIONE"),"recent"=>L.T("OSTATNIE"),"transfers"=>L.T("TRANSFERY"),"network"=>L.T("NARZĘDZIA SIECIOWE"),_=>L.T("POŁĄCZENIA") }; UpdateActivity(); QueueTree(); UpdateStatus();
     }
     private void UpdateActivity()
     {
@@ -214,11 +214,15 @@ public sealed partial class MainWindow
     private Task AboutAsync()=>Dialogs.Message(this,L.T("O ServerDesk"),L.T("Publiczna beta · licencja MIT")+"\n\n"+L.F($"ServerDesk {typeof(App).Assembly.GetName().Version?.ToString(3)}\nSSH · SFTP · monitoring · VNC · Serial\nRDP w zakładce na Windows i osobnym oknie na Linux\nSkróty terminala Ctrl+B i Ctrl+W są przekazywane do aplikacji zdalnej. Użyj Ctrl+Shift+B / Ctrl+Shift+W, aby sterować panelem i zakładką z terminala."));
     private async Task CommandsAsync()
     {
-        var commands=new Dictionary<string,Func<Task>> { ["Network Tools"]=()=>SelectSectionAsync("network"),[L.T("Nowe połączenie")]=()=>EditAsync(null),[L.T("Szybkie połączenie")]=QuickAsync,[L.T("Otwarte sesje · Ctrl+Shift+L")]=()=>SwitchSessionAsync(),[L.T("Nowy folder")]=FolderAsync,[L.T("Import konfiguracji")]=ImportAsync,[L.T("Eksport konfiguracji")]=ExportAsync,[L.T("Ustawienia wyglądu")]=SettingsAsync,[L.T("Historia połączeń")]=()=>HistoryAsync(),[L.T("Pokaż / ukryj panel boczny")]=()=> { ToggleSidebar(); return Task.CompletedTask; } };
-        commands[L.T("Komendy · Smart Cheat Sheet · Ctrl+Shift+K")]=OpenCommandsPanelAsync;
-        foreach(var tool in Enum.GetValues<NetworkToolKind>())commands["Network Tools · "+NetworkToolCatalog.Name(tool)]=()=> { OpenNetworkTool(tool); return Task.CompletedTask; };
-        foreach(var (label,mode) in new[]{("Jeden panel",WorkspaceMode.Single),("Panele obok siebie",WorkspaceMode.Columns),("Panele jeden nad drugim",WorkspaceMode.Rows),("Trzy panele (1 + 2)",WorkspaceMode.Three),("Cztery panele (2 × 2)",WorkspaceMode.Grid)})commands[L.T(label)]=()=> { SetWorkspaceMode(mode); return Task.CompletedTask; };
-        commands[L.T("Wyrównaj wielkość paneli")]=()=> { EqualizeWorkspace(); return Task.CompletedTask; };
-        var chosen=await Dialogs.Commands(this,commands.Keys); if(chosen!=null)await commands[chosen]();
+        var commands=new Dictionary<string,Func<Task>>(); var icons=new Dictionary<string,string?>();
+        void AddAction(string source,Func<Task> run,string? glyph=null) { var label=L.T(source); commands[label]=run; icons[label]=glyph??DeskIcons.ForAction(source); }
+        AddAction("Narzędzia sieciowe",()=>SelectSectionAsync("network")); AddAction("Nowe połączenie",()=>EditAsync(null)); AddAction("Szybkie połączenie",QuickAsync);
+        AddAction("Otwarte sesje · Ctrl+Shift+L",()=>SwitchSessionAsync()); AddAction("Nowy folder",FolderAsync); AddAction("Import konfiguracji",ImportAsync); AddAction("Eksport konfiguracji",ExportAsync);
+        AddAction("Ustawienia",SettingsAsync); AddAction("Historia połączeń",()=>HistoryAsync()); AddAction("Pokaż / ukryj panel połączeń",()=> { ToggleSidebar(); return Task.CompletedTask; });
+        AddAction("Komendy · Ctrl+Shift+K",OpenCommandsPanelAsync);
+        foreach(var tool in Enum.GetValues<NetworkToolKind>())AddAction(L.T("Narzędzia sieciowe")+" · "+NetworkToolCatalog.Name(tool),()=> { OpenNetworkTool(tool); return Task.CompletedTask; },NetworkToolCatalog.Icon(tool));
+        foreach(var (label,mode) in new[]{("Jeden panel",WorkspaceMode.Single),("Panele obok siebie",WorkspaceMode.Columns),("Panele jeden nad drugim",WorkspaceMode.Rows),("Trzy panele (1 + 2)",WorkspaceMode.Three),("Cztery panele (2 × 2)",WorkspaceMode.Grid)})AddAction(label,()=> { SetWorkspaceMode(mode); return Task.CompletedTask; });
+        AddAction("Wyrównaj wielkość paneli",()=> { EqualizeWorkspace(); return Task.CompletedTask; });
+        var chosen=await Dialogs.Commands(this,commands.Keys,label=>icons.GetValueOrDefault(label)); if(chosen!=null)await commands[chosen]();
     }
 }

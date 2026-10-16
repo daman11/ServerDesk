@@ -1,5 +1,6 @@
 using Avalonia;
 using Avalonia.Controls;
+using Avalonia.Controls.Templates;
 using Avalonia.Layout;
 using Avalonia.Media;
 using ServerDesk.Infrastructure;
@@ -32,14 +33,15 @@ internal static partial class Dialogs
         var row=new StackPanel { Orientation=Orientation.Horizontal,HorizontalAlignment=HorizontalAlignment.Right }; stack.Children.Add(row); var dialog=Window(title,stack); row.Children.Add(Button("Zamknij",()=>dialog.Close())); await dialog.ShowDialog(owner);
     }
     internal static Task Settings(Window owner,ProfileRepository repository,Func<Task> changed)=>EditApplicationSettings(owner,repository,changed);
-    internal static async Task<string?> Commands(Window owner,IEnumerable<string> commands)
+    internal static async Task<string?> Commands(Window owner,IEnumerable<string> commands,Func<string,string?>? icon=null)
     {
-        var names=commands.ToArray(); var search=new TextBox { Name="CommandSearch",PlaceholderText=L.T("Wpisz polecenie…") }; var list=new ListBox { Name="CommandResults",Height=240 };
-        Avalonia.Automation.AutomationProperties.SetName(search,L.T("Szukaj polecenia")); Avalonia.Automation.AutomationProperties.SetName(list,L.T("Dostępne polecenia"));
-        var empty=Text(L.T("Brak pasujących poleceń. Zmień wyszukiwanie."),12); empty.Name="CommandsEmpty";
+        var names=commands.ToArray(); var search=new TextBox { Name="CommandSearch",PlaceholderText=L.T("Wpisz nazwę akcji…") }; var list=new ListBox { Name="CommandResults",Height=240 };
+        list.ItemTemplate=new FuncDataTemplate<string>((name,_)=>name==null?null:DeskIcons.Labelled(icon?.Invoke(name)??DeskIcons.ForAction(name)??"square-terminal",name));
+        Avalonia.Automation.AutomationProperties.SetName(search,L.T("Szukaj akcji")); Avalonia.Automation.AutomationProperties.SetName(list,L.T("Dostępne akcje"));
+        var empty=Text(L.T("Brak pasujących akcji. Zmień wyszukiwanie."),12); empty.Name="CommandsEmpty";
         var results=new Grid { Children={list,empty} }; empty.VerticalAlignment=VerticalAlignment.Center;
         var actions=new StackPanel { Orientation=Orientation.Horizontal,HorizontalAlignment=HorizontalAlignment.Right,Spacing=8 };
-        var stack=new StackPanel { Spacing=DesignTokens.Section,Children={DesignSystem.PageHeading("square-terminal",L.T("Paleta poleceń")),search,results,actions} }; var dialog=Window(L.T("Paleta poleceń"),stack);
+        var stack=new StackPanel { Spacing=DesignTokens.Section,Children={DesignSystem.PageHeading("square-terminal",L.T("Paleta akcji")),search,results,actions} }; var dialog=Window(L.T("Paleta akcji"),stack);
         void Pick() { if(list.SelectedItem is string command)dialog.Close(command); }
         var run=Button("Uruchom",Pick); run.Classes.Add("primary"); actions.Children.Add(Button("Anuluj",()=>dialog.Close())); actions.Children.Add(run);
         void Filter()

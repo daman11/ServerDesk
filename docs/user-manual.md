@@ -1,6 +1,6 @@
 # ServerDesk
 
-Natywny klient administracyjny C# / .NET 10 / Avalonia 12 dla Windows i Linux. Wersja 0.36.1 Public Beta; [status MVP](mvp-status.md), [ograniczenia](known-issues.md) i [zmiany tego wydania](releases/release-0.36.1.md).
+Natywny klient administracyjny C# / .NET 10 / Avalonia 12 dla Windows i Linux. Wersja 0.36.2 Public Beta; [status MVP](mvp-status.md), [ograniczenia](known-issues.md) i [zmiany tego wydania](releases/release-0.36.2.md).
 
 ## Uruchomienie
 
@@ -16,7 +16,7 @@ Od wersji 0.32.0: **Menu → Ustawienia → Bezpieczeństwo → Zaufane klucze S
 
 Windows: rozpakuj całe archiwum wydania Windows i uruchom `ServerDesk.App.exe`. Nie przenoś samego EXE — wydanie zawiera biblioteki natywne. Nie wymaga instalacji .NET. Wersja przenośna domyślnie zapisuje konfigurację w `%APPDATA%\ServerDesk`.
 
-Linux: rozpakuj archiwum, wykonaj `chmod +x ServerDesk.App` i `./ServerDesk.App`. Alternatywnie zainstaluj DEB: `sudo apt install ./serverdesk_0.36.1_amd64.deb`. Na Fedora użyj archiwum. Wymagane są biblioteki X11/fontconfig (szczegóły w dokumentacji). WSLg służył do części testów; nie zastępuje testów na fizycznym Kubuntu/Fedora.
+Linux: rozpakuj archiwum, wykonaj `chmod +x ServerDesk.App` i `./ServerDesk.App`. Alternatywnie zainstaluj DEB: `sudo apt install ./serverdesk_0.36.2_amd64.deb`. Na Fedora użyj archiwum. Wymagane są biblioteki X11/fontconfig (szczegóły w dokumentacji). WSLg służył do części testów; nie zastępuje testów na fizycznym Kubuntu/Fedora.
 
 Okno zapamiętuje normalny rozmiar i maksymalizację, a przy starcie mieści się w obszarze roboczym monitora. Po odłączeniu monitora wraca na ekran główny. Nie trzeba usuwać zapisanej konfiguracji.
 
@@ -47,9 +47,9 @@ Język / Language: **Ustawienia → Wygląd → Język aplikacji / Language**. P
 - VNC: wybierz protokół VNC i adres/port (domyślnie 5900). Pulpit działa w zakładce, obsługuje mysz/klawiaturę, dopasowanie, rozmiar rzeczywisty, podgląd, Ctrl+Alt+Del i dokowanie. Ctrl+Alt+← / → oddaje fokus do aplikacji. Profil jawnie wybiera hasło VNC lub brak uwierzytelniania. Standardowy VNC nie szyfruje transmisji; TLS/VeNCrypt, konta systemowe, schowek i transfery VNC nie są obsługiwane. Użyj zaufanej sieci/VPN/istniejącego tunelu. Szybkie połączenie: `vnc://host:5900`. Szczegóły i ograniczenia biblioteki alpha: `docs/releases/release-0.18.0.md`.
 - Serial: wybierz port COM lub urządzenie Linux, prędkość, bity danych/stopu, parzystość i sterowanie przepływem. Port można wykryć przyciskiem lub wpisać ręcznie. DTR i RTS są domyślnie wyłączone. Połącz otwiera urządzenie w terminalu; Rozłącz zwalnia port. Na Linux wymagane są uprawnienia do danego urządzenia. Szybkie połączenie: `serial://COM3?baud=9600` albo `serial:///dev/ttyUSB0?baud=115200`.
 
-## Network Tools
+## Narzędzia sieciowe
 
-**Network Tools**: dziewięć narzędzi na lewym pasku i w menu kontekstowym serwera. Działają na ręcznie podanym celu bez zapisanych połączeń; karty obsługują split/dokowanie, Start/Stop/Restart, historię i eksport. [Pełna instrukcja Network Tools](network-tools.md).
+**Narzędzia sieciowe**: dziewięć narzędzi na lewym pasku i w menu kontekstowym serwera. Działają na ręcznie podanym celu bez zapisanych połączeń; karty obsługują split/dokowanie, Start/Stop/Restart, historię i eksport. [Pełna instrukcja narzędzi sieciowych](network-tools.md).
 
 ## Magazyn danych
 

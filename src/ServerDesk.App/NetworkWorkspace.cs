@@ -10,7 +10,12 @@ using ServerDesk.Infrastructure;
 namespace ServerDesk.App;
 internal static class NetworkToolCatalog
 {
-    internal static string Name(NetworkToolKind tool)=>tool switch { NetworkToolKind.Trace=>"Traceroute / MTR",NetworkToolKind.Dns=>"DNS Lookup",NetworkToolKind.Ports=>"Port Scanner",NetworkToolKind.Wake=>"Wake-on-LAN",NetworkToolKind.Http=>"HTTP Client",NetworkToolKind.Tls=>"SSL/TLS Inspector",NetworkToolKind.Subnet=>"Subnet Calculator",NetworkToolKind.Snmp=>"SNMP Browser",_=>"Ping" };
+    internal static string OptionName(string value)=>L.T(value switch
+    {
+        "None"=>"Brak","System"=>"Systemowy DNS","Custom"=>"Własny","Custom DNS"=>"Własny DNS","Response"=>"Treść odpowiedzi",
+        "Common Ports"=>"Najczęstsze porty","Web Services"=>"Usługi WWW","Windows Services"=>"Usługi Windows","Linux Services"=>"Usługi Linux","Database Services"=>"Usługi baz danych",_=>value
+    });
+    internal static string Name(NetworkToolKind tool)=>L.T(tool switch { NetworkToolKind.Trace=>"Trasa sieciowa / MTR",NetworkToolKind.Dns=>"Zapytania DNS",NetworkToolKind.Ports=>"Skaner portów",NetworkToolKind.Wake=>"Wake-on-LAN",NetworkToolKind.Http=>"Klient HTTP",NetworkToolKind.Tls=>"Inspektor TLS",NetworkToolKind.Subnet=>"Kalkulator podsieci",NetworkToolKind.Snmp=>"Przeglądarka SNMP",_=>"Ping" });
     internal static string Icon(NetworkToolKind tool)=>tool switch { NetworkToolKind.Ping=>"chart-no-axes-combined",NetworkToolKind.Trace=>"router",NetworkToolKind.Dns=>"globe",NetworkToolKind.Ports=>"network",NetworkToolKind.Wake=>"connect",NetworkToolKind.Http=>"file-json",NetworkToolKind.Tls=>"shield",NetworkToolKind.Subnet=>"layers",_=>"server" };
     internal static string Hint(NetworkToolKind tool)=>L.T(tool switch { NetworkToolKind.Ping=>"Opóźnienie, straty pakietów i wykres ICMP.",NetworkToolKind.Trace=>"Hopy i cykliczne statystyki trasy ICMP.",NetworkToolKind.Dns=>"Rekordy i porównanie resolverów DNS.",NetworkToolKind.Ports=>"Porty TCP jednego wskazanego hosta.",NetworkToolKind.Wake=>"Wyślij Magic Packet do urządzenia.",NetworkToolKind.Http=>"Zapytania REST, nagłówki i odpowiedzi.",NetworkToolKind.Tls=>"Certyfikat, łańcuch i uzgodnione TLS.",NetworkToolKind.Subnet=>"Adresacja i podział prefiksów IPv4/IPv6.",_=>"Odczyt OID przez SNMP v2c lub v3." });
 }
@@ -36,7 +41,7 @@ public sealed partial class MainWindow
     {
         var pane=new NetworkToolPane(this,tool,NetworkStore,new NetworkToolsService(),vm.AllServers.ToArray(),profile?.Host??""); RegisterPane(pane); pane.FocusContent(); return pane;
     }
-    private MenuItem NetworkContextMenu(ServerProfile profile)=>new() { Header="Network Tools",Icon=DeskIcons.Create("network",16),ItemsSource=Enum.GetValues<NetworkToolKind>().Select(tool=>Menu(NetworkToolCatalog.Name(tool),()=> { OpenNetworkTool(tool,profile); return Task.CompletedTask; })).ToArray() };
+    private MenuItem NetworkContextMenu(ServerProfile profile)=>new() { Header=L.T("Narzędzia sieciowe"),Icon=DeskIcons.Create("network",16),ItemsSource=Enum.GetValues<NetworkToolKind>().Select(tool=>Menu(NetworkToolCatalog.Name(tool),()=> { OpenNetworkTool(tool,profile); return Task.CompletedTask; },NetworkToolCatalog.Icon(tool))).ToArray() };
     private Control WorkspaceTabHeader(WorkspacePane pane)
     {
         if(pane is SessionPane session)return TabHeader(session);

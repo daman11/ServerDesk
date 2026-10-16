@@ -21,7 +21,7 @@ internal sealed partial class SessionPane
     private Button PanelButton(string title,int panel)
     {
         var button=Button(title,()=>ShowAsync(panel)); panelButtons[panel]=button;
-        button.Classes.Add("segment"); button.Classes.Add("chrome"); button.Classes.Set("active",panel==0); if(panel==2)button.Content=DeskIcons.Labelled("chart-no-axes-combined","Monitoring"); return button;
+        button.Classes.Add("segment"); button.Classes.Add("chrome"); button.Classes.Set("active",panel==0); return button;
     }
     private void SelectPanel(int panel)
     { var changed=SelectedPanel!=panel; SelectedPanel=panel; foreach(var (id,button) in panelButtons) { button.Classes.Set("active",id==panel); button.FontWeight=id==panel?FontWeight.SemiBold:FontWeight.Normal; } if(changed)owner.QueueWorkspaceSave(); }

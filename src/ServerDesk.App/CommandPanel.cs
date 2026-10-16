@@ -31,7 +31,7 @@ internal sealed partial class CommandPanel : Border,IDisposable
     private readonly Grid manual=new() { ColumnDefinitions=new("*,*"),RowDefinitions=new("Auto,Auto"),ColumnSpacing=6,RowSpacing=5 };
     private readonly Expander contextOptions=new() { Name="CommandContextOptions",Header=L.T("Profil systemu"),IsExpanded=false,HorizontalAlignment=HorizontalAlignment.Stretch };
     private readonly TextBox search=new() { Name="CommandSearch",PlaceholderText=L.T("Szukaj komendy, narzędzia lub problemu…"),MaxLength=200 };
-    private readonly ComboBox section=new() { Name="CommandSection",ItemsSource=new[]{"Smart Cheat Sheet",L.T("Moje komendy"),L.T("Ulubione"),L.T("Ostatnie"),L.T("Wyszukiwanie")},SelectedIndex=0,HorizontalAlignment=HorizontalAlignment.Stretch };
+    private readonly ComboBox section=new() { Name="CommandSection",ItemsSource=new[]{L.T("Ściągawka poleceń"),L.T("Moje komendy"),L.T("Ulubione"),L.T("Ostatnie"),L.T("Wyszukiwanie")},SelectedIndex=0,HorizontalAlignment=HorizontalAlignment.Stretch };
     private readonly ComboBox category=new() { Name="CommandCategory",HorizontalAlignment=HorizontalAlignment.Stretch };
     private readonly ComboBox sort=new() { Name="CommandSort",ItemsSource=new[]{L.T("Trafność"),L.T("Nazwa (A–Z)"),L.T("Nazwa (Z–A)"),L.T("Poziom ryzyka")},SelectedIndex=0,HorizontalAlignment=HorizontalAlignment.Stretch };
     private readonly ListBox list=new() { Name="CommandList",MinHeight=70 };
@@ -97,7 +97,7 @@ internal sealed partial class CommandPanel : Border,IDisposable
         codeApproval.IsCheckedChanged+=(_,_)=>UpdatePreview(); SetButtons(false);
     }
     private Button Action(string label,Func<Task> action)=>Dialogs.Button(label,()=>Run(action));
-    private MenuItem Menu(string label,Func<Task> action) { var m=new MenuItem { Header=L.T(label) }; m.Click+=(_,_)=>Run(action); return m; }
+    private MenuItem Menu(string label,Func<Task> action) { var m=DeskIcons.ActionMenu(label); m.Click+=(_,_)=>Run(action); return m; }
     private void Run(Func<Task> action)=>_ = RunAsync(action);
     private async Task RunAsync(Func<Task> action)
     {

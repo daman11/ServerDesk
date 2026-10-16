@@ -185,6 +185,7 @@ internal sealed partial class SessionPane : WorkspacePane
         var oldSsh=session; var oldSftp=sftp; var oldMonitor=monitor; var oldMonitorLoop=monitorLoop;
         var oldRdp=rdpProcess; var oldVnc=vncSession; var oldSerial=serialSession;
         session=null; sftp=null; monitor=null; monitorLoop=Task.CompletedTask; ResetFileNavigation();
+        UpdateTransferActions();
         // Kill an owned PTY before detaching it; Kill requires a realized terminal template.
         if(Profile.Protocol==Protocol.RDP && terminal.IsLive)terminal.Kill();
         var detached=terminal.DetachConnection();

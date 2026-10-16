@@ -48,6 +48,7 @@ internal sealed partial class SessionPane
     private void UpdateConnectionActions()
     {
         if(connectButton==null)return;
+        UpdateTransferActions();
         if(optionsButton!=null)optionsButton.IsEnabled=HasAttemptedConnection && !connecting;
         var live=HasActiveClient; var authenticated=IsConnected || IsRdpLoggedIn;
         var label=connecting?cancelRequested?L.T("Anulowanie…"):L.T("Łączenie…"):live?authenticated?L.T("Połączono"):UseEmbeddedRdp?embeddedRdp?.IsReconnecting==true?L.T("Ponawianie RDP…"):L.T("Logowanie RDP…"):L.T("Klient uruchomiony"):HasAttemptedConnection?L.T("Połącz ponownie"):L.T("Połącz");

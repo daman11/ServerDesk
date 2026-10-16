@@ -15,6 +15,7 @@ Małe kroki kończą się commitem, celowanymi sprawdzeniami i EXE do uruchomien
 
 ## 2. Rdzeń MVP — do domknięcia akceptacji
 
+- [x] Regresja kolejki SFTP: zatrzymane odświeżanie listy nie zajmuje slotów kopiowania; błąd odświeżania zachowuje sukces transferu; anulowanie zadania oczekującego i ponowienie po utracie SSH do pierwotnego celu sprawdzone na własnym OpenSSH.
 - [ ] SSH: fizyczna klawiatura/AltGr/IME, zaznaczanie i mysz, aplikacje pełnoekranowe, uśpienie i reconnect.
 - [ ] SFTP: transfery na opóźnionym łączu, brak miejsca/uprawnień, przerwania w różnych fazach, integralność i zachowanie oryginałów, obsługa pozostałych `.part`.
 - [ ] Profile: regresja sortowania, filtrów, drzew folderów i rzeczywistych gestów drag and drop.

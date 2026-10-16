@@ -83,7 +83,7 @@ internal sealed partial class SessionPane
         using var cancel=CancellationTokenSource.CreateLinkedTokenSource(connectionLifetime.Token);
         transferJobs.Remove(job); transferJobs.Add(job); jobList.Children.Remove(job.View); jobList.Children.Insert(0,job.View);
         job.Cancellation=cancel; job.State=TransferState.Queued; job.Detail.Text=L.T("Oczekiwanie na wolne miejsce"); job.Bar.Value=0; job.Bar.IsVisible=true; job.Bar.IsIndeterminate=true;
-        transfers.Add(cancel); UpdateTransferQueue(); var acquired=false; var finished=false;
+        transfers.Add(cancel); UpdateTransferQueue(); var acquired=false; var finished=false; var refresh=false;
         try
         {
             await MainWindow.TransferSlots.WaitAsync(cancel.Token); acquired=true;
@@ -102,9 +102,7 @@ internal sealed partial class SessionPane
             var outcome=await job.Action(connection,report,cancel.Token); cancel.Token.ThrowIfCancellationRequested(); finished=true;
             job.State=outcome.State; job.Detail.Text=L.F($"Pliki: {outcome.Files} · katalogi: {outcome.Directories} · pominięte: {outcome.Skipped}");
             job.Bar.Value=100; job.Bar.IsIndeterminate=false;
-            // Copying is complete. A failed directory refresh must not turn it into a failed transfer.
-            try { if(!cancel.IsCancellationRequested && disposed==0)await RefreshAsync(); }
-            catch(Exception ex) { job.Detail.Text+=L.T(" · odśwież listę ręcznie"); owner.ReportBackgroundError(L.T("Nie udało się odświeżyć listy po transferze."),ex); }
+            refresh=true;
         }
         catch(Exception) when(cancel.IsCancellationRequested) { job.State=TransferState.Cancelled; job.Detail.Text=L.T("Możesz ponowić zadanie po połączeniu sesji."); }
         catch(Exception ex) { job.State=TransferState.Failed; job.Detail.Text=ex.Message; ToolTip.SetTip(job.Detail,ex.Message); owner.ReportBackgroundError(L.T("Transfer SFTP nie powiódł się."),ex); }
@@ -116,6 +114,30 @@ internal sealed partial class SessionPane
             foreach(var old in transferJobs.Where(j=>!j.IsActive).Reverse().Skip(50).ToArray()) { transferJobs.Remove(old); jobList.Children.Remove(old.View); }
             UpdateTransferQueue();
         }
+        // Directory browsing uses a different connection. Release the transfer
+        // connection and global slot first so a stalled refresh cannot block
+        // queued copies in this or any other session. Keep this task tracked
+        // until refresh ends so reconnect/close can still drain it safely.
+        if(refresh && !cancel.IsCancellationRequested && disposed==0)
+        {
+            try { await RefreshAsync(); }
+            catch(OperationCanceledException) when(cancel.IsCancellationRequested || disposed!=0) { }
+            catch(Exception ex)
+            {
+                job.Detail.Text+=L.T(" · odśwież listę ręcznie");
+                owner.ReportBackgroundError(L.T("Nie udało się odświeżyć listy po transferze."),ex);
+                UpdateTransferQueue();
+            }
+        }
+    }
+    private void UpdateTransferActions()
+    {
+        foreach(var job in transferJobs)
+        {
+            job.Cancel.IsVisible=job.IsActive; job.Cancel.IsEnabled=job.IsActive && job.Cancellation?.IsCancellationRequested!=true;
+            job.Retry.IsVisible=job.State is TransferState.Failed or TransferState.Cancelled;
+            job.Retry.IsEnabled=job.Retry.IsVisible && IsConnected && disposed==0 && !connecting;
+        }
     }
     private void UpdateTransferQueue()
     {
@@ -123,11 +145,10 @@ internal sealed partial class SessionPane
         {
             job.Status.Text=job.State switch { TransferState.Queued=>L.T("W kolejce"),TransferState.Connecting=>L.T("Łączenie…"),TransferState.Running=>L.T("Przesyłanie…"),TransferState.Completed=>L.T("Zakończony"),TransferState.CompletedWithSkips=>L.T("Zakończony z pominięciami"),TransferState.Skipped=>L.T("Pominięty"),TransferState.Cancelled=>L.T("Anulowany"),_=>L.T("Błąd") };
             DesignSystem.Resource(job.Status,TextBlock.ForegroundProperty,job.State==TransferState.Failed?"Danger":job.State==TransferState.Completed?"Success":"ForegroundSecondary");
-            job.Cancel.IsVisible=job.IsActive; job.Cancel.IsEnabled=job.IsActive && job.Cancellation?.IsCancellationRequested!=true;
-            job.Retry.IsVisible=job.State is TransferState.Failed or TransferState.Cancelled;
             ToolTip.SetTip(job.Detail,job.Detail.Text);
             ToolTip.SetTip(job.View,job.Paths+"\n"+job.Status.Text+"\n"+job.Detail.Text);
         }
+        UpdateTransferActions();
         var active=transferJobs.Count(j=>j.IsActive); var failed=transferJobs.Count(j=>j.State==TransferState.Failed);
         transfer.Text=L.F($"Transfery · aktywne {active} · zakończone {transferJobs.Count-active}")+(failed>0?L.F($" · błędy {failed}"):"");
         ToolTip.SetTip(transfer,transfer.Text+L.T("\nDwa transfery jednocześnie w całej aplikacji. Historia: do 50 zakończonych zadań."));
@@ -137,7 +158,7 @@ internal sealed partial class SessionPane
     }
     internal void ExpandTransferQueue() { queueExpanded=true; UpdateTransferQueue(); }
     internal sealed record TransferSnapshot(Guid Id,string Label,string Paths,string Status,string Detail,TransferState State,bool IsActive,bool CanCancel,bool CanRetry,double Progress,bool Indeterminate);
-    internal IReadOnlyList<TransferSnapshot> TransferSnapshots=>transferJobs.AsEnumerable().Reverse().Select(job=>new TransferSnapshot(job.Id,job.Label,job.Paths,job.Status.Text??"",job.Detail.Text??"",job.State,job.IsActive,job.Cancel.IsEnabled,job.Retry.IsVisible && IsConnected && disposed==0,job.Bar.Value,job.Bar.IsIndeterminate)).ToArray();
+    internal IReadOnlyList<TransferSnapshot> TransferSnapshots=>transferJobs.AsEnumerable().Reverse().Select(job=>new TransferSnapshot(job.Id,job.Label,job.Paths,job.Status.Text??"",job.Detail.Text??"",job.State,job.IsActive,job.Cancel.IsEnabled,job.Retry.IsVisible && job.Retry.IsEnabled,job.Bar.Value,job.Bar.IsIndeterminate)).ToArray();
     internal void CancelTransfer(Guid id)
     {
         var job=transferJobs.FirstOrDefault(j=>j.Id==id);

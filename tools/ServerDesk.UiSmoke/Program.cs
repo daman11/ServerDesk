@@ -81,6 +81,7 @@ if(args.Contains("--settings-layout")) { SettingsLayoutChecks.Run(window,reposit
 if(args.Contains("--docking-regression")) { PersonalizationChecks.Run(window,root); SessionWorkflowChecks.Run(root); window.Close(); RedesignChecks.Frames(); return; }
 if(args.Contains("--sftp-workflow")) { SftpWorkflowChecks.Run(window,repository,root,args[1],args[2]); window.Close(); RedesignChecks.Frames(); return; }
 if(args.Contains("--sftp-resilience")) { SftpResilienceChecks.Run(window,repository,root,args[1],args[2]); window.Close(); RedesignChecks.Frames(); return; }
+if(args.Contains("--transfer-queue-recovery")) { TransferQueueRecoveryChecks.Run(window,repository,root,args[1],args[2]); window.Close(); RedesignChecks.Frames(); return; }
 if(args.Contains("--sftp-links")) { SftpLinkChecks.Run(window,repository,root,args[1],args[2]); window.Close(); RedesignChecks.Frames(); return; }
 if(args.Contains("--sftp-focus")) { SftpWorkflowChecks.FocusControls(window,repository); window.Close(); RedesignChecks.Frames(); return; }
 if(args.Contains("--sftp-batch")) { SftpBatchChecks.Layout(window,repository,root); window.Close(); RedesignChecks.Frames(); return; }

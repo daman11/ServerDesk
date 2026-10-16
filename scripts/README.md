@@ -3,6 +3,7 @@
 | Purpose | Entry points |
 |---|---|
 | Repository checks | `check-repository.ps1` |
+| Read-only Linux desktop preflight | `bash check-linux-desktop.sh [path/to/ServerDesk.App]` ([native acceptance](../docs/platform-support.md)) |
 | Generated-output cleanup | `clean-artifacts.ps1 -WhatIf`, `test-artifact-cleanup.ps1` ([retention guide](../docs/artifacts.md)) |
 | Build and unit tests | `build.ps1 -Test`, `bash build.sh` |
 | Self-contained payload | `publish.ps1`, `publish.sh` |

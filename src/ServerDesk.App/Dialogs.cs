@@ -27,21 +27,14 @@ internal static partial class Dialogs
         dialog.Opened+=(_,_)=>
         {
             FitToOwnerScreen(dialog,dialog.Owner as Window??dialog);
-            if(scroll!=null)scroll.MaxHeight=Math.Max(100,Math.Min(510,dialog.MaxHeight-150));
+            if(scroll!=null)scroll.MaxHeight=Math.Max(1,Math.Min(510,dialog.MaxHeight-150));
         };
+        if(scroll!=null)dialog.PropertyChanged+=(_,e)=> { if(e.Property==Avalonia.Controls.Window.MaxHeightProperty)scroll.MaxHeight=Math.Max(1,Math.Min(510,dialog.MaxHeight-150)); };
         dialog.KeyDown+=(_,e)=> { if(!e.Handled && e.Key==Avalonia.Input.Key.Escape) { dialog.Close(); e.Handled=true; } };
         return dialog;
     }
     internal static void FitToOwnerScreen(Window dialog,Window owner)
-    {
-        var screen=owner.Screens.ScreenFromWindow(owner)??owner.Screens.Primary;
-        if(screen==null)return;
-        dialog.MaxWidth=Math.Min(dialog.MaxWidth,Math.Max(280,screen.WorkingArea.Width/screen.Scaling-40));
-        dialog.MaxHeight=Math.Min(dialog.MaxHeight,Math.Max(240,screen.WorkingArea.Height/screen.Scaling-64));
-        dialog.MinWidth=Math.Min(dialog.MinWidth,dialog.MaxWidth); dialog.MinHeight=Math.Min(dialog.MinHeight,dialog.MaxHeight);
-        if(!double.IsNaN(dialog.Width))dialog.Width=Math.Min(dialog.Width,dialog.MaxWidth);
-        if(!double.IsNaN(dialog.Height))dialog.Height=Math.Min(dialog.Height,dialog.MaxHeight);
-    }
+        =>DialogScreenPlacement.Track(dialog,owner);
     public static async Task<bool> Confirm(Window owner,string title,string text,CancellationToken ct=default,string? language=null)
     {
         var stack=new StackPanel { Spacing=18 }; stack.Children.Add(DesignSystem.PageHeading("info",title)); stack.Children.Add(Text(text)); var row=new StackPanel { Orientation=Orientation.Horizontal,HorizontalAlignment=HorizontalAlignment.Right,Spacing=DesignTokens.Medium,Margin=new Thickness(0,6,0,0) }; stack.Children.Add(row);

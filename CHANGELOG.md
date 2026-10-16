@@ -2,6 +2,10 @@
 
 ## Unreleased
 
+- Refit tracked dialogs when display scale or monitor layout changes, restore original resize limits on a larger screen, and keep confirmation content scrollable above its actions.
+- Add opt-in PL/EN desktop UX coverage for five themes, larger text, simulated DPI transitions, keyboard navigation, accessible category names and collection of closed dialog windows.
+- Add a read-only Linux desktop preflight and a native acceptance checklist for Kali/KDE/Wayland; extend session endurance measurements with CPU, working set and post-close counters.
+
 - Defer connection-row visuals and folder-menu actions until presented/opened; retain profile icons, status, sorting details and drag handlers while reducing allocations for collapsed trees.
 - Keep empty folders accessible without overlaying the first-server prompt; preserve localized folder actions and icons across repeated menu opens.
 - Expand the opt-in large-browser check to 5,000 profiles and 200 folders, including protocol/search filters, numeric IP sorting, matching selection and the hidden-profile Enter guard. Add a measurement-only mode for bounded before/after comparisons.

@@ -6,6 +6,8 @@ Zmiany robocze po 0.37.0 poprawiają monitoring: odczyt sieci bez JSON na starsz
 
 Kolejny etap roboczy ogranicza tworzenie ukrytych wierszy i menu w drzewie połączeń oraz usuwa komunikat nakładający się na puste foldery. Import, filtrowanie i sortowanie 5000 profili/200 folderów sprawdzono na Windows. [Zakres i pomiary](reports/browser-scalability-2026-10-16.md); fizyczne gesty, głębsze drzewa i długie sesje pozostają w planie 1.0.
 
+Punkt 5 otrzymuje dynamiczne dopasowanie dialogów do ekranów/DPI, test ustawień PL/EN i klawiatury na Windows/Linux, natywną regresję startu Windows i 10-minutowy pomiar ośmiu sesji. [Wyniki i granice](reports/platform-ux-2026-10-16.md), [macierz i akceptacja Kali/KDE/Wayland](platform-support.md). Sprzęt, portfele i docelowe desktopy nadal wymagają rzeczywistej akceptacji.
+
 0.36.2 uzupełnia ikony i ujednolica nazwy istniejących modułów oraz dodaje audyt kompletności akcji. Nie rozszerza zakresu protokołów MVP.
 
 0.36.1 porządkuje wygląd komend, ustawień i wspólnych list. Dodaje kontrolę układu małego okna z większą czcionką; zakres istniejących funkcji MVP opisano poniżej.

@@ -46,6 +46,9 @@ Małe kroki kończą się commitem, celowanymi sprawdzeniami i EXE do uruchomien
 
 ## 5. Systemy, sprzęt i UX — do domknięcia
 
+- [x] Jawna [macierz środowisk i checklista natywnej akceptacji](platform-support.md), w tym podana konfiguracja Kali 2026.3/KDE Plasma 6.7.4/Wayland/100%; odczytowy preflight Linux bez ingerencji w portfel użytkownika.
+- [x] Dialogi reagują na zmiany ekranów/DPI i odzyskują pierwotne limity po powrocie na większy ekran. Automatyczna próba PL/EN, pięciu motywów, tekstu 16, symulacji 100/150/200/100%, klawiatury i zwalniania zamkniętych okien; [zakres](reports/platform-ux-2026-10-16.md).
+- [x] Ograniczona 10-minutowa próba Windows: osiem rzeczywistych sesji na własnym OpenSSH, 36 reconnect, SFTP/dokowanie i zapis CPU/pamięci/uchwytów/wątków oraz stanu po zamknięciu. Nie zastępuje wielogodzinnego soak ani próby Linux.
 - [ ] Ustalić dokładną listę wspieranych systemów 1.0 i wykonać jej akceptację. Pierwotny zakres: Windows 10/11, Ubuntu, Kubuntu, Debian i Fedora; WSLg nie zastępuje natywnego desktopu.
 - [ ] GNOME/KDE, odblokowany/zablokowany keyring i KWallet; X11/Wayland w deklarowanym zakresie.
 - [ ] Fizyczne monitory o różnych skalach i odłączenie monitora; ustawienia, PL/EN, motywy, większa czcionka, fokus i dostępność.

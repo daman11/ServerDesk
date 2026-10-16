@@ -15,5 +15,6 @@ Bieżące wydanie: [0.37.0 Public Beta](releases/release-0.37.0.md) — dane, pa
 | Wydania | [Release procedure](releasing.md), [Release notes](releases/README.md), [Verification reports](reports/README.md) |
 | Zakres projektu | [Droga do 1.0](stable-release-plan.md), [Stan MVP](mvp-status.md), [Roadmap](roadmap.md), [UI](ui-redesign.md), [Icons](icons.md) |
 | RDP i zależności | [RDP integration](rdp-integration.md), [RDP matrix](rdp-test-matrix.md), [Dependencies](dependencies.md) |
+| Systemy, monitory i dostępność | [Macierz Windows/Linux, Kali/KDE/Wayland i checklista akceptacji](platform-support.md) |
 
 `releases/` zawiera opis zmian poszczególnych wersji, a `reports/` — historyczne wyniki testów i audytów. Bieżące instrukcje są bezpośrednio w `docs/`. Starsze raporty dokumentują stan w dniu testu; nie potwierdzają automatycznie obecnego działania.

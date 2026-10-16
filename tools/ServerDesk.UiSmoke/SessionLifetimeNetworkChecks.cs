@@ -135,6 +135,7 @@ internal static class SessionLifetimeNetworkChecks
         var (main,repo,factory,profile)=Setup(root,host,key); using var parent=new CancellationTokenSource();
         var panes=Enumerable.Range(0,8).Select(i=>Pane(main,repo,factory,profile with { Id=Guid.NewGuid(),Name="Endurance "+i })).ToArray();
         var samples=new List<object>(); var watch=Stopwatch.StartNew(); var cycles=0;
+        using var measured=Process.GetCurrentProcess(); var lastCpu=measured.TotalProcessorTime; var lastElapsed=watch.Elapsed;
         try
         {
             Wait(Task.WhenAll(panes.Select(p=>p.ConnectAsync("serverdesk-test-passphrase",parent.Token))));
@@ -146,7 +147,11 @@ internal static class SessionLifetimeNetworkChecks
                 if(cycles%2==0) { main.DockSession(reconnect,SessionDock.Floating); RedesignChecks.Frames(2); main.DockSession(reconnect,SessionDock.Primary); }
                 if(cycles%4==0) { Wait(reconnect.ShowAsync(1)); Wait(reconnect.ShowAsync(0)); }
                 GC.Collect(); GC.WaitForPendingFinalizers(); GC.Collect(); using var process=Process.GetCurrentProcess(); process.Refresh();
-                var sample=new { seconds=(int)watch.Elapsed.TotalSeconds,cycles=++cycles,connected=panes.Count(p=>p.IsConnected),managedBytes=GC.GetTotalMemory(false),privateBytes=process.PrivateMemorySize64,handles=process.HandleCount,threads=process.Threads.Count };
+                var elapsed=watch.Elapsed; var cpu=process.TotalProcessorTime;
+                var cpuPercent=100*(cpu-lastCpu).TotalSeconds/Math.Max(.001,(elapsed-lastElapsed).TotalSeconds)/Environment.ProcessorCount;
+                lastCpu=cpu; lastElapsed=elapsed;
+                var sample=new { seconds=(int)elapsed.TotalSeconds,cycles=++cycles,connected=panes.Count(p=>p.IsConnected),managedBytes=GC.GetTotalMemory(false),privateBytes=process.PrivateMemorySize64,workingSetBytes=process.WorkingSet64,cpuPercent,handles=process.HandleCount,threads=process.Threads.Count };
+                if(sample.connected!=panes.Length)throw new Exception("An endurance session disconnected unexpectedly");
                 samples.Add(sample); File.WriteAllText(Path.Combine(root,"endurance.json"),JsonSerializer.Serialize(samples,new JsonSerializerOptions { WriteIndented=true })); Console.WriteLine(JsonSerializer.Serialize(sample));
                 var next=watch.Elapsed+TimeSpan.FromSeconds(15); while(watch.Elapsed<next && watch.Elapsed<TimeSpan.FromMinutes(minutes))RedesignChecks.Frames(1);
             }
@@ -156,6 +161,8 @@ internal static class SessionLifetimeNetworkChecks
             foreach(var pane in panes)main.RemovePane(pane); Wait(Task.WhenAll(panes.Select(p=>p.CloseAsync()))); main.Close(); RedesignChecks.Frames();
         }
         if(MainWindow.TransferSlots.CurrentCount!=2)throw new Exception("Endurance retained transfer slots");
+        GC.Collect(); GC.WaitForPendingFinalizers(); GC.Collect(); measured.Refresh();
+        File.WriteAllText(Path.Combine(root,"endurance-closed.json"),JsonSerializer.Serialize(new { cycles,managedBytes=GC.GetTotalMemory(false),privateBytes=measured.PrivateMemorySize64,workingSetBytes=measured.WorkingSet64,handles=measured.HandleCount,threads=measured.Threads.Count,transferSlots=MainWindow.TransferSlots.CurrentCount },new JsonSerializerOptions { WriteIndented=true }));
         Console.WriteLine($"PASS {minutes}-minute eight-session endurance with {cycles} reconnects, terminal markers, monitoring, SFTP and repeated docking; measurements in endurance.json");
     }
 }

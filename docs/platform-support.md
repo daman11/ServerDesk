@@ -1,0 +1,44 @@
+# Systemy, DPI i dostępność — bramka 1.0
+
+Ten dokument rozdziela cele zgodności od zakończonej akceptacji. Wydanie pozostaje Public Beta. Bieżący etap roboczy po 0.37.0 nie nadaje nowemu systemowi statusu stabilnego wsparcia.
+
+## Macierz środowisk
+
+| Środowisko x64 | Status i pozostałe próby |
+|---|---|
+| Windows 11, Win32 | Lokalny start i pozycja rzeczywistych okien; celowane testy interfejsu. Fizyczne mieszane DPI, czytnik ekranu i długie sesje wymagają szerszej akceptacji. |
+| Windows 10 22H2 | Historyczny cel zgodności. Brak oddzielnej akceptacji na tym systemie; nie zaliczamy go do zweryfikowanej macierzy 1.0. |
+| Ubuntu 24.04 x64 | Lokalne testy Linux w Ubuntu/WSL, w tym headless UX. WSLg nie zastępuje natywnego GNOME/X11 ani GNOME/Wayland. |
+| **Kali Linux 2026.3, KDE Plasma 6.7.4, Wayland, 100%** | Konfiguracja podana przez maintenera; priorytet do ręcznej akceptacji. Brak bezpośredniego dostępu z obecnego środowiska. Wersje te nie zostały niezależnie odczytane na maszynie Kali. |
+| Kubuntu/KDE, Debian, Fedora | Pozostają celami pierwotnego zakresu. Dokładne wersje i sesje graficzne trzeba zapisać przy akceptacji; brak podstaw do zadeklarowania całej rodziny jako zweryfikowanej. |
+| ARM, macOS, 32-bit | Brak paczek tego projektu. |
+
+## Kali/KDE/Wayland: uruchomienie i diagnostyka
+
+ServerDesk ma przypięte Avalonia 12.0.4 i używa `UsePlatformDetect()` z backendem X11. W sesji Wayland wymaga więc XWayland i dostępnego `DISPLAY`; sam `WAYLAND_DISPLAY` nie wystarczy. Bieżące [wyjaśnienie backendów Avalonia](https://docs.avaloniaui.net/docs/platform-specific-guides/linux) opisuje również nowszy, opcjonalny backend Wayland; ten projekt go nie włącza ani nie aktualizuje w ramach tej zmiany.
+
+Skopiuj **cały katalog** deweloperskiego buildu Linux, zachowując pliki wykonywalne i biblioteki. Przed uruchomieniem można wykonać odczytowy preflight:
+
+```bash
+bash check-linux-desktop.sh ./ServerDesk.App
+```
+
+W checkoutcie skrypt znajduje się w `scripts/check-linux-desktop.sh`. Nie instaluje pakietów, nie uruchamia usług portfela, nie odblokowuje magazynu i nie odczytuje poświadczeń. Sprawdza typ sesji, obecność narzędzi/bibliotek i aktualnego właściciela `org.freedesktop.secrets`; pomija adres D-Bus, nazwy hostów i zapisane profile. Komunikat `cached` odnosi się do cache linkera, a nie do wszystkich możliwości `LD_LIBRARY_PATH`. Sam wynik skryptu nie potwierdza działania okna ani schowka.
+
+Zależności opisują [instrukcje rozwoju](development.md). Na Kali sprawdź dostępność XWayland, bibliotek X11/fontconfig oraz `secret-tool` z libsecret-tools. Przeprowadź diagnostykę w zwykłej sesji użytkownika, bez `sudo` przy uruchamianiu aplikacji. Nie zmieniaj globalnych ustawień KDE ani osobistego portfela na potrzeby testu.
+
+ServerDesk korzysta z Secret Service przez `secret-tool`, a nie bezpośrednio z API KWallet. Obecność KWallet nie potwierdza dostępności właściwego interfejsu w konkretnej sesji. Otwieranie portfela zależy od konfiguracji pulpitu; [podręcznik KDE](https://docs.kde.org/stable_kf6/en/kwalletmanager/kwalletmanager/introduction.html) opisuje także warunkowe odblokowanie podczas logowania. Brak serwisu lub odmowa odblokowania muszą pozwolić na pracę z hasłem bez zapisywania; nie należy obiecywać trwałego zapisu bez tej akceptacji.
+
+## Ręczna akceptacja na Kali lub innym docelowym desktopie
+
+Wykorzystaj osobne konto/VM i jednorazowe profile. Można uruchomić aplikację z osobnym katalogiem danych przez `SERVERDESK_DATA_HOME`; nie kopiuj osobistej bazy ani haseł do zgłoszenia.
+
+1. Zapisz wersję systemu, pulpitu, X11/Wayland, skalę i wersję/commit aplikacji. Uruchom preflight, następnie aplikację; sprawdź zamknięcie i ponowne uruchomienie.
+2. Otwórz ustawienia: PL/EN, pięć motywów, tekst 16, małe okno. Przyciski zapisu/anulowania i wybrana kategoria muszą pozostać dostępne. Sprawdź Tab/Shift+Tab, strzałki/Home/End w kategoriach, Ctrl+F, Escape oraz widoczny fokus.
+3. Sprawdź kopiowanie/wklejanie UTF-8 w obie strony z Konsole i edytorem, zaznaczanie, AltGr, polskie znaki oraz systemowy wybór plików/grafik. Wynik headless nie zastępuje tej próby.
+4. Na jednorazowym profilu i testowym SSH sprawdź zapis/odczyt/usunięcie hasła po restarcie. Powtórz odmowę odblokowania i brak zapisu. Pełną próbę zablokowanego portfela wykonuj na osobnym koncie/VM; nie blokuj osobistego portfela używanego przez inne aplikacje. Nie przesyłaj hasła ani zawartości portfela w raporcie.
+5. Jeśli są dostępne monitory, przenieś główne okno, ustawienia, edytor profilu i odpiętą sesję między skalami 100/150/200%. Otwórz dialog na drugim ekranie, odłącz go i sprawdź powrót do widocznego obszaru. Powrót na większy ekran musi przywrócić możliwość powiększenia okna.
+6. Sprawdź własny czytnik ekranu: nazwy kategorii/akcji, kolejność fokusu, komunikaty błędów i pola haseł. Test nazw automatyzacji w kodzie nie jest certyfikacją czytnika ani dostępności Linux.
+7. Pracuj kilka godzin na jednorazowych sesjach, z reconnect, SFTP i dokowaniem. Zapisz okresowe CPU/pamięć/uchwyty lub deskryptory/wątki. Krótki test automatyczny nie zamyka tej bramki.
+
+Do raportu wystarczą wyniki powyższych punktów, wersja/commit, niesekretne wyjście preflight i zrzuty z danymi testowymi. Otwarte bramki pozostają w [planie stabilizacji](stable-release-plan.md).

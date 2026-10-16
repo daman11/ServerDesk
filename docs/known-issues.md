@@ -2,6 +2,8 @@
 
 This is a public beta. Keep a backup before upgrading and validate the workflows you need in a test environment.
 
+- **Desktop acceptance (development after 0.37.0):** dialogs react to monitor/DPI changes and restore resize limits. Automated mixed-scale tests are simulated; physical monitors, screen readers and native Kali/KDE/Wayland remain unverified. This build uses X11/XWayland and Secret Service, without a direct KWallet backend. See the [platform matrix and acceptance checklist](platform-support.md).
+
 - **Connection browser (0.37.0):** filtering clears a hidden server selection; select a visible profile again before connecting. Search expansion is temporary and does not replace normal folder collapse state. Automated PL/EN tests cover sort/reload/filter/restart; physical drag and drop and very large folder trees still need wider acceptance.
 
 - **Database snapshots (0.37.0):** manual backups are available in Settings → Security; an existing database is backed up before a schema migration. These snapshots include committed WAL data and database metadata, but exclude OS credential-store contents and private keys. They do not replace a full data backup. Restore instructions and limitations: [database backups](database-backups.md).

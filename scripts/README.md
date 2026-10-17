@@ -10,6 +10,7 @@
 | Packaging | `package-windows.ps1`, `package-deb.sh` |
 | Release assembly | `assemble-release.ps1`, `generate-notices.ps1` |
 | Package acceptance | `test-installer-text.ps1`, `test-installer.ps1`, `test-release-content.ps1`, `test-linux-release.py` |
+| Data failure acceptance | `tools/ServerDesk.DataProbe`, `test-data-disk-full.sh` (owned 8 MiB tmpfs in an isolated Linux lab) |
 | Optional integration lab | `prepare-*`, `start-test-*`, `stop-test-*`, `test-secret-service.sh`, `test-freerdp-cli.sh` |
 
 Run from the repository root; scripts resolve their own project root. See [release procedure](../docs/releasing.md) and [development guide](../docs/development.md). Lab scripts run disposable services, may need elevated rights and are not a production deployment configuration.

@@ -1,6 +1,6 @@
 # Dokumentacja / Documentation
 
-Bieżące wydanie: [0.40.0 Public Beta](releases/release-0.40.0.md) — większa personalizacja interfejsu, sprawdzanie zapisanych kopii bazy i stabilniejsze zatrzymywanie diagnostyki. [Zakres testów wydania](reports/release-verification-0.40.0.md).
+Bieżące wydanie: [0.41.0 Public Beta](releases/release-0.41.0.md) — foldery i ikony, ochrona kolekcji oraz rozszerzone próby odzyskiwania danych i instalatora. Kandydat do dalszej akceptacji 1.0; testy VM/sprzętu odłożone. [Zakres testów wydania](reports/release-verification-0.41.0.md).
 
 | Temat / Topic | Dokument |
 |---|---|

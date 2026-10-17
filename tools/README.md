@@ -6,6 +6,7 @@ These projects are development and acceptance harnesses. They are not applicatio
 |---|---|
 | `ServerDesk.UiSmoke` | Headless UI, layout, localization and isolated protocol acceptance |
 | `ServerDesk.AppProbe` | Native published Windows EXE/RDP-host verification |
+| `ServerDesk.DataProbe` | Owned historical migration/restore, process-termination and bounded tmpfs disk-full acceptance |
 | `ServerDesk.RdpProbe` | Explicit RDP endpoint/certificate and optional FreeRDP authentication diagnostics |
 | `ServerDesk.NetworkProbe` | Opt-in real SSH/SFTP checks against a disposable server |
 | `ServerDesk.SecretProbe` | Isolated Linux Secret Service checks |

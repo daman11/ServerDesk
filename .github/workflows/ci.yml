@@ -59,6 +59,16 @@ jobs:
         run: dotnet test tests/ServerDesk.Tests -c Release --no-build --logger 'trx;LogFileName=unit.trx' --results-directory artifacts/test-results
       - name: Build UI smoke harness
         run: dotnet build tools/ServerDesk.UiSmoke -c Release -m:1 -p:RestoreLockedMode=true -o artifacts/ci-harness
+      - name: Historical data and process recovery
+        run: |
+          dotnet build tools/ServerDesk.DataProbe -c Release -m:1 -p:RestoreLockedMode=true -o artifacts/ci-data-probe
+          if ($LASTEXITCODE -ne 0) { throw 'Data probe build failed' }
+          dotnet artifacts/ci-data-probe/ServerDesk.DataProbe.dll artifacts/ci-data-recovery
+          if ($LASTEXITCODE -ne 0) { throw 'Data recovery acceptance failed' }
+      - name: Bounded Linux disk-full recovery
+        if: runner.os == 'Linux'
+        shell: bash
+        run: sudo env DOTNET_ROOT="$DOTNET_ROOT" bash scripts/test-data-disk-full.sh "$(command -v dotnet)" artifacts/ci-data-probe/ServerDesk.DataProbe.dll artifacts/ci-data-disk-full
       - name: Headless UI smoke
         run: |
           foreach ($scenario in @('restart-design', 'localization', 'security', 'stability', 'credential-save', 'rdp-gui', 'plugins', 'protocols', 'large-file-views', 'trusted-hosts', 'terminal-search', 'sftp-navigation', 'extended-settings', 'four-panels', 'docking-regression', 'profile-artwork', 'commands', 'design-refresh', 'presentation-consistency', 'icons', 'sorting', 'connection-browser', 'browser-workflow', 'database-backups', 'configuration-export', 'mvp-hardening', 'network-cancellation', 'platform-ux')) {

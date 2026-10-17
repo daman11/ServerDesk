@@ -1,6 +1,6 @@
-# ServerDesk 0.40.0 — pierwsze kroki
+# ServerDesk 0.41.0 — pierwsze kroki
 
-**0.40.0:** więcej opcji w Ustawienia → Wygląd / Obszar pracy, sprawdzanie kopii SQLite oraz stabilniejsze Stop/Restart i zamykanie Network Tools. [Zmiany i ograniczenia](releases/release-0.40.0.md).
+**0.41.0:** czytelniejsze foldery i więcej ikon, wygodniejsza obsługa drzewa oraz ochrona kolekcji Network Tools przy błędzie zapisu. Wydanie przygotowuje 1.0; natywne testy VM/sprzętu są odłożone, status pozostaje Public Beta. [Zmiany i ograniczenia](releases/release-0.41.0.md).
 
 **0.39.1:** bezpieczniejsze eksporty/import, katalog kopii bazy w ustawieniach oraz karty komend. Niepoprawne zapisane dane diagnostyki zgłaszają błąd bez automatycznego kasowania; awaria zapisu historii pozostawia wynik narzędzia. [Zmiany](releases/release-0.39.1.md).
 
@@ -22,17 +22,17 @@ Od 0.37.0 kolejka transferów podaje przyczynę błędu i wskazówki przed ponow
 
 ## Windows x64
 
-Uruchom `ServerDesk-0.40.0-win-x64-Setup.exe`. Instalator działa dla bieżącego użytkownika, dodaje skrót w menu Start i wpis na liście zainstalowanych aplikacji. Nie wymaga osobnej instalacji .NET. Dostępny jest też ZIP: rozpakuj **całe archiwum** do osobnego katalogu i uruchom `ServerDesk.App.exe`.
+Uruchom `ServerDesk-0.41.0-win-x64-Setup.exe`. Instalator działa dla bieżącego użytkownika, dodaje skrót w menu Start i wpis na liście zainstalowanych aplikacji. Nie wymaga osobnej instalacji .NET. Dostępny jest też ZIP: rozpakuj **całe archiwum** do osobnego katalogu i uruchom `ServerDesk.App.exe`.
 
-Wydanie nie ma podpisu zaufanego wydawcy. Pobieraj je z zaufanego źródła; nie wyłączaj ochrony Windows. Sumę paczki możesz porównać z `SHA256SUMS.txt` poleceniem `Get-FileHash .\ServerDesk-0.40.0-win-x64-Setup.exe -Algorithm SHA256`. Suma obok pliku potwierdza zgodność pobrania, ale sama nie potwierdza tożsamości wydawcy.
+Wydanie nie ma podpisu zaufanego wydawcy. Pobieraj je z zaufanego źródła; nie wyłączaj ochrony Windows. Sumę paczki możesz porównać z `SHA256SUMS.txt` poleceniem `Get-FileHash .\ServerDesk-0.41.0-win-x64-Setup.exe -Algorithm SHA256`. Suma obok pliku potwierdza zgodność pobrania, ale sama nie potwierdza tożsamości wydawcy.
 
 Gdy po niepełnej instalacji Windows brakuje plików, aplikacja nie startuje lub zniknął deinstalator, zamknij ServerDesk i uruchom ponownie zaufany Setup tej samej wersji, wskazując dotychczasowy katalog. Instalator odtwarza własne pliki; nie wymaga usuwania bazy ani zapisanych poświadczeń. Jeśli instalacja przerwała się z powodu braku miejsca/uprawnień, najpierw usuń tę przyczynę. Nie kopiuj pojedynczych DLL z innej wersji. [Zakres sprawdzonych napraw](reports/rc-preparation-2026-10-17.md).
 
 ## Linux x64
 
-Ubuntu/Debian: `sudo apt install ./serverdesk_0.40.0_amd64.deb`, następnie uruchom ServerDesk z menu lub poleceniem `serverdesk`. Do zapamiętywania haseł potrzebny jest `libsecret-tools` oraz odblokowany Secret Service (np. GNOME Keyring). Do RDP zainstaluj FreeRDP dla swojej dystrybucji.
+Ubuntu/Debian: `sudo apt install ./serverdesk_0.41.0_amd64.deb`, następnie uruchom ServerDesk z menu lub poleceniem `serverdesk`. Do zapamiętywania haseł potrzebny jest `libsecret-tools` oraz odblokowany Secret Service (np. GNOME Keyring). Do RDP zainstaluj FreeRDP dla swojej dystrybucji.
 
-Archiwum: `mkdir serverdesk-0.40.0`, następnie `tar -xzf ServerDesk-0.40.0-linux-x64.tar.gz -C serverdesk-0.40.0` i `./serverdesk-0.40.0/ServerDesk.App`. W razie braków bibliotek sprawdź zależności w pakiecie DEB lub [development.md](development.md). Testy Linux wykonano pod WSLg; pozostałe środowiska wymagają weryfikacji.
+Archiwum: `mkdir serverdesk-0.41.0`, następnie `tar -xzf ServerDesk-0.41.0-linux-x64.tar.gz -C serverdesk-0.41.0` i `./serverdesk-0.41.0/ServerDesk.App`. W razie braków bibliotek sprawdź zależności w pakiecie DEB lub [development.md](development.md). Testy Linux wykonano pod WSLg; pozostałe środowiska wymagają weryfikacji.
 
 ## Pierwsze połączenie
 

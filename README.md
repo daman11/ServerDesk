@@ -1,4 +1,4 @@
-# ServerDesk — 0.40.0 Public Beta
+# ServerDesk — 0.41.0 Public Beta
 
 Native Windows/Linux workspace for SSH, SFTP, RDP, VNC and serial connections. Built with C#, .NET 10 and Avalonia 12. Free and open source under the [MIT license](LICENSE).
 
@@ -6,15 +6,15 @@ Native Windows/Linux workspace for SSH, SFTP, RDP, VNC and serial connections. B
 
 ## Downloads and installation
 
-0.40.0 adds more interface customization, a read-only check for saved database backups and more reliable cancellation/shutdown of diagnostic tools. It includes the export/import protections from 0.39.1. [Release notes](docs/releases/release-0.40.0.md).
+0.41.0 improves connection folders, service icons and artwork reuse; protects saved Network Tools collections against failed index writes; and adds broader data/recovery and installer acceptance. This is a candidate toward 1.0; native VM/hardware acceptance is deferred and platform limits remain explicit. [Release notes](docs/releases/release-0.41.0.md).
 
 | System | Package | Start |
 |---|---|---|
-| Windows x64 | `ServerDesk-0.40.0-win-x64-Setup.exe` | Run Setup; current-user installation and Start menu shortcut |
-| Windows x64 portable | `ServerDesk-0.40.0-win-x64.zip` | Extract everything; run `ServerDesk.App.exe` |
-| Linux x64 DEB | `serverdesk_0.40.0_amd64.deb` | `sudo apt install ./serverdesk_0.40.0_amd64.deb` |
-| Linux x64 archive | `ServerDesk-0.40.0-linux-x64.tar.gz` | Extract into a new directory; run `./ServerDesk.App` |
-| Source | `ServerDesk-0.40.0-source.zip` | .NET 10 SDK required |
+| Windows x64 | `ServerDesk-0.41.0-win-x64-Setup.exe` | Run Setup; current-user installation and Start menu shortcut |
+| Windows x64 portable | `ServerDesk-0.41.0-win-x64.zip` | Extract everything; run `ServerDesk.App.exe` |
+| Linux x64 DEB | `serverdesk_0.41.0_amd64.deb` | `sudo apt install ./serverdesk_0.41.0_amd64.deb` |
+| Linux x64 archive | `ServerDesk-0.41.0-linux-x64.tar.gz` | Extract into a new directory; run `./ServerDesk.App` |
+| Source | `ServerDesk-0.41.0-source.zip` | .NET 10 SDK required |
 
 The binary packages include .NET. Linux additionally needs its system X11/fontconfig libraries, Secret Service for remembered passwords and an installed X11 FreeRDP client (`xfreerdp3` or `xfreerdp`) for in-tab RDP. Linux verification used Ubuntu/WSLg; other desktop/distribution combinations are experimental. ARM/macOS packages are not provided.
 

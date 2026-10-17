@@ -44,5 +44,5 @@ $size=[int][Math]::Ceiling((Get-ChildItem $Payload -File -Recurse | Measure-Obje
 & $Compiler /INPUTCHARSET UTF8 /V2 "/DVERSION=$version" "/DPAYLOAD=$Payload" "/DOUTPUT=$([IO.Path]::GetFullPath($Output))" "/DUNINSTALL_INCLUDE=$(Join-Path $generated 'uninstall.nsh')" "/DCLEAN_INCLUDE=$(Join-Path $generated 'clean.nsh')" "/DBUSY_INCLUDE=$(Join-Path $generated 'busy.nsh')" "/DSIZE_KB=$size" (Join-Path $repo 'packaging/windows/ServerDesk.nsi')
 if($LASTEXITCODE -ne 0){throw 'NSIS compiler failed'}
 # Retain this cumulative ownership ledger in future releases to remove retired binaries safely.
-$owned | ConvertTo-Json | Set-Content $ownedPath -Encoding utf8
+[IO.File]::WriteAllText($ownedPath,($owned | ConvertTo-Json).Replace("`r`n","`n")+"`n",[Text.UTF8Encoding]::new($false))
 Write-Output "Installer: $Output"

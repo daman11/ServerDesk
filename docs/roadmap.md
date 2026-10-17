@@ -1,5 +1,7 @@
 Bieżące priorytety i postęp stabilizacji: [Droga do wersji 1.0](stable-release-plan.md). Pierwotne MVP: aktualna tabela kryteriów i brakującej weryfikacji znajduje się w [mvp-status.md](mvp-status.md). Poniższe wpisy opisują historię etapów; dawne listy nie są aktualną listą braków.
 
+0.41.0: ochrona sekretów kolekcji przy błędach indeksu, migracje historycznych danych, kontrolowane awarie procesów i rzeczywisty brak miejsca na izolowanym tmpfs. Zbiera zmiany drzewa/ikon oraz narzędzi RC po 0.40.0. Testy VMware odłożone na prośbę maintenera; nadal Public Beta. [Wydanie](releases/release-0.41.0.md), [weryfikacja](reports/release-verification-0.41.0.md).
+
 0.40.0: dodatkowa personalizacja czcionki interfejsu, zaokrągleń, menu, listy połączeń i kart, sprawdzanie kopii SQLite i stabilniejsze zamykanie diagnostyki. [Wydanie](releases/release-0.40.0.md), [testy i ograniczenia](reports/release-verification-0.40.0.md).
 
 0.37.0: sprawdzone kopie SQLite i ochrona startu, odzyskiwanie SFTP i kolejka/ostrzeżenia `.part`, stabilne zaznaczenie oraz tymczasowe rozwijanie wyszukiwania w panelu połączeń. [Wydanie](releases/release-0.37.0.md).

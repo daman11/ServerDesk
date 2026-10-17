@@ -1,12 +1,12 @@
 # Droga do ServerDesk 1.0
 
-Punkt wyjścia: 0.40.0 Public Beta. Funkcje rdzenia i dodatków istnieją; stan implementacji oraz granice wcześniejszych testów opisuje [MVP](mvp-status.md). Poniższa lista jest bieżącym planem stabilizacji, a nie deklaracją gotowości 1.0.
+Punkt wyjścia: 0.41.0 Public Beta. Funkcje rdzenia i dodatków istnieją; stan implementacji oraz granice wcześniejszych testów opisuje [MVP](mvp-status.md). Poniższa lista jest bieżącym planem stabilizacji, a nie deklaracją gotowości 1.0.
 
 Małe kroki kończą się commitem, celowanymi sprawdzeniami i EXE do uruchomienia z folderu. Pełna macierz i paczki są przeznaczone dla większych etapów, RC i wydania 1.0.
 
 ## Kolejność następnych prac — 2026-10-17
 
-Ostatnim zamrożonym wydaniem jest **0.40.0 Public Beta**. Późniejsze commity obejmują m.in. usprawnienia drzewa i ikon oraz narzędzia przygotowania RC; nie znajdują się automatycznie w instalatorze 0.40.0. Działające implementacje nie zamykają akceptacji: otwarte pozostają rzeczywiste środowiska Linux, sprzęt, długie sesje i część scenariuszy awarii.
+**Aktualizacja wykonawcza: 0.41.0 Public Beta** zbiera usprawnienia drzewa/ikon, narzędzia RC oraz poprawkę ochrony sekretów kolekcji. Rozszerzono migracje/odtworzenie schematów 0–2, przerwanie procesów i rzeczywisty brak miejsca na izolowanym tmpfs. [Zakres i granice](reports/release-verification-0.41.0.md). Na prośbę maintenera testy VMware są odłożone do przygotowania dostępu; pozostałe próby sprzętu, długiej pracy i pilotażu nadal są otwarte. Nie nadaje to statusu stabilnego 1.0.
 
 Etapy A–F wyznaczają kolejność wykonania. Punkty 1–6 poniżej pozostają szczegółową listą postępu według obszarów. Przed 1.0 priorytetem są poprawki istniejących funkcji; kolejne moduły odkładamy poza ten cykl.
 
@@ -79,7 +79,7 @@ Etapy A–F wyznaczają kolejność wykonania. Punkty 1–6 poniżej pozostają 
 
 ## Najbliższa partia wykonawcza
 
-Po uzgodnieniu zakresu rozpocząć etap B: **(1)** przygotować historyczne dane testowe i oczekiwany stan, **(2)** sprawdzić migrację i odtworzenie, **(3)** wymusić brak miejsca/blokadę/odmowę zapisu w izolacji, **(4)** sprawdzić przerwanie procesu i ponowienie, **(5)** potwierdzić zgodność osobnych magazynów i komunikaty PL/EN. Naprawy i testy podzielić na logiczne commity. Równolegle można zbierać ręczne wyniki natywnego Linuxa i sprzętu do etapu D.
+Po 0.41.0 kontynuować etap B: pozostałe fazy przerwania operacji, blokady, odmowy dostępu i zgodność pełnego zestawu osobnych magazynów. Wykonane migracje, awarie procesu i ENOSPC mają zakres opisany w raporcie 0.41.0; nie powtarzać ich jako nowych zaległości bez przyczyny. Po przygotowaniu przez maintenera maszyn i dostępu uzupełnić natywną akceptację z etapów A/C/D oraz instalację z rejestracją na czystej VM. Długa praca i pilotaż pozostają osobnymi otwartymi zadaniami.
 
 Ten dokument ustala plan; nie zalicza tych przyszłych prób. Aktualizacja samego planu wymaga kontroli treści/linków i commita, bez buildu aplikacji, zmiany wersji ani nowego wydania.
 
@@ -100,7 +100,8 @@ Ten dokument ustala plan; nie zalicza tych przyszłych prób. Aktualizacja sameg
 - [x] Eksport czyta profile/foldery/ikony z jednego obrazu bazy; błędy zapisu importu wycofują całość i pozwalają na retry bez zmiany lokalnych ikon. [Sześć zadań, dowody i ograniczenia](reports/configuration-consistency-2026-10-17.md).
 - [x] 0.39.1: eksport Komend i Network Tools przez zamknięty plik tymczasowy, zachowanie poprzedniego pliku przy błędzie/anulowaniu; prywatne uprawnienia nowych plików Unix.
 - [x] 0.39.1: odrzucanie powtórzonych pól konfiguracji przed zapisem oraz odczyt/walidacja/import poza wątkiem UI.
-- [ ] Szersze testy przerwanego zapisu, braku miejsca, blokad i aktualizacji historycznych zestawów danych.
+- [ ] Pozostałe fazy przerwania operacji, blokady, odmowy dostępu i dodatkowe historyczne zestawy danych; próby 0.41.0 poniżej zamykają tylko wymieniony zakres.
+- [x] 0.41.0: reprezentatywne dane schematów 0–2, kopia/migracja/odtworzenie, przerwanie własnego procesu podczas eksportu i transakcji zmiany drzewa oraz rzeczywisty ENOSPC/SQLITE_FULL na tmpfs 8 MiB z udanym retry. Pięć testów ochrony indeksu i sekretu kolekcji. Nie zamyka awarii zasilania, każdej fazy operacji ani spójności pełnego backupu magazynów. [Zakres](reports/release-verification-0.41.0.md).
 - [ ] Dalsza weryfikacja zgodności bazy z osobnym magazynem poświadczeń, komend i kolekcji; kopia bazy nie jest pełnym backupem tych danych.
 
 ## 2. Rdzeń MVP — do domknięcia akceptacji

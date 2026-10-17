@@ -2,6 +2,13 @@
 
 ## Unreleased
 
+## 0.41.0 — Public Beta — 2026-10-17
+
+- Preserve saved Network Tools collection secrets when an index write fails. Commit index deletion before retiring its encrypted blob; keep the original storage error if cleanup also fails and allow safe retry.
+- Add disposable historical-schema migration/restore, forced-process-termination and bounded 8 MiB Linux tmpfs disk-full acceptance, including original data/export preservation and successful retries. Register recovery checks in CI without using personal stores or connections.
+- Write the tracked Windows installer ownership ledger with repository LF/UTF-8 encoding so repackaging preserves its source bytes.
+- Prepare the next candidate toward 1.0. Native VM/hardware acceptance is deferred at the maintainer's request; retain Public Beta status and explicit platform limits.
+
 - Extend the isolated Windows installer harness with older-version upgrades, missing/corrupt payload repair, uninstaller recovery and full owned-payload removal checks; preserve user data and unknown files.
 - Add a dependency-audit gate for complete solution coverage, command/diagnostic failures and direct/transitive advisories, with bounded regression fixtures and future CI checks. Align RC/GitHub/repair guides with the lightweight development cycle and remaining acceptance gates.
 - Give connection folders distinct headers, persistent folder symbols alongside custom icons, consistent expander spacing and localized Empty badges for empty leaves.

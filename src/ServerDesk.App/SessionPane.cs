@@ -91,8 +91,8 @@ internal sealed partial class SessionPane : WorkspacePane
         {
 
             actions.Children.Add(PanelButton("Terminal",0)); actions.Children.Add(PanelButton("SFTP",1));
-            var pluginDivider=new Border { Width=1,Height=22,VerticalAlignment=VerticalAlignment.Center }; DesignSystem.Resource(pluginDivider,Border.BackgroundProperty,"BorderStrong");
-            sessionPluginBoundary=new StackPanel { Name="SessionPluginBoundary",Orientation=Orientation.Horizontal,Spacing=8,Children={pluginDivider,DesignSystem.Badge(L.T("Pluginy"))} }; ToolTip.SetTip(sessionPluginBoundary,L.T("Plugin wbudowany · dostarczany z ServerDesk")); actions.Children.Add(sessionPluginBoundary);
+            var pluginDivider=new Border { Width=1,Height=18,VerticalAlignment=VerticalAlignment.Center }; DesignSystem.Resource(pluginDivider,Border.BackgroundProperty,"BorderDefault");
+            sessionPluginBoundary=new StackPanel { Name="SessionPluginBoundary",Orientation=Orientation.Horizontal,Spacing=4,Children={pluginDivider} }; ToolTip.SetTip(sessionPluginBoundary,L.T("Plugin wbudowany · dostarczany z ServerDesk")); actions.Children.Add(sessionPluginBoundary);
             actions.Children.Add(PanelButton("Monitoring",2));
             commandsButton=Button("Komendy",owner.OpenCommandsPanelAsync); actions.Children.Add(commandsButton);
             var options=new Button { Content=DeskIcons.Create("more"),Tag="Opcje",Width=30,Classes={"chrome","icon"} }; optionsButton=options; ToolTip.SetTip(options,L.T("Opcje sesji")); Avalonia.Automation.AutomationProperties.SetName(options,L.T("Opcje sesji"));

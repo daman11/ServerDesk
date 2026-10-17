@@ -9,7 +9,7 @@ namespace ServerDesk.App;
 
 public sealed partial class MainWindow
 {
-    private readonly Dictionary<Button,Protocol?> protocolButtons=[];
+    private ComboBox protocolSelector=null!;
     private readonly TextBlock browserCount=DesignSystem.Label("",true,11);
     private readonly StackPanel browserEmpty=new() { Spacing=10,Margin=new Thickness(18),VerticalAlignment=VerticalAlignment.Center };
     private readonly TextBlock browserEmptyTitle=DesignSystem.Label("",false,16);
@@ -35,18 +35,15 @@ public sealed partial class MainWindow
     private void BuildBrowserFilters()
     {
         var body=new StackPanel { Margin=new Thickness(10,0,10,8),Spacing=6 };
-        var choices=new Grid { ColumnDefinitions=new ColumnDefinitions("1.8*,*,*"),RowDefinitions=new RowDefinitions("Auto,Auto"),ColumnSpacing=4,RowSpacing=4 };
-        var options=new (string Name,Protocol? Protocol)[]{(L.T("Wszystkie"),null),("SSH",Protocol.SSH),("RDP",Protocol.RDP),("VNC",Protocol.VNC),("Serial",Protocol.Serial)};
-        for(var i=0;i<options.Length;i++)
+        protocolSelector=new ComboBox { Name="ConnectionProtocolFilter",ItemsSource=new[]{L.T("Wszystkie"),"SSH","RDP","VNC","Serial"},SelectedIndex=0,HorizontalAlignment=HorizontalAlignment.Stretch,MinHeight=30,Classes={"quiet-select"} };
+        AutomationProperties.SetName(protocolSelector,L.T("Filtr protokołu"));
+        ToolTip.SetTip(protocolSelector,L.T("Filtr protokołu"));
+        protocolSelector.SelectionChanged+=(_,_)=>
         {
-            var option=options[i]; var button=Dialogs.Button(option.Name,()=> { vm.ProtocolFilter=option.Protocol; QueueTree(); });
-            button.Classes.Add("chrome"); button.Classes.Add("segment"); button.HorizontalAlignment=HorizontalAlignment.Stretch;
-            button.Padding=new Thickness(6,3);
-            AutomationProperties.SetName(button,L.T("Filtr protokołu: ")+option.Name); protocolButtons[button]=option.Protocol; Grid.SetColumn(button,i<3?i:i-3); Grid.SetRow(button,i<3?0:1); if(i==4)Grid.SetColumnSpan(button,2); choices.Children.Add(button);
-        }
-        var filterSurface=new Border { Child=choices,Padding=new Thickness(3),CornerRadius=new CornerRadius(6),BorderThickness=new Thickness(1) };
-        DesignSystem.Resource(filterSurface,Border.BackgroundProperty,"BackgroundPrimary"); DesignSystem.Resource(filterSurface,Border.BorderBrushProperty,"BorderDefault"); body.Children.Add(filterSurface);
-        BuildTagFilters(body);
+            var filter=protocolSelector.SelectedIndex<=0?null:(Protocol?)(protocolSelector.SelectedIndex-1);
+            if(filter!=vm.ProtocolFilter) { vm.ProtocolFilter=filter; QueueTree(); }
+        };
+        BuildTagFilters(body,protocolSelector);
         var stats=new Grid { ColumnDefinitions=new ColumnDefinitions("*,Auto"),ColumnSpacing=8 }; browserCount.Name="ConnectionResultCount"; browserCount.TextTrimming=TextTrimming.CharacterEllipsis; stats.Children.Add(browserCount);
         clearBrowserFilters=DeskIcons.Button("close","Wyczyść filtry",ClearBrowserFilters,24); clearBrowserFilters.Classes.Add("chrome"); Grid.SetColumn(clearBrowserFilters,1); stats.Children.Add(clearBrowserFilters); body.Children.Add(stats);
         clearBrowserFilters.Name="ClearConnectionFilters"; clearBrowserFilters.Width=double.NaN; clearBrowserFilters.Padding=new Thickness(6,2); clearBrowserFilters.Content=DeskIcons.Labelled("close",L.T("Wyczyść"),14);
@@ -63,7 +60,8 @@ public sealed partial class MainWindow
     private void UpdateBrowserState(int count)
     {
         rootProfileDrop.IsVisible=section=="connections" && count>0;
-        foreach(var (button,filter) in protocolButtons)button.Classes.Set("active",filter==vm.ProtocolFilter);
+        protocolSelector.SelectedIndex=vm.ProtocolFilter==null?0:(int)vm.ProtocolFilter+1;
+        ToolTip.SetTip(protocolSelector,vm.ProtocolFilter==null?L.T("Wszystkie protokoły"):L.T("Filtr protokołu: ")+vm.ProtocolFilter);
         browserCount.Text=L.F($"Widoczne: {count} / {vm.AllServers.Count}");
         ToolTip.SetTip(browserCount,browserCount.Text);
         clearBrowserFilters.IsVisible=HasBrowserFilter;

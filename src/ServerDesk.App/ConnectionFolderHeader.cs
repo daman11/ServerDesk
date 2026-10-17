@@ -22,8 +22,8 @@ public sealed partial class MainWindow
         Grid.SetColumn(label,2); body.Children.Add(label);
         var total=DesignSystem.Label(empty?L.T("Pusty"):count.ToString(),true,11); total.Name="ConnectionFolderCount";
         var badge=new Border { Child=total,Padding=new Thickness(5,1),CornerRadius=new CornerRadius(4),VerticalAlignment=VerticalAlignment.Center };
-        DesignSystem.Resource(badge,Border.BackgroundProperty,"BackgroundPrimary"); Grid.SetColumn(badge,3); body.Children.Add(badge);
-        var surface=new Border { CornerRadius=new CornerRadius(4),Opacity=.55,IsHitTestVisible=false }; DesignSystem.Resource(surface,Border.BackgroundProperty,"BackgroundTertiary");
+        Grid.SetColumn(badge,3); body.Children.Add(badge);
+        var surface=new Border { CornerRadius=new CornerRadius(4),Opacity=empty?.35:.18,IsHitTestVisible=false }; DesignSystem.Resource(surface,Border.BackgroundProperty,"BackgroundTertiary");
         var header=new Grid { Name="ConnectionFolderHeader",Margin=new Thickness(0,3,4,2),Children={surface,body} };
         node.Classes.Set("empty-folder",empty);
         AutomationProperties.SetName(node,L.F($"Folder: {path}"));

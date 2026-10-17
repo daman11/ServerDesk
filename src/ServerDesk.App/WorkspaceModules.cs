@@ -9,7 +9,7 @@ namespace ServerDesk.App;
 public sealed partial class MainWindow
 {
     private Border? activityPluginGroup;
-    private readonly DeskIcon sidebarModuleIcon=DeskIcons.Create("connections",18,"AccentPrimary");
+    private readonly DeskIcon sidebarModuleIcon=DeskIcons.Create("connections",17,"ForegroundSecondary");
     private readonly TextBlock sidebarModuleHint=DesignSystem.Hint(L.T("Serwery i foldery"));
 
     private Control BuildActivityNavigation()
@@ -23,8 +23,7 @@ public sealed partial class MainWindow
                 var button=DeskIcons.Button(id,L.T(title),()=>_=Safe(()=>SelectSectionAsync(id)),DesignTokens.ActivityButton-2);
                 button.Margin=new Thickness(1); button.Classes.Add("activity"); activityButtons[id]=button; buttons.Children.Add(button);
             }
-            var group=new Border { Name=name,Child=buttons,Margin=new Thickness(2,3,2,6),CornerRadius=new CornerRadius(7),BorderThickness=new Thickness(1) };
-            DesignSystem.Resource(group,Border.BackgroundProperty,"BackgroundSecondary"); DesignSystem.Resource(group,Border.BorderBrushProperty,"BorderDefault");
+            var group=new Border { Name=name,Child=buttons,Margin=new Thickness(2,2,2,10),Background=Brushes.Transparent };
             AutomationProperties.SetName(group,L.T(caption)); ToolTip.SetTip(group,L.T(caption)); return group;
         }
         var settings=Group("ActivityApplication","Ustawienia aplikacji",("settings","Ustawienia")); DockPanel.SetDock(settings,Dock.Bottom); rail.Children.Add(settings);
@@ -40,13 +39,10 @@ public sealed partial class MainWindow
     private Control BuildSidebarModuleHeader()
     {
         sectionTitle.Name="SidebarModuleTitle"; sectionTitle.TextWrapping=TextWrapping.Wrap; sectionTitle.FontWeight=FontWeight.SemiBold;
-        var icon=new Border { Width=30,Height=30,CornerRadius=new CornerRadius(8),Child=sidebarModuleIcon,VerticalAlignment=VerticalAlignment.Top };
-        DesignSystem.Resource(icon,Border.BackgroundProperty,"SurfaceSelected");
-        var row=new Grid { ColumnDefinitions=new("Auto,*,Auto"),RowDefinitions=new("Auto,Auto"),ColumnSpacing=8,RowSpacing=7,Children={icon,sectionTitle,connectionHeaderActions,sidebarModuleHint} };
-        Grid.SetColumn(sectionTitle,1); Grid.SetColumn(connectionHeaderActions,2); Grid.SetRow(sidebarModuleHint,1); Grid.SetColumnSpan(sidebarModuleHint,3);
-        sidebarModuleHint.Name="SidebarModuleHint";
-        var header=new Border { Name="SidebarModuleHeader",Child=row,Padding=new Thickness(10,10,6,10),Margin=new Thickness(0,0,0,10),BorderThickness=new Thickness(0,0,0,1) };
-        DesignSystem.Resource(header,Border.BackgroundProperty,"SurfaceDefault"); DesignSystem.Resource(header,Border.BorderBrushProperty,"BorderStrong");
+        var row=new Grid { ColumnDefinitions=new("20,*,Auto"),ColumnSpacing=7,Children={sidebarModuleIcon,sectionTitle,connectionHeaderActions} };
+        Grid.SetColumn(sectionTitle,1); Grid.SetColumn(connectionHeaderActions,2);
+        sidebarModuleHint.Name="SidebarModuleHint"; sidebarModuleHint.IsVisible=false;
+        var header=new Border { Name="SidebarModuleHeader",Child=row,Padding=new Thickness(10,10,6,8),Margin=new Thickness(0,0,0,4) };
         UpdateSidebarModule(); return header;
     }
 
@@ -58,6 +54,6 @@ public sealed partial class MainWindow
             "transfers"=>("transfers","Transfery","Zadania SFTP otwartych sesji"),
             "network"=>("network","Narzędzia sieciowe","Diagnostyka sieci"),
             _=>("connections","Połączenia","Serwery i foldery") };
-        sidebarModuleIcon.Glyph=DeskIcons.Resolve(icon); sectionTitle.Text=L.T(title); sidebarModuleHint.Text=L.T(hint);
+        sidebarModuleIcon.Glyph=DeskIcons.Resolve(icon); sectionTitle.Text=L.T(title); sidebarModuleHint.Text=L.T(hint); ToolTip.SetTip(sectionTitle,sidebarModuleHint.Text);
     }
 }

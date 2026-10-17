@@ -13,6 +13,7 @@ internal sealed class ServerMetricsBar : Grid
     private readonly Dictionary<string,(Border Cell,TextBlock Text)> cells=[];
     private ApplicationPreferences preferences=new();
     private bool warning;
+    private bool HasVisibleMetrics=>preferences.ShowMetrics && (preferences.MetricCpu||preferences.MetricMemory||preferences.MetricNetwork||preferences.MetricUptime||preferences.MetricDisk||preferences.MetricSystem||preferences.MetricClock);
     private static readonly string[] order=["cpu","ram","rx","tx","uptime","disk","os","clock"];
     internal ServerMetricsBar()
     {
@@ -32,12 +33,13 @@ internal sealed class ServerMetricsBar : Grid
     internal void Update(SessionPane? pane,double width,ApplicationPreferences? options=null)
     {
         var next=options??new(); if(preferences!=next)InvalidateMeasure(); preferences=next;
-        IsVisible=preferences.ShowMetrics && (preferences.MetricCpu||preferences.MetricMemory||preferences.MetricNetwork||preferences.MetricUptime||preferences.MetricDisk||preferences.MetricSystem||preferences.MetricClock) && pane is { Profile.Protocol:Protocol.SSH };
+        IsVisible=HasVisibleMetrics && pane is { Profile.Protocol:Protocol.SSH };
         if(!IsVisible)return;
         Render(pane!.LatestSnapshot,pane.LastSampleAt,pane.MetricsError,pane.IsConnected,width,pane.MetricsStaleAfter);
     }
     internal void Render(ServerSnapshot? snapshot,DateTimeOffset? sampledAt,string error,bool connected,double width,TimeSpan? staleAfter=null)
     {
+        IsVisible=HasVisibleMetrics && (connected || snapshot!=null);
         var stale=sampledAt is {} at && DateTimeOffset.UtcNow-at>(staleAfter??TimeSpan.FromSeconds(20));
         var status=error.Length>0?error:!connected?L.T("Połącz sesję SSH, aby zobaczyć parametry serwera."):snapshot==null?L.T("Pobieranie parametrów serwera Linux…"):L.F($"Próbka: {sampledAt?.ToLocalTime():HH:mm:ss}{(stale?" · dane nieaktualne":"")}");
         if(snapshot is { UnavailableSections.Count:>0 })status+="\n"+SessionPane.MonitoringWarning(snapshot);

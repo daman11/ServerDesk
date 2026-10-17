@@ -14,25 +14,23 @@ public sealed partial class MainWindow
     private ServerProfile[] welcomeRecentSnapshot=[];
     private Control BuildWelcome()
     {
-        var body=new StackPanel { Name="WorkspaceWelcome",Spacing=20,MaxWidth=800,HorizontalAlignment=HorizontalAlignment.Center,VerticalAlignment=VerticalAlignment.Center,Margin=new Thickness(28) };
+        var body=new StackPanel { Name="WorkspaceWelcome",Spacing=22,MaxWidth=720,HorizontalAlignment=HorizontalAlignment.Center,VerticalAlignment=VerticalAlignment.Center,Margin=new Thickness(28) };
         var shortcuts=new List<Control>();
         var title=DesignSystem.Label(L.T("Gotowy do pracy"),false,DesignTokens.Title); title.FontWeight=FontWeight.SemiBold; title.TextWrapping=TextWrapping.Wrap;
-        var description=DesignSystem.Label(L.T("Twoje serwery, terminal i pliki w jednym miejscu.\nWybierz zapisane połączenie lub rozpocznij nową sesję."),true); description.TextWrapping=TextWrapping.Wrap;
+        var description=DesignSystem.Label(L.T("Wybierz połączenie z listy lub rozpocznij nową sesję."),true); description.TextWrapping=TextWrapping.Wrap;
         var intro=new StackPanel { Spacing=8,Children={title,description} };
-        var brand=new Border { Width=58,Height=58,CornerRadius=new CornerRadius(14),Child=new BrandMark { Width=38,Height=38 },VerticalAlignment=VerticalAlignment.Top };
-        DesignSystem.Resource(brand,Border.BackgroundProperty,"SurfaceSelected");
+        var brand=new Border { Width=44,Height=44,Child=new BrandMark { Width=30,Height=30 },VerticalAlignment=VerticalAlignment.Top };
         var hero=new Grid { ColumnDefinitions=new("Auto,*"),ColumnSpacing=18,Children={brand,intro} }; Grid.SetColumn(intro,1); body.Children.Add(hero);
         welcomeSummary.Name="WelcomeSummary"; welcomeSummary.TextWrapping=TextWrapping.Wrap; body.Children.Add(welcomeSummary);
         var actions=new Grid { Name="WelcomeActions",ColumnDefinitions=new("*,*"),RowDefinitions=new("Auto,Auto"),ColumnSpacing=12,RowSpacing=12 };
         Button Entry(string icon,string title,string subtitle,string? shortcut,Func<Task> action)
         {
             title=L.T(title); subtitle=L.T(subtitle);
-            var row=new Grid { ColumnDefinitions=new("30,*,Auto"),ColumnSpacing=10 }; row.Children.Add(DeskIcons.Create(icon,22,"AccentPrimary"));
+            var row=new Grid { ColumnDefinitions=new("24,*"),ColumnSpacing=10 }; row.Children.Add(DeskIcons.Create(icon,18,"ForegroundSecondary"));
             var text=new StackPanel { Spacing=4 }; var heading=DesignSystem.Label(title); heading.FontWeight=FontWeight.SemiBold; heading.TextWrapping=TextWrapping.Wrap; text.Children.Add(heading);
             var hint=DesignSystem.Label(subtitle,true,DesignTokens.Caption); hint.TextWrapping=TextWrapping.Wrap; text.Children.Add(hint); Grid.SetColumn(text,1); row.Children.Add(text);
-            var end=DeskIcons.Create("arrow-right",14,"ForegroundSecondary"); Grid.SetColumn(end,2); row.Children.Add(end);
             if(shortcut!=null) { var key=DesignSystem.Label(shortcut,true,DesignTokens.Micro); key.Margin=new Thickness(0,6,0,0); text.Children.Add(key); shortcuts.Add(key); }
-            var button=Action(title,action); button.Content=row; button.IsDefault=false; button.VerticalAlignment=VerticalAlignment.Stretch; button.Classes.Add("welcome-action"); AutomationProperties.SetName(button,title+(shortcut==null?"":" · "+shortcut)); return button;
+            var button=Action(title,action); button.Content=row; button.IsDefault=false; button.VerticalAlignment=VerticalAlignment.Stretch; button.Classes.Add("welcome-action"); button.Classes.Add("welcome-calm"); AutomationProperties.SetName(button,title+(shortcut==null?"":" · "+shortcut)); return button;
         }
         actions.Children.Add(Entry("plus","Nowe połączenie","Dodaj SSH, RDP, VNC lub Serial","Ctrl+Shift+N",()=>EditAsync(null)));
         actions.Children.Add(Entry("connect","Szybkie połączenie","Adres ssh://, rdp://, vnc:// lub serial://",null,QuickAsync));
@@ -45,7 +43,7 @@ public sealed partial class MainWindow
         var renderedColumns=0;
         scroll.SizeChanged+=(_,_)=>
         {
-            body.Width=Math.Min(800,Math.Max(0,scroll.Bounds.Width-56)); var columns=body.Width>=500?2:1;
+            body.Width=Math.Min(720,Math.Max(0,scroll.Bounds.Width-56)); var columns=body.Width>=500?2:1;
             if(columns!=renderedColumns)
             {
                 renderedColumns=columns; actions.ColumnDefinitions=new(columns==2?"*,*":"*"); actions.RowDefinitions=new(columns==2?"Auto,Auto":"Auto,Auto,Auto,Auto");

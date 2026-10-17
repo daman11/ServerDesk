@@ -53,6 +53,9 @@ internal static partial class DesignSystem
         Add(s=>s.OfType<Button>().Class("welcome-action").Class(":pointerover"),Resource(Button.BackgroundProperty,"SurfaceHover"));
         Add(s=>s.OfType<Button>().Class("welcome-action").Class(":pressed"),Resource(Button.BackgroundProperty,"SurfaceSelected"));
         Add(s=>s.OfType<Button>().Class("welcome-action").Class(":focus-visible"),Resource(Button.BorderBrushProperty,"AccentPrimary"));
+        Add(s=>s.OfType<Button>().Class("welcome-calm"),new Setter(Button.BackgroundProperty,Brushes.Transparent),new Setter(Button.BorderBrushProperty,Brushes.Transparent));
+        Add(s=>s.OfType<Button>().Class("welcome-calm").Class(":pointerover"),Resource(Button.BackgroundProperty,"SurfaceHover"),Resource(Button.BorderBrushProperty,"BorderDefault"));
+        Add(s=>s.OfType<Button>().Class("welcome-calm").Class(":focus-visible"),Resource(Button.BorderBrushProperty,"AccentPrimary"));
         Add(s=>s.OfType<ComboBox>().Class("quiet-select"),Resource(ComboBox.BackgroundProperty,"BackgroundSecondary"),Resource(ComboBox.ForegroundProperty,"ForegroundSecondary"),new Setter(ComboBox.BorderThicknessProperty,new Thickness(0)),new Setter(ComboBox.PaddingProperty,new Thickness(8,2)),new Setter(ComboBox.MinHeightProperty,26d));
         Add(s=>s.OfType<ComboBox>().Class("quiet-select").Class(":focus-visible"),Resource(ComboBox.BorderBrushProperty,"AccentPrimary"),new Setter(ComboBox.BorderThicknessProperty,new Thickness(1)));
         Add(s=>s.OfType<TabItem>().Class(":selected"),Resource(TabItem.BackgroundProperty,"TabActiveSurface"),Resource(TabItem.ForegroundProperty,"ForegroundPrimary"),new Setter(TabItem.FontWeightProperty,FontWeight.SemiBold));
@@ -70,6 +73,10 @@ internal static partial class DesignSystem
             } }}
         });
         Add(s=>s.OfType<TreeViewItem>(),Resource(TreeViewItem.PaddingProperty,"ConnectionRowPadding"));
+        // Fluent paints selection inside the header template, independently of
+        // TreeViewItem.Background. Use the theme's quieter selection surface there too.
+        Add(s=>s.OfType<TreeViewItem>().Class("connection-entry").Class(":selected").Template().OfType<Border>().Name("PART_LayoutRoot"),Resource(Border.BackgroundProperty,"SurfaceSelected"));
+        Add(s=>s.OfType<TreeViewItem>().Class("connection-entry").Class(":selected").Template().OfType<ContentPresenter>().Name("PART_HeaderPresenter"),Resource(ContentPresenter.BackgroundProperty,"SurfaceSelected"));
         // Keep the same expander slot for populated folders, empty folders and servers.
         Add(s=>s.OfType<TreeViewItem>().Class("connection-entry").Template().OfType<Panel>().Name("PART_ExpandCollapseChevronContainer"),new Setter(Layoutable.WidthProperty,12d),new Setter(Layoutable.MarginProperty,new Thickness(8,0,4,0)));
     }

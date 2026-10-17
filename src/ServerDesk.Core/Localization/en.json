@@ -1591,5 +1591,8 @@
   "Znajdź kartę po nazwie, adresie lub panelu i wróć do pracy.": "Find a tab by name, address or pane and get back to work.",
   "Nie masz otwartych sesji. Otwórz zapisane połączenie lub skorzystaj z szybkiego połączenia.": "No sessions are open. Open a saved connection or use Quick connect.",
   "Brak pasujących sesji. Zmień lub wyczyść wyszukiwanie.": "No matching sessions. Change or clear the search.",
-  "Użytkownik: {0}": "User: {0}"
+  "Użytkownik: {0}": "User: {0}",
+  "Wszystkie protokoły": "All protocols",
+  "Filtr protokołu": "Protocol filter",
+  "Wybierz połączenie z listy lub rozpocznij nową sesję.": "Choose a connection from the list or start a new session."
 }

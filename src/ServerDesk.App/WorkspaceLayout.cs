@@ -171,7 +171,7 @@ public sealed partial class MainWindow
             Grid.SetRow(secondary,1); Grid.SetColumn(secondary,2); Grid.SetColumnSpan(secondary,4); row.Children.Add(secondary); Grid.SetRowSpan(glyph,2);
             if(profile!=null)Grid.SetRowSpan(row.Children[0],2);
         }
-        if(protocol!=null) { var badge=new Border { Child=DesignSystem.Label(protocol,true,DesignTokens.Micro),Padding=new Thickness(5,1),CornerRadius=new CornerRadius(4),VerticalAlignment=VerticalAlignment.Center }; DesignSystem.Resource(badge,Border.BackgroundProperty,"BackgroundTertiary"); Grid.SetColumn(badge,3); row.Children.Add(badge); }
+        if(protocol!=null) { var badge=DesignSystem.Label(protocol,true,DesignTokens.Micro); badge.Margin=new Thickness(3,0); Grid.SetColumn(badge,3); row.Children.Add(badge); }
         if(favorite) { var star=DeskIcons.Create("favorite",12); Grid.SetColumn(star,4); row.Children.Add(star); }
         if(connected) { var dot=DeskIcons.Create("circle-check",12,"Success"); Grid.SetColumn(dot,5); row.Children.Add(dot); }
         return row;

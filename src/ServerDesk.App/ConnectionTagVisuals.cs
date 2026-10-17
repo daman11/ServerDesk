@@ -11,15 +11,16 @@ namespace ServerDesk.App;
 
 internal static class ConnectionTagVisuals
 {
-    internal static Border Chip(string name,IReadOnlyDictionary<string,string> colors,bool selected=false,double maxTextWidth=150,bool removable=false)
+    internal static Border Chip(string name,IReadOnlyDictionary<string,string> colors,bool selected=false,double maxTextWidth=150,bool removable=false,bool quiet=false)
     {
-        var label=DesignSystem.Label(name,false,11); label.TextTrimming=TextTrimming.CharacterEllipsis; label.TextWrapping=TextWrapping.NoWrap; label.MaxWidth=maxTextWidth;
-        var dot=new Border { Width=7,Height=7,CornerRadius=new CornerRadius(4),Background=Brush.Parse(ProfileTags.Color(name,colors)),VerticalAlignment=VerticalAlignment.Center };
+        var subdued=quiet && !selected;
+        var label=DesignSystem.Label(name,subdued,11); label.TextTrimming=TextTrimming.CharacterEllipsis; label.TextWrapping=TextWrapping.NoWrap; label.MaxWidth=maxTextWidth;
+        var dot=new Border { Width=subdued?5:7,Height=subdued?5:7,CornerRadius=new CornerRadius(4),Background=Brush.Parse(ProfileTags.Color(name,colors)),VerticalAlignment=VerticalAlignment.Center };
         var body=new Grid { ColumnDefinitions=new ColumnDefinitions("Auto,*,Auto"),ColumnSpacing=5,Children={dot,label} }; Grid.SetColumn(label,1);
         if(removable) { var close=DeskIcons.Create("close",12,"ForegroundSecondary"); Grid.SetColumn(close,2); body.Children.Add(close); }
         var color=Color.Parse(ProfileTags.Color(name,colors));
-        var chip=new Border { Child=body,Padding=new Thickness(7,3),CornerRadius=new CornerRadius(12),BorderThickness=new Thickness(1),
-            Background=new SolidColorBrush(Color.FromArgb(selected?(byte)40:(byte)18,color.R,color.G,color.B)),
+        var chip=new Border { Child=body,Padding=subdued?new Thickness(2,1):new Thickness(7,3),CornerRadius=new CornerRadius(12),BorderThickness=new Thickness(subdued?0:1),
+            Background=subdued?Brushes.Transparent:new SolidColorBrush(Color.FromArgb(selected?(byte)40:(byte)18,color.R,color.G,color.B)),
             BorderBrush=new SolidColorBrush(Color.FromArgb(selected?(byte)170:(byte)75,color.R,color.G,color.B)) };
         ToolTip.SetTip(chip,name); return chip;
     }

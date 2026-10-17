@@ -40,6 +40,8 @@ internal static class ConnectionTagChecks
             try
             {
                 Verify(Count()==4,"Initial tag browser lost profiles");
+                var protocolChoice=Named<ComboBox>(main,"ConnectionProtocolFilter"); protocolChoice.SelectedIndex=2; RedesignChecks.Frames(); Verify(Count()==1 && vm.ProtocolFilter==Protocol.RDP,"Compact protocol selector did not filter the tree");
+                Click(Named<Button>(main,"ClearConnectionFilters")); RedesignChecks.Frames(); Verify(Count()==4 && protocolChoice.SelectedIndex==0,"Clearing filters did not reset the compact protocol selector");
                 tree.SelectedItem=Nodes(tree.Items).Single(n=>n.Tag is ServerProfile p && p.Id==first.Id);
                 vm.SelectedTags=["windows"]; tree.RaiseEvent(new KeyEventArgs { RoutedEvent=InputElement.KeyDownEvent,Key=Key.Enter }); RedesignChecks.Frames();
                 Verify(Count()==1 && vm.SelectedServer==null && !main.OpenSessions.Any() && !main.OwnedWindows.Any(),"Tag filter retained or opened a hidden selected profile");

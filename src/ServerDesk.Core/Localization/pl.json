@@ -1591,5 +1591,8 @@
   "Znajdź kartę po nazwie, adresie lub panelu i wróć do pracy.": "Znajdź kartę po nazwie, adresie lub panelu i wróć do pracy.",
   "Nie masz otwartych sesji. Otwórz zapisane połączenie lub skorzystaj z szybkiego połączenia.": "Nie masz otwartych sesji. Otwórz zapisane połączenie lub skorzystaj z szybkiego połączenia.",
   "Brak pasujących sesji. Zmień lub wyczyść wyszukiwanie.": "Brak pasujących sesji. Zmień lub wyczyść wyszukiwanie.",
-  "Użytkownik: {0}": "Użytkownik: {0}"
+  "Użytkownik: {0}": "Użytkownik: {0}",
+  "Wszystkie protokoły": "Wszystkie protokoły",
+  "Filtr protokołu": "Filtr protokołu",
+  "Wybierz połączenie z listy lub rozpocznij nową sesję.": "Wybierz połączenie z listy lub rozpocznij nową sesję."
 }

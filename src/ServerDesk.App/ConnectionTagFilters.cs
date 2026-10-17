@@ -16,17 +16,18 @@ public sealed partial class MainWindow
     private Button tagFilterButton=null!;
     private readonly WrapPanel activeTagFilters=new() { ItemSpacing=4,LineSpacing=4,Name="ActiveConnectionTags" };
     private readonly TextBlock activeTagMode=DesignSystem.Label("",true,11);
-    private void BuildTagFilters(StackPanel body)
+    private void BuildTagFilters(StackPanel body,Control protocolPicker)
     {
         tagFilterButton=Dialogs.Button("Tagi i kolory",()=>_=Safe(OpenTagFiltersAsync)); tagFilterButton.Name="ConnectionTagFilter"; tagFilterButton.Classes.Add("chrome");
-        tagFilterButton.HorizontalAlignment=HorizontalAlignment.Stretch; tagFilterButton.HorizontalContentAlignment=HorizontalAlignment.Stretch; tagFilterButton.Padding=new Thickness(8,6);
-        body.Children.Add(tagFilterButton); body.Children.Add(activeTagMode); body.Children.Add(activeTagFilters);
+        tagFilterButton.HorizontalAlignment=HorizontalAlignment.Stretch; tagFilterButton.HorizontalContentAlignment=HorizontalAlignment.Stretch; tagFilterButton.Padding=new Thickness(6,4);
+        var filters=new Grid { Name="ConnectionFilterRow",ColumnDefinitions=new ColumnDefinitions("*,Auto"),ColumnSpacing=6,Children={protocolPicker,tagFilterButton} }; Grid.SetColumn(tagFilterButton,1);
+        body.Children.Add(filters); body.Children.Add(activeTagMode); body.Children.Add(activeTagFilters);
     }
     private void UpdateTagFilters()
     {
         var heading=new Grid { ColumnDefinitions=new ColumnDefinitions("Auto,*,Auto"),ColumnSpacing=7,Children={DeskIcons.Create("tags",15)} };
-        var title=DesignSystem.Label(L.T("Tagi i kolory")); Grid.SetColumn(title,1); heading.Children.Add(title);
-        var count=DesignSystem.Badge(HasTagFilter?(vm.TagMode==TagFilterMode.Untagged?L.T("Bez tagów"):vm.SelectedTags.Length.ToString()):vm.AllServers.SelectMany(p=>ProfileTags.Parse(p.Tags)).Distinct(StringComparer.OrdinalIgnoreCase).Count().ToString());
+        var title=DesignSystem.Label(L.T("Tagi"),!HasTagFilter,12); Grid.SetColumn(title,1); heading.Children.Add(title);
+        var count=DesignSystem.Label(vm.TagMode==TagFilterMode.Untagged?"•":vm.SelectedTags.Length.ToString(),true,11); count.IsVisible=HasTagFilter;
         ToolTip.SetTip(count,HasTagFilter?L.T("Aktywne filtry tagów"):L.T("Liczba dostępnych tagów"));
         Grid.SetColumn(count,2); heading.Children.Add(count); tagFilterButton.Content=heading;
         activeTagMode.Text=L.T(vm.TagMode==TagFilterMode.All?"Wszystkie wybrane tagi":"Dowolny z wybranych tagów"); activeTagMode.IsVisible=vm.TagMode!=TagFilterMode.Untagged && vm.SelectedTags.Length>1;
@@ -54,7 +55,7 @@ public sealed partial class MainWindow
         var chips=new Grid { Name="ConnectionRowTags",ColumnDefinitions=new ColumnDefinitions(tags.Length==1?"*,0,0":"Auto,*,Auto"),ColumnSpacing=4,Margin=new Thickness(3+20+DesignTokens.IconGap*2,0,0,2),ClipToBounds=true };
         for(var i=0;i<Math.Min(2,tags.Length);i++)
         {
-            var name=tags[i]; var chip=ConnectionTagVisuals.Chip(name,vm.TagColors,vm.SelectedTags.Contains(name,StringComparer.OrdinalIgnoreCase)); chip.MaxWidth=i==0 && tags.Length>1?90:130; chip.ClipToBounds=true; chip.HorizontalAlignment=HorizontalAlignment.Left; Grid.SetColumn(chip,i); chips.Children.Add(chip);
+            var name=tags[i]; var chip=ConnectionTagVisuals.Chip(name,vm.TagColors,vm.SelectedTags.Contains(name,StringComparer.OrdinalIgnoreCase),quiet:true); chip.MaxWidth=i==0 && tags.Length>1?90:130; chip.ClipToBounds=true; chip.HorizontalAlignment=HorizontalAlignment.Left; Grid.SetColumn(chip,i); chips.Children.Add(chip);
         }
         if(tags.Length>2) { var more=DesignSystem.Label("+"+(tags.Length-2),true,11); Grid.SetColumn(more,2); chips.Children.Add(more); }
         ToolTip.SetTip(chips,string.Join(", ",tags)); stack.Children.Add(chips); return stack;

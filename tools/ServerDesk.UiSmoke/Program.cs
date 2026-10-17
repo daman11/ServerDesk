@@ -13,6 +13,14 @@ using Iciclecreek.Terminal;
 using Avalonia.Controls;
 using System.Text;
 
+// Opt-in child process used only by the isolated external-editor acceptance fixture.
+if(Environment.GetEnvironmentVariable("SERVERDESK_EDITOR_TEST_ROOT") is {} editorRoot && args.Length==1)
+{
+    var file=Path.GetFullPath(args[0]); var prefix=Path.GetFullPath(editorRoot)+Path.DirectorySeparatorChar;
+    if(!file.StartsWith(prefix,OperatingSystem.IsWindows()?StringComparison.OrdinalIgnoreCase:StringComparison.Ordinal))throw new ArgumentException("Editor fixture path outside its root");
+    File.WriteAllText(file+".opened.tmp",System.Text.Json.JsonSerializer.Serialize(args)); File.Move(file+".opened.tmp",file+".opened.json",true); return;
+}
+
 var root=Path.GetFullPath(args.Length>0?args[0]:"artifacts/ui-smoke");
 Directory.CreateDirectory(root); Log.Logger=new LoggerConfiguration().WriteTo.File(Path.Combine(root,"ui-diagnostics.log")).CreateLogger();
 var dataRoot=Path.Combine(root,"data-"+Guid.NewGuid().ToString("N"));
@@ -46,6 +54,7 @@ if(args.Contains("--credential-save-network")) { CredentialSaveChecks.Network(ro
 if(args.Contains("--large-file-views")) { LargeFileViewChecks.Run(root); return; }
 if(args.Contains("--sftp-navigation")) { SftpNavigationChecks.Run(root); return; }
 if(args.Contains("--extended-settings")) { ExtendedSettingsChecks.Run(root); return; }
+if(args.Contains("--themes-editor")) { ThemeEditorChecks.Run(root); return; }
 if(args.Contains("--four-panels")) { FourPanelChecks.Run(root); return; }
 if(args.Contains("--commands")) { CommandPanelChecks.Run(root); return; }
 if(args.Contains("--presentation-consistency")) { PresentationConsistencyChecks.Run(root); return; }
@@ -129,7 +138,7 @@ for(var i=0;i<10;i++) { Dispatcher.UIThread.RunJobs(); Thread.Sleep(25); }
 window.CaptureRenderedFrame()!.Save(Path.Combine(root,"main-light.png"));
 foreach(var theme in DesignSystem.Themes) { DesignSystem.Apply(theme.Id); for(var i=0;i<10;i++) { Dispatcher.UIThread.RunJobs(); Thread.Sleep(25); } window.CaptureRenderedFrame()!.Save(Path.Combine(root,"theme-"+theme.Id+".png")); }
 DesignSystem.Apply("dark"); var settings=Dialogs.Settings(window,repository,()=>Task.CompletedTask); for(var i=0;i<20;i++) { Dispatcher.UIThread.RunJobs(); Thread.Sleep(25); } var settingsWindow=window.OwnedWindows.Single(); settingsWindow.CaptureRenderedFrame()!.Save(Path.Combine(root,"appearance-settings.png")); settingsWindow.Close(); for(var i=0;i<10;i++)Dispatcher.UIThread.RunJobs();
-Console.WriteLine("MainWindow rendered in five themes; appearance settings rendered.");
+Console.WriteLine($"MainWindow rendered in {DesignSystem.Themes.Length} themes; appearance settings rendered.");
 IconChecks.Run(window,repository,root);
 RedesignChecks.Run(window,repository,root);
 DesignPolishChecks.Run(window,repository,root);

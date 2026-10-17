@@ -1,5 +1,9 @@
 # ServerDesk 0.41.0 — pierwsze kroki
 
+**Wersja rozwojowa po 0.41.0:** w **Ustawienia → Wygląd → Motyw aplikacji** są też Ocean, Forest, Aubergine, Dracula, Solar Paper i Sandstone (11 motywów oraz Systemowy). Podgląd działa od razu; Anuluj cofa zmianę.
+
+**Ustawienia → SFTP → Edycja plików → Domyślny edytor tekstu:** wybierz automatyczny edytor, VS Code, Notepad++, Kate, GNOME Text Editor albo własny plik wykonywalny (pełna ścieżka bez argumentów). Program musi być zainstalowany. Automatycznie używany jest Notatnik w Windows lub dostępny edytor tekstu w Linux. Wybór działa po Zapisz. W menu pliku SFTP wybierz **Pobierz i edytuj** dla zdalnego pliku lub **Edytuj plik** dla lokalnego; skrót **F4** działa na zaznaczonym pliku w aktywnym panelu. Zdalna kopia trafia do otwartego katalogu lokalnego, z dotychczasowym potwierdzeniem nadpisania. Po zapisaniu zmian użyj **Wyślij** do właściwego katalogu zdalnego; automatyczna synchronizacja nie jest włączana. Katalogi, dowiązania i wielokrotne zaznaczenie nie są edytowane.
+
 **0.41.0:** czytelniejsze foldery i więcej ikon, wygodniejsza obsługa drzewa oraz ochrona kolekcji Network Tools przy błędzie zapisu. Wydanie przygotowuje 1.0; natywne testy VM/sprzętu są odłożone, status pozostaje Public Beta. [Zmiany i ograniczenia](releases/release-0.41.0.md).
 
 **0.39.1:** bezpieczniejsze eksporty/import, katalog kopii bazy w ustawieniach oraz karty komend. Niepoprawne zapisane dane diagnostyki zgłaszają błąd bez automatycznego kasowania; awaria zapisu historii pozostawia wynik narzędzia. [Zmiany](releases/release-0.39.1.md).

@@ -92,7 +92,7 @@ internal static class PlatformUxChecks
             var retained=closed.Count(reference=>reference.IsAlive); if(retained>1)throw new Exception("Closed dialog screen subscriptions retain windows: "+retained);
             Console.WriteLine("INFO "+language+": closed placement dialogs retained after GC = "+retained+"/20");
             main.Close(); RedesignChecks.Frames(20);
-            Console.WriteLine("PASS "+language+": five themes, font16, simulated 100/150/200/100% DPI and monitor removal; footer/search/category visibility, restored resize limits, accessible category names, arrows/Home/End, Ctrl+F, Escape and modal Tab access");
+            Console.WriteLine("PASS "+language+$": {DesignSystem.Themes.Length} themes, font16, simulated 100/150/200/100% DPI and monitor removal; footer/search/category visibility, restored resize limits, accessible category names, arrows/Home/End, Ctrl+F, Escape and modal Tab access");
         }
         AppText.SetLanguage("pl"); DesignSystem.ApplyPreferences(preferences); DesignSystem.Apply("dark");
     }

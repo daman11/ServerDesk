@@ -46,7 +46,7 @@ internal sealed partial class SessionPane
                 if(e.GetCurrentPoint(list).Properties.IsRightButtonPressed && e.Source is Control { DataContext:FileEntry entry })
                 { if(list.SelectedItems?.Contains(entry)!=true)list.SelectedItem=entry; e.Handled=true; }
             },RoutingStrategies.Tunnel);
-            var menuItems=new List<MenuItem> { OperationMenu(remote?"Pobierz":"Wyślij",remote?DownloadAsync:UploadAsync),LinkFileMenu(remote),OperationMenu("Nowy katalog",MkdirAsync),SingleFileMenu(remote,"Zmień nazwę",RenameAsync),SingleFileMenu(remote,"Przenieś do katalogu",MoveFileAsync),SingleFileMenu(remote,"Szczegóły",FileDetailsAsync),DeleteSelectionMenu(remote) };
+            var menuItems=new List<MenuItem> { OperationMenu(remote?"Pobierz":"Wyślij",remote?DownloadAsync:UploadAsync),LinkFileMenu(remote),OperationMenu("Nowy katalog",MkdirAsync),SingleFileMenu(remote,"Zmień nazwę",RenameAsync),SingleFileMenu(remote,"Przenieś do katalogu",MoveFileAsync),SingleFileMenu(remote,"Szczegóły",FileDetailsAsync),DeleteSelectionMenu(remote),TextEditingMenu(remote) };
             if(remote)menuItems.Insert(2,SingleFileMenu(true,"Utwórz zdalne dowiązanie…",CreateRemoteLinkAsync));
             list.ContextMenu=new ContextMenu { ItemsSource=menuItems };
         }
@@ -55,6 +55,8 @@ internal sealed partial class SessionPane
             if(!files.IsVisible)return;
             if(fileRefreshes>0 && e.KeyModifiers==KeyModifiers.Alt && e.Key is Key.Left or Key.Right or Key.Up or Key.Home) { e.Handled=true; return; }
             if(e.Key==Key.F5) { e.Handled=true; _=owner.Safe(RefreshFilesAsync); }
+            else if(e.Key==Key.F4 && e.KeyModifiers==KeyModifiers.None && (localList.IsKeyboardFocusWithin || remoteList.IsKeyboardFocusWithin))
+            { e.Handled=true; _=owner.Safe(()=>EditTextFileAsync(remoteList.IsKeyboardFocusWithin)); }
             else if(e.Key==Key.Delete && e.KeyModifiers==KeyModifiers.None && (localList.IsKeyboardFocusWithin || remoteList.IsKeyboardFocusWithin))
             { e.Handled=true; _=owner.Safe(DeleteFileAsync); }
             else if(e.Key==Key.A && e.KeyModifiers==KeyModifiers.Control && (localList.IsKeyboardFocusWithin || remoteList.IsKeyboardFocusWithin))

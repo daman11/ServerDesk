@@ -20,7 +20,7 @@ internal static class RedesignChecks
         double Luminance(string hex) { var c=Color.Parse(hex); double Channel(byte value) { var s=value/255d; return s<=.04045?s/12.92:Math.Pow((s+.055)/1.055,2.4); } return .2126*Channel(c.R)+.7152*Channel(c.G)+.0722*Channel(c.B); }
         foreach(var theme in DesignSystem.Themes)foreach(var text in new[]{theme.Foreground,theme.Secondary})foreach(var background in new[]{theme.Background,theme.Sidebar,theme.Surface,theme.Hover,theme.Selected})
         { var a=Luminance(text); var b=Luminance(background); var ratio=(Math.Max(a,b)+.05)/(Math.Min(a,b)+.05); if(ratio<4.5)throw new Exception($"Contrast below AA: {theme.Id} {text} / {background}: {ratio}"); }
-        Console.WriteLine("PASS all five themes: primary/secondary text contrast >= 4.5:1 on all standard surfaces");
+        Console.WriteLine($"PASS all {DesignSystem.Themes.Length} themes: primary/secondary text contrast >= 4.5:1 on all standard surfaces");
         var tree=window.GetVisualDescendants().OfType<TreeView>().Single();
         void Activity(string name) { var button=window.GetVisualDescendants().OfType<Button>().Single(b=>AutomationProperties.GetName(b)==name); button.RaiseEvent(new RoutedEventArgs(Button.ClickEvent)); Frames(); }
         Activity("Ulubione"); if(tree.Items.Count!=2)throw new Exception("Favorites filter failed");

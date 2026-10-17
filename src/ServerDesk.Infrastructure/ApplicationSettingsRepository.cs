@@ -10,7 +10,7 @@ public sealed record ApplicationSettings(string Theme,string TerminalPalette,int
     public void Validate()
     {
         Preferences.Validate();
-        if(Theme is not ("dark" or "midnight" or "graphite" or "nord" or "light" or "system") || string.IsNullOrWhiteSpace(TerminalPalette) || TerminalFont is <9 or >32 || MonitorInterval is <2 or >300)throw new ArgumentException(L.T("Niepoprawne ustawienia aplikacji."));
+        if(!ApplicationThemes.IsSupported(Theme) || string.IsNullOrWhiteSpace(TerminalPalette) || TerminalFont is <9 or >32 || MonitorInterval is <2 or >300)throw new ArgumentException(L.T("Niepoprawne ustawienia aplikacji."));
     }
 }
 public sealed partial class ProfileRepository

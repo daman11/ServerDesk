@@ -1,5 +1,9 @@
 # ServerDesk 0.41.0 — getting started
 
+**Development build after 0.41.0:** **Settings → Appearance → Application theme** also offers Ocean, Forest, Aubergine, Dracula, Solar Paper and Sandstone (11 themes plus System). Preview is immediate; Cancel restores the previous appearance.
+
+**Settings → SFTP → File editing → Default text editor:** select automatic, VS Code, Notepad++, Kate, GNOME Text Editor or a custom executable (full path without arguments). The program must be installed. Automatic uses Notepad on Windows or an available text editor on Linux. The choice takes effect after Save. In the SFTP file menu, choose **Download and edit** for a remote file or **Edit file** for a local one; **F4** edits the selected file in the focused panel. Remote copies go into the open local directory with the existing overwrite confirmation. After saving changes, use **Upload** to send them to the intended remote directory; changes are not synchronized automatically. Directories, symbolic links and multiple selections cannot be edited.
+
 **0.41.0:** clearer folders, more icons, improved tree workflows and saved Network Tools collection protection when a write fails. This release prepares for 1.0; native VM/hardware acceptance is deferred and the status remains Public Beta. [Changes and limits](releases/release-0.41.0.md).
 
 **0.39.1:** safer exports/imports, a database backup catalog in Settings and command cards. Invalid saved diagnostic data is reported without an automatic reset; a history-save failure preserves tool results. [Changes](releases/release-0.39.1.md).

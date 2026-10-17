@@ -9,7 +9,7 @@ using Avalonia.Automation;
 
 namespace ServerDesk.App;
 
-internal sealed record DeskTheme(string Id,string Name,string Background,string Sidebar,string Surface,string Terminal,string Accent,string Foreground,string Secondary,string Border,string Hover,string Selected);
+internal sealed record DeskTheme(string Id,string Name,string Background,string Sidebar,string Surface,string Terminal,string Accent,string Foreground,string Secondary,string Border,string Hover,string Selected,bool IsLight=false);
 internal static partial class DesignSystem
 {
     internal static readonly DeskTheme[] Themes = [
@@ -17,7 +17,13 @@ internal static partial class DesignSystem
         new("midnight","Midnight","#0D1117","#151B23","#1C2430","#090D12","#58A6FF","#E6EDF3","#ADB8C7","#30363D","#252F3E","#233B56"),
         new("graphite","Graphite","#202124","#25272B","#2D3035","#191B1E","#71B8AE","#E8EAED","#B6BABF","#3D4148","#35393F","#334B48"),
         new("nord","Nord","#2E3440","#323A48","#3B4252","#242A35","#88C0D0","#ECEFF4","#C0C9D7","#4C566A","#434C5E","#42566B"),
-        new("light","ServerDesk Light","#F3F6FA","#FFFFFF","#F8FAFD","#10151C","#216DB2","#1D2A3A","#526176","#D8E0EB","#E8EEF6","#DCE9F8") ];
+        new("light","ServerDesk Light","#F3F6FA","#FFFFFF","#F8FAFD","#10151C","#216DB2","#1D2A3A","#526176","#D8E0EB","#E8EEF6","#DCE9F8",true),
+        new("ocean","Ocean","#101D29","#142635","#1A3042","#0D1822","#65CFDE","#EAF4FA","#B0C7D7","#355064","#233F53","#25495D"),
+        new("forest","Forest","#141E1B","#1A2822","#22332B","#0E1713","#8ED6A4","#EDF5EF","#B9CDBF","#3D5546","#2B4034","#2D4939"),
+        new("aubergine","Aubergine","#201A29","#292134","#332A40","#17121E","#C6A3EB","#F4EDF9","#CDBEDB","#51435F","#40334E","#4A385B"),
+        new("dracula","Dracula","#282A36","#252632","#303341","#21222C","#BD93F9","#F8F8F2","#C6C7D8","#55596F","#3A3E50","#444459"),
+        new("solar-paper","Solar Paper","#F7F1DF","#FFFAED","#F1EAD5","#10151C","#87600E","#3E3525","#655944","#CFC3A4","#EAE0C5","#E5D7B7",true),
+        new("sandstone","Sandstone","#F5EFEB","#FFFAF7","#F0E7E0","#10151C","#945234","#3C302B","#68574F","#D8C6BC","#E9DBD2","#E5D2C6",true) ];
     internal static string CurrentId { get; private set; }="dark";
     internal static event Action? Changed;
     internal static void Initialize(Application app)
@@ -34,7 +40,7 @@ internal static partial class DesignSystem
         app.Resources["ShowTabIcons"]=true; app.Resources["ShowTabCloseButtons"]=true;
         app.Resources["InterfaceFont"]=new FontFamily(OperatingSystem.IsWindows()?"Segoe UI,Inter":"Inter,Noto Sans,DejaVu Sans");
         using(var icon=typeof(DesignSystem).Assembly.GetManifestResourceStream("ServerDesk.App.Assets.Brand.serverdesk.png")) { if(icon!=null)app.Resources["ApplicationIcon"]=new WindowIcon(icon); }
-        SetResources(app,Themes[0],ThemeVariant.Dark); SetResources(app,Themes[4],ThemeVariant.Light);
+        SetResources(app,Themes.Single(t=>t.Id=="dark"),ThemeVariant.Dark); SetResources(app,Themes.Single(t=>t.Id=="light"),ThemeVariant.Light);
         app.ActualThemeVariantChanged+=(_,_)=> { if(CurrentId=="system")Changed?.Invoke(); };
         void Style<T>(AvaloniaProperty property, object value) where T:StyledElement => app.Styles.Add(new Style(s=>s.OfType<T>()) { Setters={new Setter(property,value)} });
         Style<Window>(Window.IconProperty,new DynamicResourceExtension("ApplicationIcon"));
@@ -69,7 +75,7 @@ internal static partial class DesignSystem
     }
     private static void SetResources(Application app,DeskTheme t,ThemeVariant variant)
     {
-        var light=t.Id=="light";
+        var light=t.IsLight;
         var values=new Dictionary<string,string> { ["BackgroundPrimary"]=t.Background,["BackgroundSecondary"]=t.Sidebar,["BackgroundTertiary"]=t.Surface,["SurfaceDefault"]=t.Surface,["SurfaceHover"]=t.Hover,["SurfaceSelected"]=t.Selected,["ForegroundPrimary"]=t.Foreground,["ForegroundSecondary"]=t.Secondary,["ForegroundMuted"]=t.Secondary,["BorderDefault"]=t.Border,["BorderStrong"]=t.Secondary,["AccentPrimary"]=t.Accent,["AccentHover"]=t.Accent,["AccentForeground"]=light?"#FFFFFF":"#101418",["Success"]=light?"#19715C":"#69CFB6",["Warning"]=light?"#805C14":"#D7BA7D",["Danger"]=light?"#B7382B":"#F48771",["DeskBackground"]=t.Background,["DeskPanel"]=t.Sidebar };
         var resources=new ResourceDictionary(); foreach(var pair in values) resources[pair.Key]=new SolidColorBrush(Color.Parse(pair.Value));
         resources["TabActiveSurface"]=resources["SurfaceDefault"]; resources["WelcomeSurface"]=resources["BackgroundSecondary"];
@@ -89,8 +95,8 @@ internal static partial class DesignSystem
     internal static void Apply(string id)
     {
         var app=Application.Current!; CurrentId=id=="system"?id:Themes.Any(t=>t.Id==id)?id:"dark";
-        if(CurrentId=="system") { SetResources(app,Themes[0],ThemeVariant.Dark); SetResources(app,Themes[4],ThemeVariant.Light); app.RequestedThemeVariant=ThemeVariant.Default; }
-        else { var theme=Themes.Single(t=>t.Id==CurrentId); var variant=theme.Id=="light"?ThemeVariant.Light:ThemeVariant.Dark; SetResources(app,theme,variant); app.RequestedThemeVariant=variant; }
+        if(CurrentId=="system") { SetResources(app,Themes.Single(t=>t.Id=="dark"),ThemeVariant.Dark); SetResources(app,Themes.Single(t=>t.Id=="light"),ThemeVariant.Light); app.RequestedThemeVariant=ThemeVariant.Default; }
+        else { var theme=Themes.Single(t=>t.Id==CurrentId); var variant=theme.IsLight?ThemeVariant.Light:ThemeVariant.Dark; SetResources(app,theme,variant); app.RequestedThemeVariant=variant; }
         Changed?.Invoke();
     }
     internal static void Resource(StyledElement element,AvaloniaProperty property,string key)=>element.Bind(property,new DynamicResourceExtension(key));

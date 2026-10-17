@@ -1,5 +1,7 @@
 # Rozwój i testy
 
+Motywy i edytor (wersja rozwojowa po 0.41.0): UiSmoke `ROOT --themes-editor` sprawdza 11 motywów i Systemowy, kontrast tekstu, podgląd/zapis/anulowanie oraz wybór edytora SFTP, walidację, domyślne ustawienia i mały układ PL/EN. Własny proces edytora fixture odbiera literalną ścieżkę lokalnego pliku z menu; nie otwiera serwera ani osobistego edytora. Scenariusz jest w CI. [Zakres sprawdzeń](reports/themes-editor-2026-10-17.md).
+
 0.41.0: `dotnet run --project tools/ServerDesk.DataProbe -c Release -- <nowy-katalog-wyników>` sprawdza historyczne migracje/odtworzenie i nagłe zakończenie wyłącznie własnych procesów. Nie używa systemowego magazynu poświadczeń. Linux: `sudo bash scripts/test-data-disk-full.sh <dotnet> <DataProbe.dll> <nowy-katalog-raportu>` montuje wyłącznie własny tmpfs 8 MiB, sprawdza ENOSPC/SQLITE_FULL i retry, a następnie odmontowuje go. Wykonywać w odizolowanym labie/WSL; nie wskazywać bazy użytkownika. Lockfile harnessu jest śledzony, a CI dodaje te próby na Windows/Linux. [Wyniki i ograniczenia](reports/release-verification-0.41.0.md).
 
 Przygotowanie RC: po locked restore `scripts/audit-dependencies.ps1` uruchamia audyt NuGet i sprawdza kompletność raportu, błędy źródeł i advisory; `scripts/test-dependency-audit.ps1` sprawdza kontrolowane przypadki bez sieci. Instalacyjny `scripts/test-installer.ps1` obsługuje starszy Setup, wskazany payload, trzy naprawy i raport, z oddzielną bazą oraz opcjonalnym pominięciem rejestracji. [Dowody i granice](reports/rc-preparation-2026-10-17.md), [checklista RC](rc-checklist.md).

@@ -2,6 +2,8 @@
 
 ## Unreleased
 
+- Add Ocean, Forest, Aubergine, Dracula, Solar Paper and Sandstone application themes with live preview; keep System selection independent of the number of presets.
+- Add a saved SFTP text-editor preference (automatic, VS Code, Notepad++, Kate, GNOME Text Editor or a custom executable). Edit local files or download and edit a remote file from its menu/F4; upload saved changes explicitly through the existing transfer workflow.
 - Keep contextual help and restart notices visible while searching settings; show accent presets only with their matching field.
 - Add an actionable settings search empty state with a compact layout above the language-restart reminder; clearing results preserves draft values and returns focus to search.
 - Give empty Favorites/Recent views contextual icons and a route back to saved connections, or creation when no profiles exist. Label filter clearing and restore search focus after clearing.

@@ -124,7 +124,8 @@ internal static partial class Dialogs
         var languageNote=DesignSystem.Label(L.T("Zmiana języka zostanie zastosowana po ponownym uruchomieniu ServerDesk."),true,12);
         languageNote.TextWrapping=TextWrapping.Wrap; languageNote.Name="LanguageRestartNotice"; languageSection.Children.Add(languageNote);
         var appearance=Section(appearancePage,"settings","Motyw i interfejs");
-        var theme=new ComboBox { ItemsSource=DesignSystem.Themes.Select(t=>t.Name).Append(L.T("Systemowy")).ToArray(),SelectedIndex=originalTheme=="system"?5:Math.Max(0,Array.FindIndex(DesignSystem.Themes,t=>t.Id==originalTheme)),HorizontalAlignment=HorizontalAlignment.Stretch };
+        var theme=new ComboBox { Name="ApplicationTheme",ItemsSource=DesignSystem.Themes.Select(t=>t.Name).Append(L.T("Systemowy")).ToArray(),SelectedIndex=originalTheme=="system"?DesignSystem.Themes.Length:Math.Max(0,Array.FindIndex(DesignSystem.Themes,t=>t.Id==originalTheme)),HorizontalAlignment=HorizontalAlignment.Stretch };
+        string SelectedTheme()=>theme.SelectedIndex==DesignSystem.Themes.Length?"system":DesignSystem.Themes[Math.Clamp(theme.SelectedIndex,0,DesignSystem.Themes.Length-1)].Id;
         theme.ItemTemplate=new FuncDataTemplate<string>((name,_)=>
         {
             var option=DesignSystem.Themes.FirstOrDefault(t=>t.Name==name); var row=new StackPanel { Orientation=Orientation.Horizontal,Spacing=8 };
@@ -185,6 +186,22 @@ internal static partial class Dialogs
         Flag(fileSettings,"localDescending","Sortuj lokalne pliki malejąco",p.SftpLocalDescending,false);
         var remoteFileSort=Sort("Sortowanie zdalnego panelu",p.SftpRemoteSort); remoteFileSort.Name="SftpRemoteSort";
         Flag(fileSettings,"remoteDescending","Sortuj zdalne pliki malejąco",p.SftpRemoteDescending,false);
+        var editing=Section(sftpPage,"edit","Edycja plików");
+        var editor=new ComboBox { Name="SftpTextEditor",ItemsSource=new[]{L.T("Automatycznie (edytor tekstu)"),"Visual Studio Code","Notepad++","Kate","GNOME Text Editor",L.T("Własny program")},SelectedIndex=(int)p.SftpTextEditor,HorizontalAlignment=HorizontalAlignment.Stretch }; Label(editing,"Domyślny edytor tekstu",editor);
+        var editorPath=new TextBox { Name="SftpTextEditorPath",Text=p.SftpTextEditorPath,MaxLength=4096,PlaceholderText=L.T("Pełna ścieżka do programu, bez argumentów"),HorizontalAlignment=HorizontalAlignment.Stretch,IsEnabled=p.SftpTextEditor==TextEditorKind.Custom };
+        editorPath.InnerRightContent=DeskIcons.Button("folder","Wybierz program edytora",async()=>
+        {
+            if(settingsOwner==null)return;
+            try
+            {
+                var selected=await settingsOwner.StorageProvider.OpenFilePickerAsync(new() { Title=L.T("Wybierz program edytora"),AllowMultiple=false });
+                if(selected.FirstOrDefault()?.TryGetLocalPath() is {} path)editorPath.Text=path;
+            }
+            catch(Exception ex) { Serilog.Log.Warning("Wybór edytora typu {Type}",ex.GetType().Name); error.Text=L.T("Nie udało się otworzyć wyboru pliku. Wpisz pełną ścieżkę ręcznie."); }
+        },28);
+        Label(editing,"Ścieżka własnego edytora",editorPath);
+        editing.Children.Add(DesignSystem.Hint(L.T("Automatycznie: Notatnik w Windows lub pierwszy dostępny Kate, GNOME Text Editor, gedit, Mousepad, Xed lub KWrite w Linux. Pozostałe programy muszą być zainstalowane osobno. Wybór edytora obowiązuje po zapisaniu ustawień.")));
+        editing.Children.Add(DesignSystem.Hint(L.T("SFTP → Pobierz i edytuj zapisuje kopię w otwartym katalogu lokalnym. Zapisz zmiany w edytorze, a potem użyj Wyślij, aby przesłać je na serwer. Zmiany nie są wysyłane automatycznie.")));
         var workspace=Section(workspacePage,"server","Lista połączeń");
         var sidebarWidth=Number(workspace,"Szerokość panelu połączeń",p.SidebarWidth,220,500);
         var sidebarStart=new ComboBox { ItemsSource=new[]{L.T("Zapamiętaj ostatni stan"),L.T("Zawsze pokaż"),L.T("Zawsze ukryj")},SelectedIndex=(int)p.SidebarOnStartup,HorizontalAlignment=HorizontalAlignment.Stretch }; Label(workspace,"Panel połączeń przy uruchomieniu",sidebarStart);
@@ -225,6 +242,7 @@ internal static partial class Dialogs
             ShowConnectionAddresses=On("addresses"),ShowTabIcons=On("tabIcons"),ShowTabCloseButtons=On("tabClose"),
             TerminalScrollbackLines=(int)(scrollback.Value??10000),TerminalCursor=(TerminalCursorShape)Math.Max(0,cursor.SelectedIndex),TerminalCursorBlink=On("blink"),
             SftpLocalDirectory=localDirectory.Text??"",SftpShowHidden=On("hidden"),SftpLocalSort=(FileSort)Math.Max(0,localFileSort.SelectedIndex),SftpRemoteSort=(FileSort)Math.Max(0,remoteFileSort.SelectedIndex),SftpLocalDescending=On("localDescending"),SftpRemoteDescending=On("remoteDescending"),SftpStartRemote=startSide.SelectedIndex==1,
+            SftpTextEditor=(TextEditorKind)Math.Max(0,editor.SelectedIndex),SftpTextEditorPath=editorPath.Text??"",
             SidebarWidth=(int)(sidebarWidth.Value??272),SidebarOnStartup=(SidebarStartup)Math.Max(0,sidebarStart.SelectedIndex),TabLabelWidth=(int)(tabWidth.Value??220),ShowProtocolBadges=On("protocols"),ShowSessionStatus=On("sessionStatus"),
             TabStripHeight=(int)(tabHeight.Value??35),PaneSeparatorSize=(int)(separatorSize.Value??4),ShowPanelNumbers=On("panelNumbers"),NewTabTarget=(NewTabPlacement)Math.Max(0,tabTarget.SelectedIndex),WorkspaceOnStartup=(WorkspaceStartup)Math.Max(0,startupLayout.SelectedIndex),
             ShowStatusBar=On("status"),ShowMetrics=On("metrics"),ShowTransferCount=On("transfers"),MetricCpu=On("cpu"),MetricMemory=On("ram"),MetricNetwork=On("network"),MetricUptime=On("uptime"),MetricDisk=On("disk"),MetricSystem=On("system"),MetricClock=On("clock")
@@ -232,16 +250,18 @@ internal static partial class Dialogs
         preview=()=>
         {
             if(resetting)return;
-            try { var draft=Draft(); draft.Validate(); if(main!=null)main.PreviewPreferences(draft); else DesignSystem.ApplyPreferences(draft); DesignSystem.Apply(theme.SelectedIndex==5?"system":DesignSystem.Themes[Math.Max(0,theme.SelectedIndex)].Id); error.Text=""; accent.Classes.Remove("error"); localDirectory.Classes.Remove("error"); }
+            try { var draft=Draft(); draft.Validate(); if(main!=null)main.PreviewPreferences(draft); else DesignSystem.ApplyPreferences(draft); DesignSystem.Apply(SelectedTheme()); error.Text=""; accent.Classes.Remove("error"); localDirectory.Classes.Remove("error"); editorPath.Classes.Remove("error"); }
             catch(ArgumentException ex) { ShowValidation(ex); }
         };
         void ShowValidation(ArgumentException ex)
         {
             error.Text=ex.Message; accent.Classes.Set("error",ex.ParamName==nameof(ApplicationPreferences.AccentColor)); localDirectory.Classes.Set("error",ex.ParamName==nameof(ApplicationPreferences.SftpLocalDirectory));
+            editorPath.Classes.Set("error",ex.ParamName==nameof(ApplicationPreferences.SftpTextEditorPath));
         }
         theme.SelectionChanged+=(_,_)=>preview(); density.SelectionChanged+=(_,_)=>preview(); family.SelectionChanged+=(_,_)=>preview(); sidebarStart.SelectionChanged+=(_,_)=>preview(); accent.TextChanged+=(_,_)=>preview();
         interfaceFamily.SelectionChanged+=(_,_)=>preview();
         cursor.SelectionChanged+=(_,_)=>preview(); localDirectory.TextChanged+=(_,_)=>preview(); localFileSort.SelectionChanged+=(_,_)=>preview(); remoteFileSort.SelectionChanged+=(_,_)=>preview(); startSide.SelectionChanged+=(_,_)=>preview();
+        editor.SelectionChanged+=(_,_)=> { editorPath.IsEnabled=editor.SelectedIndex==(int)TextEditorKind.Custom; preview(); }; editorPath.TextChanged+=(_,_)=>preview();
         tabTarget.SelectionChanged+=(_,_)=>preview(); startupLayout.SelectionChanged+=(_,_)=>preview();
         TabItem Category(string glyph,string title,StackPanel page)
         {
@@ -322,20 +342,22 @@ internal static partial class Dialogs
         var defaults=Button("Domyślne ustawienia",()=>
         {
             resetting=true;
-            try { language.SelectedIndex=0; theme.SelectedIndex=0; uiFont.Value=13; interfaceFamily.SelectedItem="Domyślna"; cornerRadius.Value=6; menuPadding.Value=7; connectionPadding.Value=1; density.SelectedIndex=1; accent.Text=""; palette.SelectedItem=TerminalAppearance.Names[0]; terminalFont.Value=14; family.SelectedItem="Domyślna"; scrollback.Value=10000; cursor.SelectedIndex=0; localDirectory.Text=""; localFileSort.SelectedIndex=remoteFileSort.SelectedIndex=0; startSide.SelectedIndex=1; sidebarWidth.Value=272; sidebarStart.SelectedIndex=0; tabWidth.Value=220; tabHeight.Value=35; separatorSize.Value=4; tabTarget.SelectedIndex=startupLayout.SelectedIndex=0; interval.Value=5; foreach(var (key,flag) in flags)flag.IsChecked=flagDefaults[key]; }
+            try { language.SelectedIndex=0; theme.SelectedIndex=0; uiFont.Value=13; interfaceFamily.SelectedItem="Domyślna"; cornerRadius.Value=6; menuPadding.Value=7; connectionPadding.Value=1; density.SelectedIndex=1; accent.Text=""; palette.SelectedItem=TerminalAppearance.Names[0]; terminalFont.Value=14; family.SelectedItem="Domyślna"; scrollback.Value=10000; cursor.SelectedIndex=0; localDirectory.Text=""; editor.SelectedIndex=0; editorPath.Text=""; localFileSort.SelectedIndex=remoteFileSort.SelectedIndex=0; startSide.SelectedIndex=1; sidebarWidth.Value=272; sidebarStart.SelectedIndex=0; tabWidth.Value=220; tabHeight.Value=35; separatorSize.Value=4; tabTarget.SelectedIndex=startupLayout.SelectedIndex=0; interval.Value=5; foreach(var (key,flag) in flags)flag.IsChecked=flagDefaults[key]; }
             finally { resetting=false; preview(); }
         }); defaults.HorizontalAlignment=HorizontalAlignment.Left; actions.Children.Add(defaults);
         var cancel=Button("Anuluj",()=> { if(!saving)dialog.Close(); }); Grid.SetColumn(cancel,1); actions.Children.Add(cancel);
         async Task SaveAsync(bool restart)
         {
             if(saving)return; saving=true; categories.IsEnabled=false; actions.IsEnabled=false; search.IsEnabled=false; saveRestart.IsEnabled=false;
-            try { var draft=Draft(); draft.Validate(); await repository.SaveApplicationSettingsAsync(new(theme.SelectedIndex==5?"system":DesignSystem.Themes[Math.Max(0,theme.SelectedIndex)].Id,palette.SelectedItem as string??TerminalAppearance.Names[0],(int)(terminalFont.Value??14),(int)(interval.Value??5),On("remember"),draft)); saved=true; main?.UpdateLanguageRestartNotice(draft.Language); preview(); if(main!=null)await main.ApplyPluginsAsync(draft); await changed(); restartAfterSave=restart?draft.Language:null; saving=false; dialog.Close(); }
+            try { var draft=Draft(); draft.Validate(); await repository.SaveApplicationSettingsAsync(new(SelectedTheme(),palette.SelectedItem as string??TerminalAppearance.Names[0],(int)(terminalFont.Value??14),(int)(interval.Value??5),On("remember"),draft)); saved=true; main?.UpdateLanguageRestartNotice(draft.Language); preview(); if(main!=null)await main.ApplyPluginsAsync(draft); await changed(); restartAfterSave=restart?draft.Language:null; saving=false; dialog.Close(); }
             catch(ArgumentException ex)
             {
                 ShowValidation(ex); search.Text="";
                 var (index,field)=ex.ParamName switch {
                     nameof(ApplicationPreferences.SftpLocalDirectory)=>(2,(Control)localDirectory),
                     nameof(ApplicationPreferences.SftpLocalSort)=>(2,localFileSort),
+                    nameof(ApplicationPreferences.SftpTextEditor)=>(2,editor),
+                    nameof(ApplicationPreferences.SftpTextEditorPath)=>(2,editorPath),
                     nameof(ApplicationPreferences.TerminalCursor)=>(1,cursor),
                     nameof(ApplicationPreferences.TerminalScrollbackLines)=>(1,scrollback),
                     nameof(ApplicationPreferences.WorkspaceOnStartup)=>(3,startupLayout),

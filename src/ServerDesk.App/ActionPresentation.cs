@@ -71,7 +71,7 @@ internal static partial class DeskIcons
         "Zapisz" or "Zapisz kolekcję" or "Zapisz OID" or "Zapisz urządzenie WoL"=>"save",
         "Potwierdź" or "OK"=>"check",
         "Nowe połączenie" or "Nowy serwer" or "Nowy serwer w folderze" or "Nowe połączenie w folderze" or "Nowa komenda" or "Dodaj parametr"=>"plus",
-        "Edytuj" or "Zmień nazwę" or "Zmień nazwę folderu" or "Zmień nazwę / przenieś"=>"edit",
+        "Edytuj" or "Edytuj plik" or "Pobierz i edytuj" or "Zmień nazwę" or "Zmień nazwę folderu" or "Zmień nazwę / przenieś"=>"edit",
         "Duplikuj" or "Kopiuj" or "Kopiuj wyniki" or "Kopiuj odcisk" or "Kopiuj zawartość dowiązania…" or "Kopiuj zaznaczenie"=>"copy",
         "Ulubiony" or "Ulubione"=>"star",
         "Usuń" or "Usuń zaznaczone…" or "Usuń trwale" or "Usuń serwer" or "Usuń pusty folder" or "Usuń plik / pusty katalog" or "Usuń grafikę" or "Usuń kolekcję" or "Usuń komendę" or "Usuń parametr" or "Usuń pustą kategorię" or "Usuń wpis historii" or "Wyczyść historię komend" or "Wyczyść historię narzędzi"=>"trash",

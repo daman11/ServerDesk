@@ -53,6 +53,11 @@ internal sealed partial class SessionPane
         if(uploadSelection!=null) { uploadSelection.IsEnabled=IsConnected && sftp!=null && FilePathConfirmed(true) && local.Count>0; ToolTip.SetTip(uploadSelection,L.F($"Wyślij zaznaczone elementy: {local.Count}")); }
         if(downloadSelection!=null) { downloadSelection.IsEnabled=IsConnected && sftp!=null && FilePathConfirmed(false) && remote.Count>0; ToolTip.SetTip(downloadSelection,L.F($"Pobierz zaznaczone elementy: {remote.Count}")); }
         foreach(var (menu,isRemote) in singleFileMenus)menu.IsEnabled=IsConnected && sftp!=null && SelectedFiles(isRemote??RemoteSelected).Count==1;
+        foreach(var (menu,isRemote) in textEditingMenus)
+        {
+            var remoteSide=isRemote??RemoteSelected; var selected=SelectedFiles(remoteSide);
+            menu.IsEnabled=disposed==0 && selected is { Count:1 } && !selected[0].IsDirectory && !selected[0].IsSymbolicLink && (!remoteSide || IsConnected && sftp!=null && FilePathConfirmed(false));
+        }
         foreach(var (menu,isRemote) in linkFileMenus)menu.IsEnabled=IsConnected && sftp!=null && SelectedFiles(isRemote??RemoteSelected) is { Count:1 } selected && selected[0].IsSymbolicLink;
         foreach(var (menu,isRemote) in deleteFileMenus)menu.IsEnabled=!fileDeletionOpen && sftp!=null && IsConnected && SelectedFiles(isRemote??RemoteSelected).Count>0;
     }

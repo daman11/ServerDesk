@@ -5,6 +5,7 @@ public enum SidebarStartup { Remember,Show,Hide }
 public enum TerminalCursorShape { Bar,Block,Underline }
 public enum WorkspaceStartup { Remember,Single,Columns,Rows,Three,Grid }
 public enum NewTabPlacement { FocusedPanel,FirstPanel,LeastPopulated }
+public enum TextEditorKind { Automatic,VisualStudioCode,NotepadPlusPlus,Kate,GnomeTextEditor,Custom }
 public sealed record ApplicationPreferences
 {
     public PluginSelection DisabledPlugins { get; init; }=PluginSelection.Empty;
@@ -21,6 +22,8 @@ public sealed record ApplicationPreferences
     public TerminalCursorShape TerminalCursor { get; init; }=TerminalCursorShape.Bar;
     public bool TerminalCursorBlink { get; init; }=true;
     public string SftpLocalDirectory { get; init; }="";
+    public TextEditorKind SftpTextEditor { get; init; }
+    public string SftpTextEditorPath { get; init; }="";
     public bool SftpShowHidden { get; init; }
     public FileSort SftpLocalSort { get; init; }=FileSort.Name;
     public FileSort SftpRemoteSort { get; init; }=FileSort.Name;
@@ -64,6 +67,8 @@ public sealed record ApplicationPreferences
         if(TerminalScrollbackLines is <0 or >100000)throw new ArgumentException(L.T("Historia terminala musi mieć od 0 do 100000 wierszy."),nameof(TerminalScrollbackLines));
         if(!Enum.IsDefined(TerminalCursor))throw new ArgumentException(L.T("Nieobsługiwany kształt kursora terminala."),nameof(TerminalCursor));
         if(SftpLocalDirectory==null || SftpLocalDirectory.Length>4096 || SftpLocalDirectory.Contains('\0') || SftpLocalDirectory.Length>0 && !Path.IsPathFullyQualified(SftpLocalDirectory))throw new ArgumentException(L.T("Katalog startowy SFTP powinien być pełną ścieżką lokalną lub pusty, aby użyć katalogu domowego."),nameof(SftpLocalDirectory));
+        if(!Enum.IsDefined(SftpTextEditor))throw new ArgumentException(L.T("Nieobsługiwany edytor tekstu."),nameof(SftpTextEditor));
+        if(SftpTextEditorPath==null || SftpTextEditorPath.Length>4096 || SftpTextEditorPath.Any(char.IsControl) || SftpTextEditorPath.Length>0 && !Path.IsPathFullyQualified(SftpTextEditorPath) || SftpTextEditor==TextEditorKind.Custom && string.IsNullOrWhiteSpace(SftpTextEditorPath))throw new ArgumentException(L.T("Podaj pełną ścieżkę do programu edytora, bez argumentów."),nameof(SftpTextEditorPath));
         if(!Enum.IsDefined(SftpLocalSort) || !Enum.IsDefined(SftpRemoteSort))throw new ArgumentException(L.T("Niepoprawny domyślny porządek plików SFTP."),nameof(SftpLocalSort));
         if(InterfaceFontSize is <11 or >16 || SidebarWidth is <220 or >500 || TabLabelWidth is <140 or >360 || !Enum.IsDefined(Density) || !Enum.IsDefined(SidebarOnStartup) || !TerminalFonts.Contains(TerminalFontFamily))throw new ArgumentException(L.T("Niepoprawne ustawienia interfejsu."));
         if(AccentColor==null || AccentColor.Length>0 && (AccentColor.Length!=7 || AccentColor[0]!='#' || AccentColor[1..].Any(c=>!Uri.IsHexDigit(c))))throw new ArgumentException(L.T("Kolor akcentu powinien mieć postać #RRGGBB lub być pusty."),nameof(AccentColor));

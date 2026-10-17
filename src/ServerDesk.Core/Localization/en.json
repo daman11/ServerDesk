@@ -1473,5 +1473,9 @@
   "Nieobsługiwany krój czcionki interfejsu.": "Unsupported interface font family.",
   "Zaokrąglenie kontrolek musi mieć od 0 do 12 px.": "Control corner radius must be between 0 and 12 px.",
   "Odstęp w wierszu połączenia musi mieć od 0 do 10 px.": "Connection row padding must be between 0 and 10 px.",
-  "Odstęp w pozycji menu musi mieć od 2 do 12 px.": "Menu item padding must be between 2 and 12 px."
+  "Odstęp w pozycji menu musi mieć od 2 do 12 px.": "Menu item padding must be between 2 and 12 px.",
+  "kopia": "copy",
+  "Katalog główny": "Root folder",
+  "Upuść serwer tutaj, aby przenieść go poza foldery.": "Drop a server here to move it out of folders.",
+  "Enter: połącz lub rozwiń folder · F2: edytuj · Delete: usuń po potwierdzeniu · Ctrl+D: duplikuj serwer": "Enter: connect or expand folder · F2: edit · Delete: delete after confirmation · Ctrl+D: duplicate server"
 }

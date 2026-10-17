@@ -52,6 +52,7 @@ public sealed partial class MainWindow
     }
     private void UpdateBrowserState(int count)
     {
+        rootProfileDrop.IsVisible=section=="connections" && count>0;
         foreach(var (button,filter) in protocolButtons)button.Classes.Set("active",filter==vm.ProtocolFilter);
         browserCount.Text=L.F($"Widoczne: {count} / {vm.AllServers.Count}");
         clearBrowserFilters.IsVisible=HasBrowserFilter;

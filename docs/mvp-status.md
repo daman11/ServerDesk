@@ -1,5 +1,7 @@
 # Pierwotne MVP — wydanie 0.40.0
 
+Pięć zadań roboczych po 0.40.0 dotyczy przeglądarki połączeń: folder domyślny nowych wpisów, stabilna zmiana nazw drzewa, bezpieczne usuwanie folderów, przeciąganie także do katalogu głównego i skróty klawiatury. [Scenariusze i granice prób](reports/browser-workflow-2026-10-17.md). Nie zastępują sprzętowej akceptacji gestów ani pełnej macierzy 1.0.
+
 Krok roboczy po 0.40.0: ograniczenie ponownego dekodowania własnych grafik podczas zmiany metadanych profilu oraz bezpieczny fallback dla uszkodzonych/starszych danych. Test obejmuje 96 różnych podglądów, edytor i zwalnianie bitmap; nie oznacza pełnej akceptacji dużych drzew ani długich sesji. [Zakres i granice](reports/profile-artwork-2026-10-17.md). Ostatnim zamrożonym wydaniem pozostaje 0.40.0.
 
 0.40.0: **Ustawienia → Bezpieczeństwo → Zapisane kopie bazy → Sprawdź kopię** wykonuje kontrolę SQLite i zgodności schematu wybranego pliku. Bez przywracania danych, migracji, zapisu do kopii ani sprawdzania sekretów. [Obsługa](database-backups.md), [celowane testy i granice](reports/backup-verification-2026-10-17.md).

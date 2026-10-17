@@ -80,8 +80,9 @@ public sealed partial class MainWindow
         connectionTools.Children.Add(BuildConnectionSorting());
         tree.SelectionChanged+=(_,_)=> { if(!rebuildingTree && tree.SelectedItem is TreeViewItem node) { if(node.Tag is ServerProfile p) { vm.SelectedServer=p; servers.SelectedItem=p; } else if(node.Tag is string f) { vm.SelectedServer=null; vm.SelectedFolder=f; } } };
         tree.DoubleTapped+=(_,_)=> { if(tree.SelectedItem is TreeViewItem { Tag:ServerProfile p } && IsBrowserProfileVisible(p))_ = Safe(()=>ConnectAsync(p)); };
-        tree.KeyDown+=(_,e)=> { if(e.Key==Key.Enter && tree.SelectedItem is TreeViewItem { Tag:ServerProfile p }) { e.Handled=true; if(IsBrowserProfileVisible(p))_ = Safe(()=>ConnectAsync(p)); } };
+        tree.KeyDown+=HandleBrowserKeys;
         tree.SetValue(ScrollViewer.HorizontalScrollBarVisibilityProperty,ScrollBarVisibility.Disabled); connectionBrowser.Children.Add(tree); connectionBrowser.Children.Add(browserEmpty);
+        BuildProfileDropTargets();
         BuildTransferOverview(); BuildNetworkBrowser(); sidebar.Children.Add(new Grid { Children={connectionBrowser,transferOverview,networkBrowserHost } });
         vm.Servers.CollectionChanged+=(_,_)=>QueueTree();
         var splitter=new GridSplitter { ResizeDirection=GridResizeDirection.Columns,HorizontalAlignment=HorizontalAlignment.Stretch }; Grid.SetColumn(splitter,2); Grid.SetRow(splitter,1); layout.Children.Add(splitter);
@@ -130,10 +131,8 @@ public sealed partial class MainWindow
             // Detached/rebuilt search nodes must never rewrite saved collapse state.
             node.PropertyChanged+=(_,e)=> { if(e.Property==TreeViewItem.IsExpandedProperty && !rebuildingTree && !searching && string.IsNullOrWhiteSpace(vm.Search)) { if(node.IsExpanded)collapsed.Remove(path); else collapsed.Add(path); } };
             if(path==selectedFolder)selection=node;
-            node.ContextMenu=DeferredBrowserMenu(()=>new[]{Menu("Nowe połączenie w folderze",()=>EditAsync(new ServerProfile { Folder=path })),Menu("Zmień ikonę folderu",()=>EditFolderIconAsync(path)),Menu("Zmień nazwę",async()=> { vm.SelectedFolder=path; await RenameFolderAsync(); }),Menu("Usuń pusty folder",async()=> { vm.SelectedFolder=path; await DeleteFolderAsync(); })});
-            DragDrop.SetAllowDrop(node,true);
-            DragDrop.AddDragOverHandler(node,(_,e)=> { e.DragEffects=e.DataTransfer.Contains(ServerDrag)?DragDropEffects.Move:DragDropEffects.None; e.Handled=true; });
-            DragDrop.AddDropHandler(node,(_,e)=> { if(e.DataTransfer.TryGetValue(ServerDrag) is {} p)_ = Safe(async()=> { await repository.MoveToFolderAsync(p.Id,path); await vm.LoadAsync(); }); e.Handled=true; });
+            node.ContextMenu=DeferredBrowserMenu(()=>new[]{Menu("Nowe połączenie w folderze",()=>EditAsync(new ServerProfile { Folder=path })),Menu("Zmień ikonę folderu",()=>EditFolderIconAsync(path)),Menu("Zmień nazwę",async()=> { vm.SelectedFolder=path; await RenameFolderAsync(); },shortcut:"F2"),Menu("Usuń pusty folder",async()=> { vm.SelectedFolder=path; await DeleteFolderAsync(); },shortcut:"Delete")});
+            ConfigureProfileDrop(node,path);
             folders[path]=node; if(slash<0)roots.Add(node); else Folder(path[..slash]).Items.Add(node); return node;
         }
         if(section=="connections" && !HasBrowserFilter)foreach(var path in vm.Folders.Where(f=>f is not ("Wszystkie" or "★ Ulubione" or "◷ Ostatnie")))Folder(path);
@@ -141,7 +140,7 @@ public sealed partial class MainWindow
         {
             var node=new TreeViewItem { Header=p,HeaderTemplate=profileTemplate,Tag=p }; ToolTip.SetTip(node,$"{p.Protocol} · {(p.Protocol==Protocol.SSH?p.Username+"@":"")}{p.Endpoint}\n{p.Description}");
             Avalonia.Automation.AutomationProperties.SetName(node,p.Name);
-            node.ContextMenu=DeferredBrowserMenu(()=>new[]{Menu("Połącz",()=>ConnectAsync(p)),Menu("Edytuj",()=>EditAsync(p)),Menu("Duplikuj",async()=> { vm.SelectedServer=p; await DuplicateAsync(); }),Menu("Ulubiony",async()=> { vm.SelectedServer=p; await FavoriteAsync(); }),Menu("Przenieś do folderu",async()=> { vm.SelectedServer=p; await MoveAsync(); }),Menu("Usuń",async()=> { vm.SelectedServer=p; await DeleteAsync(); }),Menu("Usuń zapisane hasło",async()=> { vm.SelectedServer=p; await ForgetSecretAsync(); }),Menu("Historia tego serwera",()=>HistoryAsync(p.Id)),NetworkContextMenu(p)});
+            node.ContextMenu=DeferredBrowserMenu(()=>new[]{Menu("Połącz",()=>ConnectAsync(p)),Menu("Edytuj",()=>EditAsync(p),shortcut:"F2"),Menu("Duplikuj",async()=> { vm.SelectedServer=p; await DuplicateAsync(); },shortcut:"Ctrl+D"),Menu("Ulubiony",async()=> { vm.SelectedServer=p; await FavoriteAsync(); }),Menu("Przenieś do folderu",async()=> { vm.SelectedServer=p; await MoveAsync(); }),Menu("Usuń",async()=> { vm.SelectedServer=p; await DeleteAsync(); },shortcut:"Delete"),Menu("Usuń zapisane hasło",async()=> { vm.SelectedServer=p; await ForgetSecretAsync(); }),Menu("Historia tego serwera",()=>HistoryAsync(p.Id)),NetworkContextMenu(p)});
             DragSupport.Source(node,ServerDrag,()=>p,DragDropEffects.Move);
             if(p.Folder.Length>0 && section=="connections")Folder(p.Folder).Items.Add(node); else roots.Add(node);
             if(p.Id==selected)selection=node;
@@ -149,6 +148,14 @@ public sealed partial class MainWindow
         rebuildingTree=true;
         try { tree.ItemsSource=OrderFolders(roots).ToArray(); tree.SelectedItem=selection; }
         finally { rebuildingTree=false; }
+        if(selection!=null && Equals(selection.Tag is ServerProfile placedProfile?placedProfile.Id:selection.Tag,browserReveal))
+        {
+            // Wait for rows to be laid out; scrolling during ItemsSource replacement
+            // can leave the old offset, with the moved item outside the viewport.
+            var reveal=selection;
+            Dispatcher.UIThread.Post(()=> { if(ReferenceEquals(tree.SelectedItem,reveal) && reveal.IsAttachedToVisualTree())reveal.BringIntoView(); },DispatcherPriority.Loaded);
+        }
+        browserReveal=null;
         UpdateBrowserState(profiles.Count()); UpdateWelcome();
     }
     private static Control Row(string icon,string name,bool favorite=false,bool connected=false,string? protocol=null,ServerProfile? profile=null,int? count=null,string? detail=null)

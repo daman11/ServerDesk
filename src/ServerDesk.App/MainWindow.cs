@@ -113,7 +113,7 @@ public sealed partial class MainWindow : Window
     }
     private async Task EditAsync(ServerProfile? profile)
     {
-        var edited=await Dialogs.Edit(this,profile,vm.Folders); if(edited==null)return;
+        var edited=await Dialogs.Edit(this,profile??new ServerProfile { Folder=BrowserCreationFolder() },vm.Folders); if(edited==null)return;
         await SaveEditedProfileAsync(profile,edited);
     }
     internal async Task SaveEditedProfileAsync(ServerProfile? original,ServerProfile edited)
@@ -140,10 +140,8 @@ public sealed partial class MainWindow : Window
         await repository.SetFolderIconAsync(path,icon,lifetime.Token); await vm.LoadAsync(); QueueTree();
     }
     private bool RealFolder()=>vm.SelectedFolder is not ("Wszystkie" or "★ Ulubione" or "◷ Ostatnie" or "" or null);
-    private async Task RenameFolderAsync() { if(!RealFolder())return; var target=await Dialogs.Prompt(this,L.T("Nowa ścieżka folderu"),vm.SelectedFolder); if(target==null)return; await repository.RenameFolderAsync(vm.SelectedFolder,target); vm.SelectedFolder=target; await vm.LoadAsync(); }
-    private async Task DeleteFolderAsync() { if(!RealFolder())return; if(!await Dialogs.Confirm(this,L.T("Usunąć pusty folder i podfoldery?"),vm.SelectedFolder))return; await repository.DeleteFolderAsync(vm.SelectedFolder); vm.SelectedFolder="Wszystkie"; await vm.LoadAsync(); }
     private async Task SettingsAsync() { await Dialogs.Settings(this,repository,()=>Task.WhenAll(sessions.Select(p=>p.ApplyAppearanceAsync()))); QueueWorkspaceSave(); }
-    private async Task DuplicateAsync() { if(vm.SelectedServer is {} p) await EditAsync(p with { Id=Guid.NewGuid(),Name=p.Name+" — kopia",LastConnected=null }); }
+    private async Task DuplicateAsync() { if(vm.SelectedServer is {} p) await EditAsync(p with { Id=Guid.NewGuid(),Name=p.Name+" — "+L.T("kopia"),LastConnected=null }); }
     private async Task FavoriteAsync() { if(vm.SelectedServer is {} p) { await repository.SaveAsync(p with { Favorite=!p.Favorite }); await vm.LoadAsync(); } }
     private async Task MoveAsync() { if(vm.SelectedServer is {} p) { var folder=await Dialogs.Prompt(this,L.T("Folder docelowy"),p.Folder); if(folder!=null) { await repository.MoveToFolderAsync(p.Id,folder); await vm.LoadAsync(); } } }
     private async Task DeleteAsync()

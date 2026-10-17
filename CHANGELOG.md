@@ -2,6 +2,10 @@
 
 ## Unreleased
 
+- Start new connections in the selected folder (or selected server's folder), retaining an empty root default when nothing is selected.
+- Keep folder rename/delete prompts tied to their original target; preserve other selections, remap collapsed descendant paths after a successful rename and clear them after deletion.
+- Add a root-folder drop target, reject unchanged/unknown/filtered profile drops, and reveal/select a profile after moving it into a folder.
+- Support tree-local F2 editing/renaming, Delete confirmation, Ctrl+D duplication and Enter folder expansion, with menu shortcut hints and localized copy names. Preserve text-field/terminal key handling.
 - Reuse each visible profile's unchanged artwork during metadata edits instead of validating/decoding it again. Decode Base64 once when artwork changes, release owned bitmaps on detach, retain valid artwork despite a malformed legacy color, and render a safe protocol icon for null/corrupt/oversized legacy artwork.
 
 ## 0.40.0 — Public Beta — 2026-10-17

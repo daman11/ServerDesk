@@ -1473,5 +1473,9 @@
   "Nieobsługiwany krój czcionki interfejsu.": "Nieobsługiwany krój czcionki interfejsu.",
   "Zaokrąglenie kontrolek musi mieć od 0 do 12 px.": "Zaokrąglenie kontrolek musi mieć od 0 do 12 px.",
   "Odstęp w wierszu połączenia musi mieć od 0 do 10 px.": "Odstęp w wierszu połączenia musi mieć od 0 do 10 px.",
-  "Odstęp w pozycji menu musi mieć od 2 do 12 px.": "Odstęp w pozycji menu musi mieć od 2 do 12 px."
+  "Odstęp w pozycji menu musi mieć od 2 do 12 px.": "Odstęp w pozycji menu musi mieć od 2 do 12 px.",
+  "kopia": "kopia",
+  "Katalog główny": "Katalog główny",
+  "Upuść serwer tutaj, aby przenieść go poza foldery.": "Upuść serwer tutaj, aby przenieść go poza foldery.",
+  "Enter: połącz lub rozwiń folder · F2: edytuj · Delete: usuń po potwierdzeniu · Ctrl+D: duplikuj serwer": "Enter: połącz lub rozwiń folder · F2: edytuj · Delete: usuń po potwierdzeniu · Ctrl+D: duplikuj serwer"
 }

@@ -56,7 +56,15 @@ public sealed class NetworkToolsStore(ProfileRepository repository,ICredentialSt
             var rows=await ReadAsync<NetworkCollection>(CollectionsKey,ct).ConfigureAwait(false); if(rows.Count>=100)throw new ArgumentException(L.T("Usuń kolekcję przed dodaniem kolejnej (limit 100)."));
             var entry=new NetworkCollection(Guid.NewGuid(),name,request.Tool); await credentials.SaveAsync(entry.Id,json,ct).ConfigureAwait(false);
             try { rows.Insert(0,entry); await repository.SetSettingAsync(CollectionsKey,JsonSerializer.Serialize(rows),ct).ConfigureAwait(false); }
-            catch { await credentials.DeleteAsync(entry.Id,CancellationToken.None).ConfigureAwait(false); throw; }
+            catch
+            {
+                // A failed acknowledgement may follow a committed SQLite write.
+                // Keep the blob unless we can prove the index does not reference it.
+                var referenced=true;
+                try { referenced=(await CollectionsAsync(CancellationToken.None).ConfigureAwait(false)).Any(row=>row.Id==entry.Id); } catch { }
+                if(!referenced)try { await credentials.DeleteAsync(entry.Id,CancellationToken.None).ConfigureAwait(false); } catch { }
+                throw;
+            }
         }
         finally { gate.Release(); }
     }
@@ -75,7 +83,14 @@ public sealed class NetworkToolsStore(ProfileRepository repository,ICredentialSt
     public async Task DeleteCollectionAsync(Guid id,CancellationToken ct=default)
     {
         await gate.WaitAsync(ct).ConfigureAwait(false);
-        try { var rows=await ReadAsync<NetworkCollection>(CollectionsKey,ct).ConfigureAwait(false); if(!rows.Any(row=>row.Id==id))return; await credentials.DeleteAsync(id,ct).ConfigureAwait(false); await repository.SetSettingAsync(CollectionsKey,JsonSerializer.Serialize(rows.Where(row=>row.Id!=id)),ct).ConfigureAwait(false); }
+        try
+        {
+            var rows=await ReadAsync<NetworkCollection>(CollectionsKey,ct).ConfigureAwait(false); if(!rows.Any(row=>row.Id==id))return;
+            // Commit removal first: a database error must leave the saved request
+            // readable. Failure to retire an encrypted orphan cannot undo deletion.
+            await repository.SetSettingAsync(CollectionsKey,JsonSerializer.Serialize(rows.Where(row=>row.Id!=id)),ct).ConfigureAwait(false);
+            try { await credentials.DeleteAsync(id,CancellationToken.None).ConfigureAwait(false); } catch { }
+        }
         finally { gate.Release(); }
     }
     public async Task<string[]> ValuesAsync(string key,CancellationToken ct=default)=> (await ReadAsync<string>("networkTools."+key,ct).ConfigureAwait(false)).Where(value=>value.Length<=512).Take(30).ToArray();

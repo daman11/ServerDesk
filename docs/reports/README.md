@@ -1,6 +1,6 @@
 # Verification and historical reviews
 
-Current UI presentation: [Folder headers and service icons](tree-icons-2026-10-17.md), [0.36.2 icon and label verification scope](release-verification-0.36.2.md).
+Current UI presentation: [Settings search and empty-section usability](ui-ux-refinements-2026-10-17.md), [folder headers and service icons](tree-icons-2026-10-17.md), [0.36.2 icon and label verification scope](release-verification-0.36.2.md).
 
 Current command module: [Smart Cheat Sheet / Command Snippets, 2026-10-16](commands-2026-10-16.md).
 

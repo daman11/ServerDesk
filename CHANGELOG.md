@@ -2,6 +2,10 @@
 
 ## Unreleased
 
+- Keep contextual help and restart notices visible while searching settings; show accent presets only with their matching field.
+- Add an actionable settings search empty state with a compact layout above the language-restart reminder; clearing results preserves draft values and returns focus to search.
+- Give empty Favorites/Recent views contextual icons and a route back to saved connections, or creation when no profiles exist. Label filter clearing and restore search focus after clearing.
+
 ## 0.41.0 — Public Beta — 2026-10-17
 
 - Preserve saved Network Tools collection secrets when an index write fails. Commit index deletion before retiring its encrypted blob; keep the original storage error if cleanup also fails and allow safe retry.

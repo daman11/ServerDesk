@@ -77,6 +77,13 @@ internal static class DesignRefreshChecks
         search.Text="cpu"; RedesignChecks.Frames(); if(categories.SelectedIndex!=4 || tabs.Count(t=>t.IsVisible)!=1 || !Setting<CheckBox>(window,"CPU").IsEffectivelyVisible)throw new Exception("Search did not expose matching monitoring category");
         search.Text="polaczen"; RedesignChecks.Frames(); if(categories.SelectedIndex!=3 || !Setting<NumericUpDown>(window,"Szerokość panelu połączeń").IsEffectivelyVisible)throw new Exception("Settings search does not ignore Polish diacritics");
         search.Text="terminal font"; RedesignChecks.Frames(); if(language=="en" && (!font.IsEffectivelyVisible || font.Value!=19))throw new Exception("English multi-term search or draft retention failed");
+        search.Text=AppText.T("Wiersze historii terminala"); RedesignChecks.Frames();
+        var historyHint=AppText.T("Kursor ma podgląd na żywo. Programy zdalne mogą zmieniać jego wygląd. Limit historii obowiązuje przy następnym połączeniu SSH lub Serial; 0 wyłącza historię. Bieżący bufor pozostaje zachowany.");
+        if(!window.GetVisualDescendants().OfType<TextBlock>().Any(t=>t.Text==historyHint && t.IsEffectivelyVisible))throw new Exception("Searching a setting hid its next-connection/contextual help");
+        search.Text=AppText.T("Język aplikacji / Language"); RedesignChecks.Frames();
+        if(!Named<TextBlock>(window,"LanguageRestartNotice").IsEffectivelyVisible)throw new Exception("Searching language hid the restart notice");
+        search.Text=AppText.T("Krój czcionki interfejsu"); RedesignChecks.Frames();
+        if(Named<StackPanel>(window,"AccentColorChoices").IsEffectivelyVisible)throw new Exception("Font-only search exposed unrelated accent preset actions");
         search.Text="qwerty-no-match"; RedesignChecks.Frames(); if(categories.IsVisible || !Named<TextBlock>(window,"SettingsSearchEmpty").IsVisible)throw new Exception("Settings empty search state missing");
         search.Focus(); window.KeyPress(Key.Escape,RawInputModifiers.None,PhysicalKey.Escape,"\u001b"); window.KeyRelease(Key.Escape,RawInputModifiers.None,PhysicalKey.Escape,"\u001b"); RedesignChecks.Frames();
         if(search.Text!="" || !window.IsVisible || !categories.IsVisible || tabs.Any(t=>!t.IsVisible))throw new Exception("Escape did not clear search without closing settings");
@@ -87,7 +94,11 @@ internal static class DesignRefreshChecks
             if(font.Value!=19)throw new Exception("Filtering discarded terminal font draft"); window.CaptureRenderedFrame()!.Save(Path.Combine(root,$"settings-search-{language}-{theme}.png"));
             window.Width=680; window.Height=500; search.Text="qwerty-no-match"; RedesignChecks.Frames();
             foreach(var button in window.GetVisualDescendants().OfType<Button>().Where(b=>b.Tag as string is "Zapisz" or "Anuluj" or "Domyślne ustawienia"))InViewport(button,window);
-            InViewport(search,window); InViewport(Named<TextBlock>(window,"SettingsSearchEmpty"),window); window.CaptureRenderedFrame()!.Save(Path.Combine(root,$"settings-empty-{language}-{theme}.png"));
+            InViewport(search,window); InViewport(Named<TextBlock>(window,"SettingsSearchEmpty"),window); InViewport(Named<Button>(window,"SettingsShowAll"),window); window.CaptureRenderedFrame()!.Save(Path.Combine(root,$"settings-empty-{language}-{theme}.png"));
+            var emptyViewport=Named<ScrollViewer>(window,"SettingsSearchViewport"); var recovery=Named<Button>(window,"SettingsShowAll"); var recoveryPoint=recovery.TranslatePoint(default,emptyViewport)!.Value;
+            if(recoveryPoint.Y<0 || recoveryPoint.Y+recovery.Bounds.Height>emptyViewport.Bounds.Height+.5)throw new Exception("Settings recovery action is obscured by the footer/restart reminder");
+            Click(Named<Button>(window,"SettingsShowAll"));
+            if(search.Text!="" || !search.IsKeyboardFocusWithin || !categories.IsVisible || font.Value!=19 || !window.IsVisible)throw new Exception("Empty-settings recovery lost draft, focus or the open dialog");
         }
         Click(window.GetVisualDescendants().OfType<Button>().Single(b=>AutomationProperties.GetName(b)==AppText.T("Wyczyść wyszukiwanie ustawień")));
         categories.SelectedIndex=0; RedesignChecks.Frames();

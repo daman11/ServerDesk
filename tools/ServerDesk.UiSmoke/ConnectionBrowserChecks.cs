@@ -1,6 +1,7 @@
 using System.Diagnostics;
 using System.Reflection;
 using System.Text.Json;
+using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Headless;
 using Avalonia.Input;
@@ -52,7 +53,33 @@ internal static class ConnectionBrowserChecks
                     context.Close(); RedesignChecks.Frames(2);
                 }
                 main.CaptureRenderedFrame()!.Save(Path.Combine(root,$"empty-folders-{language}.png"));
-                RedesignChecks.Wait(repo.SaveAsync(first)); RedesignChecks.Wait(repo.SaveAsync(second)); RedesignChecks.Wait(vm.LoadAsync()); RedesignChecks.Frames();
+                RedesignChecks.Wait(repo.SaveAsync(first)); RedesignChecks.Wait(vm.LoadAsync()); RedesignChecks.Frames();
+                var originalSize=main.ClientSize; var originalPreferences=main.CurrentPreferences;
+                foreach(var target in new[]{"favorite","recent"})
+                {
+                    RedesignChecks.Wait(Call(main,"SelectSectionAsync",target)); RedesignChecks.Frames();
+                    var recovery=Field<Button>(main,"emptyBrowserAction");
+                    if(!empty.IsVisible || !recovery.IsEffectivelyVisible || Avalonia.Automation.AutomationProperties.GetName(recovery)!=AppText.T("Pokaż wszystkie połączenia") || Field<DeskIcon>(main,"browserEmptyIcon").Glyph!=DeskIcons.Resolve(target=="favorite"?"star":"history"))throw new Exception("Empty section has no contextual icon and path back to connections");
+                    foreach(var theme in new[]{"graphite","light"})
+                    {
+                        DesignSystem.Apply(theme); main.PreviewPreferences(originalPreferences with { SidebarWidth=220,InterfaceFontSize=16 }); main.Width=900; main.Height=680; RedesignChecks.Frames();
+                        var bounds=recovery.TranslatePoint(default,main)!.Value;
+                        if(bounds.X<48 || bounds.X+recovery.Bounds.Width>269)throw new Exception("Empty-section recovery escapes the narrow sidebar");
+                        main.CaptureRenderedFrame()!.Save(Path.Combine(root,$"empty-{target}-{language}-{theme}.png"));
+                    }
+                    recovery.RaiseEvent(new RoutedEventArgs(Button.ClickEvent)); Until(()=>Field<string>(main,"section")=="connections" && !empty.IsVisible);
+                    if(main.OpenSessions.Any() || main.OwnedWindows.Any())throw new Exception("Empty section navigation opened a connection or editor");
+                }
+                main.PreviewPreferences(originalPreferences); main.Width=originalSize.Width; main.Height=originalSize.Height; DesignSystem.Apply("dark");
+                RedesignChecks.Wait(repo.SaveAsync(second)); RedesignChecks.Wait(vm.LoadAsync()); RedesignChecks.Frames();
+                main.PreviewPreferences(originalPreferences with { SidebarWidth=220,InterfaceFontSize=16 }); main.Width=900; main.Height=680;
+                vm.Search="missing"; vm.ProtocolFilter=Protocol.RDP; RedesignChecks.Frames(); var clear=Field<Button>(main,"clearBrowserFilters");
+                var clearPoint=clear.TranslatePoint(default,main)!.Value;
+                if(clearPoint.X<48 || clearPoint.X+clear.Bounds.Width>269 || clear.GetVisualDescendants().OfType<TextBlock>().Any(label=>label.TextLayout.WidthIncludingTrailingWhitespace>label.Bounds.Width+1))throw new Exception("Labelled filter reset clips in the narrow sidebar");
+                main.CaptureRenderedFrame()!.Save(Path.Combine(root,$"filters-{language}-220-font16.png"));
+                clear.RaiseEvent(new RoutedEventArgs(Button.ClickEvent)); RedesignChecks.Frames();
+                if(vm.Search!="" || vm.ProtocolFilter!=null || !Field<TextBox>(main,"connectionSearch").IsKeyboardFocusWithin)throw new Exception("Clearing filters did not return focus to connection search");
+                main.PreviewPreferences(originalPreferences); main.Width=originalSize.Width; main.Height=originalSize.Height;
                 tree.SelectedItem=Folder("Rack2/Lab"); vm.SortMode=ProfileSort.Host; vm.SortDescending=true; RedesignChecks.Frames(); FolderSelected();
                 RedesignChecks.Wait(vm.LoadAsync()); RedesignChecks.Frames(); FolderSelected();
                 tree.SelectedItem=Profile(first.Id);

@@ -139,7 +139,9 @@ internal static partial class Dialogs
         var cornerRadius=Number(appearance,"Zaokrąglenie kontrolek (px)",p.ControlCornerRadius,0,12); cornerRadius.Name="ControlCornerRadius";
         var menuPadding=Number(appearance,"Odstęp pionowy w menu (px)",p.MenuItemPadding,2,12); menuPadding.Name="MenuItemPadding";
         var accent=new TextBox { Text=p.AccentColor,PlaceholderText=L.T("Domyślny lub #RRGGBB"),HorizontalAlignment=HorizontalAlignment.Stretch }; Label(appearance,"Kolor akcentu",accent);
-        var colors=new StackPanel { Orientation=Orientation.Horizontal,Spacing=8 };
+        var colors=new StackPanel { Name="AccentColorChoices",Orientation=Orientation.Horizontal,Spacing=8 };
+        // Presets belong to the accent field, rather than the entire section.
+        colors.Bind(Visual.IsVisibleProperty,new Avalonia.Data.Binding(nameof(Visual.IsVisible)) { Source=accent.Parent });
         foreach(var (name,color) in new[]{(L.T("Motyw"),""),(L.T("Niebieski"),"#58A6FF"),(L.T("Miętowy"),"#69CFB6"),(L.T("Fioletowy"),"#B39DFF"),(L.T("Pomarańczowy"),"#E5B567")})
         {
             var choice=Button(name,()=>accent.Text=color); if(color.Length>0)choice.Content=new Border { Width=20,Height=16,Background=new Avalonia.Media.SolidColorBrush(Avalonia.Media.Color.Parse(color)),CornerRadius=new CornerRadius(3) };
@@ -266,7 +268,8 @@ internal static partial class Dialogs
         DesignSystem.Resource(footerSurface,Border.BackgroundProperty,"BackgroundSecondary"); DesignSystem.Resource(footerSurface,Border.BorderBrushProperty,"BorderDefault");
         var search=new TextBox { Name="SettingsSearch",PlaceholderText=L.T("Znajdź ustawienie: motyw, terminal, CPU…"),MaxLength=200 };
         AutomationProperties.SetName(search,L.T("Szukaj ustawień")); search.InnerLeftContent=new Border { Child=DeskIcons.Create("search",15,"ForegroundSecondary"),Margin=new Thickness(8,0,0,0) };
-        var clearSearch=DeskIcons.Button("close","Wyczyść wyszukiwanie ustawień",()=> { search.Text=""; search.Focus(); },26); clearSearch.IsVisible=false; search.InnerRightContent=clearSearch;
+        void ClearSettingsSearch() { search.Text=""; search.Focus(); }
+        var clearSearch=DeskIcons.Button("close","Wyczyść wyszukiwanie ustawień",ClearSettingsSearch,26); clearSearch.IsVisible=false; search.InnerRightContent=clearSearch;
         var searchCount=DesignSystem.Label("",true,12); searchCount.Name="SettingsSearchCount"; searchCount.IsVisible=false;
         var headerTitle=DesignSystem.PageHeading("settings",L.T("Ustawienia"),L.T("Dostosuj wygląd i sposób pracy ServerDesk."));
         var searchArea=new StackPanel { Spacing=6,VerticalAlignment=VerticalAlignment.Center,Children={search,searchCount} };
@@ -279,13 +282,23 @@ internal static partial class Dialogs
         };
         var header=new Border { Padding=new Thickness(22,16),Child=headerBody,BorderThickness=new Thickness(0,0,0,1) };
         DesignSystem.Resource(header,Border.BorderBrushProperty,"BorderDefault");
-        var emptySearch=DesignSystem.Label(L.T("Brak pasujących ustawień. Zmień lub wyczyść wyszukiwanie."),true); emptySearch.Name="SettingsSearchEmpty"; emptySearch.TextWrapping=TextWrapping.Wrap; emptySearch.Margin=new Thickness(28); emptySearch.HorizontalAlignment=HorizontalAlignment.Center; emptySearch.VerticalAlignment=VerticalAlignment.Center; emptySearch.IsVisible=false;
-        var categoryHost=new Grid { Children={categories,emptySearch} };
+        var emptySearch=DesignSystem.Hint(L.T("Brak pasujących ustawień. Zmień lub wyczyść wyszukiwanie.")); emptySearch.Name="SettingsSearchEmpty"; emptySearch.TextAlignment=TextAlignment.Center; emptySearch.IsVisible=false;
+        var emptyHeading=DesignSystem.Label(L.T("Brak wyników"),false,18); emptyHeading.FontWeight=FontWeight.SemiBold; emptyHeading.TextWrapping=TextWrapping.Wrap; emptyHeading.TextAlignment=TextAlignment.Center;
+        var showAllSettings=Button("Pokaż wszystkie ustawienia",ClearSettingsSearch); showAllSettings.Name="SettingsShowAll"; showAllSettings.HorizontalAlignment=HorizontalAlignment.Center; showAllSettings.Content=DeskIcons.Labelled("search",L.T("Pokaż wszystkie ustawienia"));
+        var emptyIcon=new Border { Width=44,Height=44,CornerRadius=new CornerRadius(12),HorizontalAlignment=HorizontalAlignment.Center,Child=DeskIcons.Create("search",24,"AccentPrimary") }; DesignSystem.Resource(emptyIcon,Border.BackgroundProperty,"SurfaceSelected");
+        var emptyState=new StackPanel { Name="SettingsSearchEmptyState",IsVisible=false,Spacing=12,Margin=new Thickness(24),MaxWidth=360,HorizontalAlignment=HorizontalAlignment.Center,VerticalAlignment=VerticalAlignment.Center,Children={emptyIcon,emptyHeading,emptySearch,showAllSettings} };
+        var emptyScroll=new ScrollViewer { Name="SettingsSearchViewport",Content=emptyState,IsVisible=false,HorizontalScrollBarVisibility=Avalonia.Controls.Primitives.ScrollBarVisibility.Disabled,VerticalScrollBarVisibility=Avalonia.Controls.Primitives.ScrollBarVisibility.Auto };
+        emptyScroll.SizeChanged+=(_,_)=>
+        {
+            var compact=emptyScroll.Bounds.Height<250;
+            emptyIcon.IsVisible=!compact; emptyState.Spacing=compact?8:12; emptyState.Margin=new Thickness(24,compact?12:24);
+        };
+        var categoryHost=new Grid { ClipToBounds=true,Children={categories,emptyScroll} };
         search.TextChanged+=(_,_)=>
         {
             var counts=searchIndex.Apply(search.Text??""); var tabs=categories.Items.OfType<TabItem>().ToArray(); var filtered=!string.IsNullOrWhiteSpace(search.Text);
             for(var index=0;index<tabs.Length;index++)tabs[index].IsVisible=!filtered || counts[index]>0;
-            var any=counts.Sum()>0; categories.IsVisible=any; emptySearch.IsVisible=!any;
+            var any=counts.Sum()>0; categories.IsVisible=any; emptySearch.IsVisible=emptyState.IsVisible=emptyScroll.IsVisible=!any;
             if(any && (categories.SelectedIndex<0 || counts[categories.SelectedIndex]==0))categories.SelectedIndex=Array.FindIndex(counts,count=>count>0);
             clearSearch.IsVisible=filtered; searchCount.IsVisible=filtered; searchCount.Text=L.F($"Pasujące ustawienia: {counts.Sum()}");
         };

@@ -70,11 +70,11 @@ public sealed partial class MainWindow
         var add=DeskIcons.Button("plus","Dodaj połączenie",()=>_ = Safe(()=>EditAsync(null))); connectionHeaderActions.Children.Add(add);
         var newFolder=DeskIcons.Button("folder","Dodaj folder",()=>_ = Safe(FolderAsync)); connectionHeaderActions.Children.Add(newFolder); Grid.SetColumn(connectionHeaderActions,1); sideHeader.Children.Add(connectionHeaderActions); DockPanel.SetDock(sideHeader,Dock.Top); sidebar.Children.Add(sideHeader);
         connectionTools.Name="ConnectionBrowserTools"; DockPanel.SetDock(connectionTools,Dock.Top); sidebar.Children.Add(connectionTools);
-        var search=new TextBox { PlaceholderText=L.T("Nazwa, adres, login lub tag"),Margin=new Thickness(10,0,10,8) }; search.Bind(TextBox.TextProperty,new Binding(nameof(vm.Search)) { Mode=BindingMode.TwoWay }); connectionTools.Children.Add(search);
+        var search=connectionSearch=new TextBox { Name="ConnectionSearch",PlaceholderText=L.T("Nazwa, adres, login lub tag"),Margin=new Thickness(10,0,10,8) }; search.Bind(TextBox.TextProperty,new Binding(nameof(vm.Search)) { Mode=BindingMode.TwoWay }); connectionTools.Children.Add(search);
         ToolTip.SetTip(search,L.T("Szukaj po nazwie, adresie, loginie, tagach, opisie, folderze i protokole. Kilka słów zawęża wyniki. Escape czyści zapytanie."));
         search.KeyDown+=(_,e)=> { if(e.Key==Key.Escape && !string.IsNullOrEmpty(search.Text)) { search.Text=""; e.Handled=true; } };
         search.InnerLeftContent=new Border { Child=DeskIcons.Create("search",14,"ForegroundSecondary"),Margin=new Thickness(8,0,0,0) };
-        var clearSearch=DeskIcons.Button("close","Wyczyść wyszukiwanie",()=>search.Text="",24); clearSearch.IsVisible=false; search.InnerRightContent=clearSearch;
+        var clearSearch=DeskIcons.Button("close","Wyczyść wyszukiwanie",()=> { search.Text=""; search.Focus(); },24); clearSearch.IsVisible=false; search.InnerRightContent=clearSearch;
         search.TextChanged+=(_,_)=>clearSearch.IsVisible=!string.IsNullOrEmpty(search.Text); Avalonia.Automation.AutomationProperties.SetName(search,L.T("Szukaj połączeń"));
         BuildBrowserFilters();
         connectionTools.Children.Add(BuildConnectionSorting());

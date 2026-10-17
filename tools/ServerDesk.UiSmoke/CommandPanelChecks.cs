@@ -2,6 +2,7 @@ using System.Reflection;
 using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Headless;
+using Avalonia.Input;
 using Avalonia.Input.Platform;
 using Avalonia.Interactivity;
 using Avalonia.VisualTree;
@@ -30,7 +31,7 @@ internal static class CommandPanelChecks
     }
     private static void Select(CommandPanel panel,string id)
     {
-        var list=Named<ListBox>(panel,"CommandList"); list.SelectedItem=list.Items.OfType<CommandMatch>().FirstOrDefault(m=>m.Command.Id==id)??throw new Exception("Missing command "+id); RedesignChecks.Frames(3);
+        var list=Named<ListBox>(panel,"CommandList"); list.SelectedItem=list.Items.OfType<CommandMatch>().FirstOrDefault(m=>m.Command.Id==id)??throw new Exception("Missing command "+id); panel.ShowCommandDetails(); RedesignChecks.Frames(3);
     }
     internal static void Run(string root)
     {
@@ -40,6 +41,19 @@ internal static class CommandPanelChecks
             Wait(repo.SaveApplicationSettingsAsync(Result(repo.ApplicationSettingsAsync()) with { Preferences=new() { Language=language } }));
             var main=new MainWindow(new(repo),repo,vault,new(repo),new ExternalRdpClient()); main.Show(); RedesignChecks.Frames(20); Wait(main.OpenCommandsPanelAsync()); RedesignChecks.Frames(8);
             var panel=Named<CommandPanel>(main,"CommandsPanel"); var list=Named<ListBox>(panel,"CommandList"); if(list.ItemCount<40)throw new Exception("Offline library not loaded");
+            if(Named<Border>(panel,"CommandDetailCard").IsVisible || Named<Grid>(panel,"CommandActions").IsVisible)throw new Exception("Command details/actions show before a card is opened");
+            var first=list.Items.OfType<CommandMatch>().First(); var firstCard=panel.GetVisualDescendants().OfType<Border>().First(b=>b.Name=="CommandCard" && b.Tag as string==first.Command.Id);
+            if(firstCard.GetVisualDescendants().OfType<TextBlock>().Single(t=>t.Name=="CommandCardTemplate").Text!=first.Command.Template)throw new Exception("Card does not show its command template");
+            main.CaptureRenderedFrame()!.Save(Path.Combine(root,$"commands-cards-{language}.png"));
+            var cardPoint=firstCard.TranslatePoint(new Point(20,15),main)!.Value; main.MouseMove(cardPoint,RawInputModifiers.None); main.MouseDown(cardPoint,MouseButton.Left,RawInputModifiers.None); main.MouseUp(cardPoint,MouseButton.Left,RawInputModifiers.None); RedesignChecks.Frames(4);
+            if(!Named<Border>(panel,"CommandDetailCard").IsVisible || list.IsEffectivelyVisible || !Named<ScrollViewer>(panel,"CommandDetails").GetVisualDescendants().OfType<TextBlock>().Any(t=>t.Text==first.Command.Title))throw new Exception("Pointer click did not open the selected command details: "+language+" / "+first.Command.Id);
+            Click(panel,"Lista komend"); RedesignChecks.Frames(4);
+            if(!list.IsEffectivelyVisible || list.SelectedItem is not CommandMatch kept || kept.Command.Id!=first.Command.Id)throw new Exception("Back did not preserve the command browser selection");
+            if(!list.Focus())throw new Exception("Command list cannot receive keyboard focus after Back");
+            main.KeyPress(Key.Enter,RawInputModifiers.None,PhysicalKey.Enter,"\r"); RedesignChecks.Frames(3);
+            if(!Named<Border>(panel,"CommandDetailCard").IsVisible)throw new Exception("Enter did not open selected command details");
+            main.KeyPress(Key.Escape,RawInputModifiers.None,PhysicalKey.Escape,""); RedesignChecks.Frames(3);
+            if(!list.IsEffectivelyVisible)throw new Exception("Escape did not return to the command list");
             var contextOptions=Named<Expander>(panel,"CommandContextOptions"); if(contextOptions.IsExpanded)throw new Exception("Profile settings hide command browsing by default");
             contextOptions.IsExpanded=true; RedesignChecks.Frames(3);
             Select(panel,"linux.net.listeners"); if(main.GetVisualDescendants().OfType<Button>().Single(b=>b.Tag as string=="Wstaw").IsEnabled)throw new Exception("Offline Insert enabled");
@@ -54,23 +68,30 @@ internal static class CommandPanelChecks
             Click(panel,"Ulubione"); RedesignChecks.Frames(5); var saved=Result(new CommandStore(repo,vault).ReadStateAsync()); if(!saved.Favorites.Contains("linux.net.listeners"))throw new Exception("Favourite did not persist");
             var mode=Named<ComboBox>(panel,"CommandMode"); mode.SelectedIndex=1; Named<ComboBox>(panel,"CommandSystem").SelectedItem="windows11"; Named<ComboBox>(panel,"CommandShell").SelectedItem=CommandShell.PowerShell; RedesignChecks.Frames(8);
             Select(panel,"windows.ps.listeners"); if(panel.Environment.Platform!=CommandPlatform.Windows)throw new Exception("Manual Windows profile failed");
-            Named<TextBox>(panel,"CommandSearch").Text="otwarte porty"; RedesignChecks.Frames(15); if(list.ItemCount<1)throw new Exception("Polish search failed in "+language); Named<TextBox>(panel,"CommandSearch").Text=""; RedesignChecks.Frames(15);
+            // Apply the query explicitly; this check covers navigation and filter retention.
+            panel.FocusSearch(); Named<TextBox>(panel,"CommandSearch").Text="otwarte porty"; panel.RefreshList(); RedesignChecks.Frames(3);
+            if(list.ItemCount<1)throw new Exception("Command query returned no matching listeners");
+            var filteredCount=list.ItemCount; Select(panel,"windows.ps.listeners"); Click(panel,"Lista komend"); RedesignChecks.Frames(3);
+            if(Named<TextBox>(panel,"CommandSearch").Text!="otwarte porty" || list.ItemCount!=filteredCount)throw new Exception("Back lost the command search filter");
+            Named<TextBox>(panel,"CommandSearch").Text=""; panel.RefreshList(); RedesignChecks.Frames(3);
             contextOptions.IsExpanded=false;
-            foreach(var theme in new[]{"dark","light","graphite","nord","midnight"}) { DesignSystem.Apply(theme); RedesignChecks.Frames(8); main.CaptureRenderedFrame()!.Save(Path.Combine(root,$"commands-{language}-{theme}.png")); }
+            foreach(var theme in new[]{"dark","light","graphite","nord","midnight"}) { DesignSystem.Apply(theme); panel.FocusSearch(); RedesignChecks.Frames(4); main.CaptureRenderedFrame()!.Save(Path.Combine(root,$"commands-cards-{language}-{theme}.png")); Select(panel,"windows.ps.listeners"); main.CaptureRenderedFrame()!.Save(Path.Combine(root,$"commands-{language}-{theme}.png")); }
             main.Width=920; main.Height=620; RedesignChecks.Frames(8); main.CaptureRenderedFrame()!.Save(Path.Combine(root,$"commands-{language}-compact.png"));
             var preview=Named<TextBox>(panel,"CommandPreview"); var footer=panel.GetVisualDescendants().OfType<Button>().Single(b=>b.Tag as string=="Wstaw");
             if(preview.Bounds.Width<=0||footer.TranslatePoint(default,main) is not {} p||p.Y+footer.Bounds.Height>main.Bounds.Height)throw new Exception("Commands footer outside compact window");
             var preferences=main.CurrentPreferences;
             foreach(var font in new[]{13,16})foreach(var expanded in new[]{false,true})
             {
-                main.PreviewPreferences(preferences with { InterfaceFontSize=font }); contextOptions.IsExpanded=expanded; RedesignChecks.Frames(6);
+                main.PreviewPreferences(preferences with { InterfaceFontSize=font }); panel.FocusSearch(); contextOptions.IsExpanded=expanded; RedesignChecks.Frames(6);
+                if(list.Bounds.Height<70 || !list.IsEffectivelyVisible)throw new Exception("Command cards lost their compact browser viewport");
+                main.CaptureRenderedFrame()!.Save(Path.Combine(root,$"commands-cards-{language}-compact-font{font}-profile{expanded}.png")); Select(panel,"windows.ps.listeners");
                 foreach(var button in panel.GetVisualDescendants().OfType<Button>().Where(b=>b.Tag as string is "Kopiuj" or "Wstaw" or "Wykonaj" or "Ulubione" or "Edytuj" or "Duplikuj"))
                 {
                     var point=button.TranslatePoint(default,main)!.Value;
                     if(point.X<0||point.Y<0||point.X+button.Bounds.Width>main.ClientSize.Width+.5||point.Y+button.Bounds.Height>main.ClientSize.Height+.5)throw new Exception("Command action clipped at font "+font);
                 }
                 var card=Named<Border>(panel,"CommandDetailCard");
-                if(list.Bounds.Height<70 || card.Bounds.Height<85 || list.TranslatePoint(default,panel)!.Value.Y+list.Bounds.Height>card.TranslatePoint(default,panel)!.Value.Y+.5)throw new Exception("Command list/detail overlap");
+                if(list.IsEffectivelyVisible || card.Bounds.Height<85 || !Named<Button>(panel,"CommandBackToList").IsEffectivelyVisible)throw new Exception("Command browser overlaps full details or hides Back");
                 main.CaptureRenderedFrame()!.Save(Path.Combine(root,$"commands-{language}-compact-font{font}-profile{expanded}.png"));
             }
             main.PreviewPreferences(preferences); contextOptions.IsExpanded=false;
@@ -83,7 +104,7 @@ internal static class CommandPanelChecks
             if(vault.Reads!=0)throw new Exception("Offline/RDP/Serial command browsing read connection credentials");
             Close(main);
         }
-        AppText.SetLanguage("pl"); Console.WriteLine("PASS commands offline, PL/EN, manual Windows, copy, favourites, compact dark/light, RDP/Serial capability isolation");
+        AppText.SetLanguage("pl"); Console.WriteLine("PASS command cards and template text, pointer/Enter details, Back/Escape selection retention, offline PL/EN, manual Windows, copy, favourites, compact dark/light, RDP/Serial capability isolation");
     }
     internal static void Network(string root,string host,string key)
     {

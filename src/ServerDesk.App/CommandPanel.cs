@@ -1,6 +1,8 @@
 using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Controls.Templates;
+using Avalonia.Data;
+using Avalonia.Input;
 using Avalonia.Layout;
 using Avalonia.Media;
 using ServerDesk.Core;
@@ -35,7 +37,7 @@ internal sealed partial class CommandPanel : Border,IDisposable
     private readonly ComboBox section=new() { Name="CommandSection",ItemsSource=new[]{L.T("Ściągawka poleceń"),L.T("Moje komendy"),L.T("Ulubione"),L.T("Ostatnie"),L.T("Wyszukiwanie")},SelectedIndex=0,HorizontalAlignment=HorizontalAlignment.Stretch };
     private readonly ComboBox category=new() { Name="CommandCategory",HorizontalAlignment=HorizontalAlignment.Stretch };
     private readonly ComboBox sort=new() { Name="CommandSort",ItemsSource=new[]{L.T("Trafność"),L.T("Nazwa (A–Z)"),L.T("Nazwa (Z–A)"),L.T("Poziom ryzyka")},SelectedIndex=0,HorizontalAlignment=HorizontalAlignment.Stretch };
-    private readonly ListBox list=new() { Name="CommandList",MinHeight=70 };
+    private readonly ListBox list=new() { Name="CommandList",MinHeight=70,Focusable=true };
     private readonly StackPanel detail=new() { Spacing=8,Margin=new Thickness(0,0,8,0) };
     private readonly TextBox preview=new() { Name="CommandPreview",IsReadOnly=true,AcceptsReturn=true,TextWrapping=TextWrapping.Wrap,MinHeight=65,MaxHeight=160,FontFamily=new FontFamily("Cascadia Mono,Consolas,monospace") };
     private readonly TextBlock validation=Dialogs.Text("",12);
@@ -53,7 +55,7 @@ internal sealed partial class CommandPanel : Border,IDisposable
         contextOptions.Classes.Add("network-options"); DesignSystem.Resource(validation,TextBlock.ForegroundProperty,"Danger");
         validation.IsVisible=false; validation.PropertyChanged+=(_,e)=> { if(e.Property==TextBlock.TextProperty)validation.IsVisible=!string.IsNullOrEmpty(validation.Text); };
         DesignSystem.Resource(this,BackgroundProperty,"BackgroundSecondary"); DesignSystem.Resource(this,BorderBrushProperty,"BorderDefault");
-        var grid=new Grid { RowDefinitions=new("Auto,Auto,*,1.15*,Auto"),RowSpacing=9,ClipToBounds=true }; Child=grid;
+        var grid=new Grid { RowDefinitions=new("Auto,Auto,*,Auto"),RowSpacing=9,ClipToBounds=true }; Child=grid;
         var header=new Grid { ColumnDefinitions=new("*,Auto,Auto,Auto,Auto,Auto"),ColumnSpacing=3 };
         header.Children.Add(DesignSystem.SectionHeading("square-terminal",L.T("Komendy")));
         var options=DeskIcons.Button("more",L.T("Opcje komend"),()=> { }); Grid.SetColumn(options,4); header.Children.Add(options);
@@ -73,28 +75,39 @@ internal sealed partial class CommandPanel : Border,IDisposable
         var filter2=new Grid { ColumnDefinitions=new("*,*"),ColumnSpacing=6 }; filter2.Children.Add(category); Grid.SetColumn(sort,1); filter2.Children.Add(sort);
         var filterBody=new StackPanel { Spacing=9,Children={controls,search,filter,filter2} };
         var filterScroll=new ScrollViewer { Name="CommandFilters",Content=filterBody,HorizontalScrollBarVisibility=Avalonia.Controls.Primitives.ScrollBarVisibility.Disabled,MaxHeight=300 };
+        filtersView=filterScroll;
         SizeChanged+=(_,_)=>filterScroll.MaxHeight=Math.Clamp(Bounds.Height*.38,140,330); Grid.SetRow(filterScroll,1); grid.Children.Add(filterScroll);
-        var results=new Grid { RowDefinitions=new("Auto,*"),RowSpacing=7,MinHeight=96,ClipToBounds=true }; results.Children.Add(count); Grid.SetRow(list,1); results.Children.Add(list); Grid.SetRow(results,2); grid.Children.Add(results);
+        var results=new Grid { Name="CommandBrowser",RowDefinitions=new("Auto,*"),RowSpacing=7,MinHeight=96,ClipToBounds=true }; resultsView=results; results.Children.Add(count); Grid.SetRow(list,1); results.Children.Add(list);
         list.Classes.Add("command-list"); list.ItemTemplate=new FuncDataTemplate<CommandMatch>((match,_)=>match==null?null:Row(match)); list.SelectionChanged+=(_,_)=>Select(list.SelectedItem as CommandMatch);
+        list.AddHandler(KeyDownEvent,(_,e)=> { if(e.Key==Key.Enter && selected!=null) { ShowCommandDetails(); e.Handled=true; } },Avalonia.Interactivity.RoutingStrategies.Tunnel);
         list.SizeChanged+=(_,_)=>Avalonia.Threading.Dispatcher.UIThread.Post(()=> { if(!lifetime.IsCancellationRequested && list.SelectedItem is {} item)list.ScrollIntoView(item); });
         var detailScroll=new ScrollViewer { Name="CommandDetails",Content=detail,HorizontalScrollBarVisibility=Avalonia.Controls.Primitives.ScrollBarVisibility.Disabled,MinHeight=85,ClipToBounds=true };
         preview.Classes.Add("code-preview");
-        var detailCard=DesignSystem.Card(detailScroll,new Thickness(12)); detailCard.Name="CommandDetailCard"; Grid.SetRow(detailCard,3); grid.Children.Add(detailCard);
+        backToList=Dialogs.Button("Lista komend",()=>ShowCommandList(true)); backToList.Name="CommandBackToList"; backToList.HorizontalAlignment=HorizontalAlignment.Left;
+        detailContext.MaxLines=2; detailContext.TextTrimming=TextTrimming.CharacterEllipsis;
+        detailContext.Bind(TextBlock.TextProperty,new Binding(nameof(TextBlock.Text)) { Source=context });
+        detailContext.Bind(TextBlock.ForegroundProperty,new Binding(nameof(TextBlock.Foreground)) { Source=context });
+        var navigation=new Grid { ColumnDefinitions=new("Auto,*"),ColumnSpacing=12,Children={backToList,detailContext} }; Grid.SetColumn(detailContext,1);
+        var detailBody=new Grid { RowDefinitions=new("Auto,*"),RowSpacing=12,Children={navigation,detailScroll} }; Grid.SetRow(detailScroll,1);
+        detailCard=DesignSystem.Card(detailBody,new Thickness(12)); detailCard.Name="CommandDetailCard";
+        var content=new Grid { Children={results,detailCard} }; Grid.SetRow(content,2); grid.Children.Add(content);
         var footer=new StackPanel { Spacing=6 }; footer.Children.Add(notice);
-        notice.PropertyChanged+=(_,e)=> { if(e.Property==TextBlock.TextProperty)notice.IsVisible=!string.IsNullOrEmpty(notice.Text); }; notice.IsVisible=false;
-        var actions=new Grid { ColumnDefinitions=new("*,*,*"),ColumnSpacing=6 };
+        notice.IsVisible=false;
+        var actions=new Grid { Name="CommandActions",ColumnDefinitions=new("*,*,*"),ColumnSpacing=6 }; detailActions=actions;
         copy=Action("Kopiuj",()=>DispatchAsync("copy")); insert=Action("Wstaw",()=>DispatchAsync("insert")); insert.Classes.Add("primary"); execute=Action("Wykonaj",()=>DispatchAsync("execute"));
         favorite=Action("Ulubione",FavoriteAsync); edit=Action("Edytuj",()=>EditAsync(selected)); duplicate=Action("Duplikuj",DuplicateAsync);
         var buttons=new[]{copy,insert,execute,favorite,edit,duplicate};
         for(var i=0;i<3;i++) { var b=buttons[i]; b.Padding=new Thickness(6,5); b.HorizontalAlignment=HorizontalAlignment.Stretch; b.HorizontalContentAlignment=HorizontalAlignment.Center; Grid.SetColumn(b,i); actions.Children.Add(b); }
         var management=new[]{(favorite,"star","Ulubione"),(edit,"edit","Edytuj"),(duplicate,"copy","Duplikuj")};
         for(var i=0;i<management.Length;i++) { var (b,glyph,label)=management[i]; b.Content=DeskIcons.Create(glyph,16); b.Classes.Add("chrome"); b.Classes.Add("icon"); b.Width=30; b.Height=30; ToolTip.SetTip(b,L.T(label)); Avalonia.Automation.AutomationProperties.SetName(b,L.T(label)); Grid.SetColumn(b,i+1); header.Children.Add(b); }
-        footer.Children.Add(actions); var footerSurface=new Border { Child=footer,Padding=new Thickness(0,8,0,0),BorderThickness=new Thickness(0,1,0,0) }; DesignSystem.Resource(footerSurface,BorderBrushProperty,"BorderDefault"); Grid.SetRow(footerSurface,4); grid.Children.Add(footerSurface);
+        footer.Children.Add(actions); footerSurface=new Border { Child=footer,Padding=new Thickness(0,8,0,0),BorderThickness=new Thickness(0,1,0,0) }; DesignSystem.Resource(footerSurface,BorderBrushProperty,"BorderDefault"); Grid.SetRow(footerSurface,3); grid.Children.Add(footerSurface);
+        notice.PropertyChanged+=(_,e)=> { if(e.Property==TextBlock.TextProperty) { notice.IsVisible=!string.IsNullOrEmpty(notice.Text); footerSurface.IsVisible=showingDetails||notice.IsVisible; } };
         queryDebounce=new(()=>RefreshList()); search.TextChanged+=(_,_)=> { if(ready)queryDebounce.Request(); };
         section.SelectionChanged+=(_,_)=> { if(ready&&!updating)RefreshList(); }; sort.SelectionChanged+=(_,_)=> { if(ready&&!updating)RefreshList(); };
         category.SelectionChanged+=(_,_)=> { if(ready&&!updating)RefreshList(); };
         mode.SelectionChanged+=(_,_)=>PreferenceChanged(); pin.IsCheckedChanged+=(_,_)=>PreferenceChanged(); system.SelectionChanged+=(_,_)=>PreferenceChanged(); shell.SelectionChanged+=(_,_)=>PreferenceChanged(); version.TextChanged+=(_,_)=>PreferenceChanged();
-        codeApproval.IsCheckedChanged+=(_,_)=>UpdatePreview(); SetButtons(false);
+        codeApproval.IsCheckedChanged+=(_,_)=>UpdatePreview(); SetButtons(false); ShowCommandList(false);
+        KeyDown+=(_,e)=> { if(!e.Handled && e.Key==Key.Escape && showingDetails && !working) { ShowCommandList(true); e.Handled=true; } };
     }
     private Button Action(string label,Func<Task> action)=>Dialogs.Button(label,()=>Run(action));
     private MenuItem Menu(string label,Func<Task> action) { var m=DeskIcons.ActionMenu(label); m.Click+=(_,_)=>Run(action); return m; }
@@ -187,17 +200,26 @@ internal sealed partial class CommandPanel : Border,IDisposable
         if(environment.Diagnostic.Length>0)contextDetail+="\n"+environment.Diagnostic;
         if(pane?.CanAcceptCommands!=true)contextDetail+="\n"+L.T("Kopiowanie dostępne. Wstawianie i wykonanie wymagają aktywnego terminala SSH.");
         ToolTip.SetTip(context,contextDetail); DesignSystem.Resource(context,TextBlock.ForegroundProperty,environment.Diagnostic.Length>0?"Warning":"ForegroundSecondary");
+        ToolTip.SetTip(detailContext,contextDetail);
         RefreshList();
     }
-    internal void FocusSearch()=>search.Focus();
+    internal void FocusSearch() { ShowCommandList(false); search.Focus(); }
     internal void ClearSelection() { list.SelectedItem=null; Select(null); }
     private Control Row(CommandMatch match)
     {
         var c=match.Command; var title=DesignSystem.Label((state.Favorites.Contains(c.Id)?"★ ":"")+c.Title); title.TextWrapping=TextWrapping.Wrap; title.FontWeight=FontWeight.SemiBold;
-        var subtitle=DesignSystem.Label(c.Description,true,12); subtitle.TextWrapping=TextWrapping.Wrap;
+        var subtitle=DesignSystem.Hint(c.Description); subtitle.MaxLines=2; subtitle.TextTrimming=TextTrimming.CharacterEllipsis;
+        var command=DesignSystem.Label(c.Template,false,12); command.Name="CommandCardTemplate"; command.FontFamily=preview.FontFamily; command.TextWrapping=TextWrapping.Wrap; command.MaxLines=3; command.TextTrimming=TextTrimming.CharacterEllipsis;
+        var code=new Border { Child=command,Padding=new Thickness(9,7),CornerRadius=new CornerRadius(5) }; DesignSystem.Resource(code,BackgroundProperty,"BackgroundPrimary");
         var meta=DesignSystem.Label(c.Shell+" · "+Risk(c.Risk)+(!match.Compatible?" · "+L.T("Inny profil / system"):match.MissingTools.Length>0?" · "+L.T("Brak narzędzia"):""),true,11);
         if(c.Risk==CommandRisk.Dangerous)DesignSystem.Resource(meta,TextBlock.ForegroundProperty,"Danger");
-        var row=new StackPanel { Spacing=3,Margin=new Thickness(2,5),Children={title} }; if(c.Description!=c.Title)row.Children.Add(subtitle); row.Children.Add(meta); return row;
+        var more=DeskIcons.Create("arrow-right",16,"ForegroundSecondary");
+        var metadata=new Grid { ColumnDefinitions=new("*,Auto"),ColumnSpacing=8,Children={meta,more} }; Grid.SetColumn(more,1); meta.TextWrapping=TextWrapping.Wrap;
+        var body=new StackPanel { Spacing=7,Children={title} }; if(c.Description!=c.Title)body.Children.Add(subtitle); body.Children.Add(code); body.Children.Add(metadata);
+        var row=new Border { Name="CommandCard",Tag=c.Id,Child=body,Padding=new Thickness(10),CornerRadius=new CornerRadius(7),BorderThickness=new Thickness(1),Background=Brushes.Transparent };
+        DesignSystem.Resource(row,BorderBrushProperty,"BorderDefault"); Avalonia.Automation.AutomationProperties.SetName(row,c.Title+" · "+L.T("Więcej informacji"));
+        ToolTip.SetTip(row,L.T("Więcej informacji"));
+        row.Tapped+=(_,e)=> { list.SelectedItem=match; ShowCommandDetails(); e.Handled=true; }; return row;
     }
     internal void RefreshList()
     {

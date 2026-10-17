@@ -12,7 +12,7 @@ EN: Open **Commands** with **Ctrl+Shift+K**, the activity bar, Menu, or the SSH 
 
 1. Bez serwera rozwiń **Profil systemu**, wybierz Ręczny, system i powłokę. Można opcjonalnie podać wersję. Dostępne są Ogólne, Linux, Ubuntu, Debian, RHEL, Rocky, AlmaLinux, CentOS Stream, Fedora, Arch, Alpine, Windows, Windows 10/11 i Windows Server.
 2. Wpisz np. `otwarte porty`, `open ports`, `sprawdź usługę`, `serwis status`, `memory` albo nazwę narzędzia. Filtruj po kategorii i sortuj po trafności, nazwie lub ryzyku.
-3. Wybierz komendę. Zobacz szablon, opis, system/powłokę, narzędzia, uprawnienia i ryzyko. Uzupełnij parametry; zobaczysz wygenerowany podgląd. Sekretne wartości pozostają ukryte.
+3. Karty pokazują krótki opis i szablon polecenia (z oznaczeniami parametrów `{{…}}`), powłokę oraz ryzyko. Kliknij kartę lub wybierz ją klawiaturą i naciśnij Enter, aby otworzyć pełne szczegóły: opis, przykłady, system/powłokę, narzędzia, uprawnienia i formularz parametrów. **Lista komend** albo Escape wraca do listy z zachowanymi filtrami. Samo otwarcie szczegółów nie wykonuje polecenia. Po uzupełnieniu parametrów zobaczysz wygenerowany podgląd; sekretne wartości pozostają ukryte.
 4. **Kopiuj** działa offline. **Wstaw** wymaga wspieranej aktywnej sesji SSH i wstawia bez Enter. **Wykonaj** pokazuje cel i pełną treść przed świadomym wysłaniem Enter. Sprawdź, że terminal jest w powłoce, a bieżący wiersz jest pusty; otwarty edytor lub program może inaczej potraktować wejście.
 5. **Ulubione** przechowuje odnośnik do definicji. **Duplikuj** tworzy własny wariant; wbudowana biblioteka pozostaje niezmieniona. **Edytuj** jest dostępne dla własnych wpisów.
 

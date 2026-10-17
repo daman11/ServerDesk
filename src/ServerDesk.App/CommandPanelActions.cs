@@ -19,7 +19,7 @@ internal sealed partial class CommandPanel
     private void Select(CommandMatch? match)
     {
         selected=match?.Command; ticket=null; values.Clear(); detail.Children.Clear(); preview.Text=""; validation.Text=""; codeApproval.IsChecked=false;
-        if(selected==null) { detail.Children.Add(Dialogs.Text(L.T("Wybierz komendę, aby zobaczyć opis, parametry i podgląd."))); SetButtons(false); return; }
+        if(selected==null) { detail.Children.Add(Dialogs.Text(L.T("Wybierz komendę, aby zobaczyć opis, parametry i podgląd."))); SetButtons(false); ShowCommandList(false); return; }
         var c=selected; if(target?.CanAcceptCommands==true)ticket=new(target.WorkspaceId,target.CommandConnectionId,c.Id);
         var title=DesignSystem.Label(c.Title,false,16); title.TextWrapping=Avalonia.Media.TextWrapping.Wrap; detail.Children.Add(title);
         title.FontWeight=Avalonia.Media.FontWeight.SemiBold;
@@ -122,6 +122,7 @@ internal sealed partial class CommandPanel
         var edited=await Dialogs.EditCommand(owner,draft,library.Categories,target?.Profile); if(edited==null)return;
         var next=library with { Commands=library.Commands.Where(c=>c.Id!=edited.Id).Append(edited).ToArray(),Categories=library.Categories.Append(edited.Category).Distinct().ToArray() };
         await store.SaveLibraryAsync(next,lifetime.Token); library=next; section.SelectedIndex=1; RefreshList(); list.SelectedItem=list.Items.OfType<CommandMatch>().FirstOrDefault(m=>m.Command.Id==edited.Id);
+        ShowCommandDetails();
     }
     private async Task DuplicateAsync()
     {

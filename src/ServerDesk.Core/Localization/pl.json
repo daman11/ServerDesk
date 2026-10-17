@@ -1417,5 +1417,7 @@
   "Parametry serwera i pasek metryk. Korzysta z osobnego połączenia SSH.": "Parametry serwera i pasek metryk. Korzysta z osobnego połączenia SSH.",
   "Zmiany pluginów działają po zapisaniu, bez restartu. Wyłączenie zatrzymuje ich pracę i ukrywa akcje; ustawienia oraz własne komendy pozostają zachowane.": "Zmiany pluginów działają po zapisaniu, bez restartu. Wyłączenie zatrzymuje ich pracę i ukrywa akcje; ustawienia oraz własne komendy pozostają zachowane.",
   "Włącz plugin": "Włącz plugin",
+  "Lista komend": "Lista komend",
+  "Więcej informacji": "Więcej informacji",
   "Pluginy": "Pluginy"
 }

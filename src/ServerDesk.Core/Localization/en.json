@@ -1417,5 +1417,7 @@
   "Parametry serwera i pasek metryk. Korzysta z osobnego połączenia SSH.": "Server metrics and the status bar. Uses a separate SSH connection.",
   "Zmiany pluginów działają po zapisaniu, bez restartu. Wyłączenie zatrzymuje ich pracę i ukrywa akcje; ustawienia oraz własne komendy pozostają zachowane.": "Plugin changes apply after saving, without a restart. Disabling stops their work and hides their actions; settings and custom commands are preserved.",
   "Włącz plugin": "Enable plugin",
+  "Lista komend": "Command list",
+  "Więcej informacji": "More information",
   "Pluginy": "Plugins"
 }

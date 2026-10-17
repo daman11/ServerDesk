@@ -2,6 +2,7 @@
 
 ## Unreleased
 
+- Show descriptions and command templates on browsable cards; open full details and parameter forms on click/Enter, with Back/Escape navigation and retained filters.
 - Unify settings section headings and help text, give Plugins a distinct icon and compact built-in badges, and keep command headers readable in narrow panels.
 - Preserve icons and destination-language tooltips in restart confirmations, distinguish primary dialog actions, and add responsive HTTP result-tab icons. Keep empty result guidance within narrow split panels while retaining table scrolling.
 

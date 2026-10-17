@@ -67,7 +67,11 @@ public sealed partial class ProfileRepository
     }
     public async Task<List<ServerProfile>> ListAsync(CancellationToken ct = default)
     {
-        await using var db = await Open(ct); using var cmd = db.CreateCommand(); cmd.CommandText = "SELECT json FROM profiles";
+        await using var db=await Open(ct); return await ReadProfilesAsync(db,null,ct);
+    }
+    private static async Task<List<ServerProfile>> ReadProfilesAsync(SqliteConnection db,SqliteTransaction? transaction,CancellationToken ct)
+    {
+        using var cmd=db.CreateCommand(); cmd.Transaction=transaction; cmd.CommandText="SELECT json FROM profiles";
         await using var reader = await cmd.ExecuteReaderAsync(ct); var list = new List<ServerProfile>();
         while (await reader.ReadAsync(ct)) list.Add(JsonSerializer.Deserialize<ServerProfile>(reader.GetString(0))!);
         return list.OrderByDescending(x => x.Favorite).ThenBy(x => x.Folder).ThenBy(x => x.Name).ToList();
@@ -86,9 +90,10 @@ public sealed partial class ProfileRepository
     {
         ProfileFolder.Validate(path,allowEmpty:true);
         await using var db=await Open(ct); using var transaction=db.BeginTransaction(); using var cmd=db.CreateCommand(); cmd.Transaction=transaction;
-        if(path.Length>0)await AddAncestors(db,transaction,path,ct);
         cmd.CommandText="UPDATE profiles SET json=json_set(json,'$.Folder',$folder) WHERE id=$id";
-        cmd.Parameters.AddWithValue("$folder",path); cmd.Parameters.AddWithValue("$id",id.ToString()); await cmd.ExecuteNonQueryAsync(ct);
+        cmd.Parameters.AddWithValue("$folder",path); cmd.Parameters.AddWithValue("$id",id.ToString());
+        if(await cmd.ExecuteNonQueryAsync(ct)==0)throw new InvalidOperationException(L.T("Serwer już nie istnieje. Odśwież listę połączeń i spróbuj ponownie."));
+        if(path.Length>0)await AddAncestors(db,transaction,path,ct);
         await transaction.CommitAsync(ct);
     }
     public async Task AddFolderAsync(string path, CancellationToken ct = default)
@@ -104,27 +109,39 @@ public sealed partial class ProfileRepository
     }
     public async Task DeleteFolderAsync(string path,CancellationToken ct=default)
     {
-        var profiles=await ListAsync(ct); if(profiles.Any(x=>x.Folder==path || x.Folder.StartsWith(path+"/",StringComparison.Ordinal))) throw new InvalidOperationException(L.T("Folder zawiera serwery. Przenieś je przed usunięciem."));
-        var folders=(await FoldersAsync(ct)).Where(x=>x==path || x.StartsWith(path+"/",StringComparison.Ordinal)).ToArray();
-        await using var db=await Open(ct); await using var transaction=await db.BeginTransactionAsync(ct);
+        ProfileFolder.Validate(path);
+        await using var db=await Open(ct); using var transaction=db.BeginTransaction();
+        // Lock before inspecting contents, so another writer cannot add a profile
+        // between the empty-folder check and the recursive deletion.
+        var profiles=await ReadProfilesAsync(db,transaction,ct);
+        if(profiles.Any(x=>x.Folder==path || x.Folder.StartsWith(path+"/",StringComparison.Ordinal)))throw new InvalidOperationException(L.T("Folder zawiera serwery. Przenieś je przed usunięciem."));
+        var allFolders=await ReadFoldersAsync(db,transaction,ct);
+        var folders=allFolders.Where(x=>x==path || x.StartsWith(path+"/",StringComparison.Ordinal)).ToArray();
         foreach(var folder in folders) { using var cmd=db.CreateCommand(); cmd.Transaction=(SqliteTransaction)transaction; cmd.CommandText="DELETE FROM folder_icons WHERE path=$path; DELETE FROM folders WHERE path=$path"; cmd.Parameters.AddWithValue("$path",folder); await cmd.ExecuteNonQueryAsync(ct); } await transaction.CommitAsync(ct);
     }
     public async Task RenameFolderAsync(string path,string target,CancellationToken ct=default)
     {
         ProfileFolder.Validate(path); ProfileFolder.Validate(target);
         if(string.IsNullOrWhiteSpace(path) || string.IsNullOrWhiteSpace(target) || target.Split('/').Any(x=>string.IsNullOrWhiteSpace(x)||x is "." or "..") || target.StartsWith(path+"/",StringComparison.Ordinal)) throw new ArgumentException(L.T("Niepoprawny folder docelowy."));
-        var folders=await FoldersAsync(ct); if(!folders.Contains(path))throw new InvalidOperationException(L.T("Folder nie istnieje.")); if(folders.Contains(target))throw new InvalidOperationException(L.T("Folder docelowy już istnieje."));
-        var profiles=(await ListAsync(ct)).Where(x=>x.Folder==path || x.Folder.StartsWith(path+"/",StringComparison.Ordinal)).ToArray();
+        await using var db=await Open(ct); using var transaction=db.BeginTransaction();
+        var folders=await ReadFoldersAsync(db,transaction,ct); if(!folders.Contains(path))throw new InvalidOperationException(L.T("Folder nie istnieje."));
+        if(path==target) { await transaction.CommitAsync(ct); return; }
+        if(folders.Contains(target))throw new InvalidOperationException(L.T("Folder docelowy już istnieje."));
+        var profiles=(await ReadProfilesAsync(db,transaction,ct)).Where(x=>x.Folder==path || x.Folder.StartsWith(path+"/",StringComparison.Ordinal)).ToArray();
         foreach(var folder in folders.Where(x=>x==path || x.StartsWith(path+"/",StringComparison.Ordinal)))ProfileFolder.Validate(target+folder[path.Length..]);
-        await using var db=await Open(ct); await using var transaction=await db.BeginTransactionAsync(ct);
+        foreach(var profile in profiles)ProfileFolder.Validate(target+profile.Folder[path.Length..]);
         foreach(var folder in folders.Where(x=>x==path || x.StartsWith(path+"/",StringComparison.Ordinal)))
         { using var cmd=db.CreateCommand(); cmd.Transaction=(SqliteTransaction)transaction; cmd.CommandText="UPDATE folder_icons SET path=$target WHERE path=$old; UPDATE folders SET path=$target WHERE path=$old"; cmd.Parameters.AddWithValue("$target",target+folder[path.Length..]); cmd.Parameters.AddWithValue("$old",folder); await cmd.ExecuteNonQueryAsync(ct); }
-        foreach(var profile in profiles) { using var cmd=db.CreateCommand(); cmd.Transaction=(SqliteTransaction)transaction; cmd.CommandText="UPDATE profiles SET json=$json WHERE id=$id"; cmd.Parameters.AddWithValue("$id",profile.Id.ToString()); cmd.Parameters.AddWithValue("$json",JsonSerializer.Serialize(profile with { Folder=target+profile.Folder[path.Length..] })); await cmd.ExecuteNonQueryAsync(ct); }
+        foreach(var profile in profiles) { using var cmd=db.CreateCommand(); cmd.Transaction=transaction; cmd.CommandText="UPDATE profiles SET json=json_set(json,'$.Folder',$folder) WHERE id=$id"; cmd.Parameters.AddWithValue("$id",profile.Id.ToString()); cmd.Parameters.AddWithValue("$folder",target+profile.Folder[path.Length..]); await cmd.ExecuteNonQueryAsync(ct); }
         await AddAncestors(db,(SqliteTransaction)transaction,target,ct); await transaction.CommitAsync(ct);
     }
     public async Task<List<string>> FoldersAsync(CancellationToken ct = default)
     {
-        await using var db = await Open(ct); using var cmd = db.CreateCommand(); cmd.CommandText = "SELECT path FROM folders ORDER BY path";
+        await using var db=await Open(ct); return await ReadFoldersAsync(db,null,ct);
+    }
+    private static async Task<List<string>> ReadFoldersAsync(SqliteConnection db,SqliteTransaction? transaction,CancellationToken ct)
+    {
+        using var cmd=db.CreateCommand(); cmd.Transaction=transaction; cmd.CommandText="SELECT path FROM folders ORDER BY path";
         await using var r = await cmd.ExecuteReaderAsync(ct); var result = new List<string>(); while (await r.ReadAsync(ct)) result.Add(r.GetString(0)); return result;
     }
     public async Task ConnectedAsync(ServerProfile profile, CancellationToken ct = default)
@@ -183,7 +200,14 @@ public sealed partial class ProfileRepository
     }
     public async Task ExportAsync(Stream stream, CancellationToken ct = default)
     {
-        var bytes=JsonSerializer.SerializeToUtf8Bytes(new ConfigurationExport(2,await ListAsync(ct),await FoldersAsync(ct)) { FolderIcons=await FolderIconsAsync(ct) },Json);
+        ConfigurationExport data;
+        await using(var db=await Open(ct))
+        using(var snapshot=db.BeginTransaction(deferred:true))
+        {
+            data=new(2,await ReadProfilesAsync(db,snapshot,ct),await ReadFoldersAsync(db,snapshot,ct)) { FolderIcons=await ReadFolderIconsAsync(db,snapshot,ct) };
+            await snapshot.CommitAsync(ct);
+        }
+        var bytes=JsonSerializer.SerializeToUtf8Bytes(data,Json);
         if(bytes.Length>StreamLimits.ConfigurationBytes)throw new InvalidDataException(L.T("Eksport przekracza limit 32 MiB. Zmniejsz liczbę własnych grafik."));
         await stream.WriteAsync(bytes,ct);
     }

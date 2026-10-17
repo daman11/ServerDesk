@@ -2,6 +2,9 @@
 
 ## Unreleased
 
+- Reject stale profile moves before creating destination folders; preserve profile metadata and unknown JSON fields during folder renames, and accept unchanged names without writes.
+- Inspect folder contents under the same write transaction as deletion/rename; preserve competing edits and legacy implicit-parent deletion behavior.
+- Export profiles, folders and icons from one SQLite read snapshot; verify storage-error rollback/retry for configuration imports without replacing local folder icons.
 - Prepare configuration JSON before staging it next to the destination, then flush/close and replace the selected file; preserve previous exports on preparation/write/publication failure or cancellation. Add PL/EN failure guidance and require a filesystem path instead of truncating provider-only files.
 - Save profiles and nested folders in one SQLite transaction so a failed write preserves the previous profile and leaves no partial ancestor chain.
 - Move profiles together with any new destination folders in one transaction; retain the original destination and metadata on failure, and allow retry.

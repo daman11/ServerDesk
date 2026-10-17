@@ -1,5 +1,7 @@
 # Pierwotne MVP — wydanie 0.39.0
 
+Sześć kolejnych zadań roboczych po 0.39.0 obejmuje blokadę przenoszenia usuniętego wpisu, zachowanie metadanych przy zmianie nazwy, akceptację tej samej nazwy, transakcyjne sprawdzanie pustego folderu, spójny odczyt eksportu i próby rollback/retry importu po błędach zapisu. Windows: 56 celowanych testów oraz dwa scenariusze UI w PL/EN. [Zakres i granice](reports/configuration-consistency-2026-10-17.md); nie zamyka to pełnej macierzy 1.0.
+
 Kolejny krok roboczy po 0.39.0 zabezpiecza eksport konfiguracji: gotowy JSON jest zapisywany do pliku tymczasowego, a dopiero po zamknięciu zastępuje wybrany plik. Błąd lub anulowanie nie opróżnia poprzedniego eksportu; komunikaty i ponowienie sprawdzono w PL/EN. [Testy i ograniczenia](reports/configuration-export-2026-10-17.md).
 
 Trzy kolejne poprawki robocze po 0.39.0 zapewniają atomowy zapis profilu i folderów, przenoszenie do nowego folderu oraz rekurencyjną zmianę nazwy drzewa wraz z ikonami i przypisaniami. Kontrolowane błędy SQLite sprawdzają zachowanie starego stanu i udane ponowienie. [Zakres testów](reports/profile-atomicity-2026-10-17.md); szersze próby braku miejsca i awarii procesu pozostają otwarte.

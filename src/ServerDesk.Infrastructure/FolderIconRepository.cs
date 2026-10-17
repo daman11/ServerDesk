@@ -7,7 +7,11 @@ public sealed partial class ProfileRepository
 {
     public async Task<Dictionary<string,string>> FolderIconsAsync(CancellationToken ct=default)
     {
-        await using var db=await Open(ct); using var cmd=db.CreateCommand();
+        await using var db=await Open(ct); return await ReadFolderIconsAsync(db,null,ct);
+    }
+    private static async Task<Dictionary<string,string>> ReadFolderIconsAsync(SqliteConnection db,SqliteTransaction? transaction,CancellationToken ct)
+    {
+        using var cmd=db.CreateCommand(); cmd.Transaction=transaction;
         cmd.CommandText="SELECT path,icon FROM folder_icons";
         await using var reader=await cmd.ExecuteReaderAsync(ct); var result=new Dictionary<string,string>(StringComparer.Ordinal);
         while(await reader.ReadAsync(ct))result.Add(reader.GetString(0),reader.GetString(1));

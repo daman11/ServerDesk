@@ -15,6 +15,9 @@ Małe kroki kończą się commitem, celowanymi sprawdzeniami i EXE do uruchomien
 - [x] Przenoszenie profilu razem z tworzeniem folderu docelowego w jednej transakcji; brak częściowo utworzonego drzewa po błędzie.
 - [x] Rekurencyjna zmiana nazwy folderu obejmuje także brakujących rodziców celu, ikony i przypisania profili w jednej transakcji. [Testy trzech poprawek i granice](reports/profile-atomicity-2026-10-17.md).
 - [x] Eksport konfiguracji do pliku nie opróżnia poprzedniego JSON-a przed zapisem; kontrolowane błędy, anulowanie i blokada pliku zachowują poprzednie dane, a ponowienie działa. [Zakres testów i ograniczenia](reports/configuration-export-2026-10-17.md).
+- [x] Przenoszenie usuniętego wpisu nie tworzy folderów; niezmieniona nazwa jest akceptowana, a zmiana nazwy nie gubi dodatkowych pól profilu ani konkurującej edycji.
+- [x] Sprawdzenie zawartości folderu i usuwanie współdzielą transakcję; próba z konkurującym zapisem chroni nowy profil, a starsze niejawne foldery nadrzędne zachowują obsługę.
+- [x] Eksport czyta profile/foldery/ikony z jednego obrazu bazy; błędy zapisu importu wycofują całość i pozwalają na retry bez zmiany lokalnych ikon. [Sześć zadań, dowody i ograniczenia](reports/configuration-consistency-2026-10-17.md).
 - [ ] Szersze testy przerwanego zapisu, braku miejsca, blokad i aktualizacji historycznych zestawów danych.
 - [ ] Dalsza weryfikacja zgodności bazy z osobnym magazynem poświadczeń, komend i kolekcji; kopia bazy nie jest pełnym backupem tych danych.
 

@@ -67,6 +67,8 @@ Close sessions and quit ServerDesk. Back up the whole data directory while the a
 
 Development after 0.39.0: **Menu → Export configuration** writes prepared JSON to a temporary file beside the destination, then replaces the selected file when complete. Errors or cancellation preserve the previous export. Check free space, permissions and file locks before retrying. Select a file with a filesystem path; provider-only files are rejected without truncation. A process crash may leave a `.part` file, which is not a completed export. [Verification scope](reports/configuration-export-2026-10-17.md).
 
+Further development after 0.39.0 reads servers, folders and icons from one database snapshot for export. Confirming an unchanged folder name succeeds without modifying it. Moving a server already deleted in another view shows a message instead of creating folders; refresh the connection list and use the current entry. [Six configuration stability tasks](reports/configuration-consistency-2026-10-17.md).
+
 Run Windows Setup over the existing installation in the same directory. Extract ZIP/TAR updates into a **new directory**, without mixing versions. Update a DEB using `apt install ./new-package.deb`. Application files are separate from user data. Do not open a database changed by a newer version with an older version; restore a backup into a separate data directory instead.
 
 Uninstall Windows through Settings → Apps; remove a DEB with `sudo apt remove serverdesk`. Delete the extracted directory for ZIP/TAR. User data and remembered passwords are preserved; see [privacy.md](privacy.md) for deletion.

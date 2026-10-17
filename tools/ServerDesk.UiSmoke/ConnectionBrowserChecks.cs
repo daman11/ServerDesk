@@ -4,6 +4,8 @@ using System.Text.Json;
 using Avalonia.Controls;
 using Avalonia.Headless;
 using Avalonia.Input;
+using Avalonia.Interactivity;
+using Avalonia.VisualTree;
 using ServerDesk.App;
 using ServerDesk.Core;
 using ServerDesk.Infrastructure;
@@ -80,6 +82,24 @@ internal static class ConnectionBrowserChecks
                 if(!saved.Contains("Rack2") || saved.Contains("Rack10"))throw new Exception("Closing persisted temporary search expansion");
                 vm=new MainViewModel(repo); main=new MainWindow(vm,repo,new CredentialStore(paths),new SshConnectionFactory(repo),new ExternalRdpClient()); main.Show(); RedesignChecks.Frames(20); tree=Field<TreeView>(main,"tree");
                 if(Folder("Rack2").IsExpanded || !Folder("Rack10").IsExpanded || vm.SortMode!=ProfileSort.Name || !vm.SortDescending)throw new Exception("Restart lost collapse states or sort order");
+                tree.SelectedItem=Folder("Rack2/Lab"); RedesignChecks.Frames();
+                var renaming=main.Safe(()=>Call(main,"RenameFolderAsync")); RedesignChecks.Frames(); var prompt=main.OwnedWindows.Single();
+                if(prompt.GetVisualDescendants().OfType<TextBox>().Single().Text!="Rack2/Lab")throw new Exception("Rename prompt did not retain current folder");
+                prompt.GetVisualDescendants().OfType<Button>().Single(b=>b.Tag as string=="OK").RaiseEvent(new RoutedEventArgs(Button.ClickEvent)); RedesignChecks.Wait(renaming); RedesignChecks.Frames();
+                if(main.OwnedWindows.Any() || !repo.FoldersAsync().GetAwaiter().GetResult().Contains("Rack2/Lab"))throw new Exception("Unchanged folder name produced an error or removed the folder");
+                tree.SelectedItem=Profile(first.Id); RedesignChecks.Frames(); RedesignChecks.Wait(repo.DeleteAsync(first.Id));
+                var moving=main.Safe(()=>Call(main,"MoveAsync")); RedesignChecks.Frames(); prompt=main.OwnedWindows.Single();
+                prompt.GetVisualDescendants().OfType<TextBox>().Single().Text="Ghost/Deep";
+                prompt.GetVisualDescendants().OfType<Button>().Single(b=>b.Tag as string=="OK").RaiseEvent(new RoutedEventArgs(Button.ClickEvent));
+                Until(()=>main.OwnedWindows.Any(w=>w.Title==AppText.T("ServerDesk — błąd"))); var error=main.OwnedWindows.Single();
+                var expected=AppText.T("Serwer już nie istnieje. Odśwież listę połączeń i spróbuj ponownie.");
+                if(vm.Status!=expected || !error.GetVisualDescendants().OfType<TextBlock>().Any(t=>t.Text==expected))throw new Exception("Stale move feedback is not localized");
+                error.CaptureRenderedFrame()!.Save(Path.Combine(root,$"stale-move-{language}.png"));
+                error.GetVisualDescendants().OfType<Button>().Single(b=>b.Tag as string=="Zamknij").RaiseEvent(new RoutedEventArgs(Button.ClickEvent)); RedesignChecks.Wait(moving);
+                if(repo.FoldersAsync().GetAwaiter().GetResult().Any(f=>f=="Ghost" || f.StartsWith("Ghost/",StringComparison.Ordinal)))throw new Exception("Stale UI move created phantom folders");
+                RedesignChecks.Wait(vm.LoadAsync()); RedesignChecks.Frames();
+                if(Nodes(tree.Items).Any(n=>n.Tag is ServerProfile p && p.Id==first.Id))throw new Exception("Refresh did not remove deleted profile");
+                Console.WriteLine("PASS "+language+": unchanged-name rename through production prompt; stale profile move through production prompt/error/reload preserves folders");
                 Console.WriteLine("PASS "+language+": empty folders stay accessible; repeated deferred folder menus retain four localized actions/icons; folder selection survives sort/reload; search/protocol/favorites clear hidden profiles; immediate Enter cannot open hidden connection; search expansion stays temporary; restart preserves collapse states and sort; 900px font16 Graphite/Light");
             }
             finally { main.Close(); Until(()=>!main.IsVisible); }

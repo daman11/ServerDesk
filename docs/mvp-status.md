@@ -1,5 +1,7 @@
 # Pierwotne MVP — wydanie 0.40.0
 
+Krok roboczy po 0.40.0: ograniczenie ponownego dekodowania własnych grafik podczas zmiany metadanych profilu oraz bezpieczny fallback dla uszkodzonych/starszych danych. Test obejmuje 96 różnych podglądów, edytor i zwalnianie bitmap; nie oznacza pełnej akceptacji dużych drzew ani długich sesji. [Zakres i granice](reports/profile-artwork-2026-10-17.md). Ostatnim zamrożonym wydaniem pozostaje 0.40.0.
+
 0.40.0: **Ustawienia → Bezpieczeństwo → Zapisane kopie bazy → Sprawdź kopię** wykonuje kontrolę SQLite i zgodności schematu wybranego pliku. Bez przywracania danych, migracji, zapisu do kopii ani sprawdzania sekretów. [Obsługa](database-backups.md), [celowane testy i granice](reports/backup-verification-2026-10-17.md).
 
 0.40.0: stabilizacja Start/Stop/Restart i zamykania kart Network Tools, w tym automatycznych obliczeń podsieci, opóźnionego odczytu kolekcji i okien zapisu. [Zakres celowanych prób](reports/network-cancellation-2026-10-17.md). Wydanie obejmuje też [personalizację interfejsu i kart](reports/customization-2026-10-17.md). [Weryfikacja wydania i ograniczenia](reports/release-verification-0.40.0.md).

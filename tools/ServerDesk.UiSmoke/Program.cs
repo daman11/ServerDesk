@@ -34,6 +34,7 @@ AppBuilder.Configure<App>().UseHeadless(new AvaloniaHeadlessPlatformOptions { Us
 if(args.Contains("--brand-assets")) { BrandAssets.Generate(root); return; }
 if(args.Contains("--ssh-acceptance")) { SshAcceptanceChecks.Run(root,args[1]); return; }
 if(args.Contains("--large-browser")) { LargeBrowserChecks.Run(root,args.Contains("--measure-only")); return; }
+if(args.Contains("--profile-artwork")) { ProfileArtworkChecks.Run(root); return; }
 if(args.Contains("--platform-ux")) { PlatformUxChecks.Run(root); return; }
 if(args.Contains("--plugins")) { PluginChecks.Run(root); return; }
 if(args.Contains("--plugins-network")) { PluginChecks.Network(root,args[1],args[2]); return; }

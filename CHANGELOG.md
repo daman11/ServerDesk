@@ -2,6 +2,8 @@
 
 ## Unreleased
 
+- Reuse each visible profile's unchanged artwork during metadata edits instead of validating/decoding it again. Decode Base64 once when artwork changes, release owned bitmaps on detach, retain valid artwork despite a malformed legacy color, and render a safe protocol icon for null/corrupt/oversized legacy artwork.
+
 ## 0.40.0 — Public Beta — 2026-10-17
 
 - Add live interface font selection, control corner radius, menu/connection row spacing, server addresses and independent tab icon/close-button visibility. Preserve defaults for older preferences and support search, cancel, save and reset in PL/EN.

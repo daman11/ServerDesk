@@ -1,0 +1,11 @@
+# Własne grafiki: ponowne użycie i zwalnianie bitmap
+
+Mały krok MVP po 0.40.0. Bez podnoszenia wersji, migracji, nowych zależności i pakowania releasu. Zamrożone paczki 0.40.0 pozostają bez zmian.
+
+`ProfileVisual` zachowuje własną bitmapę, gdy zmieniają się tylko metadane profilu. Wcześniej zmiana nazwy/koloru/protokołu odłączała, zwalniała i ponownie walidowała/dekodowała tę samą grafikę. Nowa grafika nadal przechodzi ograniczenie wielkości oraz pełną kontrolę PNG; Base64 jest dekodowane raz zamiast dwukrotnie. Podmiana, usunięcie i odłączenie widoku zwalniają poprzednią bitmapę. Nie ma wspólnego, rosnącego cache obrazów; każdy widok ma niezależnego właściciela bitmapy.
+
+Nieprawidłowy kolor starszego rekordu nie blokuje poprawnej grafiki. Puste/null, niepoprawne Base64, PNG z uszkodzonym CRC i dane ponad limit dają ikonę wektorową/protokołu bez wyjątku UI. Zmiana protokołu aktualizuje fallback także przy tej samej błędnej grafice. To ochrona odczytu widoku; walidacja przy zapisie/importowaniu profilu pozostaje bez zmian.
+
+Celowany harness `--profile-artwork` sprawdza PL/EN: 96 różnych PNG i 2880 zmian metadanych bez zastępowania bitmap, dwa niezależne widoki tego samego PNG, podmianę/usuwanie, odłączenie/powrót, błędne dane i powrót poprawnego obrazu. W rzeczywistym edytorze sprawdza podgląd koloru, wybór/usunięcie grafiki i Anuluj. Po usunięciu kontrolek i zamknięciu okien źródła obrazów są puste, a śledzone bitmapy nie pozostają osiągalne po GC. Próba zapisuje czas oraz przydziały na wątku UI, bez wliczania przygotowania/renderowania, bez deklarowania RSS/native-memory ani procentowego przyspieszenia względem innego buildu.
+
+Wynik: nowy celowany scenariusz przeszedł na Windows i Ubuntu/WSL w obu językach. Istniejący `--docking-regression` przeszedł na Windows, obejmując normalizację PNG/JPEG/WebP, zapis personalizacji, podział, odpinanie/powrót i zachowanie układu. Buildy harnessu bez ostrzeżeń/błędów; kontrola repozytorium obejmuje 651 plików. Nie uruchamiano pełnej macierzy jednostkowej/UI ani pakowania releasu. Dowody: `artifacts/reports/profile-artwork-2026-10-17/` — logi, cztery pomiary JSON i dwa wybrane zrzuty. Ten etap nie zastępuje bardzo dużych drzew, fizycznych gestów, mieszanych DPI i wielogodzinnego soak.

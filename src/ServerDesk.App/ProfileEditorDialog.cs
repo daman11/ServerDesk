@@ -13,7 +13,7 @@ namespace ServerDesk.App;
 
 internal static class ProfileEditorDialog
 {
-    internal static async Task<ServerProfile?> Show(Window owner,ServerProfile? profile,IEnumerable<string> folders)
+    internal static async Task<ServerProfile?> Show(Window owner,ServerProfile? profile,IEnumerable<string> folders,IEnumerable<string>? knownTags=null,IReadOnlyDictionary<string,string>? tagColors=null)
     {
         var original=profile??new ServerProfile();
         var fresh=string.IsNullOrEmpty(original.Name) && string.IsNullOrEmpty(original.Host);
@@ -122,7 +122,7 @@ internal static class ProfileEditorDialog
         var folderMenu=new ContextMenu { ItemsSource=new[]{""}.Concat(folders.Where(f=>f is not ("Wszystkie" or "★ Ulubione" or "◷ Ostatnie") && f.Length>0).Distinct().Order(StringComparer.CurrentCultureIgnoreCase)).Select(path=> { var item=new MenuItem { Header=path.Length==0?L.T("Bez folderu"):path,Icon=DeskIcons.Create("folder",16) }; item.Click+=(_,_)=>folder.Text=path; return item; }).ToArray() };
         folderChoice.ContextMenu=folderMenu; folderChoice.Click+=(_,_)=>folderMenu.Open(folderChoice); folder.InnerRightContent=folderChoice;
         group.Children.Add(Field("Folder / podfolder",folder,2,"Użyj /, aby utworzyć podfolder. Puste pole oznacza listę główną."));
-        var tags=new TextBox { Text=original.Tags,PlaceholderText=L.T("np. produkcja, linux, baza"),Name="ProfileTags" }; group.Children.Add(Field("Tagi",tags,2));
+        var tagEditor=new ConnectionTagsEditor(original.Tags,knownTags??[],tagColors??new Dictionary<string,string>(StringComparer.OrdinalIgnoreCase)); var tags=tagEditor.Input; group.Children.Add(Field("Tagi",tagEditor,2));
         var description=new TextBox { Text=original.Description,AcceptsReturn=true,TextWrapping=TextWrapping.Wrap,MinHeight=90,MaxHeight=150,Name="ProfileDescription" }; group.Children.Add(Field("Opis",description,2));
         var favorite=new CheckBox { Content=L.T("Ulubiony"),IsChecked=original.Favorite }; group.Children.Add(favorite);
 
@@ -210,7 +210,7 @@ internal static class ProfileEditorDialog
                 if(redirect.IsChecked==true && string.IsNullOrWhiteSpace(localFolder.Text))Error(localFolder,L.T("Wskaż folder do przekazania."));
                 options=options with { Width=w,Height=h,DisplayMode=(RdpDisplayMode)rdpMode.SelectedIndex,KeyboardMode=(RdpKeyboardMode)keyboard.SelectedIndex,Fullscreen=fullscreen.IsChecked==true,Clipboard=clipboard.IsChecked==true,DynamicResolution=dynamic.IsChecked==true,AutoReconnect=reconnect.IsChecked==true,RedirectLocalFolder=redirect.IsChecked==true,LocalFolder=localFolder.Text??"" };
             }
-            var result=original with { Name=(name.Text??"").Trim(),Host=hostname,Port=number,Protocol=selected,Username=username,Domain=domain.Text?.Trim()??"",Authentication=(Authentication)auth.SelectedItem!,PrivateKeyPath=(key.Text??"").Trim(),Folder=path,Tags=tags.Text??"",Description=description.Text??"",Favorite=favorite.IsChecked==true,IconId=iconPicker.SelectedId,Color=appearance.SelectedColor,CustomIconPng=appearance.CustomIconPng,Rdp=options,Serial=serialOptions,Vnc=original.Vnc with { Authentication=(VncAuthentication)vncAuth.SelectedIndex,Shared=vncShared.IsChecked==true,ViewOnly=vncViewOnly.IsChecked==true,FitToWindow=vncFit.IsChecked==true } };
+            var result=original with { Name=(name.Text??"").Trim(),Host=hostname,Port=number,Protocol=selected,Username=username,Domain=domain.Text?.Trim()??"",Authentication=(Authentication)auth.SelectedItem!,PrivateKeyPath=(key.Text??"").Trim(),Folder=path,Tags=ProfileTags.Format(ProfileTags.Parse(tags.Text)),Description=description.Text??"",Favorite=favorite.IsChecked==true,IconId=iconPicker.SelectedId,Color=appearance.SelectedColor,CustomIconPng=appearance.CustomIconPng,Rdp=options,Serial=serialOptions,Vnc=original.Vnc with { Authentication=(VncAuthentication)vncAuth.SelectedIndex,Shared=vncShared.IsChecked==true,ViewOnly=vncViewOnly.IsChecked==true,FitToWindow=vncFit.IsChecked==true } };
             string? general=null;
             if(errors.Count==0) { try { result.Validate(); } catch(ArgumentException e) { general=e.Message; } }
             foreach(var (control,field) in fields) { var invalid=errors.TryGetValue(control,out var message); control.Classes.Set("error",invalid); field.Error.Text=message??""; field.Error.IsVisible=invalid; }

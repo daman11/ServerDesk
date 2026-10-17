@@ -17,12 +17,13 @@ public sealed partial class MainWindow
     private readonly DeskIcon browserEmptyIcon=DeskIcons.Create("connections",26,"ForegroundSecondary");
     private TextBox? connectionSearch;
     private Button clearBrowserFilters=null!,emptyBrowserAction=null!;
-    private bool HasBrowserFilter=>!string.IsNullOrWhiteSpace(vm.Search) || vm.ProtocolFilter!=null;
+    private bool HasTagFilter=>vm.SelectedTags.Length>0 || vm.TagMode==TagFilterMode.Untagged;
+    private bool HasBrowserFilter=>!string.IsNullOrWhiteSpace(vm.Search) || vm.ProtocolFilter!=null || HasTagFilter;
     // Check the live filter too: Enter can arrive before the queued tree rebuild.
     private bool IsBrowserProfileVisible(ServerProfile profile)=>
-        ProfileSearch.Matches(profile,vm.Search) && (vm.ProtocolFilter==null || profile.Protocol==vm.ProtocolFilter) &&
+        vm.CompileBrowserFilter()(profile) &&
         (section=="connections" || section=="favorite" && profile.Favorite || section=="recent" && profile.LastConnected!=null);
-    private void ClearBrowserFilters() { vm.Search=""; vm.ProtocolFilter=null; QueueTree(); connectionSearch?.Focus(); }
+    private void ClearBrowserFilters() { vm.Search=""; vm.ProtocolFilter=null; vm.SelectedTags=[]; vm.TagMode=TagFilterMode.Any; QueueTree(); connectionSearch?.Focus(); }
     private static ContextMenu DeferredBrowserMenu(Func<MenuItem[]> items)
     {
         var menu=new ContextMenu(); var populated=false;
@@ -45,6 +46,7 @@ public sealed partial class MainWindow
         }
         var filterSurface=new Border { Child=choices,Padding=new Thickness(3),CornerRadius=new CornerRadius(6),BorderThickness=new Thickness(1) };
         DesignSystem.Resource(filterSurface,Border.BackgroundProperty,"BackgroundPrimary"); DesignSystem.Resource(filterSurface,Border.BorderBrushProperty,"BorderDefault"); body.Children.Add(filterSurface);
+        BuildTagFilters(body);
         var stats=new Grid { ColumnDefinitions=new ColumnDefinitions("*,Auto"),ColumnSpacing=8 }; browserCount.Name="ConnectionResultCount"; browserCount.TextTrimming=TextTrimming.CharacterEllipsis; stats.Children.Add(browserCount);
         clearBrowserFilters=DeskIcons.Button("close","Wyczyść filtry",ClearBrowserFilters,24); clearBrowserFilters.Classes.Add("chrome"); Grid.SetColumn(clearBrowserFilters,1); stats.Children.Add(clearBrowserFilters); body.Children.Add(stats);
         clearBrowserFilters.Name="ClearConnectionFilters"; clearBrowserFilters.Width=double.NaN; clearBrowserFilters.Padding=new Thickness(6,2); clearBrowserFilters.Content=DeskIcons.Labelled("close",L.T("Wyczyść"),14);
@@ -65,6 +67,7 @@ public sealed partial class MainWindow
         browserCount.Text=L.F($"Widoczne: {count} / {vm.AllServers.Count}");
         ToolTip.SetTip(browserCount,browserCount.Text);
         clearBrowserFilters.IsVisible=HasBrowserFilter;
+        UpdateTagFilters();
         browserEmpty.IsVisible=(section is "connections" or "favorite" or "recent") && count==0 && tree.Items.Count==0;
         browserEmptyTitle.Text=HasBrowserFilter?L.T("Brak wyników"):section=="favorite"?L.T("Brak ulubionych"):section=="recent"?L.T("Brak ostatnich połączeń"):L.T("Dodaj pierwszy serwer");
         browserEmptyHint.Text=HasBrowserFilter?L.T("Zmień zapytanie lub wyczyść filtry."):section=="favorite"?L.T("Oznacz serwer gwiazdką w jego menu."):section=="recent"?L.T("Tutaj pojawią się potwierdzone połączenia SSH, RDP, VNC i Serial."):L.T("Zapisz połączenie SSH, RDP, VNC lub Serial.");

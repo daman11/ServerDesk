@@ -1,6 +1,6 @@
 # ServerDesk
 
-Natywny klient administracyjny C# / .NET 10 / Avalonia 12 dla Windows i Linux. Wersja 0.40.0 Public Beta; [status MVP](mvp-status.md), [ograniczenia](known-issues.md) i [zmiany tego wydania](releases/release-0.40.0.md).
+Natywny klient administracyjny C# / .NET 10 / Avalonia 12 dla Windows i Linux. Wersja 0.41.0 Public Beta; [status MVP](mvp-status.md), [ograniczenia](known-issues.md) i [zmiany tego wydania](releases/release-0.41.0.md). Instrukcja opisuje także zmiany w bieżącej wersji deweloperskiej.
 
 ## Uruchomienie
 
@@ -51,6 +51,16 @@ Język / Language: **Ustawienia → Wygląd → Język aplikacji / Language**. P
 
 - VNC: wybierz protokół VNC i adres/port (domyślnie 5900). Pulpit działa w zakładce, obsługuje mysz/klawiaturę, dopasowanie, rozmiar rzeczywisty, podgląd, Ctrl+Alt+Del i dokowanie. Ctrl+Alt+← / → oddaje fokus do aplikacji. Profil jawnie wybiera hasło VNC lub brak uwierzytelniania. Standardowy VNC nie szyfruje transmisji; TLS/VeNCrypt, konta systemowe, schowek i transfery VNC nie są obsługiwane. Użyj zaufanej sieci/VPN/istniejącego tunelu. Szybkie połączenie: `vnc://host:5900`. Szczegóły i ograniczenia biblioteki alpha: `docs/releases/release-0.18.0.md`.
 - Serial: wybierz port COM lub urządzenie Linux, prędkość, bity danych/stopu, parzystość i sterowanie przepływem. Port można wykryć przyciskiem lub wpisać ręcznie. DTR i RTS są domyślnie wyłączone. Połącz otwiera urządzenie w terminalu; Rozłącz zwalnia port. Na Linux wymagane są uprawnienia do danego urządzenia. Szybkie połączenie: `serial://COM3?baud=9600` albo `serial:///dev/ttyUSB0?baud=115200`.
+
+## Tagi połączeń
+
+W edytorze połączenia otwórz **Organizacja → Tagi**. Oddziel etykiety przecinkiem lub średnikiem; nazwa może zawierać spacje. Kliknięcie istniejącego tagu dodaje go do profilu, a × usuwa przypisanie. Zapis usuwa powtórzenia bez rozróżniania wielkości liter. Anuluj pozostawia profil bez zmian.
+
+Kolorowe etykiety są widoczne pod nazwami serwerów. Długie nazwy są skracane, a podpowiedź pokazuje pełną listę. **Tagi i kolory** w panelu połączeń otwiera wyszukiwarkę tagów, liczniki przypisanych połączeń i paletę kolorów. Kolor jest wspólny dla danego tagu we wszystkich profilach. **Kolor automatyczny** przywraca stały kolor wyliczany z nazwy. Zmiany kolorów zapisuje **Zastosuj**; **Anuluj** odrzuca szkic.
+
+Filtr obsługuje **Dowolny z wybranych tagów**, **Wszystkie wybrane tagi** i **Bez tagów**. Dopasowanie dotyczy całej nazwy, bez rozróżniania wielkości liter: `prod` nie oznacza `production`. Warunki tagów, protokołu, wyszukiwanego tekstu oraz widoku Ulubione/Ostatnie działają jednocześnie. Aktywne etykiety można usuwać osobno; **Wyczyść** resetuje wszystkie filtry. Filtr jest tymczasowy i nie zmienia zapisanego zwinięcia folderów ani przypisań tagów.
+
+Tagi nadal korzystają z dotychczasowego pola w profilu. Kolory zapisujemy w ustawieniach bazy, bez migracji schematu. Eksport JSON zawiera kolory; import starszego eksportu działa bez nich. Przy łączeniu konfiguracji pierwszeństwo mają wcześniej wybrane lokalne kolory. Filtry pozostają ustawieniem bieżącego okna. [Zakres weryfikacji](reports/connection-tags-2026-10-17.md).
 
 ## Narzędzia sieciowe
 

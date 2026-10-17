@@ -20,7 +20,8 @@ internal static partial class DeskIcons
         ["font-increase"]="M3,18 L8,5 L13,18 M5,13 H11 M16,10 H22 M19,7 V13",
         ["font-decrease"]="M3,18 L8,5 L13,18 M5,13 H11 M16,10 H22",
         ["action-run"]="M8,5 L19,12 L8,19 Z",
-        ["action-stop"]="M5,5 H19 V19 H5 Z"
+        ["action-stop"]="M5,5 H19 V19 H5 Z",
+        ["tags"]="M3,3 H11 L21,13 L13,21 L3,11 Z M7,6 A1,1 0 1 1 7,8 A1,1 0 1 1 7,6"
     };
 
     internal static MenuItem ActionMenu(string label,string? glyph=null,string? shortcut=null)
@@ -61,6 +62,7 @@ internal static partial class DeskIcons
         "Terminal" or "Komendy" or "Paleta akcji" or "Paleta poleceń" or "Konsola RDP"=>"square-terminal",
         "Narzędzia sieciowe" or "Network Tools" or "Sprawdź serwer"=>"network",
         "Otwarte sesje" or "Pokaż wszystkie ustawienia"=>"search",
+        "Tagi i kolory"=>"tags",
         "Przenieś do folderu" or "Przenieś do katalogu"=>"folder-input",
         "SFTP" or "Zmień ikonę folderu" or "Domyślna ikona" or "Kategorie komend"=>"folder",
         "Monitoring" or "Server Info"=>"chart-no-axes-combined",
@@ -69,7 +71,8 @@ internal static partial class DeskIcons
         "Pobierz" or "Import konfiguracji" or "Import komend JSON"=>"download",
         "Anuluj" or "Zamknij" or "Anuluj transfery" or "Anuluj łączenie" or "Zamknij sesję"=>"close",
         "Zapisz" or "Zapisz kolekcję" or "Zapisz OID" or "Zapisz urządzenie WoL"=>"save",
-        "Potwierdź" or "OK"=>"check",
+        "Potwierdź" or "OK" or "Zastosuj"=>"check",
+        "Wyczyść wybór"=>"close",
         "Nowe połączenie" or "Nowy serwer" or "Nowy serwer w folderze" or "Nowe połączenie w folderze" or "Nowa komenda" or "Dodaj parametr"=>"plus",
         "Edytuj" or "Edytuj plik" or "Pobierz i edytuj" or "Zmień nazwę" or "Zmień nazwę folderu" or "Zmień nazwę / przenieś"=>"edit",
         "Duplikuj" or "Kopiuj" or "Kopiuj wyniki" or "Kopiuj odcisk" or "Kopiuj zawartość dowiązania…" or "Kopiuj zaznaczenie"=>"copy",

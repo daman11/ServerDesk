@@ -11,6 +11,17 @@ public sealed partial class MainViewModel(ProfileRepository repository) : Observ
     private List<ServerProfile> all = [];
     internal IReadOnlyList<ServerProfile> AllServers => all;
     internal IReadOnlyDictionary<string,string> FolderIcons { get; private set; }=new Dictionary<string,string>();
+    internal IReadOnlyDictionary<string,string> TagColors { get; private set; }=new Dictionary<string,string>(StringComparer.OrdinalIgnoreCase);
+    internal void UpdateTagColors(IReadOnlyDictionary<string,string> colors)=>TagColors=ProfileTags.ValidateColors(colors);
+    [ObservableProperty] private string[] selectedTags=[];
+    [ObservableProperty] private TagFilterMode tagMode;
+    partial void OnSelectedTagsChanged(string[] value)=>Filter();
+    partial void OnTagModeChanged(TagFilterMode value)=>Filter();
+    internal Func<ServerProfile,bool> CompileBrowserFilter()
+    {
+        var searchMatches=ProfileSearch.Compile(Search); var tagsMatch=ProfileTags.CompileFilter(SelectedTags,TagMode); var protocol=ProtocolFilter;
+        return profile=>searchMatches(profile) && tagsMatch(profile) && (protocol==null || profile.Protocol==protocol);
+    }
     [ObservableProperty] private ProfileSort sortMode=ProfileSort.Name;
     [ObservableProperty] private bool sortDescending;
     [ObservableProperty] private Protocol? protocolFilter;
@@ -26,15 +37,14 @@ public sealed partial class MainViewModel(ProfileRepository repository) : Observ
     public async Task LoadAsync()
     {
         var folderSelection=SelectedFolder??"Wszystkie";
-        await repository.InitializeAsync(); all=await repository.ListAsync(); FolderIcons=await repository.FolderIconsAsync(); var folders=await repository.FoldersAsync(); Folders.Clear(); Folders.Add("Wszystkie"); Folders.Add("★ Ulubione"); Folders.Add("◷ Ostatnie"); foreach(var folder in folders) Folders.Add(folder);
+        await repository.InitializeAsync(); all=await repository.ListAsync(); FolderIcons=await repository.FolderIconsAsync(); TagColors=await repository.TagColorsAsync(); var folders=await repository.FoldersAsync(); Folders.Clear(); Folders.Add("Wszystkie"); Folders.Add("★ Ulubione"); Folders.Add("◷ Ostatnie"); foreach(var folder in folders) Folders.Add(folder);
         SelectedFolder=""; SelectedFolder=Folders.Contains(folderSelection)?folderSelection:"Wszystkie";
         if(SelectedServer is {} selected)SelectedServer=all.FirstOrDefault(p=>p.Id==selected.Id);
         Filter();
     }
     private void Filter()
     {
-        var matches=ProfileSearch.Compile(Search);
-        var query=all.Where(x=>matches(x) && (ProtocolFilter==null || x.Protocol==ProtocolFilter));
+        var query=all.Where(CompileBrowserFilter());
         if (SelectedFolder == "★ Ulubione") query=query.Where(x=>x.Favorite);
         else if (SelectedFolder == "◷ Ostatnie") query=query.Where(x=>x.LastConnected!=null);
         else if (!string.IsNullOrEmpty(SelectedFolder) && SelectedFolder != "Wszystkie") query=query.Where(x=>x.Folder==SelectedFolder || x.Folder.StartsWith(SelectedFolder+"/",StringComparison.Ordinal));

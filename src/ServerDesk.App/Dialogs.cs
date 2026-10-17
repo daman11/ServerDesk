@@ -63,5 +63,5 @@ internal static partial class Dialogs
         using var cancelled=ct.Register(()=>Avalonia.Threading.Dispatcher.UIThread.Post(()=>dialog.Close()));
         return await dialog.ShowDialog<string?>(owner);
     }
-    public static Task<ServerProfile?> Edit(Window owner,ServerProfile? profile,IEnumerable<string> folders) => ProfileEditorDialog.Show(owner,profile,folders);
+    public static Task<ServerProfile?> Edit(Window owner,ServerProfile? profile,IEnumerable<string> folders,IEnumerable<string>? knownTags=null,IReadOnlyDictionary<string,string>? tagColors=null) => ProfileEditorDialog.Show(owner,profile,folders,knownTags,tagColors);
 }

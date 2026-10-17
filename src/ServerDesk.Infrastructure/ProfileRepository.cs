@@ -204,7 +204,7 @@ public sealed partial class ProfileRepository
         await using(var db=await Open(ct))
         using(var snapshot=db.BeginTransaction(deferred:true))
         {
-            data=new(2,await ReadProfilesAsync(db,snapshot,ct),await ReadFoldersAsync(db,snapshot,ct)) { FolderIcons=await ReadFolderIconsAsync(db,snapshot,ct) };
+            data=new(2,await ReadProfilesAsync(db,snapshot,ct),await ReadFoldersAsync(db,snapshot,ct)) { FolderIcons=await ReadFolderIconsAsync(db,snapshot,ct),TagColors=await ReadTagColorsAsync(db,snapshot,ct) };
             await snapshot.CommitAsync(ct);
         }
         var bytes=JsonSerializer.SerializeToUtf8Bytes(data,Json);
@@ -231,6 +231,7 @@ public sealed partial class ProfileRepository
         }
         catch(JsonException ex) { throw new InvalidDataException(L.T("Niepoprawny JSON konfiguracji lub powtórzone pola. Dane nie zostały zaimportowane."),ex); }
         if (data.Version is not (1 or 2) || data.Servers == null || data.Folders == null || data.Servers.Count > 10000 || data.Folders.Count>10000 || data.FolderIcons is { Count:>10000 }) throw new InvalidDataException(L.T("Nieobsługiwany eksport."));
+        var tagColors=ProfileTags.ValidateColors(data.TagColors);
         foreach (var p in data.Servers) { ct.ThrowIfCancellationRequested(); if(p==null)throw new InvalidDataException(L.T("Niepoprawne dane profilu.")); p.Validate(); }
         foreach (var folder in data.Folders)
         { try { ProfileFolder.Validate(folder); } catch(ArgumentException ex) { throw new InvalidDataException(ex.Message,ex); } }
@@ -253,11 +254,13 @@ public sealed partial class ProfileRepository
         { using var cmd = db.CreateCommand(); cmd.Transaction = (SqliteTransaction)transaction; cmd.CommandText = "INSERT OR IGNORE INTO folders VALUES($p)"; cmd.Parameters.AddWithValue("$p", folder); await cmd.ExecuteNonQueryAsync(ct); }
         // A merge into an existing folder keeps its explicitly chosen local icon.
         foreach(var (path,icon) in data.FolderIcons??[]) { using var cmd=db.CreateCommand(); cmd.Transaction=(SqliteTransaction)transaction; cmd.CommandText="INSERT OR IGNORE INTO folder_icons VALUES($p,$icon)"; cmd.Parameters.AddWithValue("$p",path); cmd.Parameters.AddWithValue("$icon",icon); await cmd.ExecuteNonQueryAsync(ct); }
+        if(tagColors.Count>0)await MergeTagColorsAsync(db,(SqliteTransaction)transaction,tagColors,ct);
         await transaction.CommitAsync(ct);
     }
     public sealed record ConfigurationExport(int Version, List<ServerProfile> Servers, List<string> Folders)
     {
         public Dictionary<string,string>? FolderIcons { get; init; }
+        public Dictionary<string,string>? TagColors { get; init; }
     }
     private static void RejectDuplicateConfigurationProperties(JsonElement element,CancellationToken ct)
     {

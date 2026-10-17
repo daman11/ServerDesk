@@ -113,7 +113,7 @@ public sealed partial class MainWindow : Window
     }
     private async Task EditAsync(ServerProfile? profile)
     {
-        var edited=await Dialogs.Edit(this,profile??new ServerProfile { Folder=BrowserCreationFolder() },vm.Folders); if(edited==null)return;
+        var edited=await Dialogs.Edit(this,profile??new ServerProfile { Folder=BrowserCreationFolder() },vm.Folders,vm.AllServers.SelectMany(p=>ProfileTags.Parse(p.Tags)),vm.TagColors); if(edited==null)return;
         await SaveEditedProfileAsync(profile,edited);
     }
     internal async Task SaveEditedProfileAsync(ServerProfile? original,ServerProfile edited)

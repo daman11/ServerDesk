@@ -97,8 +97,8 @@ public sealed partial class MainWindow
     private void BuildTree()
     {
         var selected=vm.SelectedServer?.Id; var selectedFolder=selected==null && tree.SelectedItem is not TreeViewItem { Tag:ServerProfile } && RealFolder()?vm.SelectedFolder:null;
-        var searching=!string.IsNullOrWhiteSpace(vm.Search); TreeViewItem? selection=null;
-        var matches=ProfileSearch.Compile(vm.Search); var profiles=vm.AllServers.Where(p=>matches(p) && (vm.ProtocolFilter==null || p.Protocol==vm.ProtocolFilter));
+        var searching=HasBrowserFilter; TreeViewItem? selection=null;
+        var profiles=vm.AllServers.Where(vm.CompileBrowserFilter());
         if(section=="favorite")profiles=profiles.Where(p=>p.Favorite);
         if(section=="recent")profiles=profiles.Where(p=>p.LastConnected!=null);
         profiles=ProfileOrdering.Sort(profiles,vm.SortMode,vm.SortDescending).ToArray();
@@ -112,7 +112,8 @@ public sealed partial class MainWindow
             if(p==null)return null;
             var detail=sortMode==ProfileSort.Host?SortAddress(p):sortMode==ProfileSort.LastConnected?p.LastConnected?.ToLocalTime().ToString("g")??"—":null;
             if(preferences.ShowConnectionAddresses && sortMode!=ProfileSort.Host)detail=detail==null?SortAddress(p):SortAddress(p)+" · "+detail;
-            return Row(ProfileIcons.Resolve(p),p.Name,p.Favorite,connectedIds.Contains(p.Id),badges?p.Protocol.ToString():null,p,detail:detail);
+            var row=Row(ProfileIcons.Resolve(p),p.Name,p.Favorite,connectedIds.Contains(p.Id),badges?p.Protocol.ToString():null,p,detail:detail);
+            return WithConnectionTags(row,p);
         });
         var counts=new Dictionary<string,int>(); foreach(var item in profiles) { var path=item.Folder; while(path.Length>0) { counts[path]=counts.GetValueOrDefault(path)+1; var split=path.LastIndexOf('/'); path=split<0?"":path[..split]; } }
         var roots=new List<TreeViewItem>(); var folders=new Dictionary<string,TreeViewItem>();
@@ -122,7 +123,7 @@ public sealed partial class MainWindow
             var slash=path.LastIndexOf('/'); var node=new TreeViewItem { Tag=path,IsExpanded=searching || !collapsed.Contains(path),Classes={"connection-entry","connection-folder"} };
             // Search expansion is temporary, including clicks on search results.
             // Detached/rebuilt search nodes must never rewrite saved collapse state.
-            node.PropertyChanged+=(_,e)=> { if(e.Property==TreeViewItem.IsExpandedProperty && !rebuildingTree && !searching && string.IsNullOrWhiteSpace(vm.Search)) { if(node.IsExpanded)collapsed.Remove(path); else collapsed.Add(path); } };
+            node.PropertyChanged+=(_,e)=> { if(e.Property==TreeViewItem.IsExpandedProperty && !rebuildingTree && !searching && !HasBrowserFilter) { if(node.IsExpanded)collapsed.Remove(path); else collapsed.Add(path); } };
             if(path==selectedFolder)selection=node;
             node.ContextMenu=DeferredBrowserMenu(()=>new[]{Menu("Nowe połączenie w folderze",()=>EditAsync(new ServerProfile { Folder=path })),Menu("Zmień ikonę folderu",()=>EditFolderIconAsync(path)),Menu("Zmień nazwę",async()=> { vm.SelectedFolder=path; await RenameFolderAsync(); },shortcut:"F2"),Menu("Usuń pusty folder",async()=> { vm.SelectedFolder=path; await DeleteFolderAsync(); },shortcut:"Delete")});
             ConfigureProfileDrop(node,path);
@@ -131,7 +132,7 @@ public sealed partial class MainWindow
         if(section=="connections" && !HasBrowserFilter)foreach(var path in vm.Folders.Where(f=>f is not ("Wszystkie" or "★ Ulubione" or "◷ Ostatnie")))Folder(path);
         foreach(var p in profiles)
         {
-            var node=new TreeViewItem { Header=p,HeaderTemplate=profileTemplate,Tag=p,Classes={"connection-entry"} }; ToolTip.SetTip(node,$"{p.Protocol} · {(p.Protocol==Protocol.SSH?p.Username+"@":"")}{p.Endpoint}\n{p.Description}");
+            var node=new TreeViewItem { Header=p,HeaderTemplate=profileTemplate,Tag=p,Classes={"connection-entry"} }; ToolTip.SetTip(node,$"{p.Protocol} · {(p.Protocol==Protocol.SSH?p.Username+"@":"")}{p.Endpoint}\n{p.Description}"+(string.IsNullOrWhiteSpace(p.Tags)?"":"\n"+L.T("Tagi")+": "+ProfileTags.Format(ProfileTags.Parse(p.Tags))));
             Avalonia.Automation.AutomationProperties.SetName(node,p.Name);
             node.ContextMenu=DeferredBrowserMenu(()=>new[]{Menu("Połącz",()=>ConnectAsync(p)),Menu("Edytuj",()=>EditAsync(p),shortcut:"F2"),Menu("Duplikuj",async()=> { vm.SelectedServer=p; await DuplicateAsync(); },shortcut:"Ctrl+D"),Menu("Ulubiony",async()=> { vm.SelectedServer=p; await FavoriteAsync(); }),Menu("Przenieś do folderu",async()=> { vm.SelectedServer=p; await MoveAsync(); }),Menu("Usuń",async()=> { vm.SelectedServer=p; await DeleteAsync(); },shortcut:"Delete"),Menu("Usuń zapisane hasło",async()=> { vm.SelectedServer=p; await ForgetSecretAsync(); }),Menu("Historia tego serwera",()=>HistoryAsync(p.Id)),NetworkContextMenu(p)});
             DragSupport.Source(node,ServerDrag,()=>p,DragDropEffects.Move);

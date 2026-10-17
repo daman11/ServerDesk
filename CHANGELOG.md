@@ -2,6 +2,7 @@
 
 ## Unreleased
 
+- Prepare configuration JSON before staging it next to the destination, then flush/close and replace the selected file; preserve previous exports on preparation/write/publication failure or cancellation. Add PL/EN failure guidance and require a filesystem path instead of truncating provider-only files.
 - Save profiles and nested folders in one SQLite transaction so a failed write preserves the previous profile and leaves no partial ancestor chain.
 - Move profiles together with any new destination folders in one transaction; retain the original destination and metadata on failure, and allow retry.
 - Include destination ancestors in recursive folder-rename transactions alongside folder paths, icons and profile assignments; roll back the entire rename when any write fails.

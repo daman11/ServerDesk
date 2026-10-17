@@ -65,6 +65,8 @@ Otwórz **Network Tools** z lewego paska lub Menu. Wybierz narzędzie, wpisz cel
 
 Zamknij sesje i aplikację. Przed aktualizacją skopiuj cały katalog danych, gdy ServerDesk nie działa: Windows `%APPDATA%\ServerDesk`; Linux `~/.local/share/serverdesk` i `~/.config/serverdesk` (lub własne ścieżki XDG). Hasła Linux są osobno w systemowym magazynie, a DPAPI Windows jest związane z kontem i komputerem. Eksport JSON przenosi konfigurację profili, **bez haseł i kluczy**.
 
+Zmiana robocza po 0.39.0: **Menu → Eksport konfiguracji** zapisuje przygotowany JSON do pliku tymczasowego obok celu, a po zakończeniu zastępuje wybrany plik. Błąd lub anulowanie zachowuje poprzedni eksport. Przy błędzie sprawdź wolne miejsce, uprawnienia i blokadę pliku, następnie ponów. Wybierz plik ze ścieżką w systemie plików; dostawca bez takiej ścieżki pokazuje komunikat zamiast opróżniać istniejący plik. Po awarii procesu może pozostać `.part` — nie jest ukończonym eksportem. [Zakres weryfikacji](reports/configuration-export-2026-10-17.md).
+
 Instalator Windows aktualizuje instalację w tym samym katalogu. Przy ZIP/TAR rozpakuj nową wersję do **nowego katalogu**, nie mieszaj plików różnych wersji. DEB aktualizuj przez `apt install ./nowy-pakiet.deb`. Dane użytkownika są oddzielone od plików programu. Nie wracaj do starszej wersji na bazie zmodyfikowanej przez nowszą; przywróć kopię do osobnego katalogu.
 
 Windows: odinstaluj przez Ustawienia → Aplikacje. Linux DEB: `sudo apt remove serverdesk`. Wersję ZIP/TAR usuwa się przez usunięcie jej katalogu. Dane i hasła pozostają; zasady usuwania: [privacy.md](privacy.md).

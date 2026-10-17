@@ -1436,5 +1436,7 @@
   "Skopiowano ścieżkę.": "Skopiowano ścieżkę.",
   "Nie udało się skopiować ścieżki do schowka.": "Nie udało się skopiować ścieżki do schowka.",
   "Nie udało się otworzyć folderu kopii. Skopiuj ścieżkę i otwórz ją w menedżerze plików.": "Nie udało się otworzyć folderu kopii. Skopiuj ścieżkę i otwórz ją w menedżerze plików.",
+  "Eksport konfiguracji wymaga lokalnego pliku. Wybierz folder na dysku komputera.": "Eksport konfiguracji wymaga lokalnego pliku. Wybierz folder na dysku komputera.",
+  "Nie udało się zapisać eksportu. Poprzedni plik nie został zastąpiony. Sprawdź wolne miejsce, uprawnienia i czy plik nie jest otwarty w innym programie, a następnie spróbuj ponownie.": "Nie udało się zapisać eksportu. Poprzedni plik nie został zastąpiony. Sprawdź wolne miejsce, uprawnienia i czy plik nie jest otwarty w innym programie, a następnie spróbuj ponownie.",
   "Pluginy": "Pluginy"
 }

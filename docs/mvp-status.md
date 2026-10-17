@@ -1,5 +1,7 @@
 # Pierwotne MVP — wydanie 0.39.0
 
+Kolejny krok roboczy po 0.39.0 zabezpiecza eksport konfiguracji: gotowy JSON jest zapisywany do pliku tymczasowego, a dopiero po zamknięciu zastępuje wybrany plik. Błąd lub anulowanie nie opróżnia poprzedniego eksportu; komunikaty i ponowienie sprawdzono w PL/EN. [Testy i ograniczenia](reports/configuration-export-2026-10-17.md).
+
 Trzy kolejne poprawki robocze po 0.39.0 zapewniają atomowy zapis profilu i folderów, przenoszenie do nowego folderu oraz rekurencyjną zmianę nazwy drzewa wraz z ikonami i przypisaniami. Kontrolowane błędy SQLite sprawdzają zachowanie starego stanu i udane ponowienie. [Zakres testów](reports/profile-atomicity-2026-10-17.md); szersze próby braku miejsca i awarii procesu pozostają otwarte.
 
 Zmiana robocza po 0.39.0 rozwija odzyskiwanie danych: w ustawieniach bezpieczeństwa jest lista 20 najnowszych kopii bazy z datą, rozmiarem, schematem i powodem, kopiowaniem ścieżki i dostępem do folderu. Odczyt metadanych nie otwiera bazy ani nie zmienia kopii. [Obsługa i przywracanie](database-backups.md).

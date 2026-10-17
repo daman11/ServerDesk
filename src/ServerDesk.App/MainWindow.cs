@@ -6,6 +6,7 @@ using Avalonia.Layout;
 using Avalonia.Styling;
 using Avalonia.Threading;
 using Avalonia.Input;
+using Avalonia.Platform.Storage;
 using Iciclecreek.Terminal;
 using ServerDesk.Core;
 using ServerDesk.Infrastructure;
@@ -157,9 +158,18 @@ public sealed partial class MainWindow : Window
     private async Task QuickAsync() { var uri=await Dialogs.Prompt(this,L.T("Szybkie połączenie"),"ssh://admin@localhost:22"); if(uri!=null) await ConnectAsync(QuickConnect.Parse(uri)); }
     private async Task ExportAsync()
     {
-        using var export=new MemoryStream(); await repository.ExportAsync(export,lifetime.Token); export.Position=0;
-        var file=await StorageProvider.SaveFilePickerAsync(new() { Title=L.T("Eksport konfiguracji bez sekretów"),SuggestedFileName="serverdesk.json" }); if(file==null)return;
-        await using var stream=await file.OpenWriteAsync(); stream.SetLength(0); await export.CopyToAsync(stream,lifetime.Token); vm.Status=L.T("Wyeksportowano konfigurację bez haseł");
+        using var file=await StorageProvider.SaveFilePickerAsync(new() { Title=L.T("Eksport konfiguracji bez sekretów"),SuggestedFileName="serverdesk.json",DefaultExtension="json" }); if(file==null)return;
+        await ExportConfigurationAsync(file.TryGetLocalPath());
+    }
+    internal async Task ExportConfigurationAsync(string? localPath)
+    {
+        if(string.IsNullOrWhiteSpace(localPath))throw new NotSupportedException(L.T("Eksport konfiguracji wymaga lokalnego pliku. Wybierz folder na dysku komputera."));
+        try { await repository.ExportFileAsync(localPath,lifetime.Token); }
+        catch(Exception ex) when(ex is IOException or UnauthorizedAccessException)
+        {
+            throw new InvalidOperationException(L.T("Nie udało się zapisać eksportu. Poprzedni plik nie został zastąpiony. Sprawdź wolne miejsce, uprawnienia i czy plik nie jest otwarty w innym programie, a następnie spróbuj ponownie."),ex);
+        }
+        vm.Status=L.T("Wyeksportowano konfigurację bez haseł");
     }
     private async Task ImportAsync()
     {

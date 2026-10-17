@@ -65,6 +65,8 @@ Open **Network Tools** from the left activity bar or Menu. Choose a tool, enter 
 
 Close sessions and quit ServerDesk. Back up the whole data directory while the app is closed: `%APPDATA%\ServerDesk` on Windows; `~/.local/share/serverdesk` and `~/.config/serverdesk` on Linux (or your XDG paths). Linux passwords are stored separately in the system Secret Service. Windows DPAPI passwords are bound to the user/machine. JSON export transfers profiles **without passwords or private-key contents**.
 
+Development after 0.39.0: **Menu → Export configuration** writes prepared JSON to a temporary file beside the destination, then replaces the selected file when complete. Errors or cancellation preserve the previous export. Check free space, permissions and file locks before retrying. Select a file with a filesystem path; provider-only files are rejected without truncation. A process crash may leave a `.part` file, which is not a completed export. [Verification scope](reports/configuration-export-2026-10-17.md).
+
 Run Windows Setup over the existing installation in the same directory. Extract ZIP/TAR updates into a **new directory**, without mixing versions. Update a DEB using `apt install ./new-package.deb`. Application files are separate from user data. Do not open a database changed by a newer version with an older version; restore a backup into a separate data directory instead.
 
 Uninstall Windows through Settings → Apps; remove a DEB with `sudo apt remove serverdesk`. Delete the extracted directory for ZIP/TAR. User data and remembered passwords are preserved; see [privacy.md](privacy.md) for deletion.

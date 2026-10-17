@@ -187,6 +187,14 @@ public sealed partial class ProfileRepository
         if(bytes.Length>StreamLimits.ConfigurationBytes)throw new InvalidDataException(L.T("Eksport przekracza limit 32 MiB. Zmniejsz liczbę własnych grafik."));
         await stream.WriteAsync(bytes,ct);
     }
+    public Task ExportFileAsync(string path,CancellationToken ct=default)=>Task.Run(async()=>
+    {
+        var target=Path.GetFullPath(path);
+        using var prepared=new MemoryStream(); await ExportAsync(prepared,ct); prepared.Position=0;
+        // Prepare everything before touching the destination. The staged file is
+        // flushed and closed before replacing an existing export on the same volume.
+        await AtomicFile.ReplaceAsync(target,(output,token)=>prepared.CopyToAsync(output,token),ct);
+    },ct);
     public async Task ImportAsync(Stream stream, CancellationToken ct = default)
     {
         var bytes=await StreamLimits.ReadAsync(stream,StreamLimits.ConfigurationBytes,ct);

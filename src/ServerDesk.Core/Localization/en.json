@@ -1436,5 +1436,7 @@
   "Skopiowano ścieżkę.": "Path copied.",
   "Nie udało się skopiować ścieżki do schowka.": "Could not copy the path to the clipboard.",
   "Nie udało się otworzyć folderu kopii. Skopiuj ścieżkę i otwórz ją w menedżerze plików.": "Could not open the backup folder. Copy the path and open it in your file manager.",
+  "Eksport konfiguracji wymaga lokalnego pliku. Wybierz folder na dysku komputera.": "Configuration export requires a local file. Choose a folder on your computer's disk.",
+  "Nie udało się zapisać eksportu. Poprzedni plik nie został zastąpiony. Sprawdź wolne miejsce, uprawnienia i czy plik nie jest otwarty w innym programie, a następnie spróbuj ponownie.": "Could not save the export. The previous file was not replaced. Check free space, permissions and whether another program has the file open, then try again.",
   "Pluginy": "Plugins"
 }

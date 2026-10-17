@@ -14,6 +14,7 @@ Małe kroki kończą się commitem, celowanymi sprawdzeniami i EXE do uruchomien
 - [x] Zapis profilu oraz tworzenie zagnieżdżonych folderów w jednej transakcji; kontrolowany błąd zapisu zachowuje poprzedni stan, ponowienie działa.
 - [x] Przenoszenie profilu razem z tworzeniem folderu docelowego w jednej transakcji; brak częściowo utworzonego drzewa po błędzie.
 - [x] Rekurencyjna zmiana nazwy folderu obejmuje także brakujących rodziców celu, ikony i przypisania profili w jednej transakcji. [Testy trzech poprawek i granice](reports/profile-atomicity-2026-10-17.md).
+- [x] Eksport konfiguracji do pliku nie opróżnia poprzedniego JSON-a przed zapisem; kontrolowane błędy, anulowanie i blokada pliku zachowują poprzednie dane, a ponowienie działa. [Zakres testów i ograniczenia](reports/configuration-export-2026-10-17.md).
 - [ ] Szersze testy przerwanego zapisu, braku miejsca, blokad i aktualizacji historycznych zestawów danych.
 - [ ] Dalsza weryfikacja zgodności bazy z osobnym magazynem poświadczeń, komend i kolekcji; kopia bazy nie jest pełnym backupem tych danych.
 

@@ -22,7 +22,7 @@ internal static class AtomicFile
         finally
         {
             try { File.Delete(temporary); }
-            catch(Exception ex) when(ex is IOException or UnauthorizedAccessException) { Trace.TraceWarning("Encrypted credential temporary cleanup failed: {0}",ex.GetType().Name); }
+            catch(Exception ex) when(ex is IOException or UnauthorizedAccessException) { Trace.TraceWarning("Temporary file cleanup failed: {0}",ex.GetType().Name); }
         }
     }
 }

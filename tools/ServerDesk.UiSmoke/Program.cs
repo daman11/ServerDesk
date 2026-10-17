@@ -57,6 +57,7 @@ if(args.Contains("--extended-settings")) { ExtendedSettingsChecks.Run(root); ret
 if(args.Contains("--themes-editor")) { ThemeEditorChecks.Run(root); return; }
 if(args.Contains("--four-panels")) { FourPanelChecks.Run(root); return; }
 if(args.Contains("--commands")) { CommandPanelChecks.Run(root); return; }
+if(args.Contains("--command-profile")) { CommandPanelChecks.ProfileLayout(root); return; }
 if(args.Contains("--presentation-consistency")) { PresentationConsistencyChecks.Run(root); return; }
 if(args.Contains("--commands-network")) { CommandPanelChecks.Network(root,args[1],args[2]); return; }
 if(args.Contains("--four-panels-network")) { FourPanelChecks.Network(root,args[1],args[2]); return; }

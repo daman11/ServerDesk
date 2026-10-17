@@ -34,6 +34,50 @@ internal static class CommandPanelChecks
     {
         var list=Named<ListBox>(panel,"CommandList"); list.SelectedItem=list.Items.OfType<CommandMatch>().FirstOrDefault(m=>m.Command.Id==id)??throw new Exception("Missing command "+id); panel.ShowCommandDetails(); RedesignChecks.Frames(3);
     }
+    internal static void ProfileLayout(string root)
+    {
+        foreach(var language in new[]{"pl","en"})
+        {
+            AppText.SetLanguage(language); var paths=new AppPaths(Path.Combine(root,language+"-"+Guid.NewGuid().ToString("N"))); var repo=new ProfileRepository(paths); Wait(repo.InitializeAsync()); var vault=new Vault();
+            Wait(repo.SaveApplicationSettingsAsync(Result(repo.ApplicationSettingsAsync()) with { Preferences=new() { Language=language } }));
+            var main=new MainWindow(new(repo),repo,vault,new(repo),new ExternalRdpClient()); main.Show(); RedesignChecks.Frames(12); Wait(main.OpenCommandsPanelAsync()); RedesignChecks.Frames(5);
+            var panel=Named<CommandPanel>(main,"CommandsPanel"); var options=Named<Expander>(panel,"CommandContextOptions"); options.IsExpanded=true; RedesignChecks.Frames(3);
+            Named<ComboBox>(panel,"CommandMode").SelectedIndex=1;
+            var system=Named<ComboBox>(panel,"CommandSystem"); system.SelectedItem="rhel";
+            var shell=Named<ComboBox>(panel,"CommandShell"); shell.SelectedItem=CommandShell.Bash;
+            var version=Named<TextBox>(panel,"CommandVersion"); version.Text="9.4";
+            var fields=Named<ScrollViewer>(panel,"CommandFilters"); var list=Named<ListBox>(panel,"CommandList"); var preferences=main.CurrentPreferences;
+            foreach(var size in new[]{new Size(1280,800),new Size(920,620)})foreach(var font in new[]{13,16})
+            {
+                main.Width=size.Width; main.Height=size.Height; main.PreviewPreferences(preferences with { InterfaceFontSize=font }); fields.Offset=default; RedesignChecks.Frames(8);
+                var point=system.TranslatePoint(default,fields)!.Value;
+                main.CaptureRenderedFrame()!.Save(Path.Combine(root,$"commands-profile-{language}-{size.Width}-font{font}.png"));
+                if(point.Y<0 || point.Y+system.Bounds.Height>fields.Bounds.Height+.5 || system.Bounds.Width<fields.Bounds.Width-20)throw new Exception($"System selector lacks a full visible row: {language}/{size}/{font}; system={system.Bounds}, viewport={fields.Bounds}, point={point}");
+                var label=system.GetVisualDescendants().OfType<TextBlock>().Single(t=>t.Text=="Red Hat Enterprise Linux");
+                if(label.Bounds.Width+1<label.TextLayout.WidthIncludingTrailingWhitespace)throw new Exception("Long system name is clipped");
+                if(!list.IsEffectivelyVisible || list.Bounds.Height<70 || list.TranslatePoint(default,panel)!.Value.Y+list.Bounds.Height>panel.Bounds.Height+.5)throw new Exception("Profile editing pushes the command list offscreen");
+                system.IsDropDownOpen=true; RedesignChecks.Frames(3);
+                main.CaptureRenderedFrame()!.Save(Path.Combine(root,$"commands-system-{language}-{size.Width}-font{font}.png"));
+                system.IsDropDownOpen=false;
+                version.Focus(); RedesignChecks.Frames(4);
+                var versionPoint=version.TranslatePoint(default,fields)!.Value;
+                if(versionPoint.Y<-.5 || versionPoint.Y+version.Bounds.Height>fields.Bounds.Height+.5)throw new Exception("Profile version cannot scroll into view");
+            }
+            fields.Offset=default; options.IsExpanded=false; RedesignChecks.Frames(4); options.IsExpanded=true; RedesignChecks.Frames(4);
+            if(system.SelectedItem as string!="rhel" || shell.SelectedItem is not CommandShell.Bash || version.Text!="9.4")throw new Exception("Profile layout changes lost preferences");
+            Select(panel,"general.hostname"); Wait(panel.DispatchAsync("copy")); Click(panel,"Lista komend"); RedesignChecks.Frames(5);
+            var listPoint=list.TranslatePoint(default,panel)!.Value;
+            if(list.Bounds.Height<70 || listPoint.Y+list.Bounds.Height>panel.Bounds.Height+.5)throw new Exception("Operation notice pushes command results outside the panel");
+            system.Focus(); RedesignChecks.Frames(3);
+            var systemPoint=system.TranslatePoint(default,fields)!.Value;
+            if(systemPoint.Y<-.5 || systemPoint.Y+system.Bounds.Height>fields.Bounds.Height+.5)throw new Exception("System selector cannot receive visible focus with an operation notice");
+            Wait(panel.Shutdown);
+            var saved=Result(new CommandStore(repo,vault).ReadStateAsync()).Preferences;
+            if(saved.Automatic || saved.System!="rhel" || saved.Shell!=CommandShell.Bash || saved.Version!="9.4" || vault.Reads!=0)throw new Exception("Profile selection did not persist independently of credentials");
+            Close(main);
+        }
+        AppText.SetLanguage("pl"); Console.WriteLine("PASS system profile: full-width long OS names, dropdown, scrollable fields, visible command results, resize/font changes and preference retention; PL/EN 1280x800/920x620 font13/16, no remote sessions");
+    }
     internal static void Run(string root)
     {
         foreach(var language in new[]{"pl","en"})

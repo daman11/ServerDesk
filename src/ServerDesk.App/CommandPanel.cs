@@ -28,11 +28,11 @@ internal sealed partial class CommandPanel : Border,IDisposable
     private readonly TextBlock context=Dialogs.Text("",12),notice=Dialogs.Text("",12),count=DesignSystem.Label("",true,12);
     private readonly ComboBox mode=new() { Name="CommandMode",ItemsSource=new[]{L.T("Automatyczny"),L.T("Ręczny")},SelectedIndex=0,MinWidth=130 };
     private readonly CheckBox pin=new() { Name="CommandPin",Content=L.T("Przypnij profil") };
-    private readonly ComboBox system=new() { Name="CommandSystem",ItemsSource=CommandStore.Systems,SelectedIndex=0,HorizontalAlignment=HorizontalAlignment.Stretch };
+    private readonly ComboBox system=new() { Name="CommandSystem",ItemsSource=CommandStore.Systems,SelectedIndex=0,HorizontalAlignment=HorizontalAlignment.Stretch,HorizontalContentAlignment=HorizontalAlignment.Stretch,MaxDropDownHeight=320 };
     private readonly ComboBox shell=new() { Name="CommandShell",ItemsSource=Enum.GetValues<CommandShell>(),SelectedIndex=0,HorizontalAlignment=HorizontalAlignment.Stretch };
     private readonly TextBox version=new() { Name="CommandVersion",PlaceholderText=L.T("Wersja (opcjonalna)"),MaxLength=40 };
-    private readonly Grid manual=new() { ColumnDefinitions=new("*,*"),RowDefinitions=new("Auto,Auto"),ColumnSpacing=6,RowSpacing=5 };
-    private readonly Expander contextOptions=new() { Name="CommandContextOptions",Header=L.T("Profil systemu"),IsExpanded=false,HorizontalAlignment=HorizontalAlignment.Stretch };
+    private readonly StackPanel manual=new() { Spacing=8 };
+    private readonly Expander contextOptions=new() { Name="CommandContextOptions",Header=L.T("Profil systemu"),IsExpanded=false,HorizontalAlignment=HorizontalAlignment.Stretch,HorizontalContentAlignment=HorizontalAlignment.Stretch,Padding=new Thickness(10,8) };
     private readonly TextBox search=new() { Name="CommandSearch",PlaceholderText=L.T("Szukaj komendy, narzędzia lub problemu…"),MaxLength=200 };
     private readonly ComboBox section=new() { Name="CommandSection",ItemsSource=new[]{L.T("Ściągawka poleceń"),L.T("Moje komendy"),L.T("Ulubione"),L.T("Ostatnie"),L.T("Wyszukiwanie")},SelectedIndex=0,HorizontalAlignment=HorizontalAlignment.Stretch };
     private readonly ComboBox category=new() { Name="CommandCategory",HorizontalAlignment=HorizontalAlignment.Stretch };
@@ -68,19 +68,30 @@ internal sealed partial class CommandPanel : Border,IDisposable
         var controls=new StackPanel { Spacing=7 };
         var modeRow=new WrapPanel { Orientation=Orientation.Horizontal }; modeRow.Children.Add(mode); pin.Margin=new Thickness(8,0); modeRow.Children.Add(pin);
         modeRow.Children.Add(DeskIcons.Button("refresh",L.T("Odśwież rozpoznanie systemu"),()=>Run(()=>ResolveContextAsync(true))));
-        manual.Children.Add(system); Grid.SetColumn(shell,1); manual.Children.Add(shell); Grid.SetRow(version,1); Grid.SetColumnSpan(version,2); manual.Children.Add(version);
-        contextOptions.Content=new StackPanel { Spacing=5,Children={modeRow,manual} }; controls.Children.Add(contextOptions); controls.Children.Add(context);
+        Control ProfileField(string label,Control input)
+        {
+            Avalonia.Automation.AutomationProperties.SetName(input,L.T(label)); ToolTip.SetTip(input,L.T(label));
+            return new StackPanel { Spacing=4,Children={DesignSystem.Label(L.T(label),true,12),input} };
+        }
+        Avalonia.Automation.AutomationProperties.SetName(system,L.T("System")); ToolTip.SetTip(system,L.T("System"));
+        manual.Children.Add(system); manual.Children.Add(ProfileField("Powłoka",shell)); manual.Children.Add(version);
+        Avalonia.Automation.AutomationProperties.SetName(version,L.T("Wersja (opcjonalna)"));
+        var filterScroll=new ScrollViewer { Name="CommandFilters",Content=new StackPanel { Spacing=8,Children={modeRow,manual} },HorizontalScrollBarVisibility=Avalonia.Controls.Primitives.ScrollBarVisibility.Disabled,MaxHeight=280 };
+        contextOptions.Content=filterScroll; controls.Children.Add(contextOptions); controls.Children.Add(context);
         search.InnerLeftContent=new Border { Child=DeskIcons.Create("search",15,"ForegroundSecondary"),Margin=new Thickness(8,0,0,0) };
         context.TextWrapping=TextWrapping.NoWrap; context.TextTrimming=TextTrimming.CharacterEllipsis;
         DesignSystem.Resource(context,TextBlock.ForegroundProperty,"ForegroundSecondary");
-        system.ItemTemplate=new FuncDataTemplate<string>((id,_)=>id==null?null:DesignSystem.Label(SystemLabel(id)));
+        system.ItemTemplate=new FuncDataTemplate<string>((id,_)=>
+        {
+            if(id==null)return null;
+            var label=DesignSystem.Label(SystemLabel(id)); label.TextTrimming=TextTrimming.CharacterEllipsis; ToolTip.SetTip(label,label.Text); return label;
+        });
         shell.ItemTemplate=new FuncDataTemplate<CommandShell>((value,_)=>DesignSystem.Label(ShellLabel(value)));
         category.ItemTemplate=new FuncDataTemplate<string>((id,_)=>id==null?null:DesignSystem.Label(CategoryLabel(id)));
         var filter=new Grid { ColumnDefinitions=new("*,Auto"),ColumnSpacing=6 }; filter.Children.Add(section); var add=DeskIcons.Button("plus",L.T("Nowa komenda"),()=>Run(()=>EditAsync(null))); Grid.SetColumn(add,1); filter.Children.Add(add);
         var filter2=new Grid { ColumnDefinitions=new("*,*"),ColumnSpacing=6 }; filter2.Children.Add(category); Grid.SetColumn(sort,1); filter2.Children.Add(sort);
-        var filterScroll=new ScrollViewer { Name="CommandFilters",Content=controls,HorizontalScrollBarVisibility=Avalonia.Controls.Primitives.ScrollBarVisibility.Disabled,MaxHeight=120 };
-        var filterBody=new StackPanel { Spacing=8,Children={search,filter,filter2,riskFilter,filterScroll} }; filtersView=filterBody;
-        SizeChanged+=(_,_)=>filterScroll.MaxHeight=Math.Clamp(Bounds.Height*.18,60,120); Grid.SetRow(filterBody,1); grid.Children.Add(filterBody);
+        var filterBody=new StackPanel { Spacing=8,Children={search,filter,filter2,riskFilter,controls} }; filtersView=filterBody;
+        Grid.SetRow(filterBody,1); grid.Children.Add(filterBody);
         var results=new Grid { Name="CommandBrowser",RowDefinitions=new("Auto,*"),RowSpacing=7,MinHeight=96,ClipToBounds=true }; resultsView=results;
         BuildCommandBrowser(results); Grid.SetRow(list,1); results.Children.Add(list);
         list.Classes.Add("command-list"); list.ItemTemplate=new FuncDataTemplate<CommandMatch>((match,_)=>match==null?null:Row(match)); list.SelectionChanged+=(_,_)=>Select(list.SelectedItem as CommandMatch);
@@ -107,6 +118,14 @@ internal sealed partial class CommandPanel : Border,IDisposable
         for(var i=0;i<management.Length;i++) { var (b,glyph,label)=management[i]; b.Content=DeskIcons.Create(glyph,16); b.Classes.Add("chrome"); b.Classes.Add("icon"); b.Width=30; b.Height=30; ToolTip.SetTip(b,L.T(label)); Avalonia.Automation.AutomationProperties.SetName(b,L.T(label)); Grid.SetColumn(b,i+2); header.Children.Add(b); }
         footer.Children.Add(actions); footerSurface=new Border { Child=footer,Padding=new Thickness(0,8,0,0),BorderThickness=new Thickness(0,1,0,0) }; DesignSystem.Resource(footerSurface,BorderBrushProperty,"BorderDefault"); Grid.SetRow(footerSurface,3); grid.Children.Add(footerSurface);
         notice.PropertyChanged+=(_,e)=> { if(e.Property==TextBlock.TextProperty) { notice.IsVisible=!string.IsNullOrEmpty(notice.Text); footerSurface.IsVisible=showingDetails||notice.IsVisible; } };
+        grid.LayoutUpdated+=(_,_)=>
+        {
+            if(!filtersView.IsVisible || !contextOptions.IsExpanded || filterScroll.Bounds.Height<=0 || grid.Bounds.Height<=0)return;
+            // Give profile editing the remaining space without pushing results or status offscreen.
+            var fixedHeight=moduleHeader.DesiredSize.Height+filterBody.DesiredSize.Height-filterScroll.DesiredSize.Height+(footerSurface.IsVisible?footerSurface.DesiredSize.Height:0)+grid.RowSpacing*3;
+            var maximum=Math.Clamp(grid.Bounds.Height-fixedHeight-Math.Max(results.MinHeight,70+count.Bounds.Height+results.RowSpacing),72,280);
+            if(Math.Abs(filterScroll.MaxHeight-maximum)>.5)filterScroll.MaxHeight=maximum;
+        };
         queryDebounce=new(()=>RefreshList()); search.TextChanged+=(_,_)=> { if(ready && (search.Text??"")!=appliedSearch)queryDebounce.Request(); };
         section.SelectionChanged+=(_,_)=> { if(ready&&!updating)RefreshList(); }; sort.SelectionChanged+=(_,_)=> { if(ready&&!updating)RefreshList(); };
         category.SelectionChanged+=(_,_)=> { if(ready&&!updating)RefreshList(); };

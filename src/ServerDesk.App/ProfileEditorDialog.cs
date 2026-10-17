@@ -219,6 +219,7 @@ internal static class ProfileEditorDialog
         }
         void Save()
         {
+            tagEditor.CommitPending();
             submitted=true; var result=Validate();
             if(result!=null) { dialog.Close(result); return; }
             if(errors.FirstOrDefault().Key is {} control)

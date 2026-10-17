@@ -99,6 +99,7 @@ internal sealed partial class SessionPane
     {
         if(commandsButton!=null)commandsButton.IsVisible=owner.IsPluginEnabled(PluginCatalog.Commands);
         if(panelButtons.TryGetValue(2,out var button))button.IsVisible=owner.IsPluginEnabled(PluginCatalog.LinuxMonitoring);
+        if(sessionPluginBoundary!=null)sessionPluginBoundary.IsVisible=owner.IsPluginEnabled(PluginCatalog.LinuxMonitoring)||owner.IsPluginEnabled(PluginCatalog.Commands);
         if(!owner.IsPluginEnabled(PluginCatalog.LinuxMonitoring) && SelectedPanel==2) { terminal.IsVisible=true; info.IsVisible=false; infoActive=false; SelectPanel(0); }
     }
     private void ConfigureFileTables()

@@ -57,18 +57,11 @@ public sealed partial class MainWindow
         more.Click+=(_,_)=>more.ContextMenu.Open(more); titleActions.Children.Add(more); Grid.SetColumn(titleActions,2); titlebar.Children.Add(titleActions);
         BuildWindowCaptions(titlebar);
         var header=BuildWorkspaceHeader(titlebar); Grid.SetColumnSpan(header,4); layout.Children.Add(header);
-        var activity=new DockPanel(); DesignSystem.Resource(activity,DockPanel.BackgroundProperty,"BackgroundPrimary"); Grid.SetRow(activity,1); layout.Children.Add(activity);
-        var bottom=new StackPanel(); DockPanel.SetDock(bottom,Dock.Bottom); activity.Children.Add(bottom);
-        var activityList=new StackPanel(); activity.Children.Add(activityList);
-        foreach(var item in new[]{("connections",L.T("Połączenia")),("favorite",L.T("Ulubione")),("recent",L.T("Ostatnie")),("transfers",L.T("Transfery")),("network", L.T("Narzędzia sieciowe")),("commands",L.T("Komendy")),("settings",L.T("Ustawienia"))})
-        {
-            var button=DeskIcons.Button(item.Item1,item.Item2,()=>_ = Safe(()=>SelectSectionAsync(item.Item1)),DesignTokens.ActivityButton); button.Margin=new Thickness(3); button.Classes.Add("activity");
-            activityButtons[item.Item1]=button; (item.Item1=="settings"?bottom:activityList).Children.Add(button);
-        }
+        var activity=BuildActivityNavigation(); Grid.SetRow(activity,1); layout.Children.Add(activity);
         DesignSystem.Resource(sidebar,DockPanel.BackgroundProperty,"BackgroundSecondary"); Grid.SetRow(sidebar,1); Grid.SetColumn(sidebar,1); layout.Children.Add(sidebar);
-        var sideHeader=new Grid { ColumnDefinitions=new ColumnDefinitions("*,Auto"),Height=44,Margin=new Thickness(12,0,6,0) }; sideHeader.Children.Add(sectionTitle);
         var add=DeskIcons.Button("plus","Dodaj połączenie",()=>_ = Safe(()=>EditAsync(null))); connectionHeaderActions.Children.Add(add);
-        var newFolder=DeskIcons.Button("folder","Dodaj folder",()=>_ = Safe(FolderAsync)); connectionHeaderActions.Children.Add(newFolder); Grid.SetColumn(connectionHeaderActions,1); sideHeader.Children.Add(connectionHeaderActions); DockPanel.SetDock(sideHeader,Dock.Top); sidebar.Children.Add(sideHeader);
+        var newFolder=DeskIcons.Button("folder","Dodaj folder",()=>_ = Safe(FolderAsync)); connectionHeaderActions.Children.Add(newFolder);
+        var sideHeader=BuildSidebarModuleHeader(); DockPanel.SetDock(sideHeader,Dock.Top); sidebar.Children.Add(sideHeader);
         connectionTools.Name="ConnectionBrowserTools"; DockPanel.SetDock(connectionTools,Dock.Top); sidebar.Children.Add(connectionTools);
         var search=connectionSearch=new TextBox { Name="ConnectionSearch",PlaceholderText=L.T("Nazwa, adres, login lub tag"),Margin=new Thickness(10,0,10,8) }; search.Bind(TextBox.TextProperty,new Binding(nameof(vm.Search)) { Mode=BindingMode.TwoWay }); connectionTools.Children.Add(search);
         ToolTip.SetTip(search,L.T("Szukaj po nazwie, adresie, loginie, tagach, opisie, folderze i protokole. Kilka słów zawęża wyniki. Escape czyści zapytanie."));
@@ -194,11 +187,12 @@ public sealed partial class MainWindow
         if(section==id && sidebar.IsVisible) { ToggleSidebar(); return; }
         section=id; if(!sidebar.IsVisible)ToggleSidebar();
         connectionTools.IsVisible=connectionHeaderActions.IsVisible=connectionBrowser.IsVisible=id is not ("transfers" or "network"); transferOverview.IsVisible=id=="transfers"; networkBrowserHost.IsVisible=networkBrowser.IsVisible=id=="network";
-        sectionTitle.Text=id switch { "favorite"=>L.T("ULUBIONE"),"recent"=>L.T("OSTATNIE"),"transfers"=>L.T("TRANSFERY"),"network"=>L.T("NARZĘDZIA SIECIOWE"),_=>L.T("POŁĄCZENIA") }; UpdateActivity(); QueueTree(); UpdateStatus();
+        UpdateSidebarModule(); UpdateActivity(); QueueTree(); UpdateStatus();
     }
     private void UpdateActivity()
     {
         foreach(var (id,button) in activityButtons)button.Classes.Set("active",id=="commands"?commandPanelHost.IsVisible:id==section);
+        if(activityPluginGroup!=null)activityPluginGroup.IsVisible=activityButtons["commands"].IsVisible;
     }
     private void ToggleSidebar()
     {

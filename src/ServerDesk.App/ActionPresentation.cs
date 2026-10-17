@@ -60,7 +60,7 @@ internal static partial class DeskIcons
         "Połącz ponownie" or "Uruchom ponownie sesję" or "Uruchom ponownie" or "Restart" or "Odśwież" or "Ponów odczyt biblioteki" or "Zapisz i uruchom ponownie"=>"refresh",
         "Terminal" or "Komendy" or "Paleta akcji" or "Paleta poleceń" or "Konsola RDP"=>"square-terminal",
         "Narzędzia sieciowe" or "Network Tools" or "Sprawdź serwer"=>"network",
-        "Otwarte sesje"=>"search",
+        "Otwarte sesje" or "Pokaż wszystkie ustawienia"=>"search",
         "Przenieś do folderu" or "Przenieś do katalogu"=>"folder-input",
         "SFTP" or "Zmień ikonę folderu" or "Domyślna ikona" or "Kategorie komend"=>"folder",
         "Monitoring" or "Server Info"=>"chart-no-axes-combined",

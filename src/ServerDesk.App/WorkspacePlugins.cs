@@ -47,6 +47,7 @@ public sealed partial class MainWindow
         var commands=IsPluginEnabled(PluginCatalog.Commands);
         if(commandsMenu!=null)commandsMenu.IsVisible=commands;
         if(activityButtons.TryGetValue("commands",out var activity))activity.IsVisible=commands;
+        UpdateActivity();
         foreach(var pane in sessions)pane.UpdatePluginPresentation();
     }
     internal async Task ApplyCommandsPluginAsync(bool enabled)

@@ -75,8 +75,10 @@ internal sealed partial class NetworkToolPane : WorkspacePane
         if(host.Length>0)UseHost(host);
         var options=new Expander { Name="NetworkParameters",Header=L.T("Parametry"),IsExpanded=false,HorizontalAlignment=HorizontalAlignment.Stretch,Content=form,Classes={"network-options"} };
         var savedControls=BuildSavedControls(); requestControls.AddRange(new Control[]{targetRow,form,savedControls});
-        var header=new StackPanel { Spacing=10,Margin=new Thickness(16,12),Children={heading,targetRow,savedControls,options} };
-        var headerScroll=new ScrollViewer { Content=header,MaxHeight=280,HorizontalScrollBarVisibility=ScrollBarVisibility.Disabled }; Children.Add(headerScroll);
+        var scope=DesignSystem.Badge(L.T("Narzędzia sieciowe")); scope.Name="NetworkModuleScope"; scope.HorizontalAlignment=HorizontalAlignment.Left;
+        var header=new StackPanel { Spacing=10,Margin=new Thickness(16,12),Children={scope,heading,targetRow,savedControls,options} };
+        var headerScroll=new ScrollViewer { Content=header,MaxHeight=280,HorizontalScrollBarVisibility=ScrollBarVisibility.Disabled };
+        var moduleHeader=new Border { Name="NetworkModuleHeader",Child=headerScroll,BorderThickness=new Thickness(0,0,0,1) }; DesignSystem.Resource(moduleHeader,Border.BackgroundProperty,"BackgroundSecondary"); DesignSystem.Resource(moduleHeader,Border.BorderBrushProperty,"BorderStrong"); Children.Add(moduleHeader);
         var actionSurface=new Border { Child=actions,Margin=new Thickness(16,2) }; Grid.SetRow(actionSurface,1); Children.Add(actionSurface);
         chart.IsVisible=false; summary.TextWrapping=TextWrapping.Wrap; summary.MaxLines=3; summary.TextTrimming=TextTrimming.CharacterEllipsis; status.TextWrapping=TextWrapping.Wrap; status.MaxLines=2;
         SizeChanged+=(_,_)=> { headerScroll.MaxHeight=Math.Max(100,Bounds.Height*.42); chart.IsVisible=tool==NetworkToolKind.Ping && rows.Count>0 && Bounds.Height>=450; };

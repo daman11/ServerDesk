@@ -1,5 +1,7 @@
 # ServerDesk 0.41.0 — getting started
 
+The current development build groups side navigation into connections (including Favorites and Recent), transfers, network tools and plugins. Each sidebar module has an icon, title and short description. Commands carry a Plugin badge, and session toolbars separate Terminal/SFTP from optional add-ons. Disabled plugins leave no empty frames or separators.
+
 **Development build after 0.41.0:** **Settings → Appearance → Application theme** also offers Ocean, Forest, Aubergine, Dracula, Solar Paper and Sandstone (11 themes plus System). Preview is immediate; Cancel restores the previous appearance.
 
 **Settings → SFTP → File editing → Default text editor:** select automatic, VS Code, Notepad++, Kate, GNOME Text Editor or a custom executable (full path without arguments). The program must be installed. Automatic uses Notepad on Windows or an available text editor on Linux. The choice takes effect after Save. In the SFTP file menu, choose **Download and edit** for a remote file or **Edit file** for a local one; **F4** edits the selected file in the focused panel. Remote copies go into the open local directory with the existing overwrite confirmation. After saving changes, use **Upload** to send them to the intended remote directory; changes are not synchronized automatically. Directories, symbolic links and multiple selections cannot be edited.

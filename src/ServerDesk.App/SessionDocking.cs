@@ -96,6 +96,7 @@ public sealed partial class MainWindow
         control.SelectionChanged+=(_,_)=>Dispatcher.UIThread.Post(()=> { if(control.SelectedItem is Control selected)selected.BringIntoView(); });
         var number=new Button { Name="DockNumber"+DockNumber(location),Content=DockNumber(location).ToString(),Width=26,Padding=new Thickness(2),Margin=new Thickness(3),Classes={"segment","chrome"} }; AutomationProperties.SetName(number,DockName(location)); ToolTip.SetTip(number,DockName(location)); number.Click+=(_,_)=>FocusDock(location); dockNumbers[location]=number;
         var strip=new Grid { Name="DockStrip"+DockNumber(location),ColumnDefinitions=new ColumnDefinitions("Auto,*"),ClipToBounds=true,Children={number,scroller} }; Grid.SetColumn(scroller,1);
+        var rule=new Border { Name="DockStripRule"+DockNumber(location),Height=1,VerticalAlignment=VerticalAlignment.Bottom,IsHitTestVisible=false }; DesignSystem.Resource(rule,Border.BackgroundProperty,"BorderDefault"); Grid.SetColumnSpan(rule,2); strip.Children.Add(rule);
         DesignSystem.Resource(strip,Grid.BackgroundProperty,"BackgroundPrimary"); return strip;
     }
     private void CaptureSplit(bool rows)

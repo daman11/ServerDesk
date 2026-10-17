@@ -56,11 +56,14 @@ internal sealed partial class CommandPanel : Border,IDisposable
         validation.IsVisible=false; validation.PropertyChanged+=(_,e)=> { if(e.Property==TextBlock.TextProperty)validation.IsVisible=!string.IsNullOrEmpty(validation.Text); };
         DesignSystem.Resource(this,BackgroundProperty,"BackgroundSecondary"); DesignSystem.Resource(this,BorderBrushProperty,"BorderDefault");
         var grid=new Grid { RowDefinitions=new("Auto,Auto,*,Auto"),RowSpacing=9,ClipToBounds=true }; Child=grid;
-        var header=new Grid { ColumnDefinitions=new("*,Auto,Auto,Auto,Auto,Auto"),ColumnSpacing=3 };
+        var header=new Grid { ColumnDefinitions=new("*,Auto,Auto,Auto,Auto,Auto,Auto"),RowDefinitions=new("Auto,Auto"),ColumnSpacing=3,RowSpacing=8 };
         header.Children.Add(DesignSystem.SectionHeading("square-terminal",L.T("Komendy")));
-        var options=DeskIcons.Button("more",L.T("Opcje komend"),()=> { }); Grid.SetColumn(options,4); header.Children.Add(options);
+        var pluginBadge=DesignSystem.Badge(L.T("Plugin")); pluginBadge.Name="CommandPluginBadge"; Grid.SetColumn(pluginBadge,1); header.Children.Add(pluginBadge); ToolTip.SetTip(pluginBadge,L.T("Plugin wbudowany · dostarczany z ServerDesk"));
+        var moduleHint=DesignSystem.Hint(L.T("Ściągawka poleceń i własne komendy")); Grid.SetRow(moduleHint,1); Grid.SetColumnSpan(moduleHint,7); header.Children.Add(moduleHint);
+        var options=DeskIcons.Button("more",L.T("Opcje komend"),()=> { }); Grid.SetColumn(options,5); header.Children.Add(options);
         options.ContextMenu=new() { ItemsSource=new[]{Menu("Nowa komenda",()=>EditAsync(null)),Menu("Kategorie komend",CategoriesAsync),Menu("Import komend JSON",ImportAsync),Menu("Eksport komend JSON",ExportAsync),Menu("Ponów odczyt biblioteki",ReloadLibraryAsync),Menu("Historia komend: włącz / wyłącz",ToggleHistoryAsync),Menu("Wyczyść historię komend",ClearHistoryAsync)} }; options.Click+=(_,_)=>options.ContextMenu.Open(options);
-        var close=DeskIcons.Button("close",L.T("Zamknij panel komend"),owner.CloseCommandsPanel); Grid.SetColumn(close,5); header.Children.Add(close); grid.Children.Add(header);
+        var close=DeskIcons.Button("close",L.T("Zamknij panel komend"),owner.CloseCommandsPanel); Grid.SetColumn(close,6); header.Children.Add(close);
+        var moduleHeader=new Border { Name="CommandModuleHeader",Child=header,Padding=new Thickness(0,0,0,10),BorderThickness=new Thickness(0,0,0,1) }; DesignSystem.Resource(moduleHeader,Border.BorderBrushProperty,"BorderStrong"); grid.Children.Add(moduleHeader);
         var controls=new StackPanel { Spacing=7 };
         var modeRow=new WrapPanel { Orientation=Orientation.Horizontal }; modeRow.Children.Add(mode); pin.Margin=new Thickness(8,0); modeRow.Children.Add(pin);
         modeRow.Children.Add(DeskIcons.Button("refresh",L.T("Odśwież rozpoznanie systemu"),()=>Run(()=>ResolveContextAsync(true))));
@@ -99,7 +102,7 @@ internal sealed partial class CommandPanel : Border,IDisposable
         var buttons=new[]{copy,insert,execute,favorite,edit,duplicate};
         for(var i=0;i<3;i++) { var b=buttons[i]; b.Padding=new Thickness(6,5); b.HorizontalAlignment=HorizontalAlignment.Stretch; b.HorizontalContentAlignment=HorizontalAlignment.Center; Grid.SetColumn(b,i); actions.Children.Add(b); }
         var management=new[]{(favorite,"star","Ulubione"),(edit,"edit","Edytuj"),(duplicate,"copy","Duplikuj")};
-        for(var i=0;i<management.Length;i++) { var (b,glyph,label)=management[i]; b.Content=DeskIcons.Create(glyph,16); b.Classes.Add("chrome"); b.Classes.Add("icon"); b.Width=30; b.Height=30; ToolTip.SetTip(b,L.T(label)); Avalonia.Automation.AutomationProperties.SetName(b,L.T(label)); Grid.SetColumn(b,i+1); header.Children.Add(b); }
+        for(var i=0;i<management.Length;i++) { var (b,glyph,label)=management[i]; b.Content=DeskIcons.Create(glyph,16); b.Classes.Add("chrome"); b.Classes.Add("icon"); b.Width=30; b.Height=30; ToolTip.SetTip(b,L.T(label)); Avalonia.Automation.AutomationProperties.SetName(b,L.T(label)); Grid.SetColumn(b,i+2); header.Children.Add(b); }
         footer.Children.Add(actions); footerSurface=new Border { Child=footer,Padding=new Thickness(0,8,0,0),BorderThickness=new Thickness(0,1,0,0) }; DesignSystem.Resource(footerSurface,BorderBrushProperty,"BorderDefault"); Grid.SetRow(footerSurface,3); grid.Children.Add(footerSurface);
         notice.PropertyChanged+=(_,e)=> { if(e.Property==TextBlock.TextProperty) { notice.IsVisible=!string.IsNullOrEmpty(notice.Text); footerSurface.IsVisible=showingDetails||notice.IsVisible; } };
         queryDebounce=new(()=>RefreshList()); search.TextChanged+=(_,_)=> { if(ready)queryDebounce.Request(); };

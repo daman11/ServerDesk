@@ -38,6 +38,7 @@ public sealed partial class MainWindow
     }
     private void BuildCommandWorkspace()
     {
+        DesignSystem.Resource(commandPanelSplitter,GridSplitter.BackgroundProperty,"BorderStrong");
         commandWorkspace.Children.Add(sessionHost); Grid.SetColumn(commandPanelSplitter,1); commandWorkspace.Children.Add(commandPanelSplitter);
         Grid.SetColumn(commandPanelHost,2); commandWorkspace.Children.Add(commandPanelHost);
     }

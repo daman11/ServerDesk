@@ -57,6 +57,8 @@ Dodane biblioteki: [DnsClient 1.8.0](https://github.com/MichaCo/DnsClient.NET/tr
 
 ## Testowanie
 
+Krok roboczy po 0.39.1: Stop/Escape anuluje również oczekujące automatyczne przeliczenie podsieci. Ręczny Start zastępuje starsze oczekujące przeliczenie; szybkie zmiany pól łączą się w jedno obliczenie. Powtarzany Restart współdzieli oczekującą operację, a Stop może ją odwołać. Zamknięcie karty anuluje jej okna zapisu i czeka na własne operacje bez zastosowania spóźnionych danych kolekcji. `--network-cancellation` sprawdza te przypadki na danych jednorazowych i własnym HTTP loopback.
+
 Od 0.39.1 eksporty TXT/CSV/JSON/PEM/Response korzystają z pliku tymczasowego obok celu, zamykanego przed zastąpieniem istniejącego pliku. Błąd/anulowanie zachowuje poprzedni eksport. Wymagana jest ścieżka systemu plików. Nowe pliki Unix mają uprawnienia właściciela 0600; eksport pozostaje jawnym plikiem. Uszkodzone indeksy historii/kolekcji i wartości zapamiętane zgłaszają błąd bez cichego wyzerowania. Niepoprawna kolekcja lub urządzenie WoL nie jest stosowane. Błąd opcjonalnego zapisu historii/ustawień pozostawia wynik diagnostyki z ostrzeżeniem.
 
 `NetworkToolsTests.cs` i `NetworkServicesTests.cs`: kalkulacje IPv4/IPv6, /31,/32, walidacja, ograniczenia, CSV, prywatność historii i kolekcji, ICMP/statystyki/timeout, TCP open/refused, UDP WoL, własny DNS dla wszystkich typów/NXDOMAIN/porównania, HTTP metody/redirect/timeout/limit, TLS i odmowa niezaufanego HTTPS, rzeczywiste pakiety SNMP v2c. Fixture'y są lokalne i niezależne od usług Internetu.

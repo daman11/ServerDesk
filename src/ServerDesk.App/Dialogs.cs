@@ -54,11 +54,13 @@ internal static partial class Dialogs
         using var cancelled=ct.Register(()=>Avalonia.Threading.Dispatcher.UIThread.Post(()=>dialog.Close(false)));
         return await dialog.ShowDialog<bool>(owner);
     }
-    public static async Task<string?> Prompt(Window owner,string title,string value="",bool secret=false)
+    public static async Task<string?> Prompt(Window owner,string title,string value="",bool secret=false,CancellationToken ct=default)
     {
         var box=new TextBox { Text=value,PasswordChar=secret?'●':'\0',MaxLength=secret?CredentialLimits.MaximumSecretBytes:4096 }; Avalonia.Automation.AutomationProperties.SetName(box,title); var stack=new StackPanel { Spacing=18 }; stack.Children.Add(DesignSystem.PageHeading(secret?"key":"pencil",title)); stack.Children.Add(box);
         var row=new StackPanel { Orientation=Orientation.Horizontal,HorizontalAlignment=HorizontalAlignment.Right,Spacing=DesignTokens.Medium }; stack.Children.Add(row); var dialog=Window(title,stack);
         row.Children.Add(Button("Anuluj",()=>dialog.Close())); row.Children.Add(Button("OK",()=>dialog.Close(box.Text??""))); dialog.Opened+=(_,_)=>box.Focus(); dialog.KeyDown+=(_,e)=> { if(e.Key==Avalonia.Input.Key.Escape)dialog.Close(); if(e.Key==Avalonia.Input.Key.Enter)dialog.Close(box.Text??""); };
+        if(ct.IsCancellationRequested)return null;
+        using var cancelled=ct.Register(()=>Avalonia.Threading.Dispatcher.UIThread.Post(()=>dialog.Close()));
         return await dialog.ShowDialog<string?>(owner);
     }
     public static Task<ServerProfile?> Edit(Window owner,ServerProfile? profile,IEnumerable<string> folders) => ProfileEditorDialog.Show(owner,profile,folders);

@@ -1,5 +1,7 @@
 # Rozwój i testy
 
+Krok po 0.39.1: UiSmoke `ROOT --network-cancellation` sprawdza PL/EN, kolejkę kalkulatora podsieci, opóźniony odczyt kolekcji z pamięciowego magazynu ignorującego anulowanie, zamknięcie okna zapisu oraz wielokrotne Restart/Stop i zamykanie rzeczywistych żądań HTTP na własnym porcie loopback. Nie używa osobistego magazynu ani połączeń. [Raport i granice](reports/network-cancellation-2026-10-17.md).
+
 0.39.1: `MvpHardeningTests` sprawdza ochronę eksportów, prywatne uprawnienia Unix, import poza UI i walidację uszkodzonych zapisów diagnostyki. UiSmoke `ROOT --mvp-hardening` obejmuje PL/EN, produkcyjne ścieżki zapisu, blokadę pliku Windows, ostrzeżenie po kontrolowanej odmowie zapisu historii, błędne WoL i wyjaśnienie pełnego ekranu RDP. Scenariusz jest w CI Windows/Linux; omija natywne pickery i nie łączy się z serwerem RDP. [Zakres i ograniczenia](reports/release-verification-0.39.1.md).
 
 Spójność konfiguracji po 0.39.0: `ConfigurationConsistencyTests` używa własnych baz, dwóch połączeń SQLite i kontrolowanych błędów zapisu. Sprawdza nieaktualne przeniesienie, dodatkowe pola JSON, konkurującą edycję/usuwanie, tę samą nazwę, starszego niejawnego rodzica, 80 eksportów przy 60 transakcjach drugiego połączenia oraz import rollback/retry. `ROOT --connection-browser` dodatkowo przechodzi przez produkcyjne dialogi niezmienionej nazwy i przenoszenia usuniętego wpisu w PL/EN; `ROOT --configuration-export` pozostaje regresją eksportu. [Raport](reports/configuration-consistency-2026-10-17.md).

@@ -53,6 +53,7 @@ Małe kroki kończą się commitem, celowanymi sprawdzeniami i EXE do uruchomien
 
 - [x] 0.39.1: zachowanie uszkodzonych indeksów historii/kolekcji bez cichego resetu; walidacja payloadów kolekcji, pól null i zapamiętanych DNS/OID/WoL przed zastosowaniem.
 - [x] 0.39.1: awaria opcjonalnego zapisu historii/preferencji nie blokuje diagnostyki i nie usuwa jej wyników; ostrzeżenie PL/EN. [Dziesięć zadań i granice prób](reports/release-verification-0.39.1.md).
+- [x] Krok roboczy po 0.39.1: Stop/Escape anuluje oczekujące obliczenie podsieci; ręczny Start usuwa stare przeliczenie z kolejki. Zamknięcie karty czeka na jej operacje i chroni przed spóźnionym wczytaniem kolekcji; wielokrotne Restart/Stop i anulowanie HTTP sprawdzane na własnym loopback. [Zakres i ograniczenia](reports/network-cancellation-2026-10-17.md).
 - [ ] Network Tools: rzeczywiste IPv6/VPN/DNS/ICMP, urządzenia SNMP i wybudzanie WoL; wielokrotne anulowanie/zamykanie kart.
 - [ ] Komendy: zgodność na reprezentatywnych dystrybucjach i rzeczywistym Windows SSH; quoting, parametry i ochrona tożsamości celu po reconnect.
 - [ ] Ponowny przegląd bezpieczeństwa nowych modułów, eksportów i logów.

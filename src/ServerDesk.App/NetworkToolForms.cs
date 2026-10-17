@@ -62,7 +62,7 @@ internal sealed partial class NetworkToolPane
             case NetworkToolKind.Tls:
                 Number("Port","Port TLS",1,65535); Input("Sni","Nazwa SNI / walidacji (opcjonalna)"); break;
             case NetworkToolKind.Subnet:
-                Number("SplitPrefix","Nowy prefiks (-1: bez podziału)",-1,128); ((NumericUpDown)fields["SplitPrefix"]).ValueChanged+=(_,_)=> { if(!applying)_=RecalculateAsync(); }; break;
+                Number("SplitPrefix","Nowy prefiks (-1: bez podziału)",-1,128); ((NumericUpDown)fields["SplitPrefix"]).ValueChanged+=(_,_)=> { if(!applying)_=GuardAsync(RecalculateAsync); }; break;
             case NetworkToolKind.Snmp:
                 Choice("SnmpVersion","Wersja SNMP","v2c","v3"); Choice("SnmpOperation","Operacja","GET","GETNEXT","WALK","GETBULK"); Number("Port","Port UDP",1,65535); Number("Retries","Ponowienia",0,3); Input("Oid","OID");
                 oidChoices=new ComboBox { ItemsSource=new[]{"1.3.6.1.2.1.1.1.0 · sysDescr","1.3.6.1.2.1.1.5.0 · sysName","1.3.6.1.2.1.1.3.0 · sysUpTime"},PlaceholderText=L.T("Popularny lub zapisany OID"),HorizontalAlignment=HorizontalAlignment.Stretch }; oidChoices.SelectionChanged+=(_,_)=> { if(oidChoices.SelectedItem is string value)((TextBox)fields["Oid"]).Text=value.Split(' ')[0]; }; Group("oidPreset","Szybki wybór OID",oidChoices);
@@ -98,7 +98,7 @@ internal sealed partial class NetworkToolPane
     { string Value(string key)=>secretFields.TryGetValue(key,out var text)?text.Text??"":""; return new(Value("Password"),Value("Token"),Value("Community"),Value("AuthPassword"),Value("PrivacyPassword")); }
     internal void ApplyRequest(NetworkRequest request,NetworkSecrets? secrets=null)
     {
-        if(request.Tool!=Tool)return; applying=true;
+        if(disposed || request.Tool!=Tool)return; applying=true;
         try
         {
             target.Text=request.Target;
@@ -113,6 +113,6 @@ internal sealed partial class NetworkToolPane
             foreach(var (key,input) in secretFields)input.Text=secrets==null?key=="Community"?"public":"":(string?)typeof(NetworkSecrets).GetProperty(key)!.GetValue(secrets);
         }
         finally { applying=false; UpdateSecretVisibility(); }
-        if(Tool==NetworkToolKind.Subnet)_=RecalculateAsync();
+        if(Tool==NetworkToolKind.Subnet)_=GuardAsync(RecalculateAsync);
     }
 }

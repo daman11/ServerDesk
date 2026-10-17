@@ -2,6 +2,9 @@
 
 ## Unreleased
 
+- Let Stop/Escape cancel queued subnet calculations, supersede automatic work on manual Start, coalesce Restart requests and let Stop prevent a pending restart.
+- Drain diagnostic actions and delayed work when a tab closes; prevent late collection/secret/UI updates and cancel owned save prompts. Publish saved-control refreshes only while the pane is alive.
+
 ## 0.39.1 — Public Beta — 2026-10-17
 
 - Write Commands and Network Tools exports through flushed temporary files and replace the destination only after success; preserve previous files on failure/cancellation, reject provider-only destinations, and drain diagnostic exports on close.

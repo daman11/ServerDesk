@@ -45,8 +45,11 @@ internal sealed partial class NetworkToolPane : WorkspacePane
     private readonly Button start,stop,restart,copy,export;
     private CancellationTokenSource? operation,subnetDelay;
     private readonly CancellationTokenSource lifetime=new();
-    private Task running=Task.CompletedTask,exporting=Task.CompletedTask;
-    internal Task Shutdown=>Task.WhenAll(running,exporting);
+    private Task running=Task.CompletedTask,exporting=Task.CompletedTask,restarting=Task.CompletedTask;
+    // UI-thread actions can outlive the current diagnostic, e.g. a vault read.
+    private readonly HashSet<Task> actions=[];
+    internal Task Shutdown=>Task.WhenAll(actions.Append(running).Append(exporting));
+    private long stopVersion;
     private bool disposed,applying;
     private string pem="";
     private readonly string[] columns;
@@ -63,7 +66,7 @@ internal sealed partial class NetworkToolPane : WorkspacePane
         var saved=new ComboBox { Name="NetworkSavedHost",PlaceholderText=L.T("Zapisany host"),Width=165,ItemsSource=profiles.Where(p=>p.Protocol!=Protocol.Serial && !string.IsNullOrWhiteSpace(p.Host)).Select(p=>new HostChoice(p.Name,p.Host)).ToArray() };
         AutomationProperties.SetName(saved,L.T("Zapisany host")); saved.SelectionChanged+=(_,_)=> { if(saved.SelectedItem is HostChoice choice)UseHost(choice.Host); };
         Grid.SetColumn(saved,1); targetRow.Children.Add(saved); targetRow.SizeChanged+=(_,_)=> { var narrow=targetRow.Bounds.Width<520; saved.IsVisible=!narrow; targetRow.ColumnDefinitions[1].Width=narrow?new GridLength(0):GridLength.Auto; };
-        start=Dialogs.Button("Start",()=>_=StartAsync()); stop=Dialogs.Button("Stop",()=>operation?.Cancel()); restart=Dialogs.Button("Restart",()=>_=RestartAsync());
+        start=Dialogs.Button("Start",()=>_=StartAsync()); stop=Dialogs.Button("Stop",Stop); restart=Dialogs.Button("Restart",()=>_=RestartAsync());
         copy=Dialogs.Button("Kopiuj wyniki",()=>_=GuardAsync(CopyAsync)); export=Dialogs.Button("Eksportuj wyniki",()=>_=GuardAsync(ExportAsync)); start.Classes.Add("primary"); stop.IsEnabled=false; copy.IsEnabled=export.IsEnabled=false;
         exportFormat.ItemsSource=tool==NetworkToolKind.Tls?new[]{"TXT","CSV","JSON","PEM"}:tool==NetworkToolKind.Http?new[]{"TXT","CSV","JSON","Response"}:new[]{"TXT","CSV","JSON"}; exportFormat.SelectedIndex=0;
         exportFormat.ItemTemplate=OptionTemplate();
@@ -97,8 +100,8 @@ internal sealed partial class NetworkToolPane : WorkspacePane
         }
         else { Grid.SetRow(results,3); Children.Add(results); }
         status.Margin=new Thickness(16,6); Grid.SetRow(status,4); Children.Add(status);
-        AddHandler(KeyDownEvent,(_,e)=> { if(e.Key==Key.Escape && IsRunning) { operation?.Cancel(); e.Handled=true; } else if(e.Key==Key.Enter && e.KeyModifiers.HasFlag(KeyModifiers.Control)) { _=StartAsync(); e.Handled=true; } else if(e.Key==Key.F5) { _=RestartAsync(); e.Handled=true; } },RoutingStrategies.Tunnel);
-        target.TextChanged+=(_,_)=> { clearTarget.IsVisible=!string.IsNullOrEmpty(target.Text); UpdateCaption(); if(Tool==NetworkToolKind.Subnet && !applying)_=RecalculateAsync(); };
+        AddHandler(KeyDownEvent,(_,e)=> { if(e.Key==Key.Escape && (IsRunning || subnetDelay!=null || !restarting.IsCompleted)) { Stop(); e.Handled=true; } else if(e.Key==Key.Enter && e.KeyModifiers.HasFlag(KeyModifiers.Control)) { _=StartAsync(); e.Handled=true; } else if(e.Key==Key.F5) { _=RestartAsync(); e.Handled=true; } },RoutingStrategies.Tunnel);
+        target.TextChanged+=(_,_)=> { clearTarget.IsVisible=!string.IsNullOrEmpty(target.Text); UpdateCaption(); if(Tool==NetworkToolKind.Subnet && !applying)_=GuardAsync(RecalculateAsync); };
         Loaded+=(_,_)=>_=GuardAsync(RefreshSavedAsync);
     }
     private sealed record HostChoice(string Name,string Host) { public override string ToString()=>Name+" · "+Host; }
@@ -112,6 +115,7 @@ internal sealed partial class NetworkToolPane : WorkspacePane
     }
     internal void UseHost(string host)
     {
+        if(disposed)return;
         if(Tool!=NetworkToolKind.Wake) { target.Text=HostTarget(host); UpdateCaption(); return; }
         if(System.Net.IPAddress.TryParse(host,out var address) && address.AddressFamily==System.Net.Sockets.AddressFamily.InterNetwork)
         { ((TextBox)fields["Broadcast"]).Text=address.ToString(); status.Text=L.T("Uzupełniono docelowy IPv4. Podaj MAC urządzenia i sprawdź adres wysyłki."); }
@@ -171,7 +175,9 @@ internal sealed partial class NetworkToolPane : WorkspacePane
     }
     internal Task StartAsync(bool history=true)
     {
-        if(disposed || IsRunning)return Task.CompletedTask;
+        if(disposed)return Task.CompletedTask;
+        if(history)subnetDelay?.Cancel();
+        if(IsRunning)return running;
         NetworkRequest request; try { request=ReadRequest(); request.Validate(); } catch(Exception ex) { status.Text=NetworkToolsService.Explain(ex); DesignSystem.Resource(status,TextBlock.ForegroundProperty,"Danger"); return Task.CompletedTask; }
         operation=CancellationTokenSource.CreateLinkedTokenSource(lifetime.Token); IsRunning=true; running=ExecuteAsync(request,ReadSecrets(),operation,history); return running;
     }
@@ -199,23 +205,47 @@ internal sealed partial class NetworkToolPane : WorkspacePane
         }
         catch(OperationCanceledException) { if(!disposed)status.Text=cancellation.IsCancellationRequested?L.T("Zatrzymano"):L.T("Przekroczono czas oczekiwania."); }
         catch(Exception ex) { if(!disposed) { status.Text=NetworkToolsService.Explain(ex); DesignSystem.Resource(status,TextBlock.ForegroundProperty,"Danger"); } }
-        finally { IsRunning=false; start.IsEnabled=!disposed; stop.IsEnabled=false; progress.IsVisible=false; foreach(var control in requestControls)control.IsEnabled=!disposed; if(rows.Count==0)emptyResults.Text=L.T("Brak wyników. Sprawdź komunikat poniżej i parametry narzędzia."); if(ReferenceEquals(operation,cancellation))operation=null; cancellation.Dispose(); }
+        finally
+        {
+            if(!disposed) { IsRunning=false; start.IsEnabled=true; stop.IsEnabled=subnetDelay is { IsCancellationRequested:false }; progress.IsVisible=false; foreach(var control in requestControls)control.IsEnabled=true; if(rows.Count==0)emptyResults.Text=L.T("Brak wyników. Sprawdź komunikat poniżej i parametry narzędzia."); }
+            if(ReferenceEquals(operation,cancellation))operation=null; cancellation.Dispose();
+        }
     }
-    private async Task RestartAsync() { operation?.Cancel(); await running; if(!disposed)await StartAsync(); }
+    private void Stop()
+    {
+        stopVersion++; subnetDelay?.Cancel(); operation?.Cancel();
+        if(!disposed && !IsRunning) { status.Text=L.T("Zatrzymano"); stop.IsEnabled=false; }
+    }
+    private Task RestartAsync()
+    {
+        if(disposed)return Task.CompletedTask;
+        if(!restarting.IsCompleted)return restarting;
+        Stop(); var version=stopVersion;
+        return restarting=GuardAsync(async()=> { await running; if(!disposed && version==stopVersion)await StartAsync(); });
+    }
     private async Task RecalculateAsync()
     {
-        subnetDelay?.Cancel(); var delay=CancellationTokenSource.CreateLinkedTokenSource(lifetime.Token); subnetDelay=delay;
+        if(disposed)return;
+        subnetDelay?.Cancel(); var delay=CancellationTokenSource.CreateLinkedTokenSource(lifetime.Token); subnetDelay=delay; stop.IsEnabled=true;
         try { await Task.Delay(250,delay.Token); operation?.Cancel(); await running; delay.Token.ThrowIfCancellationRequested(); await StartAsync(false); }
         catch(OperationCanceledException) { }
-        finally { if(ReferenceEquals(subnetDelay,delay))subnetDelay=null; delay.Dispose(); }
+        finally { if(ReferenceEquals(subnetDelay,delay)) { subnetDelay=null; if(!disposed && !IsRunning)stop.IsEnabled=false; } delay.Dispose(); }
     }
-    private async Task GuardAsync(Func<Task> action)
+    private Task GuardAsync(Func<Task> action)
+    {
+        if(disposed)return Task.CompletedTask;
+        var task=GuardCoreAsync(action);
+        if(!task.IsCompleted) { actions.Add(task); _=ForgetAsync(task); }
+        return task;
+    }
+    private async Task ForgetAsync(Task task) { await task; actions.Remove(task); }
+    private async Task GuardCoreAsync(Func<Task> action)
     { try { await action(); } catch(OperationCanceledException) { } catch(Exception ex) { if(!disposed) { status.Text=NetworkToolsService.Explain(ex); DesignSystem.Resource(status,TextBlock.ForegroundProperty,"Danger"); } } }
     private async Task CopyAsync()
     {
         if(TopLevel.GetTopLevel(this)?.Clipboard is not {} clipboard)return;
         var snapshot=rows.ToArray(); var body=response.Text;
-        var text=Tool==NetworkToolKind.Http && !string.IsNullOrEmpty(body)?body:await Task.Run(()=>NetworkExport.Render("TXT",columns,snapshot)); await clipboard.SetTextAsync(text);
+        var text=Tool==NetworkToolKind.Http && !string.IsNullOrEmpty(body)?body:await Task.Run(()=>NetworkExport.Render("TXT",columns,snapshot)); lifetime.Token.ThrowIfCancellationRequested(); await clipboard.SetTextAsync(text);
     }
     private Task ExportAsync()
     {
@@ -229,6 +259,7 @@ internal sealed partial class NetworkToolPane : WorkspacePane
         {
         var format=exportFormat.SelectedItem as string??"TXT"; var extension=format=="Response"?"txt":format.ToLowerInvariant();
         var snapshot=rows.ToArray(); var content=format=="PEM"?pem:format=="Response"?response.Text??"":await Task.Run(()=>NetworkExport.Render(format,columns,snapshot));
+        lifetime.Token.ThrowIfCancellationRequested();
         if(content.Length==0) { status.Text=L.T("Brak danych do eksportu."); return; }
         if(TopLevel.GetTopLevel(this)?.StorageProvider is not {} storage)return;
         using var file=await storage.SaveFilePickerAsync(new() { Title=L.T("Eksport wyników"),SuggestedFileName=$"ServerDesk-{Tool}-{DateTime.Now:yyyyMMdd-HHmmss}.{extension}",DefaultExtension=extension });
@@ -243,7 +274,7 @@ internal sealed partial class NetworkToolPane : WorkspacePane
         var value=target.Text??""; if(Tool==NetworkToolKind.Http)value=Uri.TryCreate(value,UriKind.Absolute,out var uri) && uri.Scheme is "http" or "https"?new UriBuilder(uri.Scheme,uri.Host,uri.Port).Uri.GetLeftPart(UriPartial.Authority):"";
         Caption=NetworkToolCatalog.Name(Tool)+(value.Length>0?" · "+value:"");
     }
-    public override void Dispose() { if(disposed)return; disposed=true; lifetime.Cancel(); operation?.Cancel(); subnetDelay?.Cancel(); }
+    public override void Dispose() { if(disposed)return; disposed=true; IsRunning=false; lifetime.Cancel(); Stop(); }
     private static string[] Columns(NetworkToolKind tool)=>tool switch {
         NetworkToolKind.Ping=>new[]{"#",L.T("Czas"),"IP","Status","RTT ms"},NetworkToolKind.Trace=>new[]{"Hop","IP","DNS","Status","RTT ms",L.T("Strata"),L.T("Wysłane"),"Min/Avg/Max ms"},NetworkToolKind.Dns=>new[]{"Resolver",L.T("Nazwa"),L.T("Typ"),"TTL",L.T("Wartość"),"ms","RCODE"},NetworkToolKind.Ports=>new[]{"TCP","Status","ms",L.T("Znana usługa")},NetworkToolKind.Wake=>new[]{"MAC","Broadcast","UDP","Status"},NetworkToolKind.Http=>new[]{"HTTP","ms","Bytes","Content-Type",L.T("Uwagi")},NetworkToolKind.Snmp=>new[]{"OID",L.T("Typ"),L.T("Wartość")},_=>new[]{L.T("Parametr"),L.T("Wartość")} };
 }

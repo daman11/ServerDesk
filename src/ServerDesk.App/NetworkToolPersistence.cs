@@ -28,17 +28,17 @@ internal sealed partial class NetworkToolPane
         var actions=new WrapPanel { Orientation=Orientation.Horizontal };
         actions.Children.Add(Dialogs.Button("Zapisz kolekcję",()=>_=GuardAsync(async()=>
         {
-            var request=ReadRequest(); request.Validate(); var name=await Dialogs.Prompt(TopLevel.GetTopLevel(this) as Window??owner,L.T("Nazwa kolekcji")); if(name==null)return;
-            await store.SaveCollectionAsync(name,request,ReadSecrets(),lifetime.Token); await RefreshSavedAsync(); status.Text=L.T("Kolekcję zapisano w bezpiecznym magazynie systemowym.");
+            var request=ReadRequest(); request.Validate(); var name=await Dialogs.Prompt(TopLevel.GetTopLevel(this) as Window??owner,L.T("Nazwa kolekcji"),ct:lifetime.Token); if(name==null)return;
+            lifetime.Token.ThrowIfCancellationRequested(); await store.SaveCollectionAsync(name,request,ReadSecrets(),lifetime.Token); await RefreshSavedAsync(); if(!disposed)status.Text=L.T("Kolekcję zapisano w bezpiecznym magazynie systemowym.");
         })));
-        var loadCollection=Dialogs.Button("Wczytaj kolekcję",()=>_=GuardAsync(async()=> { if(collectionChoice.SelectedItem is CollectionChoice choice) { var saved=await store.LoadCollectionAsync(choice.Entry.Id,lifetime.Token); ApplyRequest(saved.Request,saved.Secrets); } })); loadCollection.IsEnabled=false; actions.Children.Add(loadCollection);
+        var loadCollection=Dialogs.Button("Wczytaj kolekcję",()=>_=GuardAsync(async()=> { if(collectionChoice.SelectedItem is CollectionChoice choice) { var saved=await store.LoadCollectionAsync(choice.Entry.Id,lifetime.Token); lifetime.Token.ThrowIfCancellationRequested(); ApplyRequest(saved.Request,saved.Secrets); } })); loadCollection.IsEnabled=false; actions.Children.Add(loadCollection);
         var deleteCollection=Dialogs.Button("Usuń kolekcję",()=>_=GuardAsync(async()=> { if(collectionChoice.SelectedItem is CollectionChoice choice)await store.DeleteCollectionAsync(choice.Entry.Id,lifetime.Token); await RefreshSavedAsync(); })); deleteCollection.IsEnabled=false; actions.Children.Add(deleteCollection); items.Children.Add(actions);
         collectionChoice.SelectionChanged+=(_,_)=>loadCollection.IsEnabled=deleteCollection.IsEnabled=collectionChoice.SelectedItem!=null;
         if(Tool==NetworkToolKind.Wake)
         {
             wakeFavorites=new ComboBox { PlaceholderText=L.T("Ulubione urządzenia WoL"),HorizontalAlignment=HorizontalAlignment.Stretch };
             wakeFavorites.SelectionChanged+=(_,_)=> { if(wakeFavorites.SelectedItem is WakeFavorite favorite)ApplyRequest(Defaults() with { Target=favorite.Mac,Broadcast=favorite.Broadcast,Port=favorite.Port,LocalAddress=favorite.Local }); };
-            items.Children.Add(wakeFavorites); items.Children.Add(Dialogs.Button("Zapisz urządzenie WoL",()=>_=GuardAsync(async()=> { var request=ReadRequest(); request.Validate(); var name=await Dialogs.Prompt(TopLevel.GetTopLevel(this) as Window??owner,L.T("Nazwa urządzenia")); if(name==null)return; if(name.Length>100)throw new ArgumentException(L.T("Nazwa jest zbyt długa.")); await store.RememberAsync("wolFavorites",JsonSerializer.Serialize(new WakeFavorite(name,request.Target,request.Broadcast,request.Port,request.LocalAddress)),lifetime.Token); await RefreshSavedAsync(); })));
+            items.Children.Add(wakeFavorites); items.Children.Add(Dialogs.Button("Zapisz urządzenie WoL",()=>_=GuardAsync(async()=> { var request=ReadRequest(); request.Validate(); var name=await Dialogs.Prompt(TopLevel.GetTopLevel(this) as Window??owner,L.T("Nazwa urządzenia"),ct:lifetime.Token); if(name==null)return; lifetime.Token.ThrowIfCancellationRequested(); if(name.Length>100)throw new ArgumentException(L.T("Nazwa jest zbyt długa.")); await store.RememberAsync("wolFavorites",JsonSerializer.Serialize(new WakeFavorite(name,request.Target,request.Broadcast,request.Port,request.LocalAddress)),lifetime.Token); await RefreshSavedAsync(); })));
         }
         var hint=DesignSystem.Label(L.T("Historia pomija sekrety. Kolekcje wymagają odblokowanego systemowego magazynu poświadczeń."),true,11); hint.TextWrapping=Avalonia.Media.TextWrapping.Wrap; items.Children.Add(hint);
         foreach(var panel in items.Children.OfType<WrapPanel>())foreach(var button in panel.Children)button.Margin=new Thickness(0,2,6,2);
@@ -46,13 +46,13 @@ internal sealed partial class NetworkToolPane
     }
     private async Task RefreshSavedAsync()
     {
-        var history=await store.HistoryAsync(lifetime.Token); var collections=await store.CollectionsAsync(lifetime.Token); if(disposed)return;
-        historyChoice.ItemsSource=history.Where(h=>h.Request.Tool==Tool).Take(30).Select(h=>new HistoryChoice(h)).ToArray(); clearHistory.IsEnabled=history.Count>0; collectionChoice.ItemsSource=collections.Where(c=>c.Tool==Tool).Select(c=>new CollectionChoice(c)).ToArray();
-        if(rememberedResolvers!=null)rememberedResolvers.ItemsSource=await store.ValuesAsync("resolvers",lifetime.Token);
-        if(oidChoices!=null)oidChoices.ItemsSource=new[]{"1.3.6.1.2.1.1.1.0 · sysDescr","1.3.6.1.2.1.1.5.0 · sysName","1.3.6.1.2.1.1.3.0 · sysUpTime"}.Concat(await store.ValuesAsync("oidFavorites",lifetime.Token)).Concat(await store.ValuesAsync("oids",lifetime.Token)).Distinct().ToArray();
+        if(disposed)return;
+        var history=await store.HistoryAsync(lifetime.Token); var collections=await store.CollectionsAsync(lifetime.Token);
+        var resolvers=rememberedResolvers!=null?await store.ValuesAsync("resolvers",lifetime.Token):[];
+        var oids=oidChoices!=null?new[]{"1.3.6.1.2.1.1.1.0 · sysDescr","1.3.6.1.2.1.1.5.0 · sysName","1.3.6.1.2.1.1.3.0 · sysUpTime"}.Concat(await store.ValuesAsync("oidFavorites",lifetime.Token)).Concat(await store.ValuesAsync("oids",lifetime.Token)).Distinct().ToArray():[];
+        var favorites=new List<WakeFavorite>();
         if(wakeFavorites!=null)
         {
-            var favorites=new List<WakeFavorite>();
             foreach(var value in await store.ValuesAsync("wolFavorites",lifetime.Token))
             {
                 try
@@ -63,7 +63,11 @@ internal sealed partial class NetworkToolPane
                 }
                 catch(Exception ex) when(ex is JsonException or ArgumentException) { throw new InvalidDataException(L.T("Nie można odczytać zapisanych danych narzędzi sieciowych. Oryginalne dane zachowano."),ex); }
             }
-            wakeFavorites.ItemsSource=favorites;
         }
+        if(disposed)return;
+        historyChoice.ItemsSource=history.Where(h=>h.Request.Tool==Tool).Take(30).Select(h=>new HistoryChoice(h)).ToArray(); clearHistory.IsEnabled=history.Count>0; collectionChoice.ItemsSource=collections.Where(c=>c.Tool==Tool).Select(c=>new CollectionChoice(c)).ToArray();
+        if(rememberedResolvers!=null)rememberedResolvers.ItemsSource=resolvers;
+        if(oidChoices!=null)oidChoices.ItemsSource=oids;
+        if(wakeFavorites!=null)wakeFavorites.ItemsSource=favorites;
     }
 }

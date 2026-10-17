@@ -75,7 +75,7 @@ internal static partial class DeskIcons
     internal static DeskIcon Create(string name,double size=DesignTokens.IconSize,string? role=null) { var icon=new DeskIcon { Glyph=Resolve(name),Width=size,Height=size,VerticalAlignment=VerticalAlignment.Center,HorizontalAlignment=HorizontalAlignment.Center }; if(role!=null)DesignSystem.Resource(icon,TemplatedControl.ForegroundProperty,role); return icon; }
     internal static Control Labelled(string glyph,string text,double size=16,string? iconRole=null)
     {
-        var label=new TextBlock { Text=text,VerticalAlignment=VerticalAlignment.Center }; DesignSystem.Resource(label,TextBlock.FontSizeProperty,"FontBody");
+        var label=new TextBlock { Text=text,VerticalAlignment=VerticalAlignment.Center,TextTrimming=TextTrimming.CharacterEllipsis }; DesignSystem.Resource(label,TextBlock.FontSizeProperty,"FontBody");
         var row=new Grid { ColumnDefinitions=new ColumnDefinitions("Auto,*"),ColumnSpacing=DesignTokens.IconGap,VerticalAlignment=VerticalAlignment.Center,ClipToBounds=true };
         row.Children.Add(Create(glyph,size,iconRole)); Grid.SetColumn(label,1); row.Children.Add(label); return row;
     }

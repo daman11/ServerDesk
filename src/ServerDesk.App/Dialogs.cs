@@ -8,7 +8,12 @@ namespace ServerDesk.App;
 internal static partial class Dialogs
 {
     internal static Button Button(string text, Action action)
-    { var glyph=DeskIcons.ForAction(text); var button=new Button { Content=glyph==null?L.T(text):DeskIcons.Labelled(glyph,L.T(text)),Tag=text,Margin=new Thickness(0),IsCancel=text=="Anuluj",IsDefault=text is "Zapisz" or "Połącz" or "OK" or "Potwierdź" }; Avalonia.Automation.AutomationProperties.SetName(button,L.T(text)); if(DeskIcons.DescriptionForAction(text) is {} description)ToolTip.SetTip(button,L.T(description)); button.Click+=(_,_)=>action(); return button; }
+    {
+        var glyph=DeskIcons.ForAction(text); var label=L.T(text);
+        var button=new Button { Content=glyph==null?label:DeskIcons.Labelled(glyph,label),Tag=text,Margin=new Thickness(0),HorizontalContentAlignment=HorizontalAlignment.Center,IsCancel=text=="Anuluj",IsDefault=text is "Zapisz" or "Połącz" or "OK" or "Potwierdź" };
+        if(button.IsDefault)button.Classes.Add("primary");
+        Avalonia.Automation.AutomationProperties.SetName(button,label); ToolTip.SetTip(button,L.T(DeskIcons.DescriptionForAction(text)??text)); button.Click+=(_,_)=>action(); return button;
+    }
     internal static TextBlock Text(string text,double size=DesignTokens.Body) { var label=DesignSystem.Label(text,false,size); label.TextWrapping=Avalonia.Media.TextWrapping.Wrap; label.Margin=new Thickness(0,DesignTokens.Small); return label; }
     private static Window Window(string title, Control content)
     {
@@ -43,7 +48,7 @@ internal static partial class Dialogs
         {
             dialog.Title=title;
             foreach(var button in row.Children.OfType<Button>())
-            { var label=L.T((string)button.Tag!,language); button.Content=label; Avalonia.Automation.AutomationProperties.SetName(button,label); }
+            { var source=(string)button.Tag!; var label=L.T(source,language); var glyph=DeskIcons.ForAction(source); button.Content=glyph==null?label:DeskIcons.Labelled(glyph,label); Avalonia.Automation.AutomationProperties.SetName(button,label); ToolTip.SetTip(button,label); }
         }
         if(ct.IsCancellationRequested)return false;
         using var cancelled=ct.Register(()=>Avalonia.Threading.Dispatcher.UIThread.Post(()=>dialog.Close(false)));

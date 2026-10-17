@@ -55,8 +55,7 @@ internal sealed partial class CommandPanel : Border,IDisposable
         DesignSystem.Resource(this,BackgroundProperty,"BackgroundSecondary"); DesignSystem.Resource(this,BorderBrushProperty,"BorderDefault");
         var grid=new Grid { RowDefinitions=new("Auto,Auto,*,1.15*,Auto"),RowSpacing=9,ClipToBounds=true }; Child=grid;
         var header=new Grid { ColumnDefinitions=new("*,Auto,Auto,Auto,Auto,Auto"),ColumnSpacing=3 };
-        var heading=DesignSystem.Label(L.T("Komendy"),false,16); heading.FontWeight=FontWeight.SemiBold;
-        header.Children.Add(new StackPanel { Orientation=Orientation.Horizontal,Spacing=8,Children={DeskIcons.Create("square-terminal",18,"AccentPrimary"),heading} });
+        header.Children.Add(DesignSystem.SectionHeading("square-terminal",L.T("Komendy")));
         var options=DeskIcons.Button("more",L.T("Opcje komend"),()=> { }); Grid.SetColumn(options,4); header.Children.Add(options);
         options.ContextMenu=new() { ItemsSource=new[]{Menu("Nowa komenda",()=>EditAsync(null)),Menu("Kategorie komend",CategoriesAsync),Menu("Import komend JSON",ImportAsync),Menu("Eksport komend JSON",ExportAsync),Menu("Ponów odczyt biblioteki",ReloadLibraryAsync),Menu("Historia komend: włącz / wyłącz",ToggleHistoryAsync),Menu("Wyczyść historię komend",ClearHistoryAsync)} }; options.Click+=(_,_)=>options.ContextMenu.Open(options);
         var close=DeskIcons.Button("close",L.T("Zamknij panel komend"),owner.CloseCommandsPanel); Grid.SetColumn(close,5); header.Children.Add(close); grid.Children.Add(header);

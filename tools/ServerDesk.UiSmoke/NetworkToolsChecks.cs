@@ -39,6 +39,8 @@ internal static class NetworkToolsChecks
                 var expander=pane.GetVisualDescendants().OfType<Expander>().Single(e=>e.Name=="NetworkParameters"); expander.IsExpanded=true; RedesignChecks.Frames();
                 main.SetWorkspaceMode(WorkspaceMode.Columns); main.DockSession(pane,SessionDock.Secondary); main.Width=1000; main.Height=650; RedesignChecks.Frames();
                 var run=pane.GetVisualDescendants().OfType<Button>().Single(b=>b.Tag as string=="Start"); var p=run.TranslatePoint(default,pane)!.Value; if(p.X<0 || p.Y<0 || p.Y+run.Bounds.Height>pane.Bounds.Height+1)throw new Exception("Split view hides fixed Start action");
+                var empty=Field<TextBlock>(pane,"emptyResults"); var emptyPoint=empty.TranslatePoint(default,pane)!.Value;
+                if(empty.IsEffectivelyVisible && (emptyPoint.X<0 || emptyPoint.X+empty.Bounds.Width>pane.Bounds.Width+1))throw new Exception("Empty result guidance extends outside the split viewport");
                 main.CaptureRenderedFrame()!.Save(Path.Combine(root,$"network-{pane.Tool}-{language}-split.png")); main.DockSession(pane,SessionDock.Primary); main.SetWorkspaceMode(WorkspaceMode.Single); main.Width=1320; main.Height=840; expander.IsExpanded=false;
             }
             DesignSystem.ApplyPreferences(original); DesignSystem.Apply("dark");

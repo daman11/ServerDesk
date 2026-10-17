@@ -9,6 +9,7 @@ internal static partial class DeskIcons
     // Application-owned geometry; the pinned upstream SVG files stay unchanged.
     internal static readonly IReadOnlyDictionary<string,string> ApplicationPaths=new Dictionary<string,string>
     {
+        ["plugins"]="M3,3 H10 V10 H3 Z M14,3 H21 V10 H14 Z M3,14 H10 V21 H3 Z M14,17.5 H21 M17.5,14 V21",
         ["layout-single"]="M3,4 H21 V20 H3 Z",
         ["layout-columns"]="M3,4 H21 V20 H3 Z M12,4 V20",
         ["layout-rows"]="M3,4 H21 V20 H3 Z M3,12 H21",

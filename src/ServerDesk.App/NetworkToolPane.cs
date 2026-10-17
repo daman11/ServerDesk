@@ -81,7 +81,19 @@ internal sealed partial class NetworkToolPane : WorkspacePane
         var results=BuildTable();
         if(tool==NetworkToolKind.Http)
         {
-            var views=new TabControl { Items={new TabItem { Header=L.T("Wyniki"),Content=results,Classes={"page-navigation"} },new TabItem { Header=L.T("Odpowiedź"),Content=new NetworkJsonPreview(response),Classes={"page-navigation"} },new TabItem { Header=L.T("Nagłówki"),Content=responseHeaders,Classes={"page-navigation"} }} }; foreach(var tab in views.Items.OfType<TabItem>())DesignSystem.Resource(tab,TabItem.FontSizeProperty,"FontBody"); Grid.SetRow(views,3); Children.Add(views);
+            var pages=new[]{("layers","Wyniki",(Control)results),("file-json","Odpowiedź",new NetworkJsonPreview(response)),("file","Nagłówki",responseHeaders)};
+            var tabs=pages.Select(page=>
+            {
+                var tab=new TabItem { Header=DeskIcons.Labelled(page.Item1,L.T(page.Item2)),Content=page.Item3,Classes={"page-navigation"} };
+                AutomationProperties.SetName(tab,L.T(page.Item2)); ToolTip.SetTip(tab,L.T(page.Item2)); return tab;
+            }).ToArray();
+            var views=new TabControl { ItemsSource=tabs }; bool? compactTabs=null;
+            views.SizeChanged+=(_,_)=>
+            {
+                var compact=views.Bounds.Width<420; if(compactTabs==compact)return; compactTabs=compact;
+                for(var i=0;i<tabs.Length;i++)tabs[i].Header=compact?DeskIcons.Create(pages[i].Item1,18):DeskIcons.Labelled(pages[i].Item1,L.T(pages[i].Item2));
+            };
+            Grid.SetRow(views,3); Children.Add(views);
         }
         else { Grid.SetRow(results,3); Children.Add(results); }
         status.Margin=new Thickness(16,6); Grid.SetRow(status,4); Children.Add(status);
@@ -117,8 +129,11 @@ internal sealed partial class NetworkToolPane : WorkspacePane
             for(var i=0;i<Math.Min(row.Cells.Length,columns.Length);i++) { var label=DesignSystem.Label(row.Cells[i],false,12); label.TextWrapping=TextWrapping.Wrap; label.MaxLines=3; label.TextTrimming=TextTrimming.CharacterEllipsis; if(row.Error)DesignSystem.Resource(label,TextBlock.ForegroundProperty,Tool==NetworkToolKind.Trace?"Warning":"Danger"); else if(Tool==NetworkToolKind.Tls && row.Key=="Status")DesignSystem.Resource(label,TextBlock.ForegroundProperty,row.Cells[1]==L.T("Wkrótce wygasa")?"Warning":"Success"); Grid.SetColumn(label,i); grid.Children.Add(label); }
             ToolTip.SetTip(grid,string.Join("\n",row.Cells)); return grid;
         });
-        emptyResults.TextWrapping=TextWrapping.Wrap; emptyResults.HorizontalAlignment=HorizontalAlignment.Center; emptyResults.VerticalAlignment=VerticalAlignment.Center; emptyResults.Margin=new Thickness(20);
-        var results=new Grid { Children={resultList,emptyResults} };
+        emptyResults.TextWrapping=TextWrapping.Wrap; emptyResults.TextAlignment=TextAlignment.Center; emptyResults.HorizontalAlignment=HorizontalAlignment.Stretch; emptyResults.VerticalAlignment=VerticalAlignment.Center; emptyResults.IsHitTestVisible=false;
+        // Keep empty-state guidance inside the viewport; the real table can be
+        // wider than a split panel and retain its horizontal scrollbar.
+        header.SizeChanged+=(_,_)=>emptyResults.Margin=new Thickness(30,header.Bounds.Height+12,30,12);
+        var results=new Grid { Children={resultList} };
         var details=new Expander { Name="NetworkDetails",Header=L.T("Szczegóły zaznaczonego wyniku"),IsVisible=false,HorizontalAlignment=HorizontalAlignment.Stretch,HorizontalContentAlignment=HorizontalAlignment.Stretch,Content=resultDetails,Classes={"network-options"} };
         resultList.SelectionChanged+=(_,_)=>
         {
@@ -127,7 +142,8 @@ internal sealed partial class NetworkToolPane : WorkspacePane
         };
         AutomationProperties.SetName(resultDetails,L.T("Szczegóły zaznaczonego wyniku"));
         var table=new Grid { MinWidth=minWidth,RowDefinitions=new("Auto,*,Auto"),Children={header,results,details} }; Grid.SetRow(results,1); Grid.SetRow(details,2);
-        return new ScrollViewer { Content=table,HorizontalScrollBarVisibility=ScrollBarVisibility.Auto,VerticalScrollBarVisibility=ScrollBarVisibility.Disabled,HorizontalContentAlignment=HorizontalAlignment.Stretch,Margin=new Thickness(10,0) };
+        var scroll=new ScrollViewer { Content=table,HorizontalScrollBarVisibility=ScrollBarVisibility.Auto,VerticalScrollBarVisibility=ScrollBarVisibility.Disabled,HorizontalContentAlignment=HorizontalAlignment.Stretch,Margin=new Thickness(10,0) };
+        return new Grid { Children={scroll,emptyResults} };
     }
     private sealed class UiProgress(NetworkToolPane pane) : IProgress<NetworkUpdate>
     {

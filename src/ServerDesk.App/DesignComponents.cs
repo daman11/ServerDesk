@@ -13,6 +13,19 @@ namespace ServerDesk.App;
 
 internal static partial class DesignSystem
 {
+    internal static TextBlock Hint(string text)
+    { var hint=Label(text,true,DesignTokens.Caption); hint.TextWrapping=TextWrapping.Wrap; return hint; }
+    internal static Control SectionHeading(string glyph,string title)
+    {
+        var label=Label(title); label.FontWeight=FontWeight.SemiBold; label.TextWrapping=TextWrapping.Wrap;
+        var row=new Grid { ColumnDefinitions=new("Auto,*"),ColumnSpacing=DesignTokens.Medium,Children={DeskIcons.Create(glyph,18,"AccentPrimary"),label} };
+        Grid.SetColumn(label,1); return row;
+    }
+    internal static Border Badge(string text)
+    {
+        var badge=new Border { Child=Label(text,true,DesignTokens.Micro),Padding=new Thickness(7,3),CornerRadius=new CornerRadius(4),VerticalAlignment=VerticalAlignment.Center };
+        Resource(badge,Border.BackgroundProperty,"SurfaceDefault"); return badge;
+    }
     internal static Border Card(Control content,Thickness? padding=null)
     {
         var card=new Border { Child=content,Padding=padding??new Thickness(18),CornerRadius=new CornerRadius(10),BorderThickness=new Thickness(1),ClipToBounds=true };

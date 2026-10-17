@@ -34,7 +34,7 @@ internal static class AppPolishChecks
                 dialog.Width=680; dialog.Height=500; RedesignChecks.Frames();
                 var categories=dialog.GetVisualDescendants().OfType<TabControl>().Single(t=>t.Name=="SettingsCategories");
                 if(categories.Items.OfType<TabItem>().Any(t=>t.Width!=48 || ToolTip.GetTip(t)==null))throw new Exception("Compact settings navigation did not adapt");
-                for(var i=0;i<6;i++)
+                for(var i=0;i<categories.ItemCount;i++)
                 {
                     categories.SelectedIndex=i; RedesignChecks.Frames();
                     var save=dialog.GetVisualDescendants().OfType<Button>().Single(b=>b.Tag as string=="Zapisz");

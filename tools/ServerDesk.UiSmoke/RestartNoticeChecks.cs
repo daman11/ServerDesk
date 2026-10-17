@@ -99,6 +99,8 @@ internal static class RestartNoticeChecks
         Click(main,"Uruchom ponownie"); RedesignChecks.Frames();
         var confirmation=main.OwnedWindows.Single();
         if(confirmation.Title!=AppText.T("Uruchomić ponownie ServerDesk?",target) || AutomationProperties.GetName(Action(confirmation,"Anuluj"))!=AppText.T("Anuluj",target))throw new Exception("Restart confirmation language mismatch");
+        if(new[]{"Anuluj","Potwierdź"}.Any(tag=>!Action(confirmation,tag).GetVisualDescendants().OfType<DeskIcon>().Any()) || !Action(confirmation,"Potwierdź").Classes.Contains("primary") || Action(confirmation,"Anuluj").Classes.Contains("primary"))throw new Exception("Translated confirmation lost its icons or primary/secondary distinction");
+        confirmation.CaptureRenderedFrame()!.Save(Path.Combine(root,$"restart-confirmation-{running}-{target}.png"));
         Click(confirmation,"Anuluj"); RedesignChecks.Frames();
         if(launches!=0 || !pane.IsConnected || !main.IsVisible)throw new Exception("Cancelled restart launched a child or disconnected the session");
         main.StartReplacement=()=>throw new System.ComponentModel.Win32Exception("Fixture launch failure");

@@ -2,6 +2,9 @@
 
 ## Unreleased
 
+- Unify settings section headings and help text, give Plugins a distinct icon and compact built-in badges, and keep command headers readable in narrow panels.
+- Preserve icons and destination-language tooltips in restart confirmations, distinguish primary dialog actions, and add responsive HTTP result-tab icons. Keep empty result guidance within narrow split panels while retaining table scrolling.
+
 ## 0.39.0 — Public Beta — 2026-10-17
 
 - Add a stable built-in plugin catalogue and lifecycle contract for Linux monitoring and Commands, with independent settings, localized descriptions and live apply after Save.

@@ -28,10 +28,15 @@ internal static partial class Dialogs
             var page=new StackPanel { Spacing=16,Margin=new Thickness(20) };
             page.Children.Add(DesignSystem.PageHeading(icon,L.T(title),L.T(detail))); searchIndex.Page(page,title+" "+L.T(title)); return page;
         }
-        StackPanel Section(StackPanel page,string glyph,string title)
+        StackPanel Section(StackPanel page,string glyph,string title,string? badge=null)
         {
             var fields=new StackPanel { Spacing=12 };
-            var heading=DeskIcons.Labelled(glyph,L.T(title),17,"AccentPrimary");
+            Control heading=DesignSystem.SectionHeading(glyph,L.T(title));
+            if(badge!=null)
+            {
+                var tag=DesignSystem.Badge(L.T(badge)); ToolTip.SetTip(tag,L.T("Plugin wbudowany · dostarczany z ServerDesk"));
+                var row=new Grid { ColumnDefinitions=new("*,Auto"),ColumnSpacing=12,Children={heading,tag} }; Grid.SetColumn(tag,1); heading=row;
+            }
             var rule=new Border { Height=1 }; DesignSystem.Resource(rule,Border.BackgroundProperty,"BorderDefault");
             var content=new StackPanel { Spacing=14,Children={heading,rule,fields} };
             var card=DesignSystem.Card(content); card.Classes.Add("settings-card");
@@ -69,26 +74,25 @@ internal static partial class Dialogs
         var workspacePage=Page("layers","Obszar pracy","Panele, karty i zachowanie przy uruchamianiu.");
         var monitoringPage=Page("chart-no-axes-combined","Monitoring","Parametry serwera i informacje na pasku statusu.");
         var securityPage=Page("key","Bezpieczeństwo","Tożsamość serwerów i zapisane zaufanie SSH.");
-        var pluginsPage=Page("layers","Pluginy","Włączaj dodatki i dostosuj zakres działania aplikacji.");
+        var pluginsPage=Page("plugins","Pluginy","Włączaj dodatki i dostosuj zakres działania aplikacji.");
         foreach(var plugin in PluginCatalog.BuiltIn)
         {
-            var section=Section(pluginsPage,plugin.Icon,plugin.Name);
+            var section=Section(pluginsPage,plugin.Icon,plugin.Name,"Wbudowany");
+            var description=DesignSystem.Hint(L.T(plugin.Description)); section.Children.Add(description);
+            searchIndex.Field(section,description,plugin.Description+" "+L.T(plugin.Description));
             var toggle=Flag(section,"plugin:"+plugin.Id,"Włącz plugin",PluginCatalog.IsEnabled(p,plugin.Id));
             toggle.Name="PluginEnabled_"+plugin.Id.Replace('-','_'); AutomationProperties.SetName(toggle,L.T(plugin.Name));
-            var description=Text(L.T(plugin.Description),12); section.Children.Add(description);
-            searchIndex.Field(section,description,plugin.Description+" "+L.T(plugin.Description));
-            section.Children.Add(Text(L.T("Plugin wbudowany · dostarczany z ServerDesk"),12));
         }
-        pluginsPage.Children.Add(Text(L.T("Zmiany pluginów działają po zapisaniu, bez restartu. Wyłączenie zatrzymuje ich pracę i ukrywa akcje; ustawienia oraz własne komendy pozostają zachowane."),12));
+        pluginsPage.Children.Add(DesignSystem.Hint(L.T("Zmiany pluginów działają po zapisaniu, bez restartu. Wyłączenie zatrzymuje ich pracę i ukrywa akcje; ustawienia oraz własne komendy pozostają zachowane.")));
         var trustSection=Section(securityPage,"key","Weryfikacja serwerów SSH");
         Window? settingsOwner=null;
         var manageTrust=Button("Zarządzaj kluczami…",async()=> { if(settingsOwner!=null)await TrustedHosts(settingsOwner,repository); }); manageTrust.Name="ManageTrustedHosts";
         Label(trustSection,"Zaufane klucze SSH",manageTrust);
-        trustSection.Children.Add(Text(L.T("Usunięcie zaufania wymaga osobnego potwierdzenia i działa od razu, niezależnie od zapisu ustawień. Następne połączenie wymaga ponownego porównania odcisku."),12));
+        trustSection.Children.Add(DesignSystem.Hint(L.T("Usunięcie zaufania wymaga osobnego potwierdzenia i działa od razu, niezależnie od zapisu ustawień. Następne połączenie wymaga ponownego porównania odcisku.")));
         var backupSection=Section(securityPage,"database","Kopie bazy danych");
         var backupContent=new StackPanel { Spacing=10 };
-        backupContent.Children.Add(Text(L.T("Kopia obejmuje profile, foldery, ustawienia, historię i zaufane klucze SSH. Nie obejmuje haseł, prywatnych kluczy ani zaszyfrowanej treści komend i kolekcji z magazynu systemowego. Zawiera poufne dane infrastruktury — przechowuj ją prywatnie."),12));
-        var backupStatus=Text(L.T("Przed zmianą schematu istniejącej bazy ServerDesk automatycznie tworzy sprawdzoną kopię. Ręczna kopia działa od razu, niezależnie od zapisu ustawień."),12);
+        backupContent.Children.Add(DesignSystem.Hint(L.T("Kopia obejmuje profile, foldery, ustawienia, historię i zaufane klucze SSH. Nie obejmuje haseł, prywatnych kluczy ani zaszyfrowanej treści komend i kolekcji z magazynu systemowego. Zawiera poufne dane infrastruktury — przechowuj ją prywatnie.")));
+        var backupStatus=DesignSystem.Hint(L.T("Przed zmianą schematu istniejącej bazy ServerDesk automatycznie tworzy sprawdzoną kopię. Ręczna kopia działa od razu, niezależnie od zapisu ustawień."));
         backupStatus.Name="DatabaseBackupStatus";
         Button? createBackup=null;
         createBackup=Button("Utwórz kopię bazy",async()=>
@@ -135,18 +139,18 @@ internal static partial class Dialogs
             var choice=Button(name,()=>accent.Text=color); if(color.Length>0)choice.Content=new Border { Width=20,Height=16,Background=new Avalonia.Media.SolidColorBrush(Avalonia.Media.Color.Parse(color)),CornerRadius=new CornerRadius(3) };
             AutomationProperties.SetName(choice,name+L.T(" akcent")); ToolTip.SetTip(choice,name); colors.Children.Add(choice);
         }
-        appearance.Children.Add(colors); appearance.Children.Add(Text(L.T("Motyw, akcent i rozmiar interfejsu mają podgląd na żywo. Anuluj przywraca poprzedni wygląd."),12));
+        appearance.Children.Add(colors); appearance.Children.Add(DesignSystem.Hint(L.T("Motyw, akcent i rozmiar interfejsu mają podgląd na żywo. Anuluj przywraca poprzedni wygląd.")));
         var terminal=Section(terminalPage,"ssh","Wygląd terminala");
         var palette=new ComboBox { ItemsSource=TerminalAppearance.Names,SelectedItem=TerminalAppearance.Names.Contains(original.TerminalPalette)?original.TerminalPalette:TerminalAppearance.Names[0],HorizontalAlignment=HorizontalAlignment.Stretch }; Label(terminal,"Paleta terminala",palette);
         var terminalFont=Number(terminal,"Rozmiar czcionki terminala",original.TerminalFont,9,32);
         var family=new ComboBox { ItemsSource=ApplicationPreferences.TerminalFonts,SelectedItem=p.TerminalFontFamily,HorizontalAlignment=HorizontalAlignment.Stretch,ItemTemplate=new FuncDataTemplate<string>((name,_)=>DesignSystem.Label(L.T(name??""))) }; Label(terminal,"Krój czcionki terminala",family);
-        terminal.Children.Add(Text(L.T("Paleta terminala jest niezależna od motywu aplikacji. Jeśli wybranej czcionki nie ma w systemie, terminal użyje czcionki monospace."),12));
+        terminal.Children.Add(DesignSystem.Hint(L.T("Paleta terminala jest niezależna od motywu aplikacji. Jeśli wybranej czcionki nie ma w systemie, terminal użyje czcionki monospace.")));
         Flag(terminal,"sessionStatus","Pokaż status pod panelem sesji",p.ShowSessionStatus);
         terminal=Section(terminalPage,"square-terminal","Kursor i historia");
         var cursor=new ComboBox { ItemsSource=new[]{L.T("Kreska"),L.T("Blok"),L.T("Podkreślenie")},SelectedIndex=(int)p.TerminalCursor,HorizontalAlignment=HorizontalAlignment.Stretch }; Label(terminal,"Kształt kursora",cursor); cursor.Name="TerminalCursor";
         Flag(terminal,"blink","Migający kursor",p.TerminalCursorBlink);
         var scrollback=Number(terminal,"Wiersze historii terminala",p.TerminalScrollbackLines,0,100000); scrollback.Name="TerminalScrollbackLines";
-        terminal.Children.Add(Text(L.T("Kursor ma podgląd na żywo. Programy zdalne mogą zmieniać jego wygląd. Limit historii obowiązuje przy następnym połączeniu SSH lub Serial; 0 wyłącza historię. Bieżący bufor pozostaje zachowany."),12));
+        terminal.Children.Add(DesignSystem.Hint(L.T("Kursor ma podgląd na żywo. Programy zdalne mogą zmieniać jego wygląd. Limit historii obowiązuje przy następnym połączeniu SSH lub Serial; 0 wyłącza historię. Bieżący bufor pozostaje zachowany.")));
         var fileSettings=Section(sftpPage,"folder","Otwieranie przeglądarki plików");
         var localDirectory=new TextBox { Name="SftpLocalDirectory",Text=p.SftpLocalDirectory,MaxLength=4096,PlaceholderText=L.T("Puste: katalog domowy"),HorizontalAlignment=HorizontalAlignment.Stretch };
         var browse=DeskIcons.Button("folder","Wybierz katalog startowy SFTP",async()=>
@@ -163,7 +167,7 @@ internal static partial class Dialogs
         Label(fileSettings,"Lokalny katalog startowy",localDirectory);
         var startSide=new ComboBox { Name="SftpStartSide",ItemsSource=new[]{L.T("Lokalny"),L.T("Zdalny")},SelectedIndex=p.SftpStartRemote?1:0,HorizontalAlignment=HorizontalAlignment.Stretch }; Label(fileSettings,"Początkowo aktywny panel",startSide);
         Flag(fileSettings,"hidden","Pokaż ukryte pliki po otwarciu SFTP",p.SftpShowHidden,false);
-        fileSettings.Children.Add(Text(L.T("Te opcje są stosowane przy pierwszym otwarciu SFTP w karcie. Otwarta przeglądarka zachowuje bieżący katalog, filtry i sortowanie. Niedostępny katalog startowy zastąpi katalog domowy z powiadomieniem."),12));
+        fileSettings.Children.Add(DesignSystem.Hint(L.T("Te opcje są stosowane przy pierwszym otwarciu SFTP w karcie. Otwarta przeglądarka zachowuje bieżący katalog, filtry i sortowanie. Niedostępny katalog startowy zastąpi katalog domowy z powiadomieniem.")));
         fileSettings=Section(sftpPage,"transfers","Domyślne sortowanie plików");
         ComboBox Sort(string label,FileSort value)
         {
@@ -182,12 +186,12 @@ internal static partial class Dialogs
         Flag(workspace,"panelNumbers","Pokaż numery paneli w podzielonym widoku",p.ShowPanelNumbers);
         Flag(workspace,"protocols","Pokaż oznaczenia protokołów przy serwerach",p.ShowProtocolBadges);
         var tabTarget=new ComboBox { Name="NewTabTarget",ItemsSource=new[]{L.T("Aktywny panel"),L.T("Zawsze panel 1"),L.T("Panel z najmniejszą liczbą kart")},SelectedIndex=(int)p.NewTabTarget,HorizontalAlignment=HorizontalAlignment.Stretch }; Label(workspace,"Otwieraj nowe karty w",tabTarget);
-        workspace.Children.Add(Text(L.T("Rozmiary pasków i separatorów mają podgląd na żywo. Anuluj przywraca poprzedni wygląd. Nowe karty używają wybranej reguły bez przenoszenia otwartych sesji."),12));
+        workspace.Children.Add(DesignSystem.Hint(L.T("Rozmiary pasków i separatorów mają podgląd na żywo. Anuluj przywraca poprzedni wygląd. Nowe karty używają wybranej reguły bez przenoszenia otwartych sesji.")));
         workspace=Section(workspacePage,"history","Przy uruchomieniu");
         var startupLayout=new ComboBox { Name="WorkspaceOnStartup",ItemsSource=new[]{L.T("Zapamiętaj ostatni układ"),L.T("Jeden panel"),L.T("Panele obok siebie"),L.T("Panele jeden nad drugim"),L.T("Trzy panele (1 + 2)"),L.T("Cztery panele (2 × 2)")},SelectedIndex=(int)p.WorkspaceOnStartup,HorizontalAlignment=HorizontalAlignment.Stretch }; Label(workspace,"Układ przy uruchomieniu",startupLayout);
-        workspace.Children.Add(Text(L.T("Układ startowy obowiązuje przy kolejnym uruchomieniu. Przywrócone karty zostaną rozmieszczone w wybranym układzie bez automatycznego łączenia. Bieżący podział zmienisz w menu Układ."),12));
+        workspace.Children.Add(DesignSystem.Hint(L.T("Układ startowy obowiązuje przy kolejnym uruchomieniu. Przywrócone karty zostaną rozmieszczone w wybranym układzie bez automatycznego łączenia. Bieżący podział zmienisz w menu Układ.")));
         Flag(workspace,"remember","Przywracaj karty i układ po restarcie",original.RememberWorkspace);
-        workspace.Children.Add(Text(L.T("Przywrócone karty czekają na Połącz. Hasła i zawartość terminala nie są zapisywane w układzie."),12));
+        workspace.Children.Add(DesignSystem.Hint(L.T("Przywrócone karty czekają na Połącz. Hasła i zawartość terminala nie są zapisywane w układzie.")));
         var monitoring=Section(monitoringPage,"chart-no-axes-combined","Pasek statusu i monitoring");
         Flag(monitoring,"status","Pokaż dolny pasek statusu",p.ShowStatusBar);
         Flag(monitoring,"metrics","Pokaż parametry aktywnego serwera",p.ShowMetrics);
@@ -196,7 +200,7 @@ internal static partial class Dialogs
         monitoring=Section(monitoringPage,"memory-stick","Pola paska parametrów");
         Flag(monitoring,"cpu","CPU",p.MetricCpu); Flag(monitoring,"ram","Pamięć RAM",p.MetricMemory); Flag(monitoring,"network","Odbieranie i wysyłanie",p.MetricNetwork);
         Flag(monitoring,"uptime","Czas pracy serwera",p.MetricUptime); Flag(monitoring,"disk","Zajętość dysku /",p.MetricDisk); Flag(monitoring,"system","Nazwa systemu operacyjnego",p.MetricSystem); Flag(monitoring,"clock","Zegar serwera",p.MetricClock);
-        monitoring.Children.Add(Text(L.T("Pola, które nie mieszczą się w oknie, są automatycznie ukrywane. Pełne wartości są w podpowiedziach. Gdy pasek parametrów jest wyłączony, monitoring w tle czeka na otwarcie panelu Monitoring."),12));
+        monitoring.Children.Add(DesignSystem.Hint(L.T("Pola, które nie mieszczą się w oknie, są automatycznie ukrywane. Pełne wartości są w podpowiedziach. Gdy pasek parametrów jest wyłączony, monitoring w tle czeka na otwarcie panelu Monitoring.")));
         bool On(string key)=>flags[key].IsChecked==true;
         ApplicationPreferences Draft()=>new()
         {
@@ -229,7 +233,7 @@ internal static partial class Dialogs
             return new TabItem { Classes={"page-navigation","settings-category"},Header=DeskIcons.Labelled(glyph,L.T(title)),Content=scroll };
         }
         var categories=new TabControl { Name="SettingsCategories",TabStripPlacement=Dock.Left,Padding=new Thickness(0),ItemsSource=new[] {
-            Category("settings","Wygląd",appearancePage),Category("ssh","Terminal",terminalPage),Category("folder","SFTP",sftpPage),Category("layers","Obszar pracy",workspacePage),Category("chart-no-axes-combined","Monitoring",monitoringPage),Category("key","Bezpieczeństwo",securityPage),Category("layers","Pluginy",pluginsPage)
+            Category("settings","Wygląd",appearancePage),Category("ssh","Terminal",terminalPage),Category("folder","SFTP",sftpPage),Category("layers","Obszar pracy",workspacePage),Category("chart-no-axes-combined","Monitoring",monitoringPage),Category("key","Bezpieczeństwo",securityPage),Category("plugins","Pluginy",pluginsPage)
         },SelectedIndex=0 };
         SettingsNavigation.Configure(categories);
         DesignSystem.Resource(categories,TabControl.BackgroundProperty,"BackgroundSecondary");
@@ -276,7 +280,7 @@ internal static partial class Dialogs
         void ResizeNavigation()
         {
             var compact=dialog.Bounds.Width<820;
-            var icons=new[]{"settings","ssh","folder","layers","chart-no-axes-combined","key","layers"}; var names=new[]{"Wygląd","Terminal","SFTP","Obszar pracy","Monitoring","Bezpieczeństwo","Pluginy"};
+            var icons=new[]{"settings","ssh","folder","layers","chart-no-axes-combined","key","plugins"}; var names=new[]{"Wygląd","Terminal","SFTP","Obszar pracy","Monitoring","Bezpieczeństwo","Pluginy"};
             var index=0;
             foreach(var category in categories.Items.OfType<TabItem>())
             {

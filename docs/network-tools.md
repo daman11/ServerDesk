@@ -1,4 +1,4 @@
-# Narzędzia sieciowe — ServerDesk 0.36.2
+# Narzędzia sieciowe — ServerDesk 0.40.0
 
 Moduł jest częścią MVP i istniejącego obszaru kart ServerDesk. Działa na ręcznie podanym celu także przy całkowicie pustej liście połączeń. Nie wymaga SSH, RDP ani zapisanego urządzenia. Serial Console pozostaje dotychczasową funkcją połączeń.
 
@@ -57,7 +57,7 @@ Dodane biblioteki: [DnsClient 1.8.0](https://github.com/MichaCo/DnsClient.NET/tr
 
 ## Testowanie
 
-Krok roboczy po 0.39.1: Stop/Escape anuluje również oczekujące automatyczne przeliczenie podsieci. Ręczny Start zastępuje starsze oczekujące przeliczenie; szybkie zmiany pól łączą się w jedno obliczenie. Powtarzany Restart współdzieli oczekującą operację, a Stop może ją odwołać. Zamknięcie karty anuluje jej okna zapisu i czeka na własne operacje bez zastosowania spóźnionych danych kolekcji. `--network-cancellation` sprawdza te przypadki na danych jednorazowych i własnym HTTP loopback.
+Od 0.40.0 Stop/Escape anuluje również oczekujące automatyczne przeliczenie podsieci. Ręczny Start zastępuje starsze oczekujące przeliczenie; szybkie zmiany pól łączą się w jedno obliczenie. Powtarzany Restart współdzieli oczekującą operację, a Stop może ją odwołać. Zamknięcie karty anuluje jej okna zapisu i czeka na własne operacje bez zastosowania spóźnionych danych kolekcji. `--network-cancellation` sprawdza te przypadki na danych jednorazowych i własnym HTTP loopback.
 
 Od 0.39.1 eksporty TXT/CSV/JSON/PEM/Response korzystają z pliku tymczasowego obok celu, zamykanego przed zastąpieniem istniejącego pliku. Błąd/anulowanie zachowuje poprzedni eksport. Wymagana jest ścieżka systemu plików. Nowe pliki Unix mają uprawnienia właściciela 0600; eksport pozostaje jawnym plikiem. Uszkodzone indeksy historii/kolekcji i wartości zapamiętane zgłaszają błąd bez cichego wyzerowania. Niepoprawna kolekcja lub urządzenie WoL nie jest stosowane. Błąd opcjonalnego zapisu historii/ustawień pozostawia wynik diagnostyki z ostrzeżeniem.
 

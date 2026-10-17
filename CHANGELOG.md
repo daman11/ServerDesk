@@ -2,6 +2,9 @@
 
 ## Unreleased
 
+## 0.40.0 — Public Beta — 2026-10-17
+
+- Add live interface font selection, control corner radius, menu/connection row spacing, server addresses and independent tab icon/close-button visibility. Preserve defaults for older preferences and support search, cancel, save and reset in PL/EN.
 - Add an explicit read-only check for a selected database snapshot in Security settings: SQLite integrity/schema feedback in PL/EN, rejection of changed/missing/corrupt/newer/journal-dependent files, and draining checks when settings close. Keep restoration manual and disclose that this does not validate application data or credential-store contents.
 
 - Let Stop/Escape cancel queued subnet calculations, supersede automatic work on manual Start, coalesce Restart requests and let Stop prevent a pending restart.

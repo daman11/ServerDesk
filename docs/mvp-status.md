@@ -1,8 +1,8 @@
-# Pierwotne MVP — wydanie 0.39.1
+# Pierwotne MVP — wydanie 0.40.0
 
-Krok roboczy po 0.39.1: **Ustawienia → Bezpieczeństwo → Zapisane kopie bazy → Sprawdź kopię** wykonuje kontrolę SQLite i zgodności schematu wybranego pliku. Bez przywracania danych, migracji, zapisu do kopii ani sprawdzania sekretów. [Obsługa](database-backups.md), [celowane testy i granice](reports/backup-verification-2026-10-17.md). Ostatnie zamrożone wydanie pozostaje 0.39.1.
+0.40.0: **Ustawienia → Bezpieczeństwo → Zapisane kopie bazy → Sprawdź kopię** wykonuje kontrolę SQLite i zgodności schematu wybranego pliku. Bez przywracania danych, migracji, zapisu do kopii ani sprawdzania sekretów. [Obsługa](database-backups.md), [celowane testy i granice](reports/backup-verification-2026-10-17.md).
 
-Krok roboczy po 0.39.1: stabilizacja Start/Stop/Restart i zamykania kart Network Tools, w tym automatycznych obliczeń podsieci, opóźnionego odczytu kolekcji i okien zapisu. [Zakres celowanych prób](reports/network-cancellation-2026-10-17.md). Bez nowego wydania; ostatnie zamrożone paczki pozostają 0.39.1.
+0.40.0: stabilizacja Start/Stop/Restart i zamykania kart Network Tools, w tym automatycznych obliczeń podsieci, opóźnionego odczytu kolekcji i okien zapisu. [Zakres celowanych prób](reports/network-cancellation-2026-10-17.md). Wydanie obejmuje też [personalizację interfejsu i kart](reports/customization-2026-10-17.md). [Weryfikacja wydania i ograniczenia](reports/release-verification-0.40.0.md).
 
 0.39.1 obejmuje poniższe poprawki robocze po 0.39.0 oraz dziesięć zadań ochrony eksportów/importu, trwałości danych Network Tools, zachowania wyników diagnostyki i opisu RDP. [Zakres testów i ograniczenia](reports/release-verification-0.39.1.md). Nadal Public Beta; pełna akceptacja systemów i sprzętu pozostaje otwarta.
 
@@ -16,7 +16,7 @@ Zmiana robocza po 0.39.0 rozwija odzyskiwanie danych: w ustawieniach bezpieczeń
 
 0.39.0 dodaje wbudowane pluginy Monitoring Linux i Komendy z przełącznikami po zapisie bez restartu. Rdzeń SSH/SFTP/RDP zachowuje niezależność od dodatków. [Wydanie](releases/release-0.39.0.md), [obsługa](plugins.md), [testy](reports/plugins-2026-10-17.md).
 
-0.38.0 osadza Linux RDP w karcie X11/XWayland i dodaje graficzne hasło/certyfikat. Zawiera również opisane poniżej zmiany rozwijane po 0.37.0. [Bieżące wydanie](releases/release-0.38.0.md), [weryfikacja](reports/release-verification-0.38.0.md), [model zaufania i ograniczenia RDP](rdp-integration.md).
+0.38.0 osadza Linux RDP w karcie X11/XWayland i dodaje graficzne hasło/certyfikat. Zawiera również opisane poniżej zmiany rozwijane po 0.37.0. [Opis wydania 0.38.0](releases/release-0.38.0.md), [weryfikacja](reports/release-verification-0.38.0.md), [model zaufania i ograniczenia RDP](rdp-integration.md).
 
 0.37.0 stabilizuje dane, SFTP i przeglądarkę połączeń: sprawdzone kopie SQLite, ręczne odzyskiwanie SFTP, wskazówki błędów i plików częściowych oraz zachowanie zaznaczenia i zwiniętych folderów. [Wydanie](releases/release-0.37.0.md), [zakres weryfikacji](reports/release-verification-0.37.0.md).
 

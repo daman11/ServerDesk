@@ -1,6 +1,6 @@
 # Droga do ServerDesk 1.0
 
-Punkt wyjścia: 0.39.1 Public Beta. Funkcje rdzenia i dodatków istnieją; stan implementacji oraz granice wcześniejszych testów opisuje [MVP](mvp-status.md). Poniższa lista jest bieżącym planem stabilizacji, a nie deklaracją gotowości 1.0.
+Punkt wyjścia: 0.40.0 Public Beta. Funkcje rdzenia i dodatków istnieją; stan implementacji oraz granice wcześniejszych testów opisuje [MVP](mvp-status.md). Poniższa lista jest bieżącym planem stabilizacji, a nie deklaracją gotowości 1.0.
 
 Małe kroki kończą się commitem, celowanymi sprawdzeniami i EXE do uruchomienia z folderu. Pełna macierz i paczki są przeznaczone dla większych etapów, RC i wydania 1.0.
 
@@ -11,7 +11,7 @@ Małe kroki kończą się commitem, celowanymi sprawdzeniami i EXE do uruchomien
 - [x] Sprawdzona kopia przed migracją starego schematu; odmowa migracji przy błędzie kopii.
 - [x] Komunikat o uszkodzonej/niedostępnej/nowszej bazie i zamknięcie bez zapisu układu zamiast automatycznego resetu.
 - [x] Celowany test odtworzenia profili, folderów i ustawień w osobnym katalogu; [instrukcja i ograniczenia](database-backups.md).
-- [x] Krok roboczy po 0.39.1: ręczna kontrola SQLite i zgodności schematu wybranej kopii w ustawieniach, bez modyfikacji pliku, migracji ani przywracania; komunikaty PL/EN dla poprawnych, uszkodzonych i niedostępnych kopii. Nie zastępuje próby odtworzenia ani weryfikacji sekretów. [Testy i granice](reports/backup-verification-2026-10-17.md).
+- [x] 0.40.0: ręczna kontrola SQLite i zgodności schematu wybranej kopii w ustawieniach, bez modyfikacji pliku, migracji ani przywracania; komunikaty PL/EN dla poprawnych, uszkodzonych i niedostępnych kopii. Nie zastępuje próby odtworzenia ani weryfikacji sekretów. [Testy i granice](reports/backup-verification-2026-10-17.md).
 - [x] Zapis profilu oraz tworzenie zagnieżdżonych folderów w jednej transakcji; kontrolowany błąd zapisu zachowuje poprzedni stan, ponowienie działa.
 - [x] Przenoszenie profilu razem z tworzeniem folderu docelowego w jednej transakcji; brak częściowo utworzonego drzewa po błędzie.
 - [x] Rekurencyjna zmiana nazwy folderu obejmuje także brakujących rodziców celu, ikony i przypisania profili w jednej transakcji. [Testy trzech poprawek i granice](reports/profile-atomicity-2026-10-17.md).
@@ -54,7 +54,7 @@ Małe kroki kończą się commitem, celowanymi sprawdzeniami i EXE do uruchomien
 
 - [x] 0.39.1: zachowanie uszkodzonych indeksów historii/kolekcji bez cichego resetu; walidacja payloadów kolekcji, pól null i zapamiętanych DNS/OID/WoL przed zastosowaniem.
 - [x] 0.39.1: awaria opcjonalnego zapisu historii/preferencji nie blokuje diagnostyki i nie usuwa jej wyników; ostrzeżenie PL/EN. [Dziesięć zadań i granice prób](reports/release-verification-0.39.1.md).
-- [x] Krok roboczy po 0.39.1: Stop/Escape anuluje oczekujące obliczenie podsieci; ręczny Start usuwa stare przeliczenie z kolejki. Zamknięcie karty czeka na jej operacje i chroni przed spóźnionym wczytaniem kolekcji; wielokrotne Restart/Stop i anulowanie HTTP sprawdzane na własnym loopback. [Zakres i ograniczenia](reports/network-cancellation-2026-10-17.md).
+- [x] 0.40.0: Stop/Escape anuluje oczekujące obliczenie podsieci; ręczny Start usuwa stare przeliczenie z kolejki. Zamknięcie karty czeka na jej operacje i chroni przed spóźnionym wczytaniem kolekcji; wielokrotne Restart/Stop i anulowanie HTTP sprawdzane na własnym loopback. [Zakres i ograniczenia](reports/network-cancellation-2026-10-17.md).
 - [ ] Network Tools: rzeczywiste IPv6/VPN/DNS/ICMP, urządzenia SNMP i wybudzanie WoL; wielokrotne anulowanie/zamykanie kart.
 - [ ] Komendy: zgodność na reprezentatywnych dystrybucjach i rzeczywistym Windows SSH; quoting, parametry i ochrona tożsamości celu po reconnect.
 - [ ] Ponowny przegląd bezpieczeństwa nowych modułów, eksportów i logów.

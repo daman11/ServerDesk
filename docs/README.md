@@ -1,6 +1,6 @@
 # Dokumentacja / Documentation
 
-Bieżące wydanie: [0.39.1 Public Beta](releases/release-0.39.1.md) — bezpieczniejsze eksporty/import, odporność lokalnych danych diagnostyki, katalog kopii bazy i karty komend. [Zakres testów wydania](reports/release-verification-0.39.1.md).
+Bieżące wydanie: [0.40.0 Public Beta](releases/release-0.40.0.md) — większa personalizacja interfejsu, sprawdzanie zapisanych kopii bazy i stabilniejsze zatrzymywanie diagnostyki. [Zakres testów wydania](reports/release-verification-0.40.0.md).
 
 | Temat / Topic | Dokument |
 |---|---|

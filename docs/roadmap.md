@@ -1,6 +1,6 @@
 Bieżące priorytety i postęp stabilizacji: [Droga do wersji 1.0](stable-release-plan.md). Pierwotne MVP: aktualna tabela kryteriów i brakującej weryfikacji znajduje się w [mvp-status.md](mvp-status.md). Poniższe wpisy opisują historię etapów; dawne listy nie są aktualną listą braków.
 
-Rozwój po 0.39.1: dodatkowa personalizacja czcionki interfejsu, zaokrągleń, menu, listy połączeń i kart, z podglądem i zapisem. [Zakres i testy](reports/customization-2026-10-17.md).
+0.40.0: dodatkowa personalizacja czcionki interfejsu, zaokrągleń, menu, listy połączeń i kart, sprawdzanie kopii SQLite i stabilniejsze zamykanie diagnostyki. [Wydanie](releases/release-0.40.0.md), [testy i ograniczenia](reports/release-verification-0.40.0.md).
 
 0.37.0: sprawdzone kopie SQLite i ochrona startu, odzyskiwanie SFTP i kolejka/ostrzeżenia `.part`, stabilne zaznaczenie oraz tymczasowe rozwijanie wyszukiwania w panelu połączeń. [Wydanie](releases/release-0.37.0.md).
 

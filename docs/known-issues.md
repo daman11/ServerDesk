@@ -2,6 +2,8 @@
 
 This is a public beta. Keep a backup before upgrading and validate the workflows you need in a test environment.
 
+- **Customization and backup checks (0.40.0):** interface fonts depend on local availability and fall back to the default family. Changes preview live; Cancel restores the previous appearance. Check backup verifies SQLite structure/schema, not application content or secrets. Restore remains manual; see [database backups](database-backups.md). Diagnostic cancellation drains owned work; an uncooperative provider may take time to finish.
+
 - **Exports and saved diagnostics (0.39.1):** configuration, Commands and Network Tools exports require a filesystem path. A completed temporary file replaces the destination after success; this is not a power-loss guarantee, and a hard process termination may leave `.part` files. New Unix files use owner-only permissions; exports remain plaintext. Invalid saved diagnostic data is preserved and reported instead of automatically reset. A diagnostic can complete with a warning if optional history/preferences persistence fails.
 
 - **Desktop acceptance (0.38.0):** dialogs react to monitor/DPI changes and restore resize limits. Automated mixed-scale tests are simulated; physical monitors, screen readers and native Kali/KDE/Wayland remain unverified. This build uses X11/XWayland and Secret Service, without a direct KWallet backend. See the [platform matrix and acceptance checklist](platform-support.md).

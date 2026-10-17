@@ -1,6 +1,6 @@
 # Systemy, DPI i dostępność — bramka 1.0
 
-Ten dokument rozdziela cele zgodności od zakończonej akceptacji. Wydanie pozostaje Public Beta. Bieżący etap roboczy po 0.37.0 nie nadaje nowemu systemowi statusu stabilnego wsparcia.
+Ten dokument rozdziela cele zgodności od zakończonej akceptacji. Wydanie pozostaje Public Beta. Wydanie 0.38.0 nie nadaje nowemu systemowi statusu stabilnego wsparcia.
 
 ## Macierz środowisk
 
@@ -43,11 +43,9 @@ Samo `present` przy zmiennej środowiskowej nie rozstrzyga przyczyny błędu. Do
 
 ### RDP: błąd TLS/NLA i pytanie o certyfikat
 
-Zielony wynik „Serwer RDP dostępny” potwierdza odpowiedź negocjacji i deklarowane NLA. Nie oznacza zweryfikowanego certyfikatu ani poprawnego logowania. Dokładny błąd klienta pozostaje w **Konsoli RDP**; przyciskiem w pasku sesji można przełączać ją z **Podsumowaniem RDP**. Po błędzie konsola jest widoczna, a po ponownym połączeniu służy do nowych pytań klienta.
+Od 0.38.0 Linux RDP działa w karcie ServerDesk przez klient X11 FreeRDP. Hasło i decyzję o niezaufanym certyfikacie obsługują graficzne okna ServerDesk. Porównaj SHA-256 z zaufanym źródłem; zgoda dotyczy bieżącej karty. Zielona diagnostyka dostępności nie potwierdza logowania. NLA pozostaje wymagane. Szczegóły zabezpieczeń i wymagań: [RDP integration](rdp-integration.md).
 
-Wcześniej ServerDesk uruchamiał FreeRDP w PTY z `/from-stdin:force`. Ten tryb blokuje interaktywne pytanie o niezaufany certyfikat w [FreeRDP 2.11.5](https://github.com/FreeRDP/FreeRDP/blob/2.11.5/client/common/client.c#L419) oraz [3.16.0](https://github.com/FreeRDP/FreeRDP/blob/3.16.0/client/common/client.c#L616). Bieżący build usuwa ten parametr: dane logowania i decyzję o certyfikacie obsługuje zwykły interaktywny klient. Zachowuje `/sec:nla`; nie dodaje `cert:ignore`, automatycznego zaufania ani hasła w argumentach procesu.
-
-Przy pytaniu klienta porównaj odcisk z zaufanym źródłem. W konsolowym pytaniu `Y/T/N` można odmówić przez `N`, a `T` oznacza zaufanie na tę próbę. Nie potwierdzaj zmienionego certyfikatu bez sprawdzenia. Usunięcie parametru przywraca możliwość odpowiedzi; nie rozwiązuje wszystkich błędów zgodności TLS, CredSSP ani kont Windows. Po odrzuceniu certyfikatu błąd połączenia jest oczekiwany.
+Nie ma konsoli CLI do obsługi logowania. Błędy TLS/NLA wymagają sprawdzenia danych, certyfikatu i konfiguracji serwera, a potem jawnego ponownego połączenia. W Wayland wymagane są XWayland i xfreerdp3/xfreerdp; sam klient wlfreerdp lub SDL nie wystarczy.
 
 ### Zmiana rozmiaru głównego okna na Linux
 

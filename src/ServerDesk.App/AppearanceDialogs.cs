@@ -26,9 +26,15 @@ internal static partial class Dialogs
         using var cancelled=ct.Register(()=>Avalonia.Threading.Dispatcher.UIThread.Post(()=>dialog.Close(false)));
         return await dialog.ShowDialog<bool>(owner);
     }
-    internal static async Task<CredentialInput?> Credentials(Window owner,bool key,bool rdp=false,bool vnc=false,string? notice=null)
+    internal static async Task<CredentialInput?> Credentials(Window owner,bool key,bool rdp=false,bool vnc=false,string? notice=null,ServerProfile? profile=null)
     {
         var stack=new StackPanel { Spacing=DesignTokens.Section }; stack.Children.Add(DesignSystem.PageHeading("key",vnc?L.T("Uwierzytelnianie VNC"):rdp?L.T("Uwierzytelnianie RDP"):L.T("Uwierzytelnianie SSH")));
+        if(rdp && profile!=null)
+        {
+            var endpoint=DesignSystem.Label(RdpConfiguration.Address(profile),false,17); endpoint.TextWrapping=TextWrapping.Wrap;
+            var identity=DesignSystem.Label(RdpIdentity.Parse(profile.Username,profile.Domain).WindowsUsername,true); identity.TextWrapping=TextWrapping.Wrap;
+            stack.Children.Add(DesignSystem.Card(new StackPanel { Spacing=6,Children={endpoint,identity} }));
+        }
         if(notice!=null) { var warning=Text(notice,12); warning.Name="CredentialRecoveryNotice"; DesignSystem.Resource(warning,TextBlock.ForegroundProperty,"Warning"); stack.Children.Add(warning); }
         stack.Children.Add(DesignSystem.Label(key?L.T("Passphrase klucza prywatnego"):L.T("Hasło użytkownika"),true));
         var input=new TextBox { PasswordChar='●',MaxLength=CredentialLimits.MaximumSecretBytes }; stack.Children.Add(input);

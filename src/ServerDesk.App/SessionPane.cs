@@ -35,7 +35,7 @@ internal sealed partial class SessionPane : WorkspacePane
     private Button? optionsButton;
     private readonly ScrollViewer restoredNotice=new() { Name="RestoredSessionNotice",IsVisible=false,HorizontalScrollBarVisibility=Avalonia.Controls.Primitives.ScrollBarVisibility.Disabled };
     internal bool HasAttemptedConnection { get; private set; }
-    internal bool HasActiveClient=>IsConnected || embeddedRdp is { IsRunning:true } || rdpProcess is { IsRunning:true } || Profile.Protocol==Protocol.RDP && terminal.IsLive;
+    internal bool HasActiveClient=>IsConnected || embeddedRdp is { IsRunning:true } || linuxRdp is { IsRunning:true } || rdpProcess is { IsRunning:true } || Profile.Protocol==Protocol.RDP && terminal.IsLive;
     private int? restoredPanel;
     private Control? rdpNotice;
     public static readonly DirectProperty<SessionPane,string> SessionTitleProperty=AvaloniaProperty.RegisterDirect<SessionPane,string>(nameof(SessionTitle),p=>p.SessionTitle);
@@ -132,7 +132,7 @@ internal sealed partial class SessionPane : WorkspacePane
     }
     private void CancelConnection()
     {
-        if(cancelRequested || IsConnected || IsRdpLoggedIn || !connecting && embeddedRdp is not { IsRunning:true,IsReconnecting:false })return;
+        if(cancelRequested || IsConnected || IsRdpLoggedIn || !connecting && embeddedRdp is not { IsRunning:true,IsReconnecting:false } && linuxRdp is not { IsRunning:true })return;
         cancelRequested=true; connectionLifetime.Cancel();
         if(!connecting) { ResetConnections(); SetStatus(L.T("Anulowano łączenie · ")+Profile.Endpoint,"○",SessionVisualState.Idle); }
         RenderOperationStatus();
@@ -183,7 +183,7 @@ internal sealed partial class SessionPane : WorkspacePane
         CancelFileViews();
         connectionLifetime.Cancel();
         var oldSsh=session; var oldSftp=sftp; var oldMonitor=monitor; var oldMonitorLoop=monitorLoop;
-        var oldRdp=rdpProcess; var oldVnc=vncSession; var oldSerial=serialSession;
+        var oldRdp=rdpProcess; var oldVnc=vncSession; var oldSerial=serialSession; var oldLinuxRdp=linuxRdp; linuxRdp=null;
         session=null; sftp=null; monitor=null; monitorLoop=Task.CompletedTask; ResetFileNavigation();
         UpdateTransferActions();
         // Kill an owned PTY before detaching it; Kill requires a realized terminal template.
@@ -194,9 +194,11 @@ internal sealed partial class SessionPane : WorkspacePane
         cpuHistory.Clear();
         ClearMetrics();
         if(Profile.Protocol==Protocol.RDP) { rdpProcess?.Dispose(); rdpProcess=null; ResetEmbeddedRdp(); }
+        if(oldLinuxRdp!=null) { oldLinuxRdp.Dispose(); Children.Remove(oldLinuxRdp); }
         // SSH.NET channel shutdown can wait on network timeouts. Keep it off the UI,
         // but retain the tasks so reconnect and application exit can drain them.
         var stopping=new List<Task> { oldMonitorLoop };
+        if(oldLinuxRdp!=null)stopping.Add(oldLinuxRdp.Shutdown);
         if(oldSsh!=null) { stopping.Add(Task.Run(oldSsh.Dispose)); stopping.Add(oldSsh.Completion); }
         if(oldSftp!=null)stopping.Add(oldSftp.DisposeAsync().AsTask());
         if(oldMonitor!=null)stopping.Add(Task.Run(oldMonitor.Dispose));
@@ -215,6 +217,7 @@ internal sealed partial class SessionPane : WorkspacePane
     {
         var ct=connectionLifetime.Token; ct.ThrowIfCancellationRequested();
         if(rdpProcess is { IsRunning:true } || terminal.IsLive) { state.Text=L.T("Klient RDP jest już uruchomiony w osobnym oknie."); return; }
+        if(UseLinuxEmbeddedRdp) { await LaunchLinuxEmbeddedRdpAsync(ct); return; }
         try
         {
             using var busy=BeginBusy(L.T("Sprawdzanie dostępności RDP i NLA…"));

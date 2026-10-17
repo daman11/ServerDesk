@@ -199,7 +199,7 @@ public sealed partial class MainWindow : Window
     {
         if(pane.IsBusy || closing || closePending || !sessions.Contains(pane))return;
         if(pane.Profile.Protocol==Protocol.Serial)return;
-        var secret=await Dialogs.Prompt(this,pane.Profile.Protocol==Protocol.VNC?L.T("Hasło VNC"):pane.Profile.Protocol==Protocol.RDP?L.T("Hasło RDP"):pane.Profile.Authentication==Authentication.PrivateKey?L.T("Passphrase klucza (puste dla klucza bez hasła)"):L.T("Hasło SSH"),secret:true);
+        var secret=pane.Profile.Protocol==Protocol.RDP && OperatingSystem.IsLinux()?await SessionSecretCoreAsync(pane.Profile,true):await Dialogs.Prompt(this,pane.Profile.Protocol==Protocol.VNC?L.T("Hasło VNC"):pane.Profile.Protocol==Protocol.RDP?L.T("Hasło RDP"):pane.Profile.Authentication==Authentication.PrivateKey?L.T("Passphrase klucza (puste dla klucza bez hasła)"):L.T("Hasło SSH"),secret:true);
         if(secret==null || closing || closePending || !sessions.Contains(pane))return;
         if((pane.HasActiveClient || pane.ActiveTransfers>0) && !await Dialogs.Confirm(this,L.T("Zmienić poświadczenia i połączyć ponownie?"),L.T("Bieżące połączenie, uruchomione polecenia i transfery zostaną przerwane.")))return;
         if(closing || closePending || !sessions.Contains(pane))return;

@@ -9,7 +9,7 @@ using ServerDesk.Core;
 
 namespace ServerDesk.Infrastructure;
 
-public sealed record RdpEndpointInfo(TimeSpan RoundTrip,bool SupportsNla,string Security,string? CertificateSubject=null,string? CertificateFingerprint=null,SslPolicyErrors CertificateErrors=SslPolicyErrors.None,DateTime? CertificateExpires=null);
+public sealed record RdpEndpointInfo(TimeSpan RoundTrip,bool SupportsNla,string Security,string? CertificateSubject=null,string? CertificateFingerprint=null,SslPolicyErrors CertificateErrors=SslPolicyErrors.None,DateTime? CertificateExpires=null,string? CertificateIssuer=null,DateTime? CertificateStarts=null);
 
 /// <summary>Checks RDP negotiation without sending an identity or credentials.</summary>
 public sealed class RdpEndpointProbe
@@ -33,21 +33,21 @@ public sealed class RdpEndpointProbe
             if(!nla)throw new IOException(L.T("Serwer nie uzgodnił NLA. Sprawdź obsługę CredSSP i konfigurację RDP serwera; zabezpieczenia klienta pozostają włączone."));
             var elapsed=watch.Elapsed;
             if(!inspectCertificate)return new(elapsed,true,protocol==8?"NLA / CredSSP (HYBRID_EX)":"NLA / CredSSP");
-            string? subject=null,fingerprint=null; DateTime? expires=null; var errors=SslPolicyErrors.None;
+            string? subject=null,fingerprint=null,issuer=null; DateTime? expires=null,starts=null; var errors=SslPolicyErrors.None;
             using var tls=new SslStream(stream,leaveInnerStreamOpen:true,(_,certificate,_,policyErrors)=>
             {
                 errors=policyErrors;
                 if(certificate!=null)
                 {
                     using var copy=new X509Certificate2(certificate);
-                    subject=copy.Subject; fingerprint=Convert.ToHexString(SHA256.HashData(copy.RawData)); expires=copy.NotAfter;
+                    subject=copy.Subject; issuer=copy.Issuer; fingerprint=Convert.ToHexString(SHA256.HashData(copy.RawData)); expires=copy.NotAfter; starts=copy.NotBefore;
                 }
                 // Do not accept an untrusted certificate and do not send credentials in this diagnostic.
                 return policyErrors==SslPolicyErrors.None;
             });
             try { await tls.AuthenticateAsClientAsync(new SslClientAuthenticationOptions { TargetHost=profile.Host,EnabledSslProtocols=SslProtocols.None },token); }
             catch(AuthenticationException) when(fingerprint!=null && errors!=SslPolicyErrors.None) { }
-            return new(elapsed,true,protocol==8?"NLA / CredSSP (HYBRID_EX)":"NLA / CredSSP",subject,fingerprint,errors,expires);
+            return new(elapsed,true,protocol==8?"NLA / CredSSP (HYBRID_EX)":"NLA / CredSSP",subject,fingerprint,errors,expires,issuer,starts);
         }
         catch(OperationCanceledException) when(!ct.IsCancellationRequested) { throw new TimeoutException(L.T("Serwer RDP nie odpowiedział w wyznaczonym czasie. Sprawdź adres, port, sieć/VPN i zaporę serwera.")); }
         catch(SocketException ex) { throw new IOException(L.F($"Nie można połączyć z serwerem RDP {profile.Host}:{profile.Port} ({ex.SocketErrorCode}). Sprawdź dostępność serwera i usługę Pulpit zdalny."),ex); }

@@ -127,8 +127,8 @@ internal static class ProfileEditorDialog
         var favorite=new CheckBox { Content=L.T("Ulubiony"),IsChecked=original.Favorite }; group.Children.Add(favorite);
 
         var display=Card(desktop,"Obraz i okno");
-        var rdpMode=new ComboBox { Name="RdpDisplayMode",ItemsSource=new[]{L.T("Osobne okno klienta"),L.T("W zakładce ServerDesk (Windows)")},SelectedIndex=(int)original.Rdp.DisplayMode,HorizontalAlignment=HorizontalAlignment.Stretch,IsEnabled=OperatingSystem.IsWindows() };
-        display.Children.Add(Field("Wyświetlanie pulpitu",rdpMode,3,OperatingSystem.IsWindows()?"Tryb w zakładce obsługuje podział widoku i dokowanie.":"Linux korzysta z osobnego okna FreeRDP."));
+        var rdpMode=new ComboBox { Name="RdpDisplayMode",ItemsSource=new[]{L.T("Osobne okno klienta"),L.T("W zakładce ServerDesk")},SelectedIndex=OperatingSystem.IsLinux()?1:(int)original.Rdp.DisplayMode,HorizontalAlignment=HorizontalAlignment.Stretch,IsEnabled=OperatingSystem.IsWindows() };
+        display.Children.Add(Field("Wyświetlanie pulpitu",rdpMode,3,OperatingSystem.IsWindows()?"Tryb w zakładce obsługuje podział widoku i dokowanie.":"Linux osadza klienta X11 FreeRDP w zakładce przez X11/XWayland."));
         var width=new TextBox { Text=original.Rdp.Width.ToString(),Name="RdpWidth" }; var height=new TextBox { Text=original.Rdp.Height.ToString(),Name="RdpHeight" };
         display.Children.Add(Pair(Field("Szerokość (640–7680)",width,3),Field("Wysokość (480–4320)",height,3)));
         var fullscreen=new CheckBox { Content=L.T("Pełny ekran"),IsChecked=original.Rdp.Fullscreen }; var dynamic=new CheckBox { Content=L.T("Dynamiczna rozdzielczość / skalowanie"),IsChecked=original.Rdp.DynamicResolution }; display.Children.Add(fullscreen); display.Children.Add(dynamic);
@@ -165,7 +165,7 @@ internal static class ProfileEditorDialog
             rts.IsEnabled=handshake.SelectedIndex<2;
             rdpShortcut.IsVisible=isRdp; navItems[3].IsVisible=isRdp;
             if(!isRdp && navigation.SelectedIndex==3)Select(0);
-            iconPicker.SetProtocol(selected); fullscreen.IsEnabled=rdpMode.SelectedIndex==0 || !OperatingSystem.IsWindows();
+            iconPicker.SetProtocol(selected); fullscreen.IsEnabled=rdpMode.SelectedIndex==0;
             title.Text=string.IsNullOrWhiteSpace(name.Text)?L.T("Nowe połączenie"):name.Text.Trim();
             address.Text=isSerial?L.F($"Serial · {serialPort.Text} · {baud.Text} baud"):$"{selected} · {(string.IsNullOrWhiteSpace(host.Text)?L.T("Adres serwera"):host.Text.Trim())}:{port.Text}";
             preview.Profile=original with { Protocol=selected,IconId=iconPicker.SelectedId,CustomIconPng=appearance.CustomIconPng,Color=ProfileAppearance.IsColor(appearance.SelectedColor)?appearance.SelectedColor:"" };

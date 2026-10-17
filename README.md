@@ -1,4 +1,4 @@
-# ServerDesk — 0.37.0 Public Beta
+# ServerDesk — 0.38.0 Public Beta
 
 Native Windows/Linux workspace for SSH, SFTP, RDP, VNC and serial connections. Built with C#, .NET 10 and Avalonia 12. Free and open source under the [MIT license](LICENSE).
 
@@ -6,17 +6,17 @@ Native Windows/Linux workspace for SSH, SFTP, RDP, VNC and serial connections. B
 
 ## Downloads and installation
 
-0.37.0 adds verified database snapshots, safer recovery and clearer SFTP transfer feedback, and stable connection-browser selection, filtering and folder state. [Release notes](docs/releases/release-0.37.0.md).
+0.38.0 brings Linux RDP into ServerDesk tabs, with graphical password entry and certificate review. It also includes the monitoring, connection-browser and desktop fixes developed after 0.37.0. [Release notes](docs/releases/release-0.38.0.md).
 
 | System | Package | Start |
 |---|---|---|
-| Windows x64 | `ServerDesk-0.37.0-win-x64-Setup.exe` | Run Setup; current-user installation and Start menu shortcut |
-| Windows x64 portable | `ServerDesk-0.37.0-win-x64.zip` | Extract everything; run `ServerDesk.App.exe` |
-| Linux x64 DEB | `serverdesk_0.37.0_amd64.deb` | `sudo apt install ./serverdesk_0.37.0_amd64.deb` |
-| Linux x64 archive | `ServerDesk-0.37.0-linux-x64.tar.gz` | Extract into a new directory; run `./ServerDesk.App` |
-| Source | `ServerDesk-0.37.0-source.zip` | .NET 10 SDK required |
+| Windows x64 | `ServerDesk-0.38.0-win-x64-Setup.exe` | Run Setup; current-user installation and Start menu shortcut |
+| Windows x64 portable | `ServerDesk-0.38.0-win-x64.zip` | Extract everything; run `ServerDesk.App.exe` |
+| Linux x64 DEB | `serverdesk_0.38.0_amd64.deb` | `sudo apt install ./serverdesk_0.38.0_amd64.deb` |
+| Linux x64 archive | `ServerDesk-0.38.0-linux-x64.tar.gz` | Extract into a new directory; run `./ServerDesk.App` |
+| Source | `ServerDesk-0.38.0-source.zip` | .NET 10 SDK required |
 
-The binary packages include .NET. Linux additionally needs its system X11/fontconfig libraries, Secret Service for remembered passwords and an installed FreeRDP client for RDP. Linux verification used Ubuntu/WSLg; other desktop/distribution combinations are experimental. ARM/macOS packages are not provided.
+The binary packages include .NET. Linux additionally needs its system X11/fontconfig libraries, Secret Service for remembered passwords and an installed X11 FreeRDP client (`xfreerdp3` or `xfreerdp`) for in-tab RDP. Linux verification used Ubuntu/WSLg; other desktop/distribution combinations are experimental. ARM/macOS packages are not provided.
 
 This beta is unsigned. Obtain it from a trusted release source and compare its SHA-256 with `SHA256SUMS.txt`. A checksum beside the download does not independently authenticate the publisher. No public download repository is configured in this source snapshot.
 
@@ -31,7 +31,7 @@ This beta is unsigned. Obtain it from a trusted release source and compare its S
 - SSH VT keyboard fixes, background PTY setup and coalesced resizing; real password/OpenSSH terminal acceptance checks.
 - SFTP symbolic-link navigation/details, remote link creation and explicit copying of resolved contents, with bounded directory traversal and protected link destinations.
 - Nine [Network Tools](docs/network-tools.md): Ping, Traceroute/MTR, DNS, TCP scanner, Wake-on-LAN, HTTP, TLS, subnet calculator and SNMP v2c/v3; standalone targets and editable server context.
-- Embedded Windows RDP; external Linux FreeRDP; embedded VNC; serial terminal.
+- Embedded RDP on Windows and Linux X11/XWayland; graphical Linux credentials and certificate review; embedded VNC; serial terminal.
 - One, two, three or four workspace panels, detachable tabs and recovery without automatic connections; configurable startup layout, new-tab placement, separators and tab-strip height.
 - Server/folder icons, colors, custom artwork, five themes and configurable interface/terminal.
 - Polish and English UI, destination-language reminders and Save and restart in Settings.

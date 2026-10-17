@@ -23,7 +23,7 @@ if [[ -n "${DBUS_SESSION_BUS_ADDRESS:-}" ]] && command -v busctl >/dev/null 2>&1
 else printf 'Secret Service: not checked; busctl/session bus unavailable.\n'; fi
 if command -v ldconfig >/dev/null 2>&1; then
     libraries="$(ldconfig -p 2>/dev/null || true)"
-    for library in libfontconfig.so.1 libICE.so.6 libSM.so.6 libX11.so.6 libXext.so.6 libXrender.so.1 libXrandr.so.2 libXi.so.6 libXcursor.so.1; do
+    for library in libfontconfig.so.1 libICE.so.6 libSM.so.6 libX11.so.6 libxcb.so.1 libXext.so.6 libXrender.so.1 libXrandr.so.2 libXi.so.6 libXcursor.so.1; do
         if awk '{print $1}' <<< "$libraries" | grep -Fx "$library" >/dev/null; then printf '%s: cached\n' "$library"; else printf '%s: CHECK system packages or LD_LIBRARY_PATH\n' "$library"; fi
     done
 fi

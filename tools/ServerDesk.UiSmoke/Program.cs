@@ -28,12 +28,14 @@ if(args.Contains("--published-startup")) { PublishedStartupChecks.Run(root,args[
 if(args.Contains("--published-restart")) { RestartProcessChecks.Run(root,args[Array.IndexOf(args,"--published-restart")+1]).GetAwaiter().GetResult(); return; }
 if(args.Contains("--native-restart-helper")) { AppBuilder.Configure<App>().UsePlatformDetect().WithInterFont().SetupWithoutStarting(); RestartProcessChecks.Helper(root,args[Array.IndexOf(args,"--native-restart-helper")+1]); return; }
 if(args.Contains("--native-startup")) { AppBuilder.Configure<App>().UsePlatformDetect().WithInterFont().SetupWithoutStarting(); NativeStartupChecks.Run(root); return; }
+if(args.Contains("--native-linux-rdp")) { AppBuilder.Configure<App>().UsePlatformDetect().WithInterFont().SetupWithoutStarting(); NativeLinuxRdpChecks.Run(root,int.Parse(args[Array.IndexOf(args,"--native-linux-rdp")+1])); return; }
 if(args.Contains("--native-titlebar")) { AppBuilder.Configure<App>().UsePlatformDetect().WithInterFont().SetupWithoutStarting(); NativeChromeChecks.Run(root); return; }
 AppBuilder.Configure<App>().UseHeadless(new AvaloniaHeadlessPlatformOptions { UseHeadlessDrawing=false }).UseSkia().WithInterFont().SetupWithoutStarting();
 if(args.Contains("--brand-assets")) { BrandAssets.Generate(root); return; }
 if(args.Contains("--ssh-acceptance")) { SshAcceptanceChecks.Run(root,args[1]); return; }
 if(args.Contains("--large-browser")) { LargeBrowserChecks.Run(root,args.Contains("--measure-only")); return; }
 if(args.Contains("--platform-ux")) { PlatformUxChecks.Run(root); return; }
+if(args.Contains("--rdp-gui")) { RdpGuiChecks.Run(root); return; }
 if(args.Contains("--linux-desktop")) { LinuxDesktopChecks.Run(root); return; }
 if(args.Contains("--linux-rdp-certificate")) { LinuxDesktopChecks.Certificate(root,args[Array.IndexOf(args,"--linux-rdp-certificate")+1]); return; }
 if(args.Contains("--credential-save")) { CredentialSaveChecks.Run(root); return; }

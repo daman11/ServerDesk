@@ -44,7 +44,7 @@ internal sealed partial class SessionPane
     }
     internal async Task ShowRestoredPanelAsync()
     { var panel=restoredPanel; restoredPanel=null; if(panel is >0 && Profile.Protocol==Protocol.SSH)await ShowAsync(panel.Value); }
-    internal override void FocusContent() { if(Profile.Protocol==Protocol.VNC && IsConnected)vncSurface?.Focus(); else if(terminal.IsVisible)terminal.Focus(); else if(files.IsVisible)remoteList.Focus(); else if(info.IsVisible)info.Focus(); else connectButton.Focus(); }
+    internal override void FocusContent() { if(linuxRdp is { IsLoggedIn:true })linuxRdp.FocusDesktop(); else if(Profile.Protocol==Protocol.VNC && IsConnected)vncSurface?.Focus(); else if(terminal.IsVisible)terminal.Focus(); else if(files.IsVisible)remoteList.Focus(); else if(info.IsVisible)info.Focus(); else connectButton.Focus(); }
     private void UpdateConnectionActions()
     {
         if(connectButton==null)return;
@@ -55,7 +55,8 @@ internal sealed partial class SessionPane
         connectButton.Classes.Set("live",live); connectButton.Classes.Set("primary",!live);
         connectButton.Content=DeskIcons.Labelled(live?authenticated?"success":UseEmbeddedRdp?"circle-dashed":"external-link":HasAttemptedConnection?"refresh":"connect",label,16,live?authenticated?"Success":"Warning":null); connectButton.Tag=label; connectButton.IsEnabled=!live && !IsBusy && !connecting;
         Avalonia.Automation.AutomationProperties.SetName(connectButton,label); ToolTip.SetTip(connectButton,live?authenticated?L.T("Ponowne uruchomienie: Opcje → Uruchom ponownie sesję"):L.T("RDP jest uruchomiony. Logowanie może oczekiwać na potwierdzenie certyfikatu w Windows."):label);
-        cancelConnectionButton.IsVisible=!authenticated && (connecting || embeddedRdp is { IsRunning:true,IsReconnecting:false }); cancelConnectionButton.IsEnabled=!cancelRequested;
+        if(UseLinuxEmbeddedRdp && live && !authenticated)ToolTip.SetTip(connectButton,L.T("Trwa logowanie do pulpitu RDP…"));
+        cancelConnectionButton.IsVisible=!authenticated && (connecting || embeddedRdp is { IsRunning:true,IsReconnecting:false } || linuxRdp is { IsRunning:true }); cancelConnectionButton.IsEnabled=!cancelRequested;
         foreach(var button in panelButtons.Values)button.IsEnabled=!connecting && IsConnected;
         if(Profile.Protocol==Protocol.RDP)UpdateRdpActions();
         if(Profile.Protocol is Protocol.VNC or Protocol.Serial)UpdateAdditionalActions();

@@ -5,8 +5,11 @@ namespace ServerDesk.Infrastructure;
 public sealed record RdpLaunch(string Executable, string[] Arguments, bool InteractiveConsole, string? ConfigurationFile=null);
 public interface IRdpClient
 {
+    bool SupportsEmbeddedLinux=>false;
     RdpLaunch Prepare(ServerProfile profile,RdpOptions options);
+    RdpLaunch PrepareEmbeddedLinux(ServerProfile profile,RdpOptions options,ulong parentWindow,string fingerprint)=>throw new NotSupportedException();
     Task<RdpEndpointInfo?> CheckAsync(ServerProfile profile,CancellationToken ct)=>Task.FromResult<RdpEndpointInfo?>(null);
+    Task<RdpEndpointInfo?> InspectCertificateAsync(ServerProfile profile,CancellationToken ct)=>CheckAsync(profile,ct);
 }
 public static class RdpConfiguration
 {
@@ -35,9 +38,28 @@ public static class RdpConfiguration
         }
         return args.ToArray();
     }
+    public static string[] EmbeddedFreeRdpArguments(ServerProfile profile,RdpOptions options,ulong parentWindow,string certificateFingerprint)
+    {
+        if(parentWindow==0)throw new ArgumentException(L.T("Osadzony pulpit RDP nie ma gotowego okna X11."));
+        if(string.IsNullOrWhiteSpace(profile.Username))throw new ArgumentException(L.T("Wpisz login w profilu serwera, aby połączyć RDP w zakładce."));
+        var fingerprint=RdpCertificateFingerprint.Display(certificateFingerprint);
+        var args=FreeRdpArguments(profile,options with { Fullscreen=false }).ToList();
+        // GUI owns the trust decision and password input. Only the approved exception
+        // is allowed; another untrusted certificate is denied without a CLI prompt.
+        args.Add("/cert:deny,fingerprint:sha256:"+fingerprint);
+        args.Add("/from-stdin:force");
+        args.Add("/parent-window:"+parentWindow.ToString(System.Globalization.CultureInfo.InvariantCulture));
+        args.Add("-decorations"); args.Add("-grab-keyboard"); args.Add("-toggle-fullscreen"); args.Add("-auto-reconnect");
+        args.Add("/log-level:ERROR");
+        return args.ToArray();
+    }
 }
 public sealed class ExternalRdpClient(AppPaths? paths=null) : IRdpClient
 {
+    public bool SupportsEmbeddedLinux=>OperatingSystem.IsLinux();
+    public async Task<RdpEndpointInfo?> InspectCertificateAsync(ServerProfile profile,CancellationToken ct)=>await new RdpEndpointProbe().CheckAsync(profile,ct,inspectCertificate:true);
+    public RdpLaunch PrepareEmbeddedLinux(ServerProfile profile,RdpOptions options,ulong parentWindow,string fingerprint)=>new(FindEmbeddedLinuxClient(),RdpConfiguration.EmbeddedFreeRdpArguments(profile,options,parentWindow,fingerprint),false);
+    public static string FindEmbeddedLinuxClient()=>new[]{"xfreerdp3","xfreerdp"}.Select(FindExecutable).FirstOrDefault(x=>x!=null)??throw new FileNotFoundException(L.T("Brak klienta X11 FreeRDP. Zainstaluj freerdp3-x11; osadzony pulpit wymaga X11/XWayland."));
     public async Task<RdpEndpointInfo?> CheckAsync(ServerProfile profile,CancellationToken ct)=>await new RdpEndpointProbe().CheckAsync(profile,ct);
     public RdpLaunch Prepare(ServerProfile profile,RdpOptions options)
     {

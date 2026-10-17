@@ -1,6 +1,6 @@
 # Dokumentacja / Documentation
 
-Bieżące wydanie: [0.37.0 Public Beta](releases/release-0.37.0.md) — dane, panel połączeń i SFTP. [Zakres testów wydania](reports/release-verification-0.37.0.md).
+Bieżące wydanie: [0.38.0 Public Beta](releases/release-0.38.0.md) — osadzone RDP Linux i graficzne logowanie/certyfikaty. [Zakres testów wydania](reports/release-verification-0.38.0.md).
 
 | Temat / Topic | Dokument |
 |---|---|

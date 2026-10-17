@@ -1,8 +1,10 @@
-# Pierwotne MVP — wydanie 0.37.0
+# Pierwotne MVP — wydanie 0.38.0
+
+0.38.0 osadza Linux RDP w karcie X11/XWayland i dodaje graficzne hasło/certyfikat. Zawiera również opisane poniżej zmiany rozwijane po 0.37.0. [Bieżące wydanie](releases/release-0.38.0.md), [weryfikacja](reports/release-verification-0.38.0.md), [model zaufania i ograniczenia RDP](rdp-integration.md).
 
 0.37.0 stabilizuje dane, SFTP i przeglądarkę połączeń: sprawdzone kopie SQLite, ręczne odzyskiwanie SFTP, wskazówki błędów i plików częściowych oraz zachowanie zaznaczenia i zwiniętych folderów. [Wydanie](releases/release-0.37.0.md), [zakres weryfikacji](reports/release-verification-0.37.0.md).
 
-Zmiany robocze po 0.37.0 poprawiają monitoring: odczyt sieci bez JSON na starszym iproute2, domyślne bramy IPv6 obok IPv4 i pomijanie niespójnego przedziału CPU zamiast fałszywego 0%. Celowane testy obejmują parsery, własny OpenSSH, PL/EN i powrót monitoringu po zerwaniu jego transportu. [Dokładny zakres](reports/monitoring-compatibility-2026-10-16.md); bez nowego wydania paczek i bez deklaracji pełnej macierzy dystrybucji.
+Zmiany monitoringu po 0.37.0: odczyt sieci bez JSON na starszym iproute2, domyślne bramy IPv6 obok IPv4 i pomijanie niespójnego przedziału CPU zamiast fałszywego 0%. Celowane testy obejmują parsery, własny OpenSSH, PL/EN i powrót monitoringu po zerwaniu jego transportu. [Dokładny zakres](reports/monitoring-compatibility-2026-10-16.md); bez deklaracji pełnej macierzy dystrybucji.
 
 Kolejny etap roboczy ogranicza tworzenie ukrytych wierszy i menu w drzewie połączeń oraz usuwa komunikat nakładający się na puste foldery. Import, filtrowanie i sortowanie 5000 profili/200 folderów sprawdzono na Windows. [Zakres i pomiary](reports/browser-scalability-2026-10-16.md); fizyczne gesty, głębsze drzewa i długie sesje pozostają w planie 1.0.
 
@@ -30,7 +32,7 @@ Ta lista odnosi się do pierwotnej specyfikacji ServerDesk i jej kryteriów goto
 | Upload/download i katalogi | Rzeczywiste transfery i porównanie bajtów Windows/Linux, limit dwóch aktywnych zadań, postęp/prędkość, nadpisywanie za zgodą, cancel/retry i raportowanie pominięć. | 0.29.0: sprawdzone silent loss upload/download, zerwane nadpisanie, zachowanie oryginałów i retry. Pozostają dalsze fazy/WAN i wznawianie; zdalny .part może pozostać. |
 | Dowiązania symboliczne | **0.27.0:** rozpoznanie, szczegóły rzeczywistego celu, przejście do katalogu, tworzenie zdalnego dowiązania oraz osobne kopiowanie zawartości wybranego celu po potwierdzeniu. Zwykła rekurencja pomija dowiązania. | Przenoszenie samych obiektów dowiązań między platformami pozostaje poza obsługiwanym trybem; nie jest utożsamiane z kopiowaniem zawartości. |
 | Server Info, rzeczywiste CPU/RAM/dyski | Zbieranie przez SSH i standardowe /proc/polecenia bez agenta/sudo; CPU z kolejnych próbek, RAM/swap, dyski, sieć, system, wykres i ograniczanie pracy nieaktywnych sesji. 0.31.0: próbka zachowuje poprawne sekcje przy braku df/ip/lscpu lub niedostępnym CPU/RAM; osobne komunikaty, walidacja liczników i nowy punkt odniesienia po przerwie. | Pozostałe dystrybucje i szersza macierz uprawnień/odmian poleceń; kontrolowane fixture nie zastępuje testu fizycznej dystrybucji. |
-| Skonfigurowanie i uruchomienie RDP | Windows: osadzony natywny host i wcześniejsze rzeczywiste logowanie lokalne. Linux: zewnętrzny FreeRDP z jawnym oznaczeniem; jest to dopuszczony w specyfikacji wariant początkowy. | Osadzony framebuffer Linux, AD/Microsoft, pełny schowek/input/utrata sieci i fizyczne mieszane DPI. Test hosta EXE nie oznacza nowego testu logowania. |
+| Skonfigurowanie i uruchomienie RDP | Windows: osadzony natywny host i wcześniejsze rzeczywiste logowanie lokalne. Linux 0.38.0: X11 FreeRDP osadzony w karcie, okna hasła i certyfikatu, XWayland w sesji Wayland. | Osadzony framebuffer Linux, AD/Microsoft, pełny schowek/input/utrata sieci i fizyczne mieszane DPI. Test hosta EXE nie oznacza nowego testu logowania. |
 | Bezpieczne przechowywanie poświadczeń | Windows DPAPI, Linux Secret Service, opcjonalny zapis, powiązanie z tożsamością profilu; JSON i SQLite bez sekretów. GNOME Keyring zweryfikowano w izolacji. | KWallet/Secret Service w rzeczywistym KDE; inne sesje keyringu. |
 | Import/eksport między platformami | Wersjonowany JSON bez haseł i kluczy prywatnych, foldery/ikony/personalizacja, nowe identyfikatory importowanych profili i atomowa walidacja. | Dodatkowe rzeczywiste migracje konfiguracji użytkowników i bardzo duże importy. |
 | Ciemny i jasny motyw, wygodny UI | Pięć motywów, czcionka/gęstość/akcent, ikony/grafiki, PL/EN, ustawienia z wyszukiwaniem, responsywność i poprawianie położenia okna poza ekranem. | Czytniki ekranu, zmiany motywu OS w pracy, fizyczne DPI i pozostałe kombinacje sprzętu. |
@@ -51,7 +53,7 @@ Etap 0.31.0 przenosi przygotowanie klucza z passphrase oraz pełny odczyt monito
 
 1. Dłuższe sesje, setki profili i większe drzewa SFTP; pomiary responsywności/pamięci i utrata sieci podczas transferów.
 2. Kubuntu/KWallet oraz pozostałe docelowe systemy i sprzęt: Windows 10, fizyczny X11/Wayland, klawiatury/IME i mieszane DPI.
-3. Rozszerzenie macierzy RDP oraz docelowe osadzanie Linux; obecny fallback FreeRDP pozostaje jawnie opisany.
+3. Rozszerzenie macierzy osadzonego RDP, akceptacja KDE/XWayland oraz docelowy framebuffer dla natywnego Wayland.
 4. Pozostałe serwery SSH/SFTP, fizyczne gesty/mysz terminalowa i szersza macierz protokołów klawiatury.
 
 Nie ogłaszamy pełnego MVP za zakończone na podstawie samego istnienia kontrolek lub zielonej kompilacji. Wyniki tego etapu i granice testów zapisuje [raport weryfikacji](reports/release-verification-0.36.2.md).

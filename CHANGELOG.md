@@ -2,8 +2,16 @@
 
 ## Unreleased
 
+## 0.38.0 — Public Beta — 2026-10-17
+
+- Host Linux X11 FreeRDP inside ServerDesk tabs, retaining the same authenticated desktop across tab changes, split views and docking. Wayland sessions use XWayland.
+- Add masked RDP credentials and a graphical certificate review with selectable SHA-256, identity warnings and explicit verification before trusting an exceptional certificate for the current tab.
+- Pass Linux RDP passwords through redirected stdin, isolate the client trust cache, retain NLA, and drain/stop owned processes on reconnect and shutdown. Keep native Wayland, Linux RDP file drag-and-drop and the wider physical keyboard/clipboard matrix outside this release.
+- Add bounded password/argument/lifecycle tests, PL/EN RDP GUI coverage and an opt-in disposable NLA/Xvfb acceptance lab.
+
+
 - Keep FreeRDP certificate confirmation interactive by removing `/from-stdin:force` from PTY launches; retain NLA and normal certificate verification.
-- Preserve the RDP console after client errors and add a console/summary toggle with Polish/English guidance.
+- Retain bounded console diagnostics for the legacy external-client adapter; production Linux RDP now uses GUI authentication and localized exit feedback.
 - Add client-side resize edges and a visible corner grip for the Linux main window; hide the grips when maximized or resizing is disabled.
 
 - Replace the generic connection-time credential-save error with an explicit choice to connect without another save attempt or cancel. Explain Linux Secret Service requirements in PL/EN while preserving the existing secure storage backend.

@@ -22,11 +22,11 @@ Architecture: amd64
 Maintainer: ServerDesk Project
 Section: net
 Priority: optional
-Depends: libc6 (>= 2.35), libfontconfig1, libx11-6, libxext6, libxrender1, libice6, libsm6, libxrandr2, libxi6, libxcursor1, libssl3 | libssl3t64, libicu76 | libicu74 | libicu72 | libicu70
-Recommends: libsecret-tools, iputils-ping
+Depends: libc6 (>= 2.35), libfontconfig1, libx11-6, libxcb1, libxext6, libxrender1, libice6, libsm6, libxrandr2, libxi6, libxcursor1, libssl3 | libssl3t64, libicu76 | libicu74 | libicu72 | libicu70
+Recommends: libsecret-tools, iputils-ping, freerdp3-x11 | freerdp2-x11
 Description: Server administration workspace (public beta)
  SSH, SFTP, monitoring, VNC, serial sessions and Network Tools in Avalonia.
- RDP uses an external FreeRDP client on Linux. MIT licensed.
+ Linux RDP is hosted in a ServerDesk tab using X11 FreeRDP. MIT licensed.
 EOF
 find "$package" -type d -exec chmod 755 {} +
 find "$package" -type f -exec chmod 644 {} +

@@ -2,6 +2,7 @@ using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Threading;
 using System.Diagnostics;
+using ServerDesk.Infrastructure;
 
 namespace ServerDesk.App;
 
@@ -9,8 +10,46 @@ internal sealed partial class SessionPane
 {
     private WindowsRdpHost? embeddedRdp;
     internal WindowsRdpHost? RdpHost=>embeddedRdp;
-    internal bool IsRdpLoggedIn=>embeddedRdp is { IsLoggedIn:true };
-    internal nint EmbeddedRdpHandle=>embeddedRdp?.WindowHandle??0;
+    private LinuxRdpHost? linuxRdp;
+    internal bool IsRdpLoggedIn=>embeddedRdp is { IsLoggedIn:true } || linuxRdp is { IsLoggedIn:true };
+    internal nint EmbeddedRdpHandle=>linuxRdp?.WindowHandle??embeddedRdp?.WindowHandle??0;
+    private string? approvedLinuxRdpFingerprint;
+    private async Task LaunchLinuxEmbeddedRdpAsync(CancellationToken ct)
+    {
+        LinuxRdpProcessSession.ValidatePassword(secret);
+        if(string.IsNullOrWhiteSpace(Profile.Username))throw new ArgumentException(L.T("Wpisz login w profilu serwera, aby połączyć RDP w zakładce."));
+        LastRdpEndpoint=null; rdpCertificate.IsVisible=false; rdpDiagnostic.Text=L.T("Sprawdzanie RDP i certyfikatu…");
+        DesignSystem.Resource(rdpDiagnostic,Avalonia.Controls.TextBlock.ForegroundProperty,"ForegroundSecondary");
+        var certificate=await rdp.InspectCertificateAsync(Profile,ct)??throw new InvalidDataException(L.T("Brak poprawnego odcisku SHA-256 certyfikatu RDP. Sprawdź serwer ponownie."));
+        var fingerprint=ServerDesk.Core.RdpCertificateFingerprint.Normalize(certificate.CertificateFingerprint!); RenderRdpEndpoint(certificate);
+        if(certificate.CertificateErrors!=System.Net.Security.SslPolicyErrors.None && approvedLinuxRdpFingerprint!=fingerprint)
+        {
+            if(!await Dialogs.RdpCertificate(owner,Profile,certificate,ct)) { CancelConnection(); throw new OperationCanceledException(ct); }
+            approvedLinuxRdpFingerprint=fingerprint;
+        }
+        ct.ThrowIfCancellationRequested();
+        var host=new LinuxRdpHost(); linuxRdp=host; Grid.SetRow(host,2); Children.Add(host);
+        host.DesktopCreated+=()=>
+        {
+            if(disposed!=0 || !ReferenceEquals(linuxRdp,host))return;
+            connectionStarted=Stopwatch.GetTimestamp(); SetStatus(L.F($"RDP · {Profile.Host}:{Profile.Port} · zalogowano"),"●"); _=RecordSuccessfulConnectionAsync();
+            if(IsActive && owner.Workspace.Focused==WorkspaceId && TopLevel.GetTopLevel(this) is Window { IsActive:true })host.FocusDesktop();
+        };
+        host.FocusReleased+=()=> { if(ReferenceEquals(linuxRdp,host))optionsButton?.Focus(); };
+        host.FocusEntered+=()=> { if(ReferenceEquals(linuxRdp,host))owner.FocusSession(this); };
+        host.Disconnected+=code=>
+        {
+            if(disposed!=0 || !ReferenceEquals(linuxRdp,host))return;
+            host.IsVisible=false; if(rdpNotice!=null)rdpNotice.IsVisible=true;
+            var result=ServerDesk.Core.RdpExitStatus.FromClient(code,true,interactiveConsole:false); rdpError=result.IsError?result.Message:"";
+            SetStatus(result.Message,"○",result.IsError?SessionVisualState.Failed:SessionVisualState.Closed);
+        };
+        if(rdpNotice!=null)rdpNotice.IsVisible=false;
+        await host.Ready.WaitAsync(TimeSpan.FromSeconds(8),ct); ct.ThrowIfCancellationRequested();
+        var launch=rdp.PrepareEmbeddedLinux(Profile,Profile.Rdp with { Clipboard=clipboard.IsChecked==true },checked((ulong)host.WindowHandle.ToInt64()),fingerprint);
+        await host.StartAsync(launch,secret,ct);
+        if(!host.IsLoggedIn)SetStatus(L.T("Trwa logowanie do pulpitu RDP…"),"◌",SessionVisualState.Connecting);
+    }
     private async Task LaunchEmbeddedRdpAsync(CancellationToken ct)
     {
         if(string.IsNullOrWhiteSpace(Profile.Username))throw new ArgumentException(L.T("Wpisz login w profilu serwera, aby połączyć RDP w zakładce."));

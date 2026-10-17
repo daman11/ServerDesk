@@ -105,19 +105,22 @@ public sealed partial class MainWindow
         var window=floating.Window; var frame=FrameAllowance(window,false); var fit=original.Fit(ScreenAreas(),frameWidth:frame.Width,frameHeight:frame.Height);
         window.MinWidth=Math.Min(520,fit.Width); window.MinHeight=Math.Min(380,fit.Height); window.Width=fit.Width; window.Height=fit.Height; window.Position=new PixelPoint(fit.X,fit.Y); floating.NormalGeometry=fit;
     }
-    private async Task<string?> SessionSecretAsync(ServerProfile profile)
+    private Task<string?> SessionSecretAsync(ServerProfile profile)=>SessionSecretCoreAsync(profile,false);
+    private async Task<string?> SessionSecretCoreAsync(ServerProfile profile,bool forcePrompt)
     {
         if(profile.Protocol==Protocol.Serial || profile.Protocol==Protocol.VNC && profile.Vnc.Authentication==VncAuthentication.None)return "";
-        if(profile.Protocol==Protocol.RDP && (!OperatingSystem.IsWindows() || profile.Rdp.DisplayMode!=RdpDisplayMode.Embedded))return "";
+        if(profile.Protocol==Protocol.RDP && !OperatingSystem.IsLinux() && (!OperatingSystem.IsWindows() || profile.Rdp.DisplayMode!=RdpDisplayMode.Embedded))return "";
+        if(profile.Protocol==Protocol.RDP && OperatingSystem.IsLinux() && string.IsNullOrWhiteSpace(profile.Username))throw new ArgumentException(L.T("Wpisz login w profilu serwera, aby połączyć RDP w zakładce."));
         string secret; string? notice=null;
-        try { secret=await credentials.GetAsync(CredentialReference.ForProfile(profile),lifetime.Token)??""; }
+        try { secret=forcePrompt?"":await credentials.GetAsync(CredentialReference.ForProfile(profile),lifetime.Token)??""; }
         catch(CredentialReadException ex)
         {
             secret=""; notice=ex.Message; vm.Status=notice;
             Serilog.Log.Warning("Saved credential unavailable: {Type}",ex.InnerException?.GetType().Name??ex.GetType().Name);
         }
         if(secret.Length>0)return secret;
-        var input=await Dialogs.Credentials(this,profile.Protocol==Protocol.SSH && profile.Authentication==Authentication.PrivateKey,profile.Protocol==Protocol.RDP,profile.Protocol==Protocol.VNC,notice); if(input==null)return null;
+        var input=await Dialogs.Credentials(this,profile.Protocol==Protocol.SSH && profile.Authentication==Authentication.PrivateKey,profile.Protocol==Protocol.RDP,profile.Protocol==Protocol.VNC,notice,profile); if(input==null)return null;
+        if(profile.Protocol==Protocol.RDP && OperatingSystem.IsLinux())LinuxRdpProcessSession.ValidatePassword(input.Secret);
         if(input.Remember && input.Secret.Length>0)
         {
             try { await credentials.SaveAsync(CredentialReference.ForProfile(profile),input.Secret,lifetime.Token); }

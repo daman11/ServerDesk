@@ -1,6 +1,6 @@
 # Droga do ServerDesk 1.0
 
-Punkt wyjścia: 0.37.0 Public Beta. Funkcje rdzenia i dodatków istnieją; stan implementacji oraz granice wcześniejszych testów opisuje [MVP](mvp-status.md). Poniższa lista jest bieżącym planem stabilizacji, a nie deklaracją gotowości 1.0.
+Punkt wyjścia: 0.38.0 Public Beta. Funkcje rdzenia i dodatków istnieją; stan implementacji oraz granice wcześniejszych testów opisuje [MVP](mvp-status.md). Poniższa lista jest bieżącym planem stabilizacji, a nie deklaracją gotowości 1.0.
 
 Małe kroki kończą się commitem, celowanymi sprawdzeniami i EXE do uruchomienia z folderu. Pełna macierz i paczki są przeznaczone dla większych etapów, RC i wydania 1.0.
 
@@ -34,7 +34,7 @@ Małe kroki kończą się commitem, celowanymi sprawdzeniami i EXE do uruchomien
 ## 3. RDP, VNC i Serial — do domknięcia akceptacji
 
 - [ ] Uzupełnić [macierz RDP](rdp-test-matrix.md): lokalne/AD, certyfikaty, schowek w obie strony, pliki, fokus, fizyczne klawisze i awarie sieci.
-- [ ] Wyjaśnić lub rozszerzyć pełny ekran osadzonego RDP; obecnie pełny ekran dotyczy klienta zewnętrznego. Zweryfikować zewnętrzne FreeRDP na natywnym desktopie Linux.
+- [ ] Wyjaśnić lub rozszerzyć pełny ekran osadzonego RDP; obecnie pełny ekran dotyczy klienta zewnętrznego. Zweryfikować osadzone FreeRDP na natywnym KDE/XWayland; test izolowany Xvfb nie zastępuje akceptacji pulpitu.
 - [ ] Rzeczywiste implementacje VNC i długie sesje; jawnie zachować ograniczenie braku TLS/identyfikacji serwera.
 - [ ] Fizyczne adaptery Serial: parametry, flow control i odłączanie w trakcie pracy.
 
@@ -61,4 +61,4 @@ Małe kroki kończą się commitem, celowanymi sprawdzeniami i EXE do uruchomien
 - [ ] Po decyzji o publikacji: GitHub/CI, kanał prywatnych zgłoszeń bezpieczeństwa i pilotaż RC. Podpis wydawcy Windows jest zalecany przed szeroką dystrybucją.
 - [ ] Brak otwartych błędów krytycznych dotyczących bezpieczeństwa, utraty danych, zawieszania i podstawowych połączeń; zakończona macierz deklarowanego wsparcia.
 
-Synchronizacja, bastion/forwarding, pluginy, nowe platformy, integracje hypervisorów, YAML i dalsze biblioteki producentów nie blokują 1.0. Zewnętrzne RDP na Linux jest dopuszczonym w pierwotnym MVP wariantem. Ograniczony zakres wsparcia musi być jawny; nie nadajemy statusu stabilnego konfiguracji, której nie sprawdziliśmy.
+Synchronizacja, bastion/forwarding, pluginy, nowe platformy, integracje hypervisorów, YAML i dalsze biblioteki producentów nie blokują 1.0. Od 0.38.0 Linux RDP korzysta z osadzenia X11/XWayland. Natywny backend Wayland pozostaje dalszym zakresem. Ograniczony zakres wsparcia musi być jawny; nie nadajemy statusu stabilnego konfiguracji, której nie sprawdziliśmy.

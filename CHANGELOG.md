@@ -2,6 +2,8 @@
 
 ## Unreleased
 
+- Give connection folders distinct headers, persistent folder symbols alongside custom icons, consistent expander spacing and localized Empty badges for empty leaves.
+- Add 36 selectable system/service symbols for profiles and folders, including Linux distributions, Windows Server, Proxmox, Docker, Kubernetes, web servers, databases and monitoring tools. Bundle pinned Simple Icons silhouettes with source hashes, attribution and individual licenses; render filled marks in theme foreground colors.
 - Start new connections in the selected folder (or selected server's folder), retaining an empty root default when nothing is selected.
 - Keep folder rename/delete prompts tied to their original target; preserve other selections, remap collapsed descendant paths after a successful rename and clear them after deletion.
 - Add a root-folder drop target, reject unchanged/unknown/filtered profile drops, and reveal/select a profile after moving it into a folder.

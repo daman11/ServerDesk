@@ -25,15 +25,19 @@ public sealed class ProfileIconTests
         var profile=new ServerProfile { Name="Future",Host="host",Username="admin",IconId="future-icon-2" }; profile.Validate();
         Assert.Equal("ssh",ProfileIcons.Resolve(profile)); Assert.Equal("future-icon-2",profile.IconId);
     }
-    [Fact]
-    public async Task Icons_persist_duplicate_and_export_without_credential_reuse()
+    [Theory]
+    [InlineData("database")]
+    [InlineData("brand-docker")]
+    [InlineData("brand-proxmox")]
+    [InlineData("os-windows")]
+    public async Task Icons_persist_duplicate_and_export_without_credential_reuse(string icon)
     {
         var root=Path.Combine(Path.GetTempPath(),"serverdesk-icon-test-"+Guid.NewGuid().ToString("N"));
         try
         {
             var repo=new ProfileRepository(new AppPaths(root)); await repo.InitializeAsync();
-            var profile=new ServerProfile { Name="Database",Host="localhost",Username="admin",IconId="database" }; await repo.SaveAsync(profile);
-            Assert.Equal("database",(await repo.ListAsync()).Single().IconId);
+            var profile=new ServerProfile { Name="Database",Host="localhost",Username="admin",IconId=icon }; await repo.SaveAsync(profile);
+            Assert.Equal(icon,(await repo.ListAsync()).Single().IconId);
             var duplicate=profile with { Id=Guid.NewGuid() }; Assert.Equal(profile.IconId,duplicate.IconId);
             using var export=new MemoryStream(); await repo.ExportAsync(export); export.Position=0; await repo.ImportAsync(export);
             var imported=(await repo.ListAsync()).Single(p=>p.Id!=profile.Id); Assert.Equal(profile.IconId,imported.IconId); Assert.Null(imported.LastConnected);

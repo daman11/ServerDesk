@@ -46,6 +46,13 @@ try {
     foreach($notice in (Get-Content third-party/licenses/manifest.json -Raw | ConvertFrom-Json)){
         if((Get-FileHash -LiteralPath "third-party/licenses/$($notice.file)").Hash -ne $notice.sha256){$problems.Add("Upstream notice bytes changed: $($notice.file)")}
     }
+    $brands=Get-Content third-party/simple-icons/manifest.json -Raw | ConvertFrom-Json
+    foreach($asset in $brands.assets){
+        if((Get-FileHash -LiteralPath "src/ServerDesk.App/Assets/Brands/$($asset.name).svg").Hash -ne $asset.sha256){$problems.Add("Upstream brand bytes changed: $($asset.name)")}
+    }
+    foreach($notice in $brands.notices){
+        if((Get-FileHash -LiteralPath "third-party/simple-icons/$($notice.file)").Hash -ne $notice.sha256){$problems.Add("Upstream brand notice bytes changed: $($notice.file)")}
+    }
     if($problems.Count -gt 0){throw ($problems -join "`n")}
     Write-Output "PASS repository content: $($files.Count) files, required metadata, generated/private-file exclusions, credential patterns, portable paths, pinned Actions, Markdown links and upstream notice hashes"
     Write-Output 'This is a bounded content check, not a complete secret or security audit.'

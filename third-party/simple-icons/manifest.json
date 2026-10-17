@@ -1,0 +1,353 @@
+{
+  "project": "Simple Icons",
+  "version": "16.0.0",
+  "commit": "28241d80f8422eaed317ef968ad1e40b6d0d9163",
+  "source": "https://github.com/simple-icons/simple-icons",
+  "assets": [
+    {
+      "name": "brand-linux",
+      "slug": "linux",
+      "title": "Linux",
+      "sha256": "7e55f2779ae11a83c9dad2d0414a65d8ca7867d0716ce58bfe41ed299ae1447f",
+      "source": "https://www.linuxfoundation.org/the-linux-mark/",
+      "guidelines": null,
+      "license": null
+    },
+    {
+      "name": "brand-ubuntu",
+      "slug": "ubuntu",
+      "title": "Ubuntu",
+      "sha256": "b0aca674c881a07bb60b26afbcee07093ae419e29ee38e376f938817fa66ae03",
+      "source": "https://design.ubuntu.com/resources",
+      "guidelines": "https://design.ubuntu.com/brand",
+      "license": null
+    },
+    {
+      "name": "brand-debian",
+      "slug": "debian",
+      "title": "Debian",
+      "sha256": "8835536d63c80990f9c90c935982ba329d163e707c894278ca6bd73258d1962b",
+      "source": "https://www.debian.org/logos",
+      "guidelines": "https://www.debian.org/logos/",
+      "license": {
+        "type": "CC-BY-SA-3.0"
+      }
+    },
+    {
+      "name": "brand-rockylinux",
+      "slug": "rockylinux",
+      "title": "Rocky Linux",
+      "sha256": "a65476b168c4ef14c6b743e7eb3875e56c9d60ca15bbaef57a72a6cdeab242d0",
+      "source": "https://github.com/rocky-linux/branding/blob/94e97dd30b87d909cc4f6a6838a2926f77f9ac47/logo/src/icon-black.svg",
+      "guidelines": null,
+      "license": {
+        "type": "CC-BY-SA-4.0"
+      }
+    },
+    {
+      "name": "brand-almalinux",
+      "slug": "almalinux",
+      "title": "AlmaLinux",
+      "sha256": "d31e95e025c2299efb0fcbf64965081c5815ae32a54ad39db20b0c16327a6ef6",
+      "source": "https://almalinux.org",
+      "guidelines": "https://almalinux.org/p/the-almalinux-os-trademark-usage-policy/",
+      "license": null
+    },
+    {
+      "name": "brand-redhat",
+      "slug": "redhat",
+      "title": "Red Hat",
+      "sha256": "3d0e1854a9dad1a8ad11132843f522f948197ec0e0ee49b7a51d5fdf44230568",
+      "source": "https://www.redhat.com/en/about/brand/new-brand/details",
+      "guidelines": null,
+      "license": null
+    },
+    {
+      "name": "brand-freebsd",
+      "slug": "freebsd",
+      "title": "FreeBSD",
+      "sha256": "57c61b8658266e79ae3d753d367ebb56d5157e929fc72b2bc6ba7fe7a1059584",
+      "source": "https://www.freebsdfoundation.org/about/project/",
+      "guidelines": null,
+      "license": null
+    },
+    {
+      "name": "brand-proxmox",
+      "slug": "proxmox",
+      "title": "Proxmox",
+      "sha256": "95b5f2bce5447030acfc03c326c396c6b768b5c95b64e53c17f8a6910e6b3df7",
+      "source": "https://www.proxmox.com/en/news/media-kit",
+      "guidelines": "https://www.proxmox.com/en/news/media-kit",
+      "license": null
+    },
+    {
+      "name": "brand-docker",
+      "slug": "docker",
+      "title": "Docker",
+      "sha256": "65571291c261ef869c31540a38f3ca0f0ee3bb73f179c172211c8860f19a6359",
+      "source": "https://www.docker.com/company/newsroom/media-resources",
+      "guidelines": null,
+      "license": null
+    },
+    {
+      "name": "brand-kubernetes",
+      "slug": "kubernetes",
+      "title": "Kubernetes",
+      "sha256": "ceee2f4e87fa1533600672190c156194039f744fa9b5da10e83f002178e84b47",
+      "source": "https://github.com/kubernetes/kubernetes/tree/cac53883f4714452f3084a22e4be20d042a9df33/logo",
+      "guidelines": null,
+      "license": null
+    },
+    {
+      "name": "brand-portainer",
+      "slug": "portainer",
+      "title": "Portainer",
+      "sha256": "7142fc6474862dd841b89910961851ff5717b5a0ac42ec935c921fc11b485a97",
+      "source": "https://www.portainer.io",
+      "guidelines": null,
+      "license": null
+    },
+    {
+      "name": "brand-nginx",
+      "slug": "nginx",
+      "title": "NGINX",
+      "sha256": "236d53b2b746706df75e2a01668cb84e6f3fc7c8923a9ce824f8534db007a438",
+      "source": "https://www.nginx.com/press/",
+      "guidelines": "https://www.nginx.com/press/",
+      "license": null
+    },
+    {
+      "name": "brand-apache",
+      "slug": "apache",
+      "title": "Apache",
+      "sha256": "b6f98b799dbc23a0b3e3cf60a9508bcf11c58cbb8830762e942ff995adce93fc",
+      "source": "https://www.apache.org/foundation/press/kit",
+      "guidelines": "https://www.apache.org/foundation/marks",
+      "license": {
+        "type": "Apache-2.0"
+      }
+    },
+    {
+      "name": "brand-traefikproxy",
+      "slug": "traefikproxy",
+      "title": "Traefik Proxy",
+      "sha256": "fd1d5e98ac50b22efb35ba9955f81c2f7c202cf977e8335d92a7b13f3bb4fd8a",
+      "source": "https://traefik.io/traefik",
+      "guidelines": null,
+      "license": null
+    },
+    {
+      "name": "brand-caddy",
+      "slug": "caddy",
+      "title": "Caddy",
+      "sha256": "3ce50619d72dd473413d0b774f8956691b36f7224f3850a08e23b4da1f69f3ff",
+      "source": "https://caddyserver.com",
+      "guidelines": null,
+      "license": null
+    },
+    {
+      "name": "brand-postgresql",
+      "slug": "postgresql",
+      "title": "PostgreSQL",
+      "sha256": "c8ccadbd88c9312c2ad3734c4861b31d3485ce179ee91d64793143f83cfa745c",
+      "source": "https://wiki.postgresql.org/wiki/Logo",
+      "guidelines": "https://www.postgresql.org/about/policies/trademarks/",
+      "license": null
+    },
+    {
+      "name": "brand-mysql",
+      "slug": "mysql",
+      "title": "MySQL",
+      "sha256": "67c144cc3e44ad14062a3f20ebe29c5e7eeb2c2c9c0f43cf48d87fe6291a8b2d",
+      "source": "https://www.mysql.com/about/legal/logos.html",
+      "guidelines": "https://www.mysql.com/about/legal/logos.html",
+      "license": null
+    },
+    {
+      "name": "brand-mariadb",
+      "slug": "mariadb",
+      "title": "MariaDB",
+      "sha256": "477435746bb2024048c7b71529f615fb70d7e679618f37bac49f78fd07e67dfe",
+      "source": "https://mariadb.com/about-us/logos/",
+      "guidelines": "https://mariadb.com/about-us/logos/",
+      "license": null
+    },
+    {
+      "name": "brand-redis",
+      "slug": "redis",
+      "title": "Redis",
+      "sha256": "428b86deb14c8bdacdcdf75987fe454f367bcd078a7e4ae3f84de29aa5bdf136",
+      "source": "https://redis.io/brand-guidelines",
+      "guidelines": "https://redis.io/brand-guidelines",
+      "license": null
+    },
+    {
+      "name": "brand-mongodb",
+      "slug": "mongodb",
+      "title": "MongoDB",
+      "sha256": "6698757ee85997e8167b2eacaff8395d6987954185488f2e90b88ef387fec6c7",
+      "source": "https://www.mongodb.com/pressroom",
+      "guidelines": null,
+      "license": null
+    },
+    {
+      "name": "brand-elasticsearch",
+      "slug": "elasticsearch",
+      "title": "Elasticsearch",
+      "sha256": "f866863bb80c3f1e22cb49541442c9db2112bba74b8c1210328bd3536984e6a3",
+      "source": "https://www.elastic.co/brand",
+      "guidelines": null,
+      "license": null
+    },
+    {
+      "name": "brand-grafana",
+      "slug": "grafana",
+      "title": "Grafana",
+      "sha256": "e6da4ab998d25d509e27ce8a1f1afcb2d549907569b6fb1e4065890877cffefa",
+      "source": "https://grafana.com",
+      "guidelines": null,
+      "license": null
+    },
+    {
+      "name": "brand-prometheus",
+      "slug": "prometheus",
+      "title": "Prometheus",
+      "sha256": "6dd2480e57936b879f7626b7c71dcd51163da700d8510843516a66316bf8f379",
+      "source": "https://prometheus.io",
+      "guidelines": null,
+      "license": null
+    },
+    {
+      "name": "brand-jenkins",
+      "slug": "jenkins",
+      "title": "Jenkins",
+      "sha256": "95ab5d541710c116d939f44e4e72c8b1503e78d04a1c298ad257c4e26d3a1873",
+      "source": "https://get.jenkins.io/art/",
+      "guidelines": "https://www.jenkins.io/press/",
+      "license": {
+        "type": "CC-BY-SA-3.0"
+      }
+    },
+    {
+      "name": "brand-gitlab",
+      "slug": "gitlab",
+      "title": "GitLab",
+      "sha256": "c7c39058bd1b6f9f40334383bd5136bb8c5ba5e6a24200f2d1f18365e2526e28",
+      "source": "https://about.gitlab.com/press/press-kit/",
+      "guidelines": "https://about.gitlab.com/handbook/marketing/corporate-marketing/brand-activation/trademark-guidelines/",
+      "license": null
+    },
+    {
+      "name": "brand-gitea",
+      "slug": "gitea",
+      "title": "Gitea",
+      "sha256": "4a7b0c24de5e146f84664eb3a16331c1c08012ae572b88c5e4c63b9591ecb299",
+      "source": "https://github.com/go-gitea/gitea/blob/e0c753e770a64cda5e3900aa1da3d7e1f3263c9a/assets/logo.svg",
+      "guidelines": null,
+      "license": null
+    },
+    {
+      "name": "brand-ansible",
+      "slug": "ansible",
+      "title": "Ansible",
+      "sha256": "dde263ada8ced6d3ce092f9046fba6224eac3afae87274d912cef45210f8fff6",
+      "source": "https://www.ansible.com/logos",
+      "guidelines": null,
+      "license": null
+    },
+    {
+      "name": "brand-terraform",
+      "slug": "terraform",
+      "title": "Terraform",
+      "sha256": "9c3737d360a174afec8fa0208332a3991f087ea0b7bacb1eea16598883e1a730",
+      "source": "https://www.hashicorp.com/brand",
+      "guidelines": "https://www.hashicorp.com/brand",
+      "license": null
+    },
+    {
+      "name": "brand-truenas",
+      "slug": "truenas",
+      "title": "TrueNAS",
+      "sha256": "47802c448f9ae6516048d3b1f1ffd805ec808c466f16cd25a502fb2c9ac16d20",
+      "source": "https://www.truenas.com",
+      "guidelines": null,
+      "license": null
+    },
+    {
+      "name": "brand-pfsense",
+      "slug": "pfsense",
+      "title": "pfSense",
+      "sha256": "d27a1c178dfa7f8d1d10a092fb1977396d1ffc219af1f8c82c23a2bdcf28b358",
+      "source": "https://www.pfsense.org",
+      "guidelines": null,
+      "license": null
+    },
+    {
+      "name": "brand-openwrt",
+      "slug": "openwrt",
+      "title": "OpenWrt",
+      "sha256": "637830d2232d13c23abbeafff1aa10225c13eeec452b11d9fb71482af4a77596",
+      "source": "https://openwrt.org/docs/guide-graphic-designer/openwrt-logo",
+      "guidelines": "https://openwrt.org/docs/guide-graphic-designer/openwrt-logo",
+      "license": null
+    },
+    {
+      "name": "brand-homeassistant",
+      "slug": "homeassistant",
+      "title": "Home Assistant",
+      "sha256": "fed294bba289ad605cd4cab2df98dd239f52d40e5cb8e03c9487c649a6a62957",
+      "source": "https://github.com/home-assistant/assets/blob/0f69676da79c3881e7dfca6d6c0a5739f88273d8/logo/home-assistant-logo.zip",
+      "guidelines": "https://design.home-assistant.io/#brand/logo",
+      "license": null
+    },
+    {
+      "name": "brand-nextcloud",
+      "slug": "nextcloud",
+      "title": "Nextcloud",
+      "sha256": "523a9295f2e3a8be7904e9e914ad030a4ae13597421f9ee81122be705b2e60be",
+      "source": "https://nextcloud.com/press/",
+      "guidelines": "https://nextcloud.com/trademarks/",
+      "license": null
+    },
+    {
+      "name": "brand-synology",
+      "slug": "synology",
+      "title": "Synology",
+      "sha256": "2b11f3cb29f858a3a28b2094a668f5700ff279051ffc475c4509333b7365db02",
+      "source": "https://www.synology.com/en-global/company/branding",
+      "guidelines": "https://www.synology.com/en-global/company/branding",
+      "license": null
+    },
+    {
+      "name": "brand-vmware",
+      "slug": "vmware",
+      "title": "VMware",
+      "sha256": "4c3970bf3955a3e95c7d9eef7f4f45528c487dffa92092ce9273913f8271029a",
+      "source": "https://myvmware.workspaceair.com",
+      "guidelines": null,
+      "license": null
+    }
+  ],
+  "notices": [
+    {
+      "file": "LICENSE.md",
+      "sha256": "9046848b63a5c92bff14e4accca80bd987e0623b74adf9226ce5198d312b79d5"
+    },
+    {
+      "file": "DISCLAIMER.md",
+      "sha256": "09dddc05bc94ecb61e293cf7d39c2585b4ecc900be707a3589d05b29563c4f3d"
+    },
+    {
+      "file": "Apache-2.0.txt",
+      "sha256": "cfc7749b96f63bd31c3c42b5c471bf756814053e847c10f3eb003417bc523d30"
+    },
+    {
+      "file": "CC-BY-SA-3.0.txt",
+      "sha256": "3f941b3b89cf7b8370ceb83cc76d2120d471b58735d8ca60238a751a48d7f72f"
+    },
+    {
+      "file": "CC-BY-SA-4.0.txt",
+      "sha256": "28a9529c7d0bb4dc51f4bf5c116a3d16ef247a052f7591466768ddf563fd1cf5"
+    }
+  ]
+}

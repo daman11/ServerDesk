@@ -13,7 +13,7 @@ internal static partial class Dialogs
         var options=FolderIcons.Choices.ToList();
         if(!options.Any(c=>c.Id==original))options.Add(new(original,L.T("Nierozpoznana — folder")));
         var preview=DeskIcons.Create(FolderIcons.Resolve(original),32);
-        var choices=new ComboBox { ItemsSource=options,SelectedItem=options.First(c=>c.Id==original),HorizontalAlignment=HorizontalAlignment.Stretch,
+        var choices=new ComboBox { ItemsSource=options,SelectedItem=options.First(c=>c.Id==original),HorizontalAlignment=HorizontalAlignment.Stretch,MaxDropDownHeight=340,
             ItemTemplate=new FuncDataTemplate<ProfileIconOption>((item,_)=>item==null?new TextBlock():DeskIcons.Labelled(FolderIcons.Resolve(item.Id),L.T(item.Label))) };
         AutomationProperties.SetName(choices,L.T("Ikona folderu"));
         choices.SelectionChanged+=(_,_)=>preview.Glyph=FolderIcons.Resolve((choices.SelectedItem as ProfileIconOption)?.Id);

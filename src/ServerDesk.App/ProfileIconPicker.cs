@@ -8,7 +8,7 @@ using ServerDesk.Core;
 namespace ServerDesk.App;
 internal sealed class ProfileIconPicker : Grid
 {
-    private readonly ComboBox choices=new() { HorizontalAlignment=HorizontalAlignment.Stretch };
+    private readonly ComboBox choices=new() { HorizontalAlignment=HorizontalAlignment.Stretch,MaxDropDownHeight=340 };
     private readonly DeskIcon preview=DeskIcons.Create("ssh",24);
     private Protocol protocol;
     internal event Action? Changed;

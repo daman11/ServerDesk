@@ -126,7 +126,7 @@ public sealed partial class MainWindow
         TreeViewItem Folder(string path)
         {
             if(folders.TryGetValue(path,out var found))return found;
-            var slash=path.LastIndexOf('/'); var node=new TreeViewItem { Header=Row(FolderIcons.Resolve(vm.FolderIcons.GetValueOrDefault(path)),slash<0?path:path[(slash+1)..],count:counts.GetValueOrDefault(path)),Tag=path,IsExpanded=searching || !collapsed.Contains(path) };
+            var slash=path.LastIndexOf('/'); var node=new TreeViewItem { Tag=path,IsExpanded=searching || !collapsed.Contains(path),Classes={"connection-entry","connection-folder"} };
             // Search expansion is temporary, including clicks on search results.
             // Detached/rebuilt search nodes must never rewrite saved collapse state.
             node.PropertyChanged+=(_,e)=> { if(e.Property==TreeViewItem.IsExpandedProperty && !rebuildingTree && !searching && string.IsNullOrWhiteSpace(vm.Search)) { if(node.IsExpanded)collapsed.Remove(path); else collapsed.Add(path); } };
@@ -138,13 +138,14 @@ public sealed partial class MainWindow
         if(section=="connections" && !HasBrowserFilter)foreach(var path in vm.Folders.Where(f=>f is not ("Wszystkie" or "★ Ulubione" or "◷ Ostatnie")))Folder(path);
         foreach(var p in profiles)
         {
-            var node=new TreeViewItem { Header=p,HeaderTemplate=profileTemplate,Tag=p }; ToolTip.SetTip(node,$"{p.Protocol} · {(p.Protocol==Protocol.SSH?p.Username+"@":"")}{p.Endpoint}\n{p.Description}");
+            var node=new TreeViewItem { Header=p,HeaderTemplate=profileTemplate,Tag=p,Classes={"connection-entry"} }; ToolTip.SetTip(node,$"{p.Protocol} · {(p.Protocol==Protocol.SSH?p.Username+"@":"")}{p.Endpoint}\n{p.Description}");
             Avalonia.Automation.AutomationProperties.SetName(node,p.Name);
             node.ContextMenu=DeferredBrowserMenu(()=>new[]{Menu("Połącz",()=>ConnectAsync(p)),Menu("Edytuj",()=>EditAsync(p),shortcut:"F2"),Menu("Duplikuj",async()=> { vm.SelectedServer=p; await DuplicateAsync(); },shortcut:"Ctrl+D"),Menu("Ulubiony",async()=> { vm.SelectedServer=p; await FavoriteAsync(); }),Menu("Przenieś do folderu",async()=> { vm.SelectedServer=p; await MoveAsync(); }),Menu("Usuń",async()=> { vm.SelectedServer=p; await DeleteAsync(); },shortcut:"Delete"),Menu("Usuń zapisane hasło",async()=> { vm.SelectedServer=p; await ForgetSecretAsync(); }),Menu("Historia tego serwera",()=>HistoryAsync(p.Id)),NetworkContextMenu(p)});
             DragSupport.Source(node,ServerDrag,()=>p,DragDropEffects.Move);
             if(p.Folder.Length>0 && section=="connections")Folder(p.Folder).Items.Add(node); else roots.Add(node);
             if(p.Id==selected)selection=node;
         }
+        foreach(var (path,node) in folders)node.Header=FolderHeader(node,path,FolderIcons.Resolve(vm.FolderIcons.GetValueOrDefault(path)),counts.GetValueOrDefault(path));
         rebuildingTree=true;
         try { tree.ItemsSource=OrderFolders(roots).ToArray(); tree.SelectedItem=selection; }
         finally { rebuildingTree=false; }
@@ -158,7 +159,7 @@ public sealed partial class MainWindow
         browserReveal=null;
         UpdateBrowserState(profiles.Count()); UpdateWelcome();
     }
-    private static Control Row(string icon,string name,bool favorite=false,bool connected=false,string? protocol=null,ServerProfile? profile=null,int? count=null,string? detail=null)
+    private static Control Row(string icon,string name,bool favorite=false,bool connected=false,string? protocol=null,ServerProfile? profile=null,string? detail=null)
     {
         var row=new Grid { ColumnDefinitions=new ColumnDefinitions(profile==null?"0,20,*,Auto,Auto,Auto":"3,20,*,Auto,Auto,Auto"),ColumnSpacing=DesignTokens.IconGap,MinHeight=24 };
         if(profile!=null)row.Children.Add(new Border { Width=3,Height=18,CornerRadius=new CornerRadius(2),Background=ProfileVisual.ColorBrush(profile.Color) });
@@ -174,7 +175,6 @@ public sealed partial class MainWindow
         if(protocol!=null) { var badge=new Border { Child=DesignSystem.Label(protocol,true,DesignTokens.Micro),Padding=new Thickness(5,1),CornerRadius=new CornerRadius(4),VerticalAlignment=VerticalAlignment.Center }; DesignSystem.Resource(badge,Border.BackgroundProperty,"BackgroundTertiary"); Grid.SetColumn(badge,3); row.Children.Add(badge); }
         if(favorite) { var star=DeskIcons.Create("favorite",12); Grid.SetColumn(star,4); row.Children.Add(star); }
         if(connected) { var dot=DeskIcons.Create("circle-check",12,"Success"); Grid.SetColumn(dot,5); row.Children.Add(dot); }
-        if(count!=null) { var total=DesignSystem.Label(count.Value.ToString(),true,11); Grid.SetColumn(total,5); row.Children.Add(total); }
         return row;
     }
     private Control TabHeader(SessionPane p)

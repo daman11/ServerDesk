@@ -12,7 +12,7 @@ using Avalonia.Media;
 
 namespace ServerDesk.App;
 
-// Only trusted, embedded Lucide SVG primitives are accepted. No external SVG or runtime download.
+// Only trusted, embedded SVG primitives are accepted. No external SVG or runtime download.
 internal class DeskIcon : TemplatedControl
 {
     internal static readonly StyledProperty<string> GlyphProperty=AvaloniaProperty.Register<DeskIcon,string>(nameof(Glyph),"file");
@@ -23,7 +23,8 @@ internal class DeskIcon : TemplatedControl
     {
         var size=Math.Min(Bounds.Width,Bounds.Height); if(size<=0)return;
         using var transform=context.PushTransform(Matrix.CreateScale(size/24,size/24)*Matrix.CreateTranslation((Bounds.Width-size)/2,(Bounds.Height-size)/2));
-        context.DrawGeometry(null,new Pen(Foreground,2,lineCap:PenLineCap.Round,lineJoin:PenLineJoin.Round),DeskIcons.Geometry(Glyph));
+        if(DeskIcons.IsBrand(Glyph))context.DrawGeometry(Foreground,null,DeskIcons.Geometry(Glyph));
+        else context.DrawGeometry(null,new Pen(Foreground,2,lineCap:PenLineCap.Round,lineJoin:PenLineJoin.Round),DeskIcons.Geometry(Glyph));
     }
 }
 
@@ -37,10 +38,11 @@ internal static partial class DeskIcons
         ["connections"]="server",["favorite"]="star",["recent"]="clock-arrow-left",["history"]="clock-arrow-left",["transfers"]="arrow-up-down",["ssh"]="square-terminal",["rdp"]="monitor",["serial"]="link-2",["close"]="x",["refresh"]="refresh-cw",["sidebar"]="panel-left",["up"]="arrow-up",["link"]="link-2",["delete"]="trash",["edit"]="pencil",["connect"]="log-in",["disconnect"]="log-out",["more"]="ellipsis",["import"]="download",["export"]="upload",["key"]="key-round",["warning"]="triangle-alert",["error"]="circle-alert",["success"]="circle-check",["unknown"]="circle-dashed",["file-json"]="file-braces"
     };
     internal static IReadOnlyCollection<string> Available=>Names;
-    internal static string Resolve(string name)=>name=="commands"?"square-terminal":Aliases.TryGetValue(name,out var alias)?alias:Names.Contains(name)||ApplicationPaths.ContainsKey(name)?name:"file";
+    internal static string Resolve(string name)=>name=="commands"?"square-terminal":Aliases.TryGetValue(name,out var alias)?alias:Names.Contains(name)||ApplicationPaths.ContainsKey(name)||BrandNames.Contains(name)?name:"file";
     internal static Geometry Geometry(string name)=>Cache.GetOrAdd(Resolve(name),Load);
     private static Geometry Load(string name)
     {
+        if(IsBrand(name))return LoadBrand(name);
         if(ApplicationPaths.TryGetValue(name,out var path))return Avalonia.Media.Geometry.Parse(path);
         using var stream=Assembly.GetManifestResourceStream(Prefix+name+".svg")??throw new InvalidDataException("Missing bundled icon: "+name);
         using var reader=XmlReader.Create(stream,new XmlReaderSettings { DtdProcessing=DtdProcessing.Prohibit,XmlResolver=null });

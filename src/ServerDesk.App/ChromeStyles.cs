@@ -70,5 +70,7 @@ internal static partial class DesignSystem
             } }}
         });
         Add(s=>s.OfType<TreeViewItem>(),Resource(TreeViewItem.PaddingProperty,"ConnectionRowPadding"));
+        // Keep the same expander slot for populated folders, empty folders and servers.
+        Add(s=>s.OfType<TreeViewItem>().Class("connection-entry").Template().OfType<Panel>().Name("PART_ExpandCollapseChevronContainer"),new Setter(Layoutable.WidthProperty,12d),new Setter(Layoutable.MarginProperty,new Thickness(8,0,4,0)));
     }
 }

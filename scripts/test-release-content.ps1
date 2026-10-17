@@ -10,13 +10,16 @@ foreach($runtime in @('win-x64','linux-x64')) {
     $directory=Join-Path $repo "artifacts/$runtime-$version"
     $release=Get-Content "$directory/RELEASE.json" -Raw | ConvertFrom-Json
     if($release.version -ne $version -or $release.runtime -ne $runtime -or $release.license -ne 'MIT'){throw 'Wrong payload metadata'}
-    foreach($required in @('LICENSE','CHANGELOG.md','SECURITY.md','THIRD-PARTY-NOTICES.md','DEPENDENCIES.json','DOTNET-LICENSE.txt','DOTNET-THIRD-PARTY-NOTICES.txt','LUCIDE-LICENSE.txt','MARCUSW-VNC-LICENSE.txt','licenses/inter-LICENSE.txt','licenses/nsis-COPYING.txt','docs/getting-started.md','docs/getting-started.en.md','docs/known-issues.md',"docs/releases/release-$version.md","docs/reports/release-verification-$version.md")){if(-not (Test-Path -LiteralPath "$directory/$required")){throw "Missing $required in $runtime"}}
+    foreach($required in @('LICENSE','CHANGELOG.md','SECURITY.md','THIRD-PARTY-NOTICES.md','DEPENDENCIES.json','DOTNET-LICENSE.txt','DOTNET-THIRD-PARTY-NOTICES.txt','LUCIDE-LICENSE.txt','MARCUSW-VNC-LICENSE.txt','licenses/inter-LICENSE.txt','licenses/nsis-COPYING.txt','licenses/simple-icons/README.md','licenses/simple-icons/LICENSE.md','licenses/simple-icons/manifest.json','docs/getting-started.md','docs/getting-started.en.md','docs/known-issues.md',"docs/releases/release-$version.md","docs/reports/release-verification-$version.md")){if(-not (Test-Path -LiteralPath "$directory/$required")){throw "Missing $required in $runtime"}}
     foreach($file in (Get-ChildItem (Join-Path $repo 'docs') -File -Recurse)){
         $relative=[IO.Path]::GetRelativePath($repo,$file.FullName)
         $copy=Join-Path $directory $relative
         if(-not (Test-Path -LiteralPath $copy) -or (Get-FileHash -LiteralPath $copy).Hash -ne (Get-FileHash -LiteralPath $file.FullName).Hash){throw "Missing or stale offline documentation: $relative in $runtime"}
     }
     $inventory=Get-Content "$directory/DEPENDENCIES.json" -Raw | ConvertFrom-Json
+    $brands=Get-Content "$directory/licenses/simple-icons/manifest.json" -Raw | ConvertFrom-Json
+    foreach($asset in $brands.assets){if((Get-FileHash -LiteralPath "$directory/licenses/simple-icons/icons/$($asset.name).svg").Hash -ne $asset.sha256){throw "Changed brand asset: $($asset.name) in $runtime"}}
+    foreach($notice in $brands.notices){if((Get-FileHash -LiteralPath "$directory/licenses/simple-icons/$($notice.file)").Hash -ne $notice.sha256){throw "Changed brand notice: $($notice.file) in $runtime"}}
     foreach($package in $inventory.packages){foreach($notice in $package.notices){if(-not (Test-Path -LiteralPath "$directory/$notice")){throw "Missing notice for $($package.id)"}}}
     foreach($file in (Get-ChildItem $directory -Recurse -File)) {
         $relative=[IO.Path]::GetRelativePath($directory,$file.FullName).Replace('\','/')

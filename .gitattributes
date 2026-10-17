@@ -23,5 +23,7 @@
 
 # Upstream notices/assets have pinned byte hashes; preserve their original bytes.
 third-party/** -text
+# The upstream CC license deliberately ends with a blank line; retain pinned bytes.
+third-party/simple-icons/CC-BY-SA-4.0.txt whitespace=-blank-at-eof
 src/ServerDesk.App/Assets/** -text
 tests/ServerDesk.Tests/Fixtures/** -text

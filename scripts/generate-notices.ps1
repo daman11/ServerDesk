@@ -54,7 +54,12 @@ foreach($entry in ($assets.libraries.GetEnumerator() | Sort-Object Key)) {
 Copy-Item (Join-Path $repo 'third-party/marcusw-vnc/LICENSE') (Join-Path $Output 'MARCUSW-VNC-LICENSE.txt')
 Copy-Item (Join-Path $repo 'third-party/lucide/LICENSE') (Join-Path $Output 'LUCIDE-LICENSE.txt')
 Copy-Item (Join-Path $repo 'third-party/lucide/manifest.json') (Join-Path $Output 'LUCIDE-MANIFEST.json')
+$brandNotices=Join-Path $licenseRoot 'simple-icons'; New-Item -ItemType Directory -Force $brandNotices | Out-Null
+Copy-Item (Join-Path $repo 'third-party/simple-icons/*') $brandNotices
+$brandSources=Join-Path $brandNotices 'icons'; New-Item -ItemType Directory -Force $brandSources | Out-Null
+Copy-Item (Join-Path $repo 'src/ServerDesk.App/Assets/Brands/*') $brandSources -Force
 $lines.Add('## Additional bundled material'); $lines.Add('')
 $lines.Add('Inter fonts: licenses/inter-LICENSE.txt (SIL OFL 1.1). Lucide 1.55.0 SVG subset: LUCIDE-LICENSE.txt (ISC/MIT), hashes in LUCIDE-MANIFEST.json. MarcusW.VncClient: MARCUSW-VNC-LICENSE.txt (MIT). Windows installer uses NSIS 3.13 with zlib compression: licenses/nsis-COPYING.txt. System fallback fonts and external mstsc/FreeRDP/secret-tool are not distributed by ServerDesk.')
+$lines.Add('Simple Icons 16.0.0 subset: licenses/simple-icons/ contains the upstream CC0 dedication, disclaimer, individual icon attribution/license/source metadata, applicable Apache-2.0 and CC-BY-SA texts, and unchanged SVGs. See README.md and manifest.json there. Brand marks identify user-selected systems/services; they do not imply endorsement.')
 $lines | Set-Content -LiteralPath (Join-Path $Output 'THIRD-PARTY-NOTICES.md') -Encoding utf8
 [ordered]@{format='ServerDesk dependency inventory v1';runtime=$Runtime;runtimeVersion=$runtimeDirectory.Name;scope='Resolved NuGet graph including build-time and other-platform assets; additional notices are listed in THIRD-PARTY-NOTICES.md';packages=$inventory} | ConvertTo-Json -Depth 8 | Set-Content (Join-Path $Output 'DEPENDENCIES.json') -Encoding utf8

@@ -19,7 +19,10 @@ function Add-SourceDirectory([string]$Directory) {
         if($item.PSIsContainer){if($item.Name -notin @('bin','obj','.git','.tools','artifacts','TestResults')){Add-SourceDirectory ([IO.Path]::GetRelativePath($repo,$item.FullName))}; continue}
         if($item.Extension -notin @('.cs','.csproj','.json','.props','.targets','.manifest','.svg','.png','.ico','.md','.sh','.ps1','.py','.nsi','.txt','.desktop','.yml','.yaml') -and $item.Name -notin @('LICENSE','COPYING','NOTICE')){throw "Unexpected source file; review before export: $($item.Name)"}
         $relative=[IO.Path]::GetRelativePath($repo,$item.FullName)
-        if($item.Name -match '(?i)integration_key|credential|^\.env' -and $item.Extension -ne '.cs'){throw "Sensitive source candidate: $relative"}
+        # Credential audit guides are source documentation, not credential data.
+        # Keep the filename guard for data/config files and all key/env candidates.
+        $credentialGuide=$relative.Replace('\','/').StartsWith('docs/',[StringComparison]::Ordinal) -and $item.Extension -eq '.md' -and $item.BaseName -match '^credentials?(?:-|$)' -and $item.Name -notmatch '(?i)integration_key|^\.env'
+        if($item.Name -match '(?i)integration_key|credential|^\.env' -and $item.Extension -ne '.cs' -and -not $credentialGuide){throw "Sensitive source candidate: $relative"}
         $destination=Join-Path $source $relative
         New-Item -ItemType Directory -Force (Split-Path -Parent $destination) | Out-Null
         Copy-Item -LiteralPath $item.FullName -Destination $destination

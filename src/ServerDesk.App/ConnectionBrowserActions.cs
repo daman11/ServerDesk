@@ -4,6 +4,7 @@ using Avalonia.Controls;
 using Avalonia.Input;
 using Avalonia.Layout;
 using Avalonia.Media;
+using Avalonia.Threading;
 using ServerDesk.Core;
 
 namespace ServerDesk.App;
@@ -12,6 +13,34 @@ public sealed partial class MainWindow
 {
     private Border rootProfileDrop=null!;
     private object? browserReveal;
+    private async Task FindConnectionAsync()
+    {
+        if(section is not ("connections" or "favorite" or "recent"))await SelectSectionAsync("connections");
+        else if(!sidebar.IsVisible)ToggleSidebar();
+        Activate(); connectionSearch?.Focus(); connectionSearch?.SelectAll();
+    }
+    private static IEnumerable<TreeViewItem> VisibleBrowserNodes(IEnumerable<object?> items)
+    {
+        foreach(var node in items.OfType<TreeViewItem>())
+        {
+            yield return node;
+            if(node.IsExpanded)foreach(var child in VisibleBrowserNodes(node.Items))yield return child;
+        }
+    }
+    private void FocusBrowserResults()
+    {
+        // Text binding and the tree refresh may still be queued when Enter arrives.
+        vm.Search=connectionSearch?.Text??""; QueueTree();
+        Dispatcher.UIThread.Post(()=>
+        {
+            if(!tree.IsEffectivelyVisible || connectionSearch?.IsKeyboardFocusWithin!=true)return;
+            var visible=VisibleBrowserNodes(tree.Items).ToArray();
+            var target=visible.FirstOrDefault(n=>n.Tag is ServerProfile p && p.Id==vm.SelectedServer?.Id && IsBrowserProfileVisible(p))
+                ??visible.FirstOrDefault(n=>n.Tag is ServerProfile p && IsBrowserProfileVisible(p))??visible.FirstOrDefault();
+            if(target==null)return;
+            tree.SelectedItem=target; target.BringIntoView(); target.Focus();
+        },DispatcherPriority.Background);
+    }
     private static bool InFolder(string candidate,string folder)=>candidate==folder || candidate.StartsWith(folder+"/",StringComparison.Ordinal);
     private string BrowserCreationFolder()
     {
@@ -46,6 +75,9 @@ public sealed partial class MainWindow
     }
     private void HandleBrowserKeys(object? sender,KeyEventArgs e)
     {
+        if(tree.IsEffectivelyVisible && (section is "connections" or "favorite" or "recent") && e.KeyModifiers==KeyModifiers.None &&
+            (e.Key==Key.Escape || e.Key==Key.Up && ReferenceEquals(tree.SelectedItem,VisibleBrowserNodes(tree.Items).FirstOrDefault())))
+        { connectionSearch?.Focus(); e.Handled=true; return; }
         if(!tree.IsEffectivelyVisible || section is not ("connections" or "favorite" or "recent") || tree.SelectedItem is not TreeViewItem node)return;
         if(node.Tag is ServerProfile p && IsBrowserProfileVisible(p))
         {

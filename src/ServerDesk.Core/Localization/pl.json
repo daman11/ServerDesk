@@ -1575,5 +1575,21 @@
   "Pasujące połączenia: {0}": "Pasujące połączenia: {0}",
   "Nie wybrano tagów. Wyłącz „Tylko wybrane”, aby zobaczyć całą listę.": "Nie wybrano tagów. Wyłącz „Tylko wybrane”, aby zobaczyć całą listę.",
   "Aktywne filtry tagów": "Aktywne filtry tagów",
-  "Liczba dostępnych tagów": "Liczba dostępnych tagów"
+  "Liczba dostępnych tagów": "Liczba dostępnych tagów",
+  "Znajdź połączenie": "Znajdź połączenie",
+  "Znajdź połączenie · Ctrl+Shift+O": "Znajdź połączenie · Ctrl+Shift+O",
+  "Ctrl+Shift+O: znajdź połączenie. Szukaj po nazwie, adresie, loginie, tagach, opisie, folderze i protokole. ↓ / Enter przenosi do wyników; Escape czyści zapytanie.": "Ctrl+Shift+O: znajdź połączenie. Szukaj po nazwie, adresie, loginie, tagach, opisie, folderze i protokole. ↓ / Enter przenosi do wyników; Escape czyści zapytanie.",
+  "Znajdź połączenie  Ctrl+Shift+O     ·     Otwarte sesje  Ctrl+Shift+L": "Znajdź połączenie  Ctrl+Shift+O     ·     Otwarte sesje  Ctrl+Shift+L",
+  "Edytuj jako profil": "Edytuj jako profil",
+  "Podaj adres i sprawdź cel przed otwarciem sesji. Hasło podasz dopiero przy łączeniu.": "Podaj adres i sprawdź cel przed otwarciem sesji. Hasło podasz dopiero przy łączeniu.",
+  "Adres połączenia": "Adres połączenia",
+  "Szybkie połączenie nie zapisuje profilu. Wybierz „Edytuj jako profil”, aby nadać nazwę, folder i zapisać ustawienia.": "Szybkie połączenie nie zapisuje profilu. Wybierz „Edytuj jako profil”, aby nadać nazwę, folder i zapisać ustawienia.",
+  "Wpisz adres lub wybierz przykład protokołu.": "Wpisz adres lub wybierz przykład protokołu.",
+  "Adres jest poprawny. Sprawdź dane połączenia poniżej.": "Adres jest poprawny. Sprawdź dane połączenia poniżej.",
+  "Niepoprawny adres połączenia.": "Niepoprawny adres połączenia.",
+  "Aktywna": "Aktywna",
+  "Znajdź kartę po nazwie, adresie lub panelu i wróć do pracy.": "Znajdź kartę po nazwie, adresie lub panelu i wróć do pracy.",
+  "Nie masz otwartych sesji. Otwórz zapisane połączenie lub skorzystaj z szybkiego połączenia.": "Nie masz otwartych sesji. Otwórz zapisane połączenie lub skorzystaj z szybkiego połączenia.",
+  "Brak pasujących sesji. Zmień lub wyczyść wyszukiwanie.": "Brak pasujących sesji. Zmień lub wyczyść wyszukiwanie.",
+  "Użytkownik: {0}": "Użytkownik: {0}"
 }

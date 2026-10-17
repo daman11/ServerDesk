@@ -153,7 +153,11 @@ public sealed partial class MainWindow : Window
         await repository.DeleteAsync(p.Id); await vm.LoadAsync();
     }
     private async Task ForgetSecretAsync() { if(vm.SelectedServer is {} p) { await credentials.DeleteAsync(p.Id); await credentials.DeleteAsync(CredentialReference.Vnc(p.Id)); vm.Status=L.T("Usunięto zapisane poświadczenie"); } }
-    private async Task QuickAsync() { var uri=await Dialogs.Prompt(this,L.T("Szybkie połączenie"),"ssh://admin@localhost:22"); if(uri!=null) await ConnectAsync(QuickConnect.Parse(uri)); }
+    private async Task QuickAsync()
+    {
+        var chosen=await Dialogs.QuickConnection(this); if(chosen==null)return;
+        if(chosen.EditProfile)await EditAsync(chosen.Profile); else await ConnectAsync(chosen.Profile);
+    }
     private async Task ExportAsync()
     {
         using var file=await StorageProvider.SaveFilePickerAsync(new() { Title=L.T("Eksport konfiguracji bez sekretów"),SuggestedFileName="serverdesk.json",DefaultExtension="json" }); if(file==null)return;

@@ -53,7 +53,7 @@ public sealed partial class MainWindow
         docking.ContextMenu=new ContextMenu { ItemsSource=new[]{Menu("Jeden panel",()=> { SetWorkspaceMode(WorkspaceMode.Single); return Task.CompletedTask; }),Menu("Panele obok siebie",()=> { SetWorkspaceMode(WorkspaceMode.Columns); return Task.CompletedTask; }),Menu("Panele jeden nad drugim",()=> { SetWorkspaceMode(WorkspaceMode.Rows); return Task.CompletedTask; }),Menu("Trzy panele (1 + 2)",()=> { SetWorkspaceMode(WorkspaceMode.Three); return Task.CompletedTask; }),Menu("Cztery panele (2 × 2)",()=> { SetWorkspaceMode(WorkspaceMode.Grid); return Task.CompletedTask; }),Menu("Wyrównaj wielkość paneli",()=> { EqualizeWorkspace(); return Task.CompletedTask; }),Menu("Przywróć wszystkie odpięte sesje",()=> { foreach(var pane in Panes.Where(p=>dockState.Location(p.WorkspaceId)==SessionDock.Floating).ToArray())DockSession(pane,SessionDock.Primary); return Task.CompletedTask; })} };
         docking.Click+=(_,_)=>docking.ContextMenu.Open(docking); titleActions.Children.Add(docking);
         var more=new Button { Content=DeskIcons.Labelled("more","Menu"),Tag="Menu",Classes={"icon","chrome"} };
-        more.ContextMenu=new ContextMenu { ItemsSource=new[]{Menu("Szybkie połączenie",QuickAsync),Menu("Nowy folder",FolderAsync),Menu("Import konfiguracji",ImportAsync),Menu("Eksport konfiguracji",ExportAsync),Menu("Paleta akcji",CommandsAsync,shortcut:"Ctrl+Shift+P"),Menu("Ustawienia",SettingsAsync),Menu("Historia połączeń",()=>HistoryAsync()),Menu("Narzędzia sieciowe",()=>SelectSectionAsync("network")),commandsMenu=Menu("Komendy",OpenCommandsPanelAsync,shortcut:"Ctrl+Shift+K"),Menu("O aplikacji",AboutAsync)} };
+        more.ContextMenu=new ContextMenu { ItemsSource=new[]{Menu("Znajdź połączenie",FindConnectionAsync,shortcut:"Ctrl+Shift+O"),Menu("Szybkie połączenie",QuickAsync),Menu("Nowy folder",FolderAsync),Menu("Import konfiguracji",ImportAsync),Menu("Eksport konfiguracji",ExportAsync),Menu("Paleta akcji",CommandsAsync,shortcut:"Ctrl+Shift+P"),Menu("Ustawienia",SettingsAsync),Menu("Historia połączeń",()=>HistoryAsync()),Menu("Narzędzia sieciowe",()=>SelectSectionAsync("network")),commandsMenu=Menu("Komendy",OpenCommandsPanelAsync,shortcut:"Ctrl+Shift+K"),Menu("O aplikacji",AboutAsync)} };
         more.Click+=(_,_)=>more.ContextMenu.Open(more); titleActions.Children.Add(more); Grid.SetColumn(titleActions,2); titlebar.Children.Add(titleActions);
         BuildWindowCaptions(titlebar);
         var header=BuildWorkspaceHeader(titlebar); Grid.SetColumnSpan(header,4); layout.Children.Add(header);
@@ -64,8 +64,13 @@ public sealed partial class MainWindow
         var sideHeader=BuildSidebarModuleHeader(); DockPanel.SetDock(sideHeader,Dock.Top); sidebar.Children.Add(sideHeader);
         connectionTools.Name="ConnectionBrowserTools"; DockPanel.SetDock(connectionTools,Dock.Top); sidebar.Children.Add(connectionTools);
         var search=connectionSearch=new TextBox { Name="ConnectionSearch",PlaceholderText=L.T("Nazwa, adres, login lub tag"),Margin=new Thickness(10,0,10,8) }; search.Bind(TextBox.TextProperty,new Binding(nameof(vm.Search)) { Mode=BindingMode.TwoWay }); connectionTools.Children.Add(search);
-        ToolTip.SetTip(search,L.T("Szukaj po nazwie, adresie, loginie, tagach, opisie, folderze i protokole. Kilka słów zawęża wyniki. Escape czyści zapytanie."));
-        search.KeyDown+=(_,e)=> { if(e.Key==Key.Escape && !string.IsNullOrEmpty(search.Text)) { search.Text=""; e.Handled=true; } };
+        ToolTip.SetTip(search,L.T("Ctrl+Shift+O: znajdź połączenie. Szukaj po nazwie, adresie, loginie, tagach, opisie, folderze i protokole. ↓ / Enter przenosi do wyników; Escape czyści zapytanie."));
+        search.KeyDown+=(_,e)=>
+        {
+            if(e.KeyModifiers!=KeyModifiers.None)return;
+            if(e.Key==Key.Escape && !string.IsNullOrEmpty(search.Text)) { search.Text=""; e.Handled=true; }
+            else if(e.Key is Key.Down or Key.Enter) { FocusBrowserResults(); e.Handled=true; }
+        };
         search.InnerLeftContent=new Border { Child=DeskIcons.Create("search",14,"ForegroundSecondary"),Margin=new Thickness(8,0,0,0) };
         var clearSearch=DeskIcons.Button("close","Wyczyść wyszukiwanie",()=> { search.Text=""; search.Focus(); },24); clearSearch.IsVisible=false; search.InnerRightContent=clearSearch;
         search.TextChanged+=(_,_)=>clearSearch.IsVisible=!string.IsNullOrEmpty(search.Text); Avalonia.Automation.AutomationProperties.SetName(search,L.T("Szukaj połączeń"));
@@ -221,6 +226,7 @@ public sealed partial class MainWindow
         else if(shift && e.Key==Key.P) { e.Handled=true; _ = Safe(CommandsAsync); }
         else if(shift && e.Key==Key.K) { e.Handled=true; _ = Safe(OpenCommandsPanelAsync); }
         else if(shift && e.Key==Key.L) { e.Handled=true; _ = Safe(()=>SwitchSessionAsync(sender as Window)); }
+        else if(shift && e.Key==Key.O) { e.Handled=true; _ = Safe(FindConnectionAsync); }
         else if(e.Key is Key.B or Key.W)
         {
             // Ctrl+B and Ctrl+W belong to shells/editors whenever the terminal owns keyboard focus.
@@ -234,7 +240,7 @@ public sealed partial class MainWindow
     {
         var commands=new Dictionary<string,Func<Task>>(); var icons=new Dictionary<string,string?>();
         void AddAction(string source,Func<Task> run,string? glyph=null) { var label=L.T(source); commands[label]=run; icons[label]=glyph??DeskIcons.ForAction(source); }
-        AddAction("Narzędzia sieciowe",()=>SelectSectionAsync("network")); AddAction("Nowe połączenie",()=>EditAsync(null)); AddAction("Szybkie połączenie",QuickAsync);
+        AddAction("Narzędzia sieciowe",()=>SelectSectionAsync("network")); AddAction("Nowe połączenie",()=>EditAsync(null)); AddAction("Szybkie połączenie",QuickAsync); AddAction("Znajdź połączenie · Ctrl+Shift+O",FindConnectionAsync);
         AddAction("Otwarte sesje · Ctrl+Shift+L",()=>SwitchSessionAsync()); AddAction("Nowy folder",FolderAsync); AddAction("Import konfiguracji",ImportAsync); AddAction("Eksport konfiguracji",ExportAsync);
         AddAction("Ustawienia",SettingsAsync); AddAction("Historia połączeń",()=>HistoryAsync()); AddAction("Pokaż / ukryj panel połączeń",()=> { ToggleSidebar(); return Task.CompletedTask; });
         if(IsPluginEnabled(PluginCatalog.Commands))AddAction("Komendy · Ctrl+Shift+K",OpenCommandsPanelAsync);

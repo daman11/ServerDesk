@@ -1575,5 +1575,21 @@
   "Pasujące połączenia: {0}": "Matching connections: {0}",
   "Nie wybrano tagów. Wyłącz „Tylko wybrane”, aby zobaczyć całą listę.": "No tags selected. Turn off “Selected only” to see the full list.",
   "Aktywne filtry tagów": "Active tag filters",
-  "Liczba dostępnych tagów": "Number of available tags"
+  "Liczba dostępnych tagów": "Number of available tags",
+  "Znajdź połączenie": "Find connection",
+  "Znajdź połączenie · Ctrl+Shift+O": "Find connection · Ctrl+Shift+O",
+  "Ctrl+Shift+O: znajdź połączenie. Szukaj po nazwie, adresie, loginie, tagach, opisie, folderze i protokole. ↓ / Enter przenosi do wyników; Escape czyści zapytanie.": "Ctrl+Shift+O: find a connection. Search names, addresses, users, tags, descriptions, folders and protocols. ↓ / Enter moves to results; Escape clears the query.",
+  "Znajdź połączenie  Ctrl+Shift+O     ·     Otwarte sesje  Ctrl+Shift+L": "Find connection  Ctrl+Shift+O     ·     Open sessions  Ctrl+Shift+L",
+  "Edytuj jako profil": "Edit as profile",
+  "Podaj adres i sprawdź cel przed otwarciem sesji. Hasło podasz dopiero przy łączeniu.": "Enter an address and check the destination before opening a session. You will enter the password when connecting.",
+  "Adres połączenia": "Connection address",
+  "Szybkie połączenie nie zapisuje profilu. Wybierz „Edytuj jako profil”, aby nadać nazwę, folder i zapisać ustawienia.": "Quick connect does not save a profile. Choose “Edit as profile” to set a name, folder and save the settings.",
+  "Wpisz adres lub wybierz przykład protokołu.": "Enter an address or choose a protocol example.",
+  "Adres jest poprawny. Sprawdź dane połączenia poniżej.": "The address is valid. Check the connection details below.",
+  "Niepoprawny adres połączenia.": "Invalid connection address.",
+  "Aktywna": "Active",
+  "Znajdź kartę po nazwie, adresie lub panelu i wróć do pracy.": "Find a tab by name, address or pane and get back to work.",
+  "Nie masz otwartych sesji. Otwórz zapisane połączenie lub skorzystaj z szybkiego połączenia.": "No sessions are open. Open a saved connection or use Quick connect.",
+  "Brak pasujących sesji. Zmień lub wyczyść wyszukiwanie.": "No matching sessions. Change or clear the search.",
+  "Użytkownik: {0}": "User: {0}"
 }

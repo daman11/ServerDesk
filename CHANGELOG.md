@@ -2,6 +2,14 @@
 
 ## Unreleased
 
+## 0.39.1 — Public Beta — 2026-10-17
+
+- Write Commands and Network Tools exports through flushed temporary files and replace the destination only after success; preserve previous files on failure/cancellation, reject provider-only destinations, and drain diagnostic exports on close.
+- Restrict new Unix staging/export files to the owner's read/write permissions.
+- Reject duplicate configuration JSON fields before importing and perform stream reading, validation and SQLite work outside the UI thread.
+- Preserve corrupt Network Tools history, collection indexes and remembered values instead of silently resetting them; validate collection payloads, null request fields and WoL favorites before applying them.
+- Retain successful diagnostic results when optional history/preferences persistence fails, with localized warning guidance.
+- Clarify that RDP fullscreen applies to the separate client window; embedded desktops follow their panel size and retain stored preferences.
 - Reject stale profile moves before creating destination folders; preserve profile metadata and unknown JSON fields during folder renames, and accept unchanged names without writes.
 - Inspect folder contents under the same write transaction as deletion/rename; preserve competing edits and legacy implicit-parent deletion behavior.
 - Export profiles, folders and icons from one SQLite read snapshot; verify storage-error rollback/retry for configuration imports without replacing local folder icons.

@@ -54,6 +54,7 @@ if(args.Contains("--extended-settings-network")) { ExtendedSettingsChecks.Networ
 if(args.Contains("--sftp-navigation-network")) { SftpNavigationChecks.Network(root,args[1],args[2]); return; }
 if(args.Contains("--database-backups")) { DatabaseBackupChecks.Run(root); return; }
 if(args.Contains("--configuration-export")) { ConfigurationExportChecks.Run(root); return; }
+if(args.Contains("--mvp-hardening")) { MvpHardeningChecks.Run(root); return; }
 if(args.Contains("--trusted-hosts")) { TrustedHostsChecks.Run(root); return; }
 if(args.Contains("--trusted-hosts-network")) { TrustedHostsChecks.Network(root,args[1],args[2]); return; }
 if(args.Contains("--terminal-search")) { TerminalSearchChecks.Run(root); return; }

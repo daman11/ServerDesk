@@ -46,6 +46,7 @@ public sealed record NetworkRequest
     public string Context { get; init; }="";
     public void Validate()
     {
+        if(new[]{Target,Family,RecordType,Resolvers,Ports,LocalAddress,Broadcast,Method,Headers,Query,Body,ContentType,Authentication,Username,Sni,Oid,SnmpVersion,SnmpOperation,SecurityLevel,AuthProtocol,PrivacyProtocol,Context}.Any(value=>value==null))throw new ArgumentException(L.T("Parametry narzędzia są zbyt długie lub niepoprawne."));
         if(!Enum.IsDefined(Tool) || TimeoutMs is <100 or >60000 || IntervalMs is <100 or >60000 || Count is <1 or >100000 || PayloadBytes is <0 or >1400 || MaxHops is <1 or >64 || Concurrency is <1 or >64 || Port is <1 or >65535 || Retries is <0 or >3)throw new ArgumentException(L.T("Niepoprawne limity narzędzia sieciowego."));
         if(Family is not ("Auto" or "IPv4" or "IPv6") || Target.Length>2048 || Headers.Length>16384 || Query.Length>16384 || Body.Length>262144 || Resolvers.Length>512 || Oid.Length>512 || Sni.Length>253 || Username.Length>256 || Context.Length>256)throw new ArgumentException(L.T("Parametry narzędzia są zbyt długie lub niepoprawne."));
         if(Tool==NetworkToolKind.Http)

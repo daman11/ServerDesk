@@ -50,6 +50,20 @@ internal sealed partial class NetworkToolPane
         historyChoice.ItemsSource=history.Where(h=>h.Request.Tool==Tool).Take(30).Select(h=>new HistoryChoice(h)).ToArray(); clearHistory.IsEnabled=history.Count>0; collectionChoice.ItemsSource=collections.Where(c=>c.Tool==Tool).Select(c=>new CollectionChoice(c)).ToArray();
         if(rememberedResolvers!=null)rememberedResolvers.ItemsSource=await store.ValuesAsync("resolvers",lifetime.Token);
         if(oidChoices!=null)oidChoices.ItemsSource=new[]{"1.3.6.1.2.1.1.1.0 · sysDescr","1.3.6.1.2.1.1.5.0 · sysName","1.3.6.1.2.1.1.3.0 · sysUpTime"}.Concat(await store.ValuesAsync("oidFavorites",lifetime.Token)).Concat(await store.ValuesAsync("oids",lifetime.Token)).Distinct().ToArray();
-        if(wakeFavorites!=null)wakeFavorites.ItemsSource=(await store.ValuesAsync("wolFavorites",lifetime.Token)).Select(value=> { try { return JsonSerializer.Deserialize<WakeFavorite>(value); } catch(JsonException) { return null; } }).OfType<WakeFavorite>().ToArray();
+        if(wakeFavorites!=null)
+        {
+            var favorites=new List<WakeFavorite>();
+            foreach(var value in await store.ValuesAsync("wolFavorites",lifetime.Token))
+            {
+                try
+                {
+                    var favorite=JsonSerializer.Deserialize<WakeFavorite>(value)??throw new JsonException();
+                    if(string.IsNullOrWhiteSpace(favorite.Name) || favorite.Name.Length>100 || favorite.Name.Any(char.IsControl))throw new JsonException();
+                    (Defaults() with { Target=favorite.Mac,Broadcast=favorite.Broadcast,Port=favorite.Port,LocalAddress=favorite.Local }).Validate(); favorites.Add(favorite);
+                }
+                catch(Exception ex) when(ex is JsonException or ArgumentException) { throw new InvalidDataException(L.T("Nie można odczytać zapisanych danych narzędzi sieciowych. Oryginalne dane zachowano."),ex); }
+            }
+            wakeFavorites.ItemsSource=favorites;
+        }
     }
 }

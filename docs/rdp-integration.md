@@ -1,5 +1,7 @@
 # RDP — pulpit w karcie ServerDesk
 
+Opcja **Pełny ekran klienta w osobnym oknie** dotyczy zewnętrznego klienta RDP na Windows. W trybie osadzonym jest niedostępna; pulpit dopasowuje się do rozmiaru panelu. Zmiana trybu nie kasuje zapisanej preferencji. Linux zawsze korzysta z osadzenia, więc nie stosuje tej opcji.
+
 ## Linux od 0.38.0
 
 ServerDesk osadza zainstalowany klient **X11 FreeRDP** (`xfreerdp3`, następnie `xfreerdp`) w `NativeControlHost` przez `/parent-window`. W sesji Wayland aplikacja i klient korzystają z **XWayland**. Nie włączamy natywnego backendu Wayland i nie osadzamy klientów SDL/wlfreerdp. FreeRDP nie jest dołączony do paczki; DEB rekomenduje freerdp3-x11 lub freerdp2-x11. Wymagane są X11 i libxcb1.

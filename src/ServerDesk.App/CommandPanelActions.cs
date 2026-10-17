@@ -3,6 +3,7 @@ using Avalonia.Controls;
 using Avalonia.Layout;
 using Avalonia.Input;
 using Avalonia.Input.Platform;
+using Avalonia.Platform.Storage;
 using ServerDesk.Core;
 using ServerDesk.Infrastructure;
 using System.Text;
@@ -154,9 +155,14 @@ internal sealed partial class CommandPanel
     {
         if(libraryLocked)throw new InvalidOperationException(L.T("Najpierw odblokuj własną bibliotekę komend."));
         if(!await Dialogs.Confirm(owner,L.T("Eksportować własne komendy?"),L.T("Plik JSON zawiera jawne szablony, metadane i zapisane wartości domyślne. Nie zawiera wartości wpisanych podczas użycia komendy, historii ani ustawień aplikacji. Sprawdź cały plik przed udostępnieniem."),lifetime.Token))return;
-        var file=await owner.StorageProvider.SaveFilePickerAsync(new() { Title=L.T("Eksport komend JSON"),SuggestedFileName="serverdesk-commands.json" }); if(file==null)return;
+        using var file=await owner.StorageProvider.SaveFilePickerAsync(new() { Title=L.T("Eksport komend JSON"),SuggestedFileName="serverdesk-commands.json",DefaultExtension="json" }); if(file==null)return;
+        await SaveExportAsync(file.TryGetLocalPath());
+    }
+    internal Task SaveExportAsync(string? path)
+    {
+        if(libraryLocked)throw new InvalidOperationException(L.T("Najpierw odblokuj własną bibliotekę komend."));
         var export=library with { Commands=library.Commands.Select(c=>c with { HostId=null,HostFolder="" }).ToArray() };
-        await using var output=await file.OpenWriteAsync(); output.SetLength(0); await JsonSerializer.SerializeAsync(output,export,CommandValidation.Json,lifetime.Token);
+        return ExportDestination.SaveAsync(path,(output,ct)=>JsonSerializer.SerializeAsync(output,export,CommandValidation.Json,ct),lifetime.Token);
     }
     private async Task CategoriesAsync()
     {

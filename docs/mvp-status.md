@@ -1,4 +1,6 @@
-# Pierwotne MVP — wydanie 0.39.0
+# Pierwotne MVP — wydanie 0.39.1
+
+0.39.1 obejmuje poniższe poprawki robocze po 0.39.0 oraz dziesięć zadań ochrony eksportów/importu, trwałości danych Network Tools, zachowania wyników diagnostyki i opisu RDP. [Zakres testów i ograniczenia](reports/release-verification-0.39.1.md). Nadal Public Beta; pełna akceptacja systemów i sprzętu pozostaje otwarta.
 
 Sześć kolejnych zadań roboczych po 0.39.0 obejmuje blokadę przenoszenia usuniętego wpisu, zachowanie metadanych przy zmianie nazwy, akceptację tej samej nazwy, transakcyjne sprawdzanie pustego folderu, spójny odczyt eksportu i próby rollback/retry importu po błędach zapisu. Windows: 56 celowanych testów oraz dwa scenariusze UI w PL/EN. [Zakres i granice](reports/configuration-consistency-2026-10-17.md); nie zamyka to pełnej macierzy 1.0.
 

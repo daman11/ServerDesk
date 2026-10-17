@@ -219,10 +219,17 @@ public sealed partial class ProfileRepository
         // flushed and closed before replacing an existing export on the same volume.
         await AtomicFile.ReplaceAsync(target,(output,token)=>prepared.CopyToAsync(output,token),ct);
     },ct);
-    public async Task ImportAsync(Stream stream, CancellationToken ct = default)
+    public Task ImportAsync(Stream stream,CancellationToken ct=default)=>Task.Run(()=>ImportCoreAsync(stream,ct),ct);
+    private async Task ImportCoreAsync(Stream stream,CancellationToken ct)
     {
         var bytes=await StreamLimits.ReadAsync(stream,StreamLimits.ConfigurationBytes,ct);
-        var data = JsonSerializer.Deserialize<ConfigurationExport>(bytes, Json) ?? throw new InvalidDataException(L.T("Pusty eksport."));
+        ConfigurationExport data;
+        try
+        {
+            using var document=JsonDocument.Parse(bytes); RejectDuplicateConfigurationProperties(document.RootElement,ct);
+            data=document.RootElement.Deserialize<ConfigurationExport>(Json)??throw new JsonException();
+        }
+        catch(JsonException ex) { throw new InvalidDataException(L.T("Niepoprawny JSON konfiguracji lub powtórzone pola. Dane nie zostały zaimportowane."),ex); }
         if (data.Version is not (1 or 2) || data.Servers == null || data.Folders == null || data.Servers.Count > 10000 || data.Folders.Count>10000 || data.FolderIcons is { Count:>10000 }) throw new InvalidDataException(L.T("Nieobsługiwany eksport."));
         foreach (var p in data.Servers) { ct.ThrowIfCancellationRequested(); if(p==null)throw new InvalidDataException(L.T("Niepoprawne dane profilu.")); p.Validate(); }
         foreach (var folder in data.Folders)
@@ -251,5 +258,15 @@ public sealed partial class ProfileRepository
     public sealed record ConfigurationExport(int Version, List<ServerProfile> Servers, List<string> Folders)
     {
         public Dictionary<string,string>? FolderIcons { get; init; }
+    }
+    private static void RejectDuplicateConfigurationProperties(JsonElement element,CancellationToken ct)
+    {
+        ct.ThrowIfCancellationRequested();
+        if(element.ValueKind==JsonValueKind.Object)
+        {
+            var keys=new HashSet<string>(StringComparer.Ordinal);
+            foreach(var property in element.EnumerateObject()) { if(!keys.Add(property.Name))throw new JsonException(); RejectDuplicateConfigurationProperties(property.Value,ct); }
+        }
+        else if(element.ValueKind==JsonValueKind.Array)foreach(var value in element.EnumerateArray())RejectDuplicateConfigurationProperties(value,ct);
     }
 }

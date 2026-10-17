@@ -1,6 +1,6 @@
 # Dokumentacja / Documentation
 
-Bieżące wydanie: [0.39.0 Public Beta](releases/release-0.39.0.md) — wbudowane pluginy monitoringu i komend. [Zakres testów wydania](reports/release-verification-0.39.0.md).
+Bieżące wydanie: [0.39.1 Public Beta](releases/release-0.39.1.md) — bezpieczniejsze eksporty/import, odporność lokalnych danych diagnostyki, katalog kopii bazy i karty komend. [Zakres testów wydania](reports/release-verification-0.39.1.md).
 
 | Temat / Topic | Dokument |
 |---|---|

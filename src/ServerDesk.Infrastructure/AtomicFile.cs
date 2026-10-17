@@ -10,7 +10,9 @@ internal static class AtomicFile
         var temporary=target+"."+Guid.NewGuid().ToString("N")+".part";
         try
         {
-            await using(var stream=new FileStream(temporary,FileMode.CreateNew,FileAccess.Write,FileShare.None,4096,FileOptions.Asynchronous))
+            var options=new FileStreamOptions { Mode=FileMode.CreateNew,Access=FileAccess.Write,Share=FileShare.None,Options=FileOptions.Asynchronous };
+            if(!OperatingSystem.IsWindows())options.UnixCreateMode=UnixFileMode.UserRead|UnixFileMode.UserWrite;
+            await using(var stream=new FileStream(temporary,options))
             {
                 await write(stream,ct).ConfigureAwait(false);
                 await stream.FlushAsync(ct).ConfigureAwait(false);

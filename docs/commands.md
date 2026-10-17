@@ -75,6 +75,8 @@ Całe wieloliniowe skrypty są **copy-only**, także gdy terminal obsługuje bra
 
 ## Dla dewelopera
 
+Od 0.39.1 eksport własnej biblioteki zapisuje najpierw plik tymczasowy i zastępuje wybrany JSON po pomyślnym zamknięciu. Błąd/anulowanie zachowuje poprzedni plik; wymagany jest cel w systemie plików. Eksport jest jawny, a istniejące potwierdzenie ryzyka pozostaje wymagane. Nowe pliki Unix mają uprawnienia 0600.
+
 - `src/ServerDesk.Core/Commands/`: model, walidacja, renderer, ograniczenia wysyłki, dopasowanie/wyszukiwanie i parsery rozpoznania; bez Avalonia i zależności SSH.
 - `library.v1.json` jest wersjonowanym zasobem osadzonym; `scripts/generate-command-library.py` jest jego przeglądalnym źródłem utrzymaniowym. Nie pobiera danych z sieci.
 - `CommandStore` używa istniejących ustawień SQLite i ICredentialStore. Nie zmienia tabel ani user_version=3; stan i odnośnik biblioteki mają osobne klucze `.v1`.

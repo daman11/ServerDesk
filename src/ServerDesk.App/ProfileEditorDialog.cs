@@ -131,7 +131,8 @@ internal static class ProfileEditorDialog
         display.Children.Add(Field("Wyświetlanie pulpitu",rdpMode,3,OperatingSystem.IsWindows()?"Tryb w zakładce obsługuje podział widoku i dokowanie.":"Linux osadza klienta X11 FreeRDP w zakładce przez X11/XWayland."));
         var width=new TextBox { Text=original.Rdp.Width.ToString(),Name="RdpWidth" }; var height=new TextBox { Text=original.Rdp.Height.ToString(),Name="RdpHeight" };
         display.Children.Add(Pair(Field("Szerokość (640–7680)",width,3),Field("Wysokość (480–4320)",height,3)));
-        var fullscreen=new CheckBox { Content=L.T("Pełny ekran"),IsChecked=original.Rdp.Fullscreen }; var dynamic=new CheckBox { Content=L.T("Dynamiczna rozdzielczość / skalowanie"),IsChecked=original.Rdp.DynamicResolution }; display.Children.Add(fullscreen); display.Children.Add(dynamic);
+        var fullscreen=new CheckBox { Name="RdpExternalFullscreen",Content=L.T("Pełny ekran klienta w osobnym oknie"),IsChecked=original.Rdp.Fullscreen }; var dynamic=new CheckBox { Content=L.T("Dynamiczna rozdzielczość / skalowanie"),IsChecked=original.Rdp.DynamicResolution }; display.Children.Add(fullscreen); display.Children.Add(dynamic);
+        var fullscreenHelp=DesignSystem.Hint(L.T("Pełny ekran dotyczy klienta w osobnym oknie. Pulpit w zakładce korzysta z rozmiaru panelu ServerDesk; to ustawienie go nie przełącza.")); fullscreenHelp.Name="RdpFullscreenHelp"; display.Children.Add(fullscreenHelp);
         var input=Card(desktop,"Klawiatura i schowek");
         var keyboard=new ComboBox { Name="RdpKeyboardMode",ItemsSource=new[]{L.T("Skróty Windows na tym komputerze"),L.T("Skróty Windows na serwerze"),L.T("Skróty na serwerze tylko w pełnym ekranie")},SelectedIndex=(int)original.Rdp.KeyboardMode,HorizontalAlignment=HorizontalAlignment.Stretch,IsEnabled=OperatingSystem.IsWindows() };
         input.Children.Add(Field("Klawiatura RDP",keyboard,3,"Ctrl+Alt+← / → oddaje fokus do ServerDesk."));

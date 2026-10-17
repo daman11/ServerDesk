@@ -1439,5 +1439,13 @@
   "Eksport konfiguracji wymaga lokalnego pliku. Wybierz folder na dysku komputera.": "Configuration export requires a local file. Choose a folder on your computer's disk.",
   "Nie udało się zapisać eksportu. Poprzedni plik nie został zastąpiony. Sprawdź wolne miejsce, uprawnienia i czy plik nie jest otwarty w innym programie, a następnie spróbuj ponownie.": "Could not save the export. The previous file was not replaced. Check free space, permissions and whether another program has the file open, then try again.",
   "Serwer już nie istnieje. Odśwież listę połączeń i spróbuj ponownie.": "The server no longer exists. Refresh the connection list and try again.",
+  "Eksport wymaga pliku ze ścieżką w systemie plików. Wybierz folder na dysku komputera.": "Export requires a file with a filesystem path. Choose a folder on your computer's disk.",
+  "Nie udało się zapisać eksportu. Poprzedni plik pozostał zachowany. Sprawdź wolne miejsce, uprawnienia i blokadę pliku, a następnie ponów zapis.": "Could not save the export. The previous file was preserved. Check free space, permissions and file locks, then retry.",
+  "Niepoprawny JSON konfiguracji lub powtórzone pola. Dane nie zostały zaimportowane.": "Invalid configuration JSON or duplicate fields. No data was imported.",
+  "Nie można odczytać zapisanych danych narzędzi sieciowych. Oryginalne dane zachowano.": "Could not read saved Network Tools data. The original data was preserved.",
+  "Niepoprawna kolekcja. Zapisane dane pozostają zachowane.": "Invalid collection. The saved data is preserved.",
+  "Diagnostyka zakończona. Wyniki zachowano, ale nie udało się zapisać lub odczytać historii i ustawień lokalnych.": "Diagnostics completed. Results were kept, but local history and settings could not be saved or read.",
+  "Pełny ekran klienta w osobnym oknie": "Full screen for the separate client window",
+  "Pełny ekran dotyczy klienta w osobnym oknie. Pulpit w zakładce korzysta z rozmiaru panelu ServerDesk; to ustawienie go nie przełącza.": "Full screen applies to the separate client window. An in-tab desktop uses the ServerDesk pane size; this setting does not switch it to full screen.",
   "Pluginy": "Plugins"
 }

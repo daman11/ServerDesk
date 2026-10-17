@@ -1,4 +1,6 @@
-# ServerDesk 0.39.0 — pierwsze kroki
+# ServerDesk 0.39.1 — pierwsze kroki
+
+**0.39.1:** bezpieczniejsze eksporty/import, katalog kopii bazy w ustawieniach oraz karty komend. Niepoprawne zapisane dane diagnostyki zgłaszają błąd bez automatycznego kasowania; awaria zapisu historii pozostawia wynik narzędzia. [Zmiany](releases/release-0.39.1.md).
 
 **Pluginy (0.39.0):** w Ustawienia → Pluginy włącz lub wyłącz Monitoring Linux i Komendy. Zapis działa bez restartu; wyłączenie zachowuje terminal, SFTP i własne szablony. [Obsługa](plugins.md).
 

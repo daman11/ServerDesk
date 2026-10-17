@@ -52,7 +52,7 @@ internal sealed partial class SessionPane : WorkspacePane
     private readonly StackPanel jobList=new() { Spacing=DesignTokens.Tight };
     private readonly CheckBox hidden=new() { Content=L.T("Ukryte"),IsChecked=false };
     private readonly ComboBox fileTarget=new() { ItemsSource=new[] { L.T("Lokalny"), L.T("Zdalny") },SelectedIndex=1,Width=105 };
-    private readonly CheckBox fullscreen=new() { Content=L.T("Pełny ekran") },clipboard=new() { Content=L.T("Schowek RDP"),IsChecked=true };
+    private readonly CheckBox fullscreen=new() { Content=L.T("Pełny ekran klienta w osobnym oknie") },clipboard=new() { Content=L.T("Schowek RDP"),IsChecked=true };
     private readonly NumericUpDown interval=new() { Minimum=2,Maximum=300,Value=5,Text="5",FormatString="0",Width=100 };
     private List<FileEntry> localEntries=[],remoteEntries=[];
     private SshTerminalSession? session;

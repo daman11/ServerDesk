@@ -1,4 +1,6 @@
-# ServerDesk 0.39.0 — getting started
+# ServerDesk 0.39.1 — getting started
+
+**0.39.1:** safer exports/imports, a database backup catalog in Settings and command cards. Invalid saved diagnostic data is reported without an automatic reset; a history-save failure preserves tool results. [Changes](releases/release-0.39.1.md).
 
 **Plugins (0.39.0):** Settings → Plugins independently enables Linux monitoring and Commands. Save applies without restarting; disabling preserves SSH, SFTP and custom snippets. Both built-in plugins default to enabled.
 

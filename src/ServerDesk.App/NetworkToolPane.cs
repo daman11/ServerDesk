@@ -45,8 +45,8 @@ internal sealed partial class NetworkToolPane : WorkspacePane
     private readonly Button start,stop,restart,copy,export;
     private CancellationTokenSource? operation,subnetDelay;
     private readonly CancellationTokenSource lifetime=new();
-    private Task running=Task.CompletedTask;
-    internal Task Shutdown=>running;
+    private Task running=Task.CompletedTask,exporting=Task.CompletedTask;
+    internal Task Shutdown=>Task.WhenAll(running,exporting);
     private bool disposed,applying;
     private string pem="";
     private readonly string[] columns;
@@ -166,7 +166,7 @@ internal sealed partial class NetworkToolPane : WorkspacePane
         }
         if(update.Summary.Length>0) { summary.Text=update.Summary; ToolTip.SetTip(summary,update.Summary); }
         progress.IsIndeterminate=update.Total==0; if(update.Total>0)progress.Value=Math.Max(progress.Value,Math.Clamp(100d*update.Completed/update.Total,0,100));
-        copy.IsEnabled=export.IsEnabled=rows.Count>0;
+        copy.IsEnabled=rows.Count>0; export.IsEnabled=rows.Count>0&&exporting.IsCompleted;
         status.Text=dropped>0?L.F($"Zachowano ostatnie 2000 wyników; pominięte starsze: {dropped}. Eksport obejmuje zachowane wyniki."):L.F($"Wyniki: {rows.Count} · Ctrl+Enter: Start · Escape: Stop · F5: Restart");
     }
     internal Task StartAsync(bool history=true)
@@ -182,12 +182,20 @@ internal sealed partial class NetworkToolPane : WorkspacePane
         if(Tool!=NetworkToolKind.Subnet)foreach(var control in requestControls)control.IsEnabled=false;
         try
         {
+            var persistenceIssue=false;
+            async Task OptionalPersistence(Func<Task> action)
+            {
+                try { await action(); }
+                catch(OperationCanceledException) when(cancellation.IsCancellationRequested || lifetime.IsCancellationRequested) { throw; }
+                catch(Exception ex) { persistenceIssue=true; Serilog.Log.Warning("Network tool optional persistence failed: {Type}",ex.GetType().Name); }
+            }
             var reporter=new UiProgress(this);
-            var result=await Task.Run(async()=> { if(history)await store.AddHistoryAsync(request,cancellation.Token).ConfigureAwait(false); return await service.RunAsync(request,secrets,reporter,cancellation.Token).ConfigureAwait(false); },cancellation.Token);
+            var result=await Task.Run(async()=> { if(history)await OptionalPersistence(()=>store.AddHistoryAsync(request,cancellation.Token)).ConfigureAwait(false); return await service.RunAsync(request,secrets,reporter,cancellation.Token).ConfigureAwait(false); },cancellation.Token);
             if(disposed)return; summary.Text=result.Summary+(dropped>0?"\n"+L.F($"Zachowano ostatnie 2000 wyników; pominięte starsze: {dropped}. Eksport obejmuje zachowane wyniki."):""); response.Text=result.Body; responseHeaders.Text=result.Headers; pem=result.Pem; status.Text=L.T("Zakończono");
-            if(request.Tool==NetworkToolKind.Dns && request.Resolvers.Length>0)await store.RememberAsync("resolvers",request.Resolvers,lifetime.Token);
-            if(request.Tool==NetworkToolKind.Snmp)await store.RememberAsync("oids",request.Oid,lifetime.Token);
-            await RefreshSavedAsync();
+            if(request.Tool==NetworkToolKind.Dns && request.Resolvers.Length>0)await OptionalPersistence(()=>store.RememberAsync("resolvers",request.Resolvers,lifetime.Token));
+            if(request.Tool==NetworkToolKind.Snmp)await OptionalPersistence(()=>store.RememberAsync("oids",request.Oid,lifetime.Token));
+            await OptionalPersistence(RefreshSavedAsync);
+            if(!disposed && persistenceIssue) { status.Text=L.T("Diagnostyka zakończona. Wyniki zachowano, ale nie udało się zapisać lub odczytać historii i ustawień lokalnych."); DesignSystem.Resource(status,TextBlock.ForegroundProperty,"Warning"); }
         }
         catch(OperationCanceledException) { if(!disposed)status.Text=cancellation.IsCancellationRequested?L.T("Zatrzymano"):L.T("Przekroczono czas oczekiwania."); }
         catch(Exception ex) { if(!disposed) { status.Text=NetworkToolsService.Explain(ex); DesignSystem.Resource(status,TextBlock.ForegroundProperty,"Danger"); } }
@@ -209,15 +217,26 @@ internal sealed partial class NetworkToolPane : WorkspacePane
         var snapshot=rows.ToArray(); var body=response.Text;
         var text=Tool==NetworkToolKind.Http && !string.IsNullOrEmpty(body)?body:await Task.Run(()=>NetworkExport.Render("TXT",columns,snapshot)); await clipboard.SetTextAsync(text);
     }
-    private async Task ExportAsync()
+    private Task ExportAsync()
     {
+        if(disposed || !exporting.IsCompleted)return Task.CompletedTask;
+        return exporting=GuardAsync(ExportCoreAsync);
+    }
+    private async Task ExportCoreAsync()
+    {
+        export.IsEnabled=false;
+        try
+        {
         var format=exportFormat.SelectedItem as string??"TXT"; var extension=format=="Response"?"txt":format.ToLowerInvariant();
         var snapshot=rows.ToArray(); var content=format=="PEM"?pem:format=="Response"?response.Text??"":await Task.Run(()=>NetworkExport.Render(format,columns,snapshot));
         if(content.Length==0) { status.Text=L.T("Brak danych do eksportu."); return; }
         if(TopLevel.GetTopLevel(this)?.StorageProvider is not {} storage)return;
-        var file=await storage.SaveFilePickerAsync(new() { Title=L.T("Eksport wyników"),SuggestedFileName=$"ServerDesk-{Tool}-{DateTime.Now:yyyyMMdd-HHmmss}.{extension}",DefaultExtension=extension });
-        if(file==null)return; await using var stream=await file.OpenWriteAsync(); stream.SetLength(0); await using var writer=new StreamWriter(stream); await writer.WriteAsync(content);
+        using var file=await storage.SaveFilePickerAsync(new() { Title=L.T("Eksport wyników"),SuggestedFileName=$"ServerDesk-{Tool}-{DateTime.Now:yyyyMMdd-HHmmss}.{extension}",DefaultExtension=extension });
+        if(file==null)return; await SaveExportAsync(file.TryGetLocalPath(),content);
+        }
+        finally { if(!disposed)export.IsEnabled=rows.Count>0; }
     }
+    internal Task SaveExportAsync(string? path,string content)=>ExportDestination.SaveAsync(path,(stream,ct)=>ExportDestination.WriteTextAsync(stream,content,ct),lifetime.Token);
     internal override void FocusContent()=>target.Focus();
     private void UpdateCaption()
     {

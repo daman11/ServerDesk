@@ -1,0 +1,13 @@
+# ServerDesk 0.39.1 — zakres weryfikacji, 2026-10-17
+
+Dziesięć zadań stabilizacji: ochrona eksportu Komend; ochrona eksportów Network Tools i zatrzymanie zapisu przy zamknięciu; prywatne uprawnienia plików Unix; odrzucenie powtórzonych pól importu; import poza UI; zachowanie uszkodzonych indeksów historii/kolekcji; walidacja zawartości kolekcji; walidacja zapamiętanych DNS/OID/WoL; zachowanie diagnostyki po błędzie lokalnego zapisu; jednoznaczna opcja pełnego ekranu zewnętrznego RDP.
+
+`MvpHardeningTests` obejmuje kontrolowane błędy/anulowanie zapisu, powtórzone i escaped pola JSON, blokowany strumień importu, uszkodzone indeksy/payloady, duplikaty ID i ponowny zapis zapamiętanych wartości. Na Linux sprawdza uprawnienia 0600 stagingu i gotowego eksportu. `--mvp-hardening` sprawdza PL/EN, zapis przez produkcyjne ścieżki eksportu, zachowanie zablokowanego pliku Windows, rzeczywistą odmowę INSERT historii przez SQLite, zachowane wyniki obliczeń, błędne WoL i opcję RDP w edytorze. Fixture wyłącza niezwiązane automatyczne przeliczanie podsieci, aby izolować jawne uruchomienie diagnostyki.
+
+Bramki obejmują locked restore, Release build i pełne testy jednostkowe Windows/Linux, aktualną macierz CI UI oraz network-tools/app-polish, audyt NuGet, kontrolę treści i linków. Po commicie sprawdzane są paczki, natywny host RDP Windows bez logowania, start/restart opublikowanego EXE, teksty i izolowana instalacja/aktualizacja/deinstalacja oraz zawartość Linux TAR/DEB. Dokładne końcowe wyniki i commit zapisuje `VERIFICATION.md` wydania; dowody w `artifacts/reports/mvp-hardening-2026-10-17`.
+
+Locked restore oraz Release build Windows i Linux: bez ostrzeżeń/błędów. Jednostkowe: 747/747 na każdym systemie, bez pominiętych. Audyt NuGet czterech projektów nie zwrócił advisory ani błędów źródeł; nie zastępuje pełnego audytu bezpieczeństwa. Kontrola treści/linków/wzorców poświadczeń obejmuje 641 plików źródłowych.
+
+Bez nowych zależności, migracji bazy i zmian uwierzytelniania protokołów. Próby korzystają z własnych katalogów, bazy i pamięciowego magazynu, bez prywatnych połączeń/poświadczeń. Eksporty pozostają jawnymi plikami; uprawnienia Unix nie zapewniają szyfrowania. Zastąpienie pliku nie gwarantuje odporności na awarię zasilania systemu plików; twarde zamknięcie może pozostawić `.part`. Nie usuwamy ich automatycznie.
+
+Nie powtarzano logowania do rzeczywistego Windows RDP, fizycznego Serial, natywnego Kali/KDE, mieszanych DPI, pełnej macierzy schowka/IME ani wielogodzinnego soak. Te zadania nadal są otwarte w [planie 1.0](../stable-release-plan.md). Poprzednie raporty protokołów pozostają dowodami ich własnego zakresu, a nie nową akceptacją tego wydania.

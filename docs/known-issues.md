@@ -2,6 +2,8 @@
 
 This is a public beta. Keep a backup before upgrading and validate the workflows you need in a test environment.
 
+- **Exports and saved diagnostics (0.39.1):** configuration, Commands and Network Tools exports require a filesystem path. A completed temporary file replaces the destination after success; this is not a power-loss guarantee, and a hard process termination may leave `.part` files. New Unix files use owner-only permissions; exports remain plaintext. Invalid saved diagnostic data is preserved and reported instead of automatically reset. A diagnostic can complete with a warning if optional history/preferences persistence fails.
+
 - **Desktop acceptance (0.38.0):** dialogs react to monitor/DPI changes and restore resize limits. Automated mixed-scale tests are simulated; physical monitors, screen readers and native Kali/KDE/Wayland remain unverified. This build uses X11/XWayland and Secret Service, without a direct KWallet backend. See the [platform matrix and acceptance checklist](platform-support.md).
 
 - **Connection browser (0.37.0):** filtering clears a hidden server selection; select a visible profile again before connecting. Search expansion is temporary and does not replace normal folder collapse state. Automated PL/EN tests cover sort/reload/filter/restart; physical drag and drop and very large folder trees still need wider acceptance.

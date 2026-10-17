@@ -1439,5 +1439,13 @@
   "Eksport konfiguracji wymaga lokalnego pliku. Wybierz folder na dysku komputera.": "Eksport konfiguracji wymaga lokalnego pliku. Wybierz folder na dysku komputera.",
   "Nie udało się zapisać eksportu. Poprzedni plik nie został zastąpiony. Sprawdź wolne miejsce, uprawnienia i czy plik nie jest otwarty w innym programie, a następnie spróbuj ponownie.": "Nie udało się zapisać eksportu. Poprzedni plik nie został zastąpiony. Sprawdź wolne miejsce, uprawnienia i czy plik nie jest otwarty w innym programie, a następnie spróbuj ponownie.",
   "Serwer już nie istnieje. Odśwież listę połączeń i spróbuj ponownie.": "Serwer już nie istnieje. Odśwież listę połączeń i spróbuj ponownie.",
+  "Eksport wymaga pliku ze ścieżką w systemie plików. Wybierz folder na dysku komputera.": "Eksport wymaga pliku ze ścieżką w systemie plików. Wybierz folder na dysku komputera.",
+  "Nie udało się zapisać eksportu. Poprzedni plik pozostał zachowany. Sprawdź wolne miejsce, uprawnienia i blokadę pliku, a następnie ponów zapis.": "Nie udało się zapisać eksportu. Poprzedni plik pozostał zachowany. Sprawdź wolne miejsce, uprawnienia i blokadę pliku, a następnie ponów zapis.",
+  "Niepoprawny JSON konfiguracji lub powtórzone pola. Dane nie zostały zaimportowane.": "Niepoprawny JSON konfiguracji lub powtórzone pola. Dane nie zostały zaimportowane.",
+  "Nie można odczytać zapisanych danych narzędzi sieciowych. Oryginalne dane zachowano.": "Nie można odczytać zapisanych danych narzędzi sieciowych. Oryginalne dane zachowano.",
+  "Niepoprawna kolekcja. Zapisane dane pozostają zachowane.": "Niepoprawna kolekcja. Zapisane dane pozostają zachowane.",
+  "Diagnostyka zakończona. Wyniki zachowano, ale nie udało się zapisać lub odczytać historii i ustawień lokalnych.": "Diagnostyka zakończona. Wyniki zachowano, ale nie udało się zapisać lub odczytać historii i ustawień lokalnych.",
+  "Pełny ekran klienta w osobnym oknie": "Pełny ekran klienta w osobnym oknie",
+  "Pełny ekran dotyczy klienta w osobnym oknie. Pulpit w zakładce korzysta z rozmiaru panelu ServerDesk; to ustawienie go nie przełącza.": "Pełny ekran dotyczy klienta w osobnym oknie. Pulpit w zakładce korzysta z rozmiaru panelu ServerDesk; to ustawienie go nie przełącza.",
   "Pluginy": "Pluginy"
 }

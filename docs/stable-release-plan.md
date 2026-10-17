@@ -1,6 +1,6 @@
 # Droga do ServerDesk 1.0
 
-Punkt wyjścia: 0.39.0 Public Beta. Funkcje rdzenia i dodatków istnieją; stan implementacji oraz granice wcześniejszych testów opisuje [MVP](mvp-status.md). Poniższa lista jest bieżącym planem stabilizacji, a nie deklaracją gotowości 1.0.
+Punkt wyjścia: 0.39.1 Public Beta. Funkcje rdzenia i dodatków istnieją; stan implementacji oraz granice wcześniejszych testów opisuje [MVP](mvp-status.md). Poniższa lista jest bieżącym planem stabilizacji, a nie deklaracją gotowości 1.0.
 
 Małe kroki kończą się commitem, celowanymi sprawdzeniami i EXE do uruchomienia z folderu. Pełna macierz i paczki są przeznaczone dla większych etapów, RC i wydania 1.0.
 
@@ -18,6 +18,8 @@ Małe kroki kończą się commitem, celowanymi sprawdzeniami i EXE do uruchomien
 - [x] Przenoszenie usuniętego wpisu nie tworzy folderów; niezmieniona nazwa jest akceptowana, a zmiana nazwy nie gubi dodatkowych pól profilu ani konkurującej edycji.
 - [x] Sprawdzenie zawartości folderu i usuwanie współdzielą transakcję; próba z konkurującym zapisem chroni nowy profil, a starsze niejawne foldery nadrzędne zachowują obsługę.
 - [x] Eksport czyta profile/foldery/ikony z jednego obrazu bazy; błędy zapisu importu wycofują całość i pozwalają na retry bez zmiany lokalnych ikon. [Sześć zadań, dowody i ograniczenia](reports/configuration-consistency-2026-10-17.md).
+- [x] 0.39.1: eksport Komend i Network Tools przez zamknięty plik tymczasowy, zachowanie poprzedniego pliku przy błędzie/anulowaniu; prywatne uprawnienia nowych plików Unix.
+- [x] 0.39.1: odrzucanie powtórzonych pól konfiguracji przed zapisem oraz odczyt/walidacja/import poza wątkiem UI.
 - [ ] Szersze testy przerwanego zapisu, braku miejsca, blokad i aktualizacji historycznych zestawów danych.
 - [ ] Dalsza weryfikacja zgodności bazy z osobnym magazynem poświadczeń, komend i kolekcji; kopia bazy nie jest pełnym backupem tych danych.
 
@@ -42,12 +44,15 @@ Małe kroki kończą się commitem, celowanymi sprawdzeniami i EXE do uruchomien
 ## 3. RDP, VNC i Serial — do domknięcia akceptacji
 
 - [ ] Uzupełnić [macierz RDP](rdp-test-matrix.md): lokalne/AD, certyfikaty, schowek w obie strony, pliki, fokus, fizyczne klawisze i awarie sieci.
-- [ ] Wyjaśnić lub rozszerzyć pełny ekran osadzonego RDP; obecnie pełny ekran dotyczy klienta zewnętrznego. Zweryfikować osadzone FreeRDP na natywnym KDE/XWayland; test izolowany Xvfb nie zastępuje akceptacji pulpitu.
+- [x] 0.39.1: jednoznaczny opis pełnego ekranu klienta w osobnym oknie; osadzony pulpit korzysta z rozmiaru panelu, bez utraty zapisanej preferencji.
+- [ ] Zweryfikować osadzone FreeRDP na natywnym KDE/XWayland; test izolowany Xvfb nie zastępuje akceptacji pulpitu.
 - [ ] Rzeczywiste implementacje VNC i długie sesje; jawnie zachować ograniczenie braku TLS/identyfikacji serwera.
 - [ ] Fizyczne adaptery Serial: parametry, flow control i odłączanie w trakcie pracy.
 
 ## 4. Dodatkowe moduły — do domknięcia akceptacji
 
+- [x] 0.39.1: zachowanie uszkodzonych indeksów historii/kolekcji bez cichego resetu; walidacja payloadów kolekcji, pól null i zapamiętanych DNS/OID/WoL przed zastosowaniem.
+- [x] 0.39.1: awaria opcjonalnego zapisu historii/preferencji nie blokuje diagnostyki i nie usuwa jej wyników; ostrzeżenie PL/EN. [Dziesięć zadań i granice prób](reports/release-verification-0.39.1.md).
 - [ ] Network Tools: rzeczywiste IPv6/VPN/DNS/ICMP, urządzenia SNMP i wybudzanie WoL; wielokrotne anulowanie/zamykanie kart.
 - [ ] Komendy: zgodność na reprezentatywnych dystrybucjach i rzeczywistym Windows SSH; quoting, parametry i ochrona tożsamości celu po reconnect.
 - [ ] Ponowny przegląd bezpieczeństwa nowych modułów, eksportów i logów.

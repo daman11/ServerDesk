@@ -1,5 +1,7 @@
 # Rozwój i testy
 
+Sprawdzanie kopii po 0.39.1: `DatabaseBackupVerificationTests` obejmuje prawdziwe kopie, schematy 0–3, URI ze spacjami/Unicode/#/%, pliki read-only, uszkodzenie, nowszy lub niezgodny schemat, dzienniki, anulowanie, zniknięcie pliku oraz blokadę Windows i dowiązania Unix. Istniejący UiSmoke `ROOT --database-backups` sprawdza teraz również ikonę, PL/EN, sukces/błąd i zamknięcie w trakcie kontroli. [Raport](reports/backup-verification-2026-10-17.md).
+
 Krok po 0.39.1: UiSmoke `ROOT --network-cancellation` sprawdza PL/EN, kolejkę kalkulatora podsieci, opóźniony odczyt kolekcji z pamięciowego magazynu ignorującego anulowanie, zamknięcie okna zapisu oraz wielokrotne Restart/Stop i zamykanie rzeczywistych żądań HTTP na własnym porcie loopback. Nie używa osobistego magazynu ani połączeń. [Raport i granice](reports/network-cancellation-2026-10-17.md).
 
 0.39.1: `MvpHardeningTests` sprawdza ochronę eksportów, prywatne uprawnienia Unix, import poza UI i walidację uszkodzonych zapisów diagnostyki. UiSmoke `ROOT --mvp-hardening` obejmuje PL/EN, produkcyjne ścieżki zapisu, blokadę pliku Windows, ostrzeżenie po kontrolowanej odmowie zapisu historii, błędne WoL i wyjaśnienie pełnego ekranu RDP. Scenariusz jest w CI Windows/Linux; omija natywne pickery i nie łączy się z serwerem RDP. [Zakres i ograniczenia](reports/release-verification-0.39.1.md).

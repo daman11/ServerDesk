@@ -2,6 +2,8 @@
 
 ## Unreleased
 
+- Add an explicit read-only check for a selected database snapshot in Security settings: SQLite integrity/schema feedback in PL/EN, rejection of changed/missing/corrupt/newer/journal-dependent files, and draining checks when settings close. Keep restoration manual and disclose that this does not validate application data or credential-store contents.
+
 - Let Stop/Escape cancel queued subnet calculations, supersede automatic work on manual Start, coalesce Restart requests and let Stop prevent a pending restart.
 - Drain diagnostic actions and delayed work when a tab closes; prevent late collection/secret/UI updates and cancel owned save prompts. Publish saved-control refreshes only while the pane is alive.
 

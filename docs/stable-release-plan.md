@@ -11,6 +11,7 @@ Małe kroki kończą się commitem, celowanymi sprawdzeniami i EXE do uruchomien
 - [x] Sprawdzona kopia przed migracją starego schematu; odmowa migracji przy błędzie kopii.
 - [x] Komunikat o uszkodzonej/niedostępnej/nowszej bazie i zamknięcie bez zapisu układu zamiast automatycznego resetu.
 - [x] Celowany test odtworzenia profili, folderów i ustawień w osobnym katalogu; [instrukcja i ograniczenia](database-backups.md).
+- [x] Krok roboczy po 0.39.1: ręczna kontrola SQLite i zgodności schematu wybranej kopii w ustawieniach, bez modyfikacji pliku, migracji ani przywracania; komunikaty PL/EN dla poprawnych, uszkodzonych i niedostępnych kopii. Nie zastępuje próby odtworzenia ani weryfikacji sekretów. [Testy i granice](reports/backup-verification-2026-10-17.md).
 - [x] Zapis profilu oraz tworzenie zagnieżdżonych folderów w jednej transakcji; kontrolowany błąd zapisu zachowuje poprzedni stan, ponowienie działa.
 - [x] Przenoszenie profilu razem z tworzeniem folderu docelowego w jednej transakcji; brak częściowo utworzonego drzewa po błędzie.
 - [x] Rekurencyjna zmiana nazwy folderu obejmuje także brakujących rodziców celu, ikony i przypisania profili w jednej transakcji. [Testy trzech poprawek i granice](reports/profile-atomicity-2026-10-17.md).

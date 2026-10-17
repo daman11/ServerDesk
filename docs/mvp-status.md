@@ -1,5 +1,7 @@
 # Pierwotne MVP — wydanie 0.39.1
 
+Krok roboczy po 0.39.1: **Ustawienia → Bezpieczeństwo → Zapisane kopie bazy → Sprawdź kopię** wykonuje kontrolę SQLite i zgodności schematu wybranego pliku. Bez przywracania danych, migracji, zapisu do kopii ani sprawdzania sekretów. [Obsługa](database-backups.md), [celowane testy i granice](reports/backup-verification-2026-10-17.md). Ostatnie zamrożone wydanie pozostaje 0.39.1.
+
 Krok roboczy po 0.39.1: stabilizacja Start/Stop/Restart i zamykania kart Network Tools, w tym automatycznych obliczeń podsieci, opóźnionego odczytu kolekcji i okien zapisu. [Zakres celowanych prób](reports/network-cancellation-2026-10-17.md). Bez nowego wydania; ostatnie zamrożone paczki pozostają 0.39.1.
 
 0.39.1 obejmuje poniższe poprawki robocze po 0.39.0 oraz dziesięć zadań ochrony eksportów/importu, trwałości danych Network Tools, zachowania wyników diagnostyki i opisu RDP. [Zakres testów i ograniczenia](reports/release-verification-0.39.1.md). Nadal Public Beta; pełna akceptacja systemów i sprzętu pozostaje otwarta.

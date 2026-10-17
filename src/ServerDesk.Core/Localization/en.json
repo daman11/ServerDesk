@@ -1447,5 +1447,17 @@
   "Diagnostyka zakończona. Wyniki zachowano, ale nie udało się zapisać lub odczytać historii i ustawień lokalnych.": "Diagnostics completed. Results were kept, but local history and settings could not be saved or read.",
   "Pełny ekran klienta w osobnym oknie": "Full screen for the separate client window",
   "Pełny ekran dotyczy klienta w osobnym oknie. Pulpit w zakładce korzysta z rozmiaru panelu ServerDesk; to ustawienie go nie przełącza.": "Full screen applies to the separate client window. An in-tab desktop uses the ServerDesk pane size; this setting does not switch it to full screen.",
-  "Pluginy": "Plugins"
+  "Pluginy": "Plugins",
+  "Sprawdź kopię": "Check backup",
+  "Sprawdzanie wybranej kopii…": "Checking selected backup…",
+  "Lista pokazuje metadane. Sprawdź kopię wykonuje kontrolę SQLite, bez przywracania danych ani sprawdzania haseł i kolekcji w magazynie systemowym. Przed przywróceniem przetestuj kopię w osobnym katalogu danych.": "The list shows metadata. Check backup inspects SQLite without restoring data or checking passwords and collections in the system credential store. Test the backup in a separate data directory before restoring.",
+  "Kontrola SQLite poprawna · schemat {0}. Przed przywróceniem sprawdź dane w osobnym katalogu.": "SQLite check passed · schema {0}. Check the data in a separate directory before restoring.",
+  "Nazwa kopii nie jest zgodna z wybranym wpisem. Odśwież listę i wybierz plik ponownie.": "The backup name does not match the selected entry. Refresh the list and select the file again.",
+  "Plik kopii zmienił się lub jest niepoprawny. Odśwież listę i spróbuj ponownie.": "The backup file has changed or is invalid. Refresh the list and try again.",
+  "Kontrola SQLite wykryła uszkodzenie kopii. Plik pozostawiono bez zmian.": "The SQLite check found corruption in the backup. The file was left unchanged.",
+  "Kopia pochodzi z nowszej lub nieobsługiwanej wersji ServerDesk. Plik pozostawiono bez zmian.": "The backup comes from a newer or unsupported ServerDesk version. The file was left unchanged.",
+  "Schemat zapisany w bazie różni się od nazwy kopii. Plik pozostawiono bez zmian.": "The schema stored in the database differs from the backup name. The file was left unchanged.",
+  "Nie można potwierdzić poprawności SQLite w tej kopii. Plik pozostawiono bez zmian.": "Could not confirm SQLite integrity in this backup. The file was left unchanged.",
+  "Obok kopii znaleziono pliki dziennika SQLite. Nie sprawdzamy jej jako samodzielnej kopii; utwórz nową kopię w ServerDesk.": "SQLite journal files were found beside this backup. It cannot be checked as a standalone snapshot; create a new backup in ServerDesk.",
+  "Nie udało się sprawdzić kopii. Plik mógł zostać usunięty, zablokowany lub jest niedostępny. Odśwież listę i spróbuj ponownie.": "Could not check the backup. The file may have been removed, locked or become unavailable. Refresh the list and try again."
 }

@@ -1447,5 +1447,17 @@
   "Diagnostyka zakończona. Wyniki zachowano, ale nie udało się zapisać lub odczytać historii i ustawień lokalnych.": "Diagnostyka zakończona. Wyniki zachowano, ale nie udało się zapisać lub odczytać historii i ustawień lokalnych.",
   "Pełny ekran klienta w osobnym oknie": "Pełny ekran klienta w osobnym oknie",
   "Pełny ekran dotyczy klienta w osobnym oknie. Pulpit w zakładce korzysta z rozmiaru panelu ServerDesk; to ustawienie go nie przełącza.": "Pełny ekran dotyczy klienta w osobnym oknie. Pulpit w zakładce korzysta z rozmiaru panelu ServerDesk; to ustawienie go nie przełącza.",
-  "Pluginy": "Pluginy"
+  "Pluginy": "Pluginy",
+  "Sprawdź kopię": "Sprawdź kopię",
+  "Sprawdzanie wybranej kopii…": "Sprawdzanie wybranej kopii…",
+  "Lista pokazuje metadane. Sprawdź kopię wykonuje kontrolę SQLite, bez przywracania danych ani sprawdzania haseł i kolekcji w magazynie systemowym. Przed przywróceniem przetestuj kopię w osobnym katalogu danych.": "Lista pokazuje metadane. Sprawdź kopię wykonuje kontrolę SQLite, bez przywracania danych ani sprawdzania haseł i kolekcji w magazynie systemowym. Przed przywróceniem przetestuj kopię w osobnym katalogu danych.",
+  "Kontrola SQLite poprawna · schemat {0}. Przed przywróceniem sprawdź dane w osobnym katalogu.": "Kontrola SQLite poprawna · schemat {0}. Przed przywróceniem sprawdź dane w osobnym katalogu.",
+  "Nazwa kopii nie jest zgodna z wybranym wpisem. Odśwież listę i wybierz plik ponownie.": "Nazwa kopii nie jest zgodna z wybranym wpisem. Odśwież listę i wybierz plik ponownie.",
+  "Plik kopii zmienił się lub jest niepoprawny. Odśwież listę i spróbuj ponownie.": "Plik kopii zmienił się lub jest niepoprawny. Odśwież listę i spróbuj ponownie.",
+  "Kontrola SQLite wykryła uszkodzenie kopii. Plik pozostawiono bez zmian.": "Kontrola SQLite wykryła uszkodzenie kopii. Plik pozostawiono bez zmian.",
+  "Kopia pochodzi z nowszej lub nieobsługiwanej wersji ServerDesk. Plik pozostawiono bez zmian.": "Kopia pochodzi z nowszej lub nieobsługiwanej wersji ServerDesk. Plik pozostawiono bez zmian.",
+  "Schemat zapisany w bazie różni się od nazwy kopii. Plik pozostawiono bez zmian.": "Schemat zapisany w bazie różni się od nazwy kopii. Plik pozostawiono bez zmian.",
+  "Nie można potwierdzić poprawności SQLite w tej kopii. Plik pozostawiono bez zmian.": "Nie można potwierdzić poprawności SQLite w tej kopii. Plik pozostawiono bez zmian.",
+  "Obok kopii znaleziono pliki dziennika SQLite. Nie sprawdzamy jej jako samodzielnej kopii; utwórz nową kopię w ServerDesk.": "Obok kopii znaleziono pliki dziennika SQLite. Nie sprawdzamy jej jako samodzielnej kopii; utwórz nową kopię w ServerDesk.",
+  "Nie udało się sprawdzić kopii. Plik mógł zostać usunięty, zablokowany lub jest niedostępny. Odśwież listę i spróbuj ponownie.": "Nie udało się sprawdzić kopii. Plik mógł zostać usunięty, zablokowany lub jest niedostępny. Odśwież listę i spróbuj ponownie."
 }

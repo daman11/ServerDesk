@@ -86,6 +86,7 @@ internal static partial class DeskIcons
         "Importuj grafikę"=>"image",
         "Wybierz plik" or "Wybierz pliki"=>"folder-open",
         "Wczytaj kolekcję" or "Utwórz kopię bazy"=>"archive",
+        "Sprawdź kopię"=>"shield",
         "Przejdź"=>"arrow-right",
         "Lista komend"=>"arrow-left",
         "Kopiuj ścieżkę"=>"copy",

@@ -74,22 +74,34 @@ public sealed partial class ProfileRepository
     }
     public async Task SaveAsync(ServerProfile profile, CancellationToken ct = default)
     {
-        profile.Validate(); await Execute("INSERT INTO profiles VALUES($id,$json) ON CONFLICT(id) DO UPDATE SET json=excluded.json", ct, ("$id", profile.Id.ToString()), ("$json", JsonSerializer.Serialize(profile)));
-        if (profile.Folder.Length > 0) await AddFolderAsync(profile.Folder, ct);
+        profile.Validate();
+        await using var db=await Open(ct); using var transaction=db.BeginTransaction(); using var cmd=db.CreateCommand(); cmd.Transaction=transaction;
+        cmd.CommandText="INSERT INTO profiles VALUES($id,$json) ON CONFLICT(id) DO UPDATE SET json=excluded.json";
+        cmd.Parameters.AddWithValue("$id",profile.Id.ToString()); cmd.Parameters.AddWithValue("$json",JsonSerializer.Serialize(profile)); await cmd.ExecuteNonQueryAsync(ct);
+        if(profile.Folder.Length>0)await AddAncestors(db,transaction,profile.Folder,ct);
+        await transaction.CommitAsync(ct);
     }
     public Task DeleteAsync(Guid id, CancellationToken ct = default) => Execute("DELETE FROM profiles WHERE id=$id", ct, ("$id", id.ToString()));
     public async Task MoveToFolderAsync(Guid id,string path,CancellationToken ct=default)
     {
-        if(path.Length>0)await AddFolderAsync(path,ct);
-        await Execute("UPDATE profiles SET json=json_set(json,'$.Folder',$folder) WHERE id=$id",ct,("$folder",path),("$id",id.ToString()));
+        ProfileFolder.Validate(path,allowEmpty:true);
+        await using var db=await Open(ct); using var transaction=db.BeginTransaction(); using var cmd=db.CreateCommand(); cmd.Transaction=transaction;
+        if(path.Length>0)await AddAncestors(db,transaction,path,ct);
+        cmd.CommandText="UPDATE profiles SET json=json_set(json,'$.Folder',$folder) WHERE id=$id";
+        cmd.Parameters.AddWithValue("$folder",path); cmd.Parameters.AddWithValue("$id",id.ToString()); await cmd.ExecuteNonQueryAsync(ct);
+        await transaction.CommitAsync(ct);
     }
-    public Task AddFolderAsync(string path, CancellationToken ct = default)
+    public async Task AddFolderAsync(string path, CancellationToken ct = default)
     {
         ProfileFolder.Validate(path);
-        return AddAncestors(path,ct);
+        await using var db=await Open(ct); using var transaction=db.BeginTransaction();
+        await AddAncestors(db,transaction,path,ct); await transaction.CommitAsync(ct);
     }
-    private async Task AddAncestors(string path,CancellationToken ct)
-    { foreach(var ancestor in ProfileFolder.Ancestors(path))await Execute("INSERT OR IGNORE INTO folders VALUES($path)",ct,("$path",ancestor)); }
+    private static async Task AddAncestors(SqliteConnection db,SqliteTransaction transaction,string path,CancellationToken ct)
+    {
+        using var cmd=db.CreateCommand(); cmd.Transaction=transaction; cmd.CommandText="INSERT OR IGNORE INTO folders VALUES($path)"; var value=cmd.Parameters.Add("$path",SqliteType.Text);
+        foreach(var ancestor in ProfileFolder.Ancestors(path)) { value.Value=ancestor; await cmd.ExecuteNonQueryAsync(ct); }
+    }
     public async Task DeleteFolderAsync(string path,CancellationToken ct=default)
     {
         var profiles=await ListAsync(ct); if(profiles.Any(x=>x.Folder==path || x.Folder.StartsWith(path+"/",StringComparison.Ordinal))) throw new InvalidOperationException(L.T("Folder zawiera serwery. Przenieś je przed usunięciem."));
@@ -108,7 +120,7 @@ public sealed partial class ProfileRepository
         foreach(var folder in folders.Where(x=>x==path || x.StartsWith(path+"/",StringComparison.Ordinal)))
         { using var cmd=db.CreateCommand(); cmd.Transaction=(SqliteTransaction)transaction; cmd.CommandText="UPDATE folder_icons SET path=$target WHERE path=$old; UPDATE folders SET path=$target WHERE path=$old"; cmd.Parameters.AddWithValue("$target",target+folder[path.Length..]); cmd.Parameters.AddWithValue("$old",folder); await cmd.ExecuteNonQueryAsync(ct); }
         foreach(var profile in profiles) { using var cmd=db.CreateCommand(); cmd.Transaction=(SqliteTransaction)transaction; cmd.CommandText="UPDATE profiles SET json=$json WHERE id=$id"; cmd.Parameters.AddWithValue("$id",profile.Id.ToString()); cmd.Parameters.AddWithValue("$json",JsonSerializer.Serialize(profile with { Folder=target+profile.Folder[path.Length..] })); await cmd.ExecuteNonQueryAsync(ct); }
-        await transaction.CommitAsync(ct); await AddAncestors(target,ct);
+        await AddAncestors(db,(SqliteTransaction)transaction,target,ct); await transaction.CommitAsync(ct);
     }
     public async Task<List<string>> FoldersAsync(CancellationToken ct = default)
     {

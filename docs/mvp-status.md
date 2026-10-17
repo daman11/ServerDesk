@@ -1,5 +1,7 @@
 # Pierwotne MVP — wydanie 0.39.0
 
+Trzy kolejne poprawki robocze po 0.39.0 zapewniają atomowy zapis profilu i folderów, przenoszenie do nowego folderu oraz rekurencyjną zmianę nazwy drzewa wraz z ikonami i przypisaniami. Kontrolowane błędy SQLite sprawdzają zachowanie starego stanu i udane ponowienie. [Zakres testów](reports/profile-atomicity-2026-10-17.md); szersze próby braku miejsca i awarii procesu pozostają otwarte.
+
 Zmiana robocza po 0.39.0 rozwija odzyskiwanie danych: w ustawieniach bezpieczeństwa jest lista 20 najnowszych kopii bazy z datą, rozmiarem, schematem i powodem, kopiowaniem ścieżki i dostępem do folderu. Odczyt metadanych nie otwiera bazy ani nie zmienia kopii. [Obsługa i przywracanie](database-backups.md).
 
 0.39.0 dodaje wbudowane pluginy Monitoring Linux i Komendy z przełącznikami po zapisie bez restartu. Rdzeń SSH/SFTP/RDP zachowuje niezależność od dodatków. [Wydanie](releases/release-0.39.0.md), [obsługa](plugins.md), [testy](reports/plugins-2026-10-17.md).

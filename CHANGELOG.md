@@ -2,6 +2,9 @@
 
 ## Unreleased
 
+- Save profiles and nested folders in one SQLite transaction so a failed write preserves the previous profile and leaves no partial ancestor chain.
+- Move profiles together with any new destination folders in one transaction; retain the original destination and metadata on failure, and allow retry.
+- Include destination ancestors in recursive folder-rename transactions alongside folder paths, icons and profile assignments; roll back the entire rename when any write fails.
 - Add a read-only catalog of the 20 newest database snapshots in Security settings, with timestamps, sizes, schema/reason, copied paths and an explicit folder launcher; exclude incomplete/unrelated files.
 - Show descriptions and command templates on browsable cards; open full details and parameter forms on click/Enter, with Back/Escape navigation and retained filters.
 - Unify settings section headings and help text, give Plugins a distinct icon and compact built-in badges, and keep command headers readable in narrow panels.

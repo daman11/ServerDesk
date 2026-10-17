@@ -47,6 +47,7 @@ internal sealed partial class CommandPanel : Border,IDisposable
     private CommandDispatchTicket? ticket;
     private readonly Button insert,execute,copy,favorite,edit,duplicate;
     private readonly DispatcherDebounce queryDebounce;
+    private string appliedSearch="";
     internal CommandUserLibrary UserLibrary=>library;
     internal CommandEnvironment Environment=>environment;
     internal CommandPanel(MainWindow owner,CommandStore store)
@@ -73,14 +74,15 @@ internal sealed partial class CommandPanel : Border,IDisposable
         context.TextWrapping=TextWrapping.NoWrap; context.TextTrimming=TextTrimming.CharacterEllipsis;
         DesignSystem.Resource(context,TextBlock.ForegroundProperty,"ForegroundSecondary");
         system.ItemTemplate=new FuncDataTemplate<string>((id,_)=>id==null?null:DesignSystem.Label(SystemLabel(id)));
+        shell.ItemTemplate=new FuncDataTemplate<CommandShell>((value,_)=>DesignSystem.Label(ShellLabel(value)));
         category.ItemTemplate=new FuncDataTemplate<string>((id,_)=>id==null?null:DesignSystem.Label(CategoryLabel(id)));
         var filter=new Grid { ColumnDefinitions=new("*,Auto"),ColumnSpacing=6 }; filter.Children.Add(section); var add=DeskIcons.Button("plus",L.T("Nowa komenda"),()=>Run(()=>EditAsync(null))); Grid.SetColumn(add,1); filter.Children.Add(add);
         var filter2=new Grid { ColumnDefinitions=new("*,*"),ColumnSpacing=6 }; filter2.Children.Add(category); Grid.SetColumn(sort,1); filter2.Children.Add(sort);
-        var filterBody=new StackPanel { Spacing=9,Children={controls,search,filter,filter2} };
-        var filterScroll=new ScrollViewer { Name="CommandFilters",Content=filterBody,HorizontalScrollBarVisibility=Avalonia.Controls.Primitives.ScrollBarVisibility.Disabled,MaxHeight=300 };
-        filtersView=filterScroll;
-        SizeChanged+=(_,_)=>filterScroll.MaxHeight=Math.Clamp(Bounds.Height*.38,140,330); Grid.SetRow(filterScroll,1); grid.Children.Add(filterScroll);
-        var results=new Grid { Name="CommandBrowser",RowDefinitions=new("Auto,*"),RowSpacing=7,MinHeight=96,ClipToBounds=true }; resultsView=results; results.Children.Add(count); Grid.SetRow(list,1); results.Children.Add(list);
+        var filterScroll=new ScrollViewer { Name="CommandFilters",Content=controls,HorizontalScrollBarVisibility=Avalonia.Controls.Primitives.ScrollBarVisibility.Disabled,MaxHeight=120 };
+        var filterBody=new StackPanel { Spacing=8,Children={search,filter,filter2,riskFilter,filterScroll} }; filtersView=filterBody;
+        SizeChanged+=(_,_)=>filterScroll.MaxHeight=Math.Clamp(Bounds.Height*.18,60,120); Grid.SetRow(filterBody,1); grid.Children.Add(filterBody);
+        var results=new Grid { Name="CommandBrowser",RowDefinitions=new("Auto,*"),RowSpacing=7,MinHeight=96,ClipToBounds=true }; resultsView=results;
+        BuildCommandBrowser(results); Grid.SetRow(list,1); results.Children.Add(list);
         list.Classes.Add("command-list"); list.ItemTemplate=new FuncDataTemplate<CommandMatch>((match,_)=>match==null?null:Row(match)); list.SelectionChanged+=(_,_)=>Select(list.SelectedItem as CommandMatch);
         list.AddHandler(KeyDownEvent,(_,e)=> { if(e.Key==Key.Enter && selected!=null) { ShowCommandDetails(); e.Handled=true; } },Avalonia.Interactivity.RoutingStrategies.Tunnel);
         list.SizeChanged+=(_,_)=>Avalonia.Threading.Dispatcher.UIThread.Post(()=> { if(!lifetime.IsCancellationRequested && list.SelectedItem is {} item)list.ScrollIntoView(item); });
@@ -94,7 +96,7 @@ internal sealed partial class CommandPanel : Border,IDisposable
         var detailBody=new Grid { RowDefinitions=new("Auto,*"),RowSpacing=12,Children={navigation,detailScroll} }; Grid.SetRow(detailScroll,1);
         detailCard=DesignSystem.Card(detailBody,new Thickness(12)); detailCard.Name="CommandDetailCard";
         var content=new Grid { Children={results,detailCard} }; Grid.SetRow(content,2); grid.Children.Add(content);
-        var footer=new StackPanel { Spacing=6 }; footer.Children.Add(notice);
+        var footer=new StackPanel { Spacing=6 }; footer.Children.Add(notice); footer.Children.Add(dispatchHint);
         notice.IsVisible=false;
         var actions=new Grid { Name="CommandActions",ColumnDefinitions=new("*,*,*"),ColumnSpacing=6 }; detailActions=actions;
         copy=Action("Kopiuj",()=>DispatchAsync("copy")); insert=Action("Wstaw",()=>DispatchAsync("insert")); insert.Classes.Add("primary"); execute=Action("Wykonaj",()=>DispatchAsync("execute"));
@@ -105,9 +107,10 @@ internal sealed partial class CommandPanel : Border,IDisposable
         for(var i=0;i<management.Length;i++) { var (b,glyph,label)=management[i]; b.Content=DeskIcons.Create(glyph,16); b.Classes.Add("chrome"); b.Classes.Add("icon"); b.Width=30; b.Height=30; ToolTip.SetTip(b,L.T(label)); Avalonia.Automation.AutomationProperties.SetName(b,L.T(label)); Grid.SetColumn(b,i+2); header.Children.Add(b); }
         footer.Children.Add(actions); footerSurface=new Border { Child=footer,Padding=new Thickness(0,8,0,0),BorderThickness=new Thickness(0,1,0,0) }; DesignSystem.Resource(footerSurface,BorderBrushProperty,"BorderDefault"); Grid.SetRow(footerSurface,3); grid.Children.Add(footerSurface);
         notice.PropertyChanged+=(_,e)=> { if(e.Property==TextBlock.TextProperty) { notice.IsVisible=!string.IsNullOrEmpty(notice.Text); footerSurface.IsVisible=showingDetails||notice.IsVisible; } };
-        queryDebounce=new(()=>RefreshList()); search.TextChanged+=(_,_)=> { if(ready)queryDebounce.Request(); };
+        queryDebounce=new(()=>RefreshList()); search.TextChanged+=(_,_)=> { if(ready && (search.Text??"")!=appliedSearch)queryDebounce.Request(); };
         section.SelectionChanged+=(_,_)=> { if(ready&&!updating)RefreshList(); }; sort.SelectionChanged+=(_,_)=> { if(ready&&!updating)RefreshList(); };
         category.SelectionChanged+=(_,_)=> { if(ready&&!updating)RefreshList(); };
+        riskFilter.SelectionChanged+=(_,_)=> { if(ready&&!updating)RefreshList(); };
         mode.SelectionChanged+=(_,_)=>PreferenceChanged(); pin.IsCheckedChanged+=(_,_)=>PreferenceChanged(); system.SelectionChanged+=(_,_)=>PreferenceChanged(); shell.SelectionChanged+=(_,_)=>PreferenceChanged(); version.TextChanged+=(_,_)=>PreferenceChanged();
         codeApproval.IsCheckedChanged+=(_,_)=>UpdatePreview(); SetButtons(false); ShowCommandList(false);
         KeyDown+=(_,e)=> { if(!e.Handled && e.Key==Key.Escape && showingDetails && !working) { ShowCommandList(true); e.Handled=true; } };
@@ -198,7 +201,7 @@ internal sealed partial class CommandPanel : Border,IDisposable
         }
         if(revision!=contextRevision||lifetime.IsCancellationRequested)return;
         var systemName=CommandStore.Systems.Contains(environment.PrettyName)?SystemLabel(environment.PrettyName):environment.PrettyName;
-        context.Text=(pane==null?L.T("Tryb offline"):pane.Profile.Name+" · "+pane.Profile.Protocol)+" · "+(systemName.Length>0?systemName:L.T("System nieznany"))+" "+environment.Version+" · "+environment.Shell;
+        context.Text=(pane==null?L.T("Tryb offline"):pane.Profile.Name+" · "+pane.Profile.Protocol)+" · "+(systemName.Length>0?systemName:L.T("System nieznany"))+" "+environment.Version+" · "+ShellLabel(environment.Shell);
         var contextDetail=context.Text;
         if(environment.Diagnostic.Length>0)contextDetail+="\n"+environment.Diagnostic;
         if(pane?.CanAcceptCommands!=true)contextDetail+="\n"+L.T("Kopiowanie dostępne. Wstawianie i wykonanie wymagają aktywnego terminala SSH.");
@@ -210,15 +213,16 @@ internal sealed partial class CommandPanel : Border,IDisposable
     internal void ClearSelection() { list.SelectedItem=null; Select(null); }
     private Control Row(CommandMatch match)
     {
-        var c=match.Command; var title=DesignSystem.Label((state.Favorites.Contains(c.Id)?"★ ":"")+c.Title); title.TextWrapping=TextWrapping.Wrap; title.FontWeight=FontWeight.SemiBold;
+        var c=match.Command; var title=DesignSystem.Label(c.Title); title.TextWrapping=TextWrapping.Wrap; title.FontWeight=FontWeight.SemiBold;
+        var favoriteIcon=DeskIcons.Create("star",16,"AccentPrimary"); favoriteIcon.IsVisible=state.Favorites.Contains(c.Id); ToolTip.SetTip(favoriteIcon,L.T("Ulubione"));
+        var heading=new Grid { ColumnDefinitions=new("*,Auto"),ColumnSpacing=6,Children={title,favoriteIcon} }; Grid.SetColumn(favoriteIcon,1);
         var subtitle=DesignSystem.Hint(c.Description); subtitle.MaxLines=2; subtitle.TextTrimming=TextTrimming.CharacterEllipsis;
         var command=DesignSystem.Label(c.Template,false,12); command.Name="CommandCardTemplate"; command.FontFamily=preview.FontFamily; command.TextWrapping=TextWrapping.Wrap; command.MaxLines=3; command.TextTrimming=TextTrimming.CharacterEllipsis;
         var code=new Border { Child=command,Padding=new Thickness(9,7),CornerRadius=new CornerRadius(5) }; DesignSystem.Resource(code,BackgroundProperty,"BackgroundPrimary");
-        var meta=DesignSystem.Label(c.Shell+" · "+Risk(c.Risk)+(!match.Compatible?" · "+L.T("Inny profil / system"):match.MissingTools.Length>0?" · "+L.T("Brak narzędzia"):""),true,11);
-        if(c.Risk==CommandRisk.Dangerous)DesignSystem.Resource(meta,TextBlock.ForegroundProperty,"Danger");
-        var more=DeskIcons.Create("arrow-right",16,"ForegroundSecondary");
-        var metadata=new Grid { ColumnDefinitions=new("*,Auto"),ColumnSpacing=8,Children={meta,more} }; Grid.SetColumn(more,1); meta.TextWrapping=TextWrapping.Wrap;
-        var body=new StackPanel { Spacing=7,Children={title} }; if(c.Description!=c.Title)body.Children.Add(subtitle); body.Children.Add(code); body.Children.Add(metadata);
+        var meta=DesignSystem.Label(CategoryLabel(c.Category)+" · "+ShellLabel(c.Shell)+(!match.Compatible?" · "+L.T("Inny profil / system"):match.MissingTools.Length>0?" · "+L.T("Brak narzędzia"):""),true,11); meta.TextWrapping=TextWrapping.Wrap;
+        var more=DeskIcons.Labelled("arrow-right",L.T("Więcej"),14); more.HorizontalAlignment=HorizontalAlignment.Right;
+        var metadata=new Grid { ColumnDefinitions=new("Auto,*,Auto"),ColumnSpacing=7,Children={RiskBadge(c.Risk),meta,more} }; Grid.SetColumn(meta,1); Grid.SetColumn(more,2);
+        var body=new StackPanel { Spacing=7,Children={heading} }; if(c.Description!=c.Title)body.Children.Add(subtitle); body.Children.Add(code); body.Children.Add(metadata);
         var row=new Border { Name="CommandCard",Tag=c.Id,Child=body,Padding=new Thickness(10),CornerRadius=new CornerRadius(7),BorderThickness=new Thickness(1),Background=Brushes.Transparent };
         DesignSystem.Resource(row,BorderBrushProperty,"BorderDefault"); Avalonia.Automation.AutomationProperties.SetName(row,c.Title+" · "+L.T("Więcej informacji"));
         ToolTip.SetTip(row,L.T("Więcej informacji"));
@@ -226,7 +230,7 @@ internal sealed partial class CommandPanel : Border,IDisposable
     }
     internal void RefreshList()
     {
-        if(!ready)return; var keep=selected?.Id; var oldCategory=category.SelectedItem as string; updating=true;
+        if(!ready)return; queryDebounce.Cancel(); var keep=selected?.Id; var oldCategory=category.SelectedItem as string; updating=true;
         try
         {
             var management=section.SelectedIndex is 1 or 2 or 3;
@@ -235,9 +239,13 @@ internal sealed partial class CommandPanel : Border,IDisposable
             var all=L.T("Wszystkie kategorie"); var categories=new[]{all}.Concat(library.Categories.Concat(matches.Select(m=>m.Command.Category)).Distinct().Order(StringComparer.CurrentCultureIgnoreCase)).ToArray();
             category.ItemsSource=categories; category.SelectedItem=categories.Contains(oldCategory??"")?oldCategory:all;
             if(category.SelectedItem is string path&&path!=all)matches=matches.Where(m=>m.Command.Category==path||m.Command.Category.StartsWith(path+"/",StringComparison.Ordinal)).ToArray();
+            if(riskFilter.SelectedIndex>0)matches=matches.Where(m=>m.Command.Risk==(CommandRisk)(riskFilter.SelectedIndex-1)).ToArray();
             matches=sort.SelectedIndex switch { 1=>matches.OrderBy(m=>m.Command.Title,StringComparer.CurrentCultureIgnoreCase).ToArray(),2=>matches.OrderByDescending(m=>m.Command.Title,StringComparer.CurrentCultureIgnoreCase).ToArray(),3=>matches.OrderBy(m=>m.Command.Risk).ThenBy(m=>m.Command.Title).ToArray(),_=>section.SelectedIndex==3?matches.OrderByDescending(m=>state.Recent.First(r=>r.CommandId==m.Command.Id).UsedAt).ToArray():matches };
             list.ItemsSource=matches; count.Text=L.F($"Komendy: {matches.Count}"); list.SelectedItem=matches.FirstOrDefault(m=>m.Command.Id==keep); Select(list.SelectedItem as CommandMatch);
-            if(matches.Count==0)count.Text=L.T("Brak pasujących komend. Zmień system, kategorię lub wyszukiwanie.");
+            // TextChanged is deferred by TextBox. An immediate Enter/reset must
+            // not schedule another rebuild that discards the new parameter draft.
+            appliedSearch=search.Text??"";
+            UpdateCommandBrowser(matches.Count);
         }
         finally { updating=false; }
     }
@@ -250,6 +258,7 @@ internal sealed partial class CommandPanel : Border,IDisposable
         private readonly Avalonia.Threading.DispatcherTimer timer=Create(action);
         private static Avalonia.Threading.DispatcherTimer Create(Action action) { var t=new Avalonia.Threading.DispatcherTimer { Interval=TimeSpan.FromMilliseconds(160) }; t.Tick+=(_,_)=> { t.Stop(); action(); }; return t; }
         public void Request() { timer.Stop(); timer.Start(); }
+        public void Cancel()=>timer.Stop();
         public void Dispose()=>timer.Stop();
     }
 }

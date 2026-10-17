@@ -1,8 +1,14 @@
-# Komendy / Commands — ServerDesk 0.36.2
+# Komendy / Commands
+
+Wersja rozwojowa po 0.41.0: wyszukiwarka, źródło, kategoria, sortowanie i filtr ryzyka są poza przewijanym profilem systemu. **Wyczyść filtry** przywraca zapytanie/kategorię/ryzyko/sortowanie bez zmiany źródła ani profilu. Puste Moje komendy pozwalają utworzyć szablon, Ulubione prowadzą do ściągawki, a wyłączona historia oferuje jej świadome włączenie. Historia nadal przechowuje tylko identyfikatory i czas użycia.
+
+W panelu **Ctrl+F** ustawia fokus na wyszukiwaniu, **↓** przechodzi z wyszukiwarki na listę, a **Enter** natychmiast otwiera szczegóły wybranej lub pierwszej pasującej komendy. Żaden z tych skrótów nie wykonuje komendy. **Escape** czyści zapytanie w wyszukiwarce lub wraca ze szczegółów. Karty pokazują kategorię, powłokę, ryzyko, opis i szablon; szczegóły mają osobne sekcje parametrów, podglądu i wskazówek. Stopka wyjaśnia, dlaczego Wstaw/Wykonaj jest niedostępne (np. offline, niezgodny profil albo brak parametrów).
+
+EN, development build after 0.41.0: search and filters stay outside the scrolling system profile. Filter by risk; reset without changing the source or system profile. Empty views offer recovery, custom-command creation or history opt-in. Within the panel, Ctrl+F focuses search, Down moves to results, Enter opens details immediately and Escape clears search or returns to the list. Cards show category/shell/risk; details separate parameters, preview and guidance. The footer explains unavailable Insert/Execute actions. Execution confirmations and parameter/secret handling remain unchanged.
 
 Nazwy interfejsu od 0.36.2: **Komendy → Ściągawka poleceń** (EN: **Commands → Command reference**) to biblioteka Smart Cheat Sheet. **Paleta akcji** (EN: **Action palette**) pod Ctrl+Shift+P służy do wyszukiwania funkcji aplikacji. W menu nazwa akcji i skrót są wyświetlane osobno.
 
-Od 0.36.1 profil jest początkowo zwinięty, a opcje/filtry przewijają się w niskim oknie. Ikony gwiazdy, ołówka i kopiowania w nagłówku odpowiadają za Ulubione, Edytuj i Duplikuj. Dolny rząd zawiera Kopiuj / Wstaw / Wykonaj; karta szczegółów ma własne przewijanie. Pełny kontekst systemu oraz wyjaśnienia niedostępnych akcji są w podpowiedziach.
+Profil jest początkowo zwinięty i ma osobne przewijanie w niskim oknie. Ikony gwiazdy, ołówka i kopiowania w nagłówku odpowiadają za Ulubione, Edytuj i Duplikuj. Dolny rząd zawiera Kopiuj / Wstaw / Wykonaj; karta szczegółów ma własne przewijanie. Pełny kontekst systemu jest w podpowiedzi, a wyjaśnienie niedostępnych akcji również w stopce.
 
 Jeden panel **Komendy** łączy Smart Cheat Sheet, własne szablony, ulubione i opcjonalną historię. Otwórz go ikoną terminala w lewym pasku, przez Menu, przyciskiem **Komendy** w sesji SSH albo **Ctrl+Shift+K**. Panel jest po prawej stronie istniejącego obszaru pracy. Nie tworzy osobnych terminali ani systemu zakładek. Ctrl+Shift+P nadal otwiera paletę akcji aplikacji.
 
@@ -16,7 +22,7 @@ EN: Open **Commands** with **Ctrl+Shift+K**, the activity bar, Menu, or the SSH 
 4. **Kopiuj** działa offline. **Wstaw** wymaga wspieranej aktywnej sesji SSH i wstawia bez Enter. **Wykonaj** pokazuje cel i pełną treść przed świadomym wysłaniem Enter. Sprawdź, że terminal jest w powłoce, a bieżący wiersz jest pusty; otwarty edytor lub program może inaczej potraktować wejście.
 5. **Ulubione** przechowuje odnośnik do definicji. **Duplikuj** tworzy własny wariant; wbudowana biblioteka pozostaje niezmieniona. **Edytuj** jest dostępne dla własnych wpisów.
 
-Przy małej wysokości zwija się konfiguracja profilu, a opis ma własny przewijany obszar. Przy wąskim oknie panel połączeń jest chowany, aby zachować miejsce terminala. Można go ponownie otworzyć. Szerokość panelu komend zmienia separator. Zmiana wielkości okna ponownie dopasowuje szerokość; sam fakt otwarcia panelu nie jest zapamiętywany.
+Przy małej wysokości konfiguracja profilu ma ograniczony przewijany obszar, a wyszukiwarka pozostaje widoczna. Przy wąskim oknie panel połączeń jest chowany, aby zachować miejsce terminala. Można go ponownie otworzyć. Szerokość panelu komend zmienia separator. Zmiana wielkości okna ponownie dopasowuje szerokość; sam fakt otwarcia panelu nie jest zapamiętywany.
 
 ## Automatyczny, ręczny i przypięty profil
 

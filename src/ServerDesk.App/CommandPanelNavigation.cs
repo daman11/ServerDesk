@@ -25,6 +25,7 @@ internal sealed partial class CommandPanel
     {
         filtersView.IsVisible=resultsView.IsVisible=!showingDetails;
         detailCard.IsVisible=detailActions.IsVisible=showingDetails;
+        dispatchHint.IsVisible=showingDetails;
         favorite.IsVisible=edit.IsVisible=duplicate.IsVisible=showingDetails;
         footerSurface.IsVisible=showingDetails||notice.IsVisible;
     }

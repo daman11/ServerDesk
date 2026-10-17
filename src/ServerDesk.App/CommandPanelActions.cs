@@ -20,15 +20,15 @@ internal sealed partial class CommandPanel
     private void Select(CommandMatch? match)
     {
         selected=match?.Command; ticket=null; values.Clear(); detail.Children.Clear(); preview.Text=""; validation.Text=""; codeApproval.IsChecked=false;
-        if(selected==null) { detail.Children.Add(Dialogs.Text(L.T("Wybierz komendę, aby zobaczyć opis, parametry i podgląd."))); SetButtons(false); ShowCommandList(false); return; }
+        if(selected==null) { detail.Children.Add(Dialogs.Text(L.T("Wybierz komendę, aby zobaczyć opis, parametry i podgląd."))); dispatchHint.Text=""; SetButtons(false); ShowCommandList(false); return; }
         var c=selected; if(target?.CanAcceptCommands==true)ticket=new(target.WorkspaceId,target.CommandConnectionId,c.Id);
         var title=DesignSystem.Label(c.Title,false,16); title.TextWrapping=Avalonia.Media.TextWrapping.Wrap; detail.Children.Add(title);
         title.FontWeight=Avalonia.Media.FontWeight.SemiBold;
-        detail.Children.Add(preview); detail.Children.Add(validation);
-        detail.Children.Add(Dialogs.Text(c.Detail,12));
-        var metadata=Dialogs.Text(c.Platform+" · "+c.Shell+" · "+Risk(c.Risk)+" · "+L.T("Uprawnienia")+": "+c.Privileges+"\n"+CategoryLabel(c.Category)+(c.Subcategory.Length>0?" / "+c.Subcategory:"")+" · "+(c.Origin==CommandOrigin.BuiltIn?L.T("Wbudowana"):L.T("Własna")),12);
-        if(c.Risk==CommandRisk.Dangerous)DesignSystem.Resource(metadata,TextBlock.ForegroundProperty,"Danger"); detail.Children.Add(metadata);
+        var badges=new WrapPanel { Orientation=Orientation.Horizontal,Children={RiskBadge(c.Risk),DesignSystem.Badge(ShellLabel(c.Shell)),DesignSystem.Badge(L.T(c.Origin==CommandOrigin.BuiltIn?"Wbudowana":"Własna"))} }; foreach(var badge in badges.Children)badge.Margin=new Thickness(0,0,6,4); detail.Children.Add(badges);
+        if(c.Description.Length>0 && c.Description!=c.Title)detail.Children.Add(DesignSystem.Hint(c.Description));
+        var metadata=DesignSystem.Hint((c.Platform==CommandPlatform.General?L.T("Ogólne"):c.Platform.ToString())+" · "+L.T("Uprawnienia")+": "+c.Privileges+"\n"+CategoryLabel(c.Category)+(c.Subcategory.Length>0?" / "+c.Subcategory:"")); detail.Children.Add(metadata);
         if(c.Tools.Length>0)detail.Children.Add(Dialogs.Text(string.Join(" · ",c.Tools.Select(t=>t+": "+L.T(environment.Tool(t) switch { ToolAvailability.Available=>"Dostępne",ToolAvailability.NotDetected=>"Niewykryte",_=>"Nieznane" }))),12));
+        if(c.Parameters.Length>0)detail.Children.Add(DesignSystem.SectionHeading("settings",L.T("Parametry komendy")));
         foreach(var p in c.Parameters)
         {
             detail.Children.Add(DesignSystem.Label(p.Label.Length>0?p.Label:p.Key,true,12));
@@ -44,6 +44,8 @@ internal sealed partial class CommandPanel
             }
         }
         if(c.Parameters.Any(p=>p.Kind==CommandParameterKind.Code))detail.Children.Add(codeApproval);
+        detail.Children.Add(DesignSystem.SectionHeading("square-terminal",L.T("Podgląd komendy"))); detail.Children.Add(preview); detail.Children.Add(validation);
+        if(c.Detail.Length>0) { detail.Children.Add(DesignSystem.SectionHeading("info",L.T("Opis i wskazówki"))); detail.Children.Add(Dialogs.Text(c.Detail,12)); }
         if(c.Examples.Length>0)detail.Children.Add(Dialogs.Text(L.T("Przykłady")+"\n"+string.Join("\n",c.Examples),12));
         if(c.Origin==CommandOrigin.User)
         {
@@ -73,10 +75,9 @@ internal sealed partial class CommandPanel
             insert.IsEnabled=execute.IsEnabled=!working&&ticket!=null&&target?.CanAcceptCommands==true&&!rendered.IsMultiline&&!rendered.ContainsSecret&&compatible&&(environment.Shell!=CommandShell.Any||selected.Shell==CommandShell.Any);
             ToolTip.SetTip(insert,L.T(target?.CanAcceptCommands!=true?"Kopiowanie dostępne. Wstawianie i wykonanie wymagają aktywnego terminala SSH.":"Wstawia bez Enter. Sprawdź bieżący wiersz i program w terminalu."));
             ToolTip.SetTip(execute,L.T(target?.CanAcceptCommands!=true?"Kopiowanie dostępne. Wstawianie i wykonanie wymagają aktywnego terminala SSH.":"Pokaż pełną komendę i potwierdź wysłanie Enter do wskazanej sesji."));
-            if(rendered.IsMultiline)notice.Text=L.T("Skrypt wieloliniowy: podgląd i kopiowanie. Wstawianie bez wykonania nie jest gwarantowane.");
-            else if(rendered.ContainsSecret)notice.Text=L.T("Sekretne parametry są dostępne tylko do kopiowania; nie wysyłamy ich do historii powłoki.");
+            dispatchHint.Text=L.T(rendered.IsMultiline?"Skrypt wieloliniowy: podgląd i kopiowanie. Wstawianie bez wykonania nie jest gwarantowane.":rendered.ContainsSecret?"Sekretne parametry są dostępne tylko do kopiowania; nie wysyłamy ich do historii powłoki.":target?.CanAcceptCommands!=true?"Kopiowanie dostępne. Wstawianie i wykonanie wymagają aktywnego terminala SSH.":!compatible?"Komenda nie pasuje do aktywnej sesji. Możesz ją skopiować lub zmienić profil.":environment.Shell==CommandShell.Any&&selected.Shell!=CommandShell.Any?"Wybierz konkretną powłokę.":"Wstaw nie wysyła Enter. Wykonaj wymaga potwierdzenia celu i komendy.");
         }
-        catch(ArgumentException ex) { validation.Text=ex.Message; preview.Text=selected.Template; copy.IsEnabled=insert.IsEnabled=execute.IsEnabled=false; }
+        catch(ArgumentException ex) { validation.Text=ex.Message; dispatchHint.Text=ex.Message; preview.Text=selected.Template; copy.IsEnabled=insert.IsEnabled=execute.IsEnabled=false; }
     }
     internal async Task DispatchAsync(string action)
     {

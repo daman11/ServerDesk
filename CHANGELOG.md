@@ -2,6 +2,7 @@
 
 ## Unreleased
 
+- Improve the Commands plugin with fixed search/filter controls above its scrolling system profile, a risk filter, contextual empty-state actions and Enter/Down/Escape/Ctrl+F navigation. Give cards category/risk information and organize details into parameters, preview and guidance, with visible explanations of unavailable dispatch actions.
 - Separate navigation into connection, transfer, network-tool and plugin groups. Give sidebar modules a framed icon/title/description header, and make command/network headers and session plugin boundaries explicit across themes.
 - Add Ocean, Forest, Aubergine, Dracula, Solar Paper and Sandstone application themes with live preview; keep System selection independent of the number of presets.
 - Add a saved SFTP text-editor preference (automatic, VS Code, Notepad++, Kate, GNOME Text Editor or a custom executable). Edit local files or download and edit a remote file from its menu/F4; upload saved changes explicitly through the existing transfer workflow.

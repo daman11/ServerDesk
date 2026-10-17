@@ -1,5 +1,6 @@
 using System.Reflection;
 using Avalonia;
+using Avalonia.Automation;
 using Avalonia.Controls;
 using Avalonia.Headless;
 using Avalonia.Input;
@@ -41,12 +42,53 @@ internal static class CommandPanelChecks
             Wait(repo.SaveApplicationSettingsAsync(Result(repo.ApplicationSettingsAsync()) with { Preferences=new() { Language=language } }));
             var main=new MainWindow(new(repo),repo,vault,new(repo),new ExternalRdpClient()); main.Show(); RedesignChecks.Frames(20); Wait(main.OpenCommandsPanelAsync()); RedesignChecks.Frames(8);
             var panel=Named<CommandPanel>(main,"CommandsPanel"); var list=Named<ListBox>(panel,"CommandList"); if(list.ItemCount<40)throw new Exception("Offline library not loaded");
+            var riskFilter=Named<ComboBox>(panel,"CommandRiskFilter");
+            foreach(var index in new[]{1,2,3})
+            {
+                riskFilter.SelectedIndex=index; RedesignChecks.Frames(3);
+                if(list.ItemCount==0 || list.Items.OfType<CommandMatch>().Any(m=>m.Command.Risk!=(CommandRisk)(index-1)))throw new Exception("Risk filter mixes command levels");
+            }
+            var query=Named<TextBox>(panel,"CommandSearch"); query.Text="qwerty-no-command-fixture"; panel.RefreshList(); RedesignChecks.Frames(3);
+            if(!Named<ScrollViewer>(panel,"CommandEmptyState").IsEffectivelyVisible || list.IsEffectivelyVisible)throw new Exception("Missing command search recovery state");
+            var environment=panel.Environment; Named<Button>(panel,"CommandEmptyAction").RaiseEvent(new RoutedEventArgs(Button.ClickEvent)); RedesignChecks.Frames(3);
+            if(query.Text!="" || riskFilter.SelectedIndex!=0 || !query.IsKeyboardFocusWithin || panel.Environment!=environment || list.ItemCount<40)throw new Exception("Command filter reset lost profile, focus or results");
+            var commandSection=Named<ComboBox>(panel,"CommandSection"); commandSection.SelectedIndex=1; RedesignChecks.Frames(3);
+            Named<Button>(panel,"CommandEmptyAction").RaiseEvent(new RoutedEventArgs(Button.ClickEvent)); RedesignChecks.Frames(4);
+            if(main.OwnedWindows.Count()!=1)throw new Exception("Empty My commands did not open its editor"); Click(main.OwnedWindows.Single(),"Anuluj");
+            Wait((Task)typeof(CommandPanel).GetField("actionWork",BindingFlags.Instance|BindingFlags.NonPublic)!.GetValue(panel)!);
+            commandSection.SelectedIndex=2; RedesignChecks.Frames(3); Named<Button>(panel,"CommandEmptyAction").RaiseEvent(new RoutedEventArgs(Button.ClickEvent)); RedesignChecks.Frames(3);
+            if(commandSection.SelectedIndex!=0)throw new Exception("Empty Favorites did not lead to the reference");
+            commandSection.SelectedIndex=3; RedesignChecks.Frames(3);
+            if(AutomationProperties.GetName(Named<Button>(panel,"CommandEmptyAction"))!=AppText.T("Włącz historię komend"))throw new Exception("Disabled history lacks an opt-in action");
+            main.CaptureRenderedFrame()!.Save(Path.Combine(root,$"commands-history-empty-{language}.png"));
+            Named<Button>(panel,"CommandEmptyAction").RaiseEvent(new RoutedEventArgs(Button.ClickEvent)); Wait((Task)typeof(CommandPanel).GetField("actionWork",BindingFlags.Instance|BindingFlags.NonPublic)!.GetValue(panel)!);
+            if(!Result(new CommandStore(repo,vault).ReadStateAsync()).Preferences.RememberRecent)throw new Exception("History empty-state opt-in failed");
+            commandSection.SelectedIndex=0; panel.FocusSearch(); query.Text="otwarte porty";
+            main.KeyPress(Key.Enter,RawInputModifiers.None,PhysicalKey.Enter,"\r"); main.KeyRelease(Key.Enter,RawInputModifiers.None,PhysicalKey.Enter,"\r"); RedesignChecks.Frames(3);
+            if(!Named<Border>(panel,"CommandDetailCard").IsVisible || main.OpenSessions.Count!=0 || Named<TextBlock>(panel,"CommandDispatchHint").Text!=AppText.T("Kopiowanie dostępne. Wstawianie i wykonanie wymagają aktywnego terminala SSH."))throw new Exception("Immediate Enter did not expose offline details without dispatch");
+            main.KeyPress(Key.F,RawInputModifiers.Control,PhysicalKey.F,"f"); main.KeyRelease(Key.F,RawInputModifiers.Control,PhysicalKey.F,"f"); RedesignChecks.Frames(3);
+            if(!query.IsKeyboardFocusWithin || !list.IsEffectivelyVisible)throw new Exception("Ctrl+F did not restore command search");
+            query.Text="systemctl start"; main.KeyPress(Key.Enter,RawInputModifiers.None,PhysicalKey.Enter,"\r"); main.KeyRelease(Key.Enter,RawInputModifiers.None,PhysicalKey.Enter,"\r");
+            var service=Named<TextBox>(panel,"CommandParameter_service"); service.Text="fixture-service"; RedesignChecks.Frames(14);
+            if(Named<TextBox>(panel,"CommandParameter_service").Text!="fixture-service")throw new Exception("Deferred search erased the parameter draft after immediate Enter");
+            main.KeyPress(Key.F,RawInputModifiers.Control,PhysicalKey.F,"f"); main.KeyRelease(Key.F,RawInputModifiers.Control,PhysicalKey.F,"f"); RedesignChecks.Frames(3);
+            main.KeyPress(Key.Escape,RawInputModifiers.None,PhysicalKey.Escape,""); main.KeyRelease(Key.Escape,RawInputModifiers.None,PhysicalKey.Escape,""); RedesignChecks.Frames(3);
+            if(query.Text!="" || !list.IsEffectivelyVisible || !main.IsVisible)throw new Exception("Escape did not clear command search");
             if(Named<Border>(panel,"CommandDetailCard").IsVisible || Named<Grid>(panel,"CommandActions").IsVisible)throw new Exception("Command details/actions show before a card is opened");
-            var first=list.Items.OfType<CommandMatch>().First(); var firstCard=panel.GetVisualDescendants().OfType<Border>().First(b=>b.Name=="CommandCard" && b.Tag as string==first.Command.Id);
-            if(firstCard.GetVisualDescendants().OfType<TextBlock>().Single(t=>t.Name=="CommandCardTemplate").Text!=first.Command.Template)throw new Exception("Card does not show its command template");
+            main.Activate(); list.Focus(); RedesignChecks.Frames(8); main.UpdateLayout();
             main.CaptureRenderedFrame()!.Save(Path.Combine(root,$"commands-cards-{language}.png"));
-            var cardPoint=firstCard.TranslatePoint(new Point(20,15),main)!.Value; main.MouseMove(cardPoint,RawInputModifiers.None); main.MouseDown(cardPoint,MouseButton.Left,RawInputModifiers.None); main.MouseUp(cardPoint,MouseButton.Left,RawInputModifiers.None); RedesignChecks.Frames(4);
-            if(!Named<Border>(panel,"CommandDetailCard").IsVisible || list.IsEffectivelyVisible || !Named<ScrollViewer>(panel,"CommandDetails").GetVisualDescendants().OfType<TextBlock>().Any(t=>t.Text==first.Command.Title))throw new Exception("Pointer click did not open the selected command details: "+language+" / "+first.Command.Id);
+            // Previous navigation can retain an offset in the virtualized list.
+            // Exercise an actual visible card rather than assuming item zero is realized.
+            var firstCard=list.GetVisualDescendants().OfType<Border>().First(b=>b.Name=="CommandCard" && b.TranslatePoint(new Point(20,15),list) is {} point && point.Y>=0 && point.Y<list.Bounds.Height);
+            var first=list.Items.OfType<CommandMatch>().Single(m=>m.Command.Id==firstCard.Tag as string);
+            if(firstCard.GetVisualDescendants().OfType<TextBlock>().Single(t=>t.Name=="CommandCardTemplate").Text!=first.Command.Template)throw new Exception("Card does not show its command template");
+            var cardPoint=firstCard.TranslatePoint(new Point(20,15),main)!.Value; var hit=main.InputHitTest(cardPoint) as Control;
+            main.MouseMove(cardPoint,RawInputModifiers.None); main.MouseDown(cardPoint,MouseButton.Left,RawInputModifiers.None); main.MouseUp(cardPoint,MouseButton.Left,RawInputModifiers.None); RedesignChecks.Frames(4);
+            if(!Named<Border>(panel,"CommandDetailCard").IsVisible || list.IsEffectivelyVisible || !Named<ScrollViewer>(panel,"CommandDetails").GetVisualDescendants().OfType<TextBlock>().Any(t=>t.Text==first.Command.Title))
+            {
+                main.CaptureRenderedFrame()!.Save(Path.Combine(root,$"commands-pointer-failure-{language}.png"));
+                throw new Exception($"Pointer click did not open selected details: {language}/{first.Command.Id}; point={cardPoint}, hit={hit?.GetType().Name}/{hit?.Name}, active={main.IsActive}, enabled={main.IsEnabled}, visible={Named<Border>(panel,"CommandDetailCard").IsVisible}, selected={(list.SelectedItem as CommandMatch)?.Command.Id}");
+            }
             Click(panel,"Lista komend"); RedesignChecks.Frames(4);
             if(!list.IsEffectivelyVisible || list.SelectedItem is not CommandMatch kept || kept.Command.Id!=first.Command.Id)throw new Exception("Back did not preserve the command browser selection");
             if(!list.Focus())throw new Exception("Command list cannot receive keyboard focus after Back");
@@ -83,6 +125,8 @@ internal static class CommandPanelChecks
             foreach(var font in new[]{13,16})foreach(var expanded in new[]{false,true})
             {
                 main.PreviewPreferences(preferences with { InterfaceFontSize=font }); panel.FocusSearch(); contextOptions.IsExpanded=expanded; RedesignChecks.Frames(6);
+                var searchPoint=query.TranslatePoint(default,panel)!.Value;
+                if(!query.IsEffectivelyVisible || searchPoint.Y<0 || searchPoint.Y+query.Bounds.Height>panel.Bounds.Height || query.GetVisualAncestors().OfType<ScrollViewer>().Any(s=>s.Name=="CommandFilters"))throw new Exception("Expanded system profile scrolls the search away");
                 if(list.Bounds.Height<70 || !list.IsEffectivelyVisible)throw new Exception("Command cards lost their compact browser viewport");
                 main.CaptureRenderedFrame()!.Save(Path.Combine(root,$"commands-cards-{language}-compact-font{font}-profile{expanded}.png")); Select(panel,"windows.ps.listeners");
                 foreach(var button in panel.GetVisualDescendants().OfType<Button>().Where(b=>b.Tag as string is "Kopiuj" or "Wstaw" or "Wykonaj" or "Ulubione" or "Edytuj" or "Duplikuj"))
@@ -104,7 +148,7 @@ internal static class CommandPanelChecks
             if(vault.Reads!=0)throw new Exception("Offline/RDP/Serial command browsing read connection credentials");
             Close(main);
         }
-        AppText.SetLanguage("pl"); Console.WriteLine("PASS command cards and template text, pointer/Enter details, Back/Escape selection retention, offline PL/EN, manual Windows, copy, favourites, compact dark/light, RDP/Serial capability isolation");
+        AppText.SetLanguage("pl"); Console.WriteLine("PASS command cards/template/category/risk, risk filtering and empty-state recovery/create/history opt-in, immediate search Enter/Ctrl+F/Escape, sticky search above profile, visible offline action guidance, pointer/details/back, copy/favourites, PL/EN compact font13/16, RDP/Serial isolation");
     }
     internal static void Network(string root,string host,string key)
     {

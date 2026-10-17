@@ -2,6 +2,7 @@
 
 ## Unreleased
 
+- Replace the brief About message with localized application, license and component tabs. Include the original MIT license offline and copyable build/runtime information for bug reports.
 - Improve the Commands plugin with fixed search/filter controls above its scrolling system profile, a risk filter, contextual empty-state actions and Enter/Down/Escape/Ctrl+F navigation. Give cards category/risk information and organize details into parameters, preview and guidance, with visible explanations of unavailable dispatch actions.
 - Separate navigation into connection, transfer, network-tool and plugin groups. Give sidebar modules a framed icon/title/description header, and make command/network headers and session plugin boundaries explicit across themes.
 - Add Ocean, Forest, Aubergine, Dracula, Solar Paper and Sandstone application themes with live preview; keep System selection independent of the number of presets.

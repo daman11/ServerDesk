@@ -235,7 +235,7 @@ public sealed partial class MainWindow
         }
     }
     private async Task HistoryAsync(Guid? profileId=null) { var profile=await Dialogs.History(this,repository,profileId); if(profile!=null)await ConnectAsync(profile); }
-    private Task AboutAsync()=>Dialogs.Message(this,L.T("O ServerDesk"),L.T("Publiczna beta · licencja MIT")+"\n\n"+L.F($"ServerDesk {typeof(App).Assembly.GetName().Version?.ToString(3)}\nSSH · SFTP · monitoring · VNC · Serial\nRDP w zakładce na Windows i osobnym oknie na Linux\nSkróty terminala Ctrl+B i Ctrl+W są przekazywane do aplikacji zdalnej. Użyj Ctrl+Shift+B / Ctrl+Shift+W, aby sterować panelem i zakładką z terminala."));
+    private Task AboutAsync()=>Dialogs.About(this);
     private async Task CommandsAsync()
     {
         var commands=new Dictionary<string,Func<Task>>(); var icons=new Dictionary<string,string?>();

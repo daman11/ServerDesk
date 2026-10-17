@@ -6,7 +6,7 @@ Repozytorium pracuje na `main`. Tag `v0.31.1` oznacza dokładny import 475 plik�
 
 ```sh
 git status
-git switch -c feat/short-description
+git switch -c codex/short-description
 # Wprowadź i sprawdź zmianę.
 git diff
 git add src tests docs
@@ -25,14 +25,15 @@ Dodawaj tylko pliki należące do konkretnej zmiany. Dla poprawek używaj `fix:`
 git remote add origin URL_REPOZYTORIUM
 git remote -v
 git push -u origin main
-git push origin v0.31.1 v0.32.0 v0.33.0 v0.34.0 v0.35.0 v0.36.0 v0.36.1 v0.36.2
+# Po sprawdzeniu konkretnego lokalnego taga wydania:
+git push origin v0.40.0
 ```
 
 Jeżeli `origin` już istnieje, najpierw sprawdź jego adres zamiast dodawać drugi. Utworzone wcześniej repozytorium z własnymi commitami wymaga uzgodnienia historii; nie zastępuj jej wymuszonym pushem. Samo przygotowanie projektu lokalnie nie publikuje kodu ani paczek.
 
 ## CI i ustawienia GitHub
 
-Workflow [CI](../.github/workflows/ci.yml) buduje rozwiązanie, uruchamia testy jednostkowe i headless UI na Windows i Ubuntu. Używa SDK z `global.json`, lockfile NuGet i repozytoryjnego `NuGet.Config`. Zapisuje tylko wyniki TRX oraz renderowane obrazy UI, bez baz i logów sesji. Akcje są przypięte do pełnych SHA; token ma `contents: read`, a checkout nie zachowuje poświadczeń. Konfiguracja korzysta z [oficjalnych akcji GitHub](https://github.com/actions) i [zaleceń bezpieczeństwa Actions](https://docs.github.com/en/actions/reference/security/secure-use).
+Workflow [CI](../.github/workflows/ci.yml) buduje rozwiązanie, uruchamia testy jednostkowe i headless UI na Windows i Ubuntu. Po locked restore wykonuje również bramkę audytu NuGet oraz testy jej decyzji. Używa SDK z `global.json`, lockfile NuGet i repozytoryjnego `NuGet.Config`. Zapisuje wyniki TRX, renderowane obrazy UI i podsumowania JSON, bez baz i logów sesji; surowy raport audytu/stderr nie jest automatycznie publikowany jako artifact CI. Akcje są przypięte do pełnych SHA; token ma `contents: read`, a checkout nie zachowuje poświadczeń. Konfiguracja korzysta z [oficjalnych akcji GitHub](https://github.com/actions) i [zaleceń bezpieczeństwa Actions](https://docs.github.com/en/actions/reference/security/secure-use).
 
 Po pierwszym pushu sprawdź wynik zakładki Actions. Lokalny test nie zastępuje wykonania na runnerze GitHub. Następnie ustaw `main` jako domyślną gałąź oraz regułę ochrony wymagającą zielonych kontroli `Build and test (windows-2025)` i `Build and test (ubuntu-24.04)`. W repozytorium zespołowym włącz przegląd pull requestów. Włącz dostępne secret scanning i push protection. Ustal prywatny kanał zgłaszania podatności i uzupełnij [SECURITY.md](../SECURITY.md).
 
@@ -42,6 +43,8 @@ Przed publikacją można powtórzyć skan historii przez `gitleaks git --redact 
 
 ## Kolejne wydania
 
-Numer aplikacji jest w `Directory.Build.props`. Bump dotyczy nowego wydania, nie każdego pośredniego commita. Po zakończeniu zamówionego etapu zmian użytkowych przygotuj również lokalne paczki i tag; sam commit nie kończy wydania. Bieżące wydanie to 0.36.2; następne poprawki mogą otrzymać 0.36.3, a większy etap 0.37.0. Postępuj według [procedury wydania](releasing.md), zapisz zmiany w CHANGELOG i dodaj nowe notatki/raport. Przed zakończeniem uruchom `scripts/check-release-state.ps1 -RequireCurrentRelease`. Publikacja na GitHub nadal wymaga polecenia użytkownika.
+Numer aplikacji jest w `Directory.Build.props`. Ostatnim zamrożonym wydaniem jest **0.40.0 Public Beta**; późniejsze commity robocze mogą pozostawać przy tej wersji, a istniejące paczki i tag opisują swój zamrożony commit. Małe zmiany kończą się lokalnym commitem, celowanymi sprawdzeniami i — jeśli dotyczą aplikacji — buildem deweloperskim do testowania z folderu. Nie wymagają bumpa, instalatora ani nowego taga. Zmiany samych narzędzi i dokumentacji nie wymagają nowego EXE.
+
+Pełne testy i lokalne wydanie wykonuj dla większych etapów lub na wyraźne zlecenie wydania, według [procedury](releasing.md). Wtedy zmień wersję, zaktualizuj CHANGELOG i przewodniki, sprawdź paczki z końcowego commita, utwórz nowy anotowany tag i zakończ przez `scripts/check-release-state.ps1 -RequireCurrentRelease`. Do roboczego odczytu stanu używaj skryptu bez tego przełącznika; różnice względem ostatniego wydania są wtedy oczekiwane. Istniejące tagi i paczki pozostają niezmienne. [Checklista RC](rc-checklist.md) rozdziela lokalne dowody od otwartej akceptacji. Publikacja na GitHub wymaga osobnego polecenia użytkownika.
 
 Po weryfikacji konkretnego commita utwórz nowy tag `vMAJOR.MINOR.PATCH` i wypchnij wyłącznie ten tag. Na GitHub utwórz release beta/prerelease z Setup, ZIP, DEB, TAR.GZ, źródłami i SHA-256. Gotowe paczki są załącznikami Releases, a nie plikami w historii Git. Obecne wydania w ignorowanym `artifacts/releases/` pozostają lokalne do chwili oddzielnej publikacji.

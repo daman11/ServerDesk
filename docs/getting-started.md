@@ -26,6 +26,8 @@ Uruchom `ServerDesk-0.40.0-win-x64-Setup.exe`. Instalator działa dla bieżąceg
 
 Wydanie nie ma podpisu zaufanego wydawcy. Pobieraj je z zaufanego źródła; nie wyłączaj ochrony Windows. Sumę paczki możesz porównać z `SHA256SUMS.txt` poleceniem `Get-FileHash .\ServerDesk-0.40.0-win-x64-Setup.exe -Algorithm SHA256`. Suma obok pliku potwierdza zgodność pobrania, ale sama nie potwierdza tożsamości wydawcy.
 
+Gdy po niepełnej instalacji Windows brakuje plików, aplikacja nie startuje lub zniknął deinstalator, zamknij ServerDesk i uruchom ponownie zaufany Setup tej samej wersji, wskazując dotychczasowy katalog. Instalator odtwarza własne pliki; nie wymaga usuwania bazy ani zapisanych poświadczeń. Jeśli instalacja przerwała się z powodu braku miejsca/uprawnień, najpierw usuń tę przyczynę. Nie kopiuj pojedynczych DLL z innej wersji. [Zakres sprawdzonych napraw](reports/rc-preparation-2026-10-17.md).
+
 ## Linux x64
 
 Ubuntu/Debian: `sudo apt install ./serverdesk_0.40.0_amd64.deb`, następnie uruchom ServerDesk z menu lub poleceniem `serverdesk`. Do zapamiętywania haseł potrzebny jest `libsecret-tools` oraz odblokowany Secret Service (np. GNOME Keyring). Do RDP zainstaluj FreeRDP dla swojej dystrybucji.

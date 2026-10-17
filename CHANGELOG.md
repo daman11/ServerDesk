@@ -2,6 +2,8 @@
 
 ## Unreleased
 
+- Extend the isolated Windows installer harness with older-version upgrades, missing/corrupt payload repair, uninstaller recovery and full owned-payload removal checks; preserve user data and unknown files.
+- Add a dependency-audit gate for complete solution coverage, command/diagnostic failures and direct/transitive advisories, with bounded regression fixtures and future CI checks. Align RC/GitHub/repair guides with the lightweight development cycle and remaining acceptance gates.
 - Give connection folders distinct headers, persistent folder symbols alongside custom icons, consistent expander spacing and localized Empty badges for empty leaves.
 - Add 36 selectable system/service symbols for profiles and folders, including Linux distributions, Windows Server, Proxmox, Docker, Kubernetes, web servers, databases and monitoring tools. Bundle pinned Simple Icons silhouettes with source hashes, attribution and individual licenses; render filled marks in theme foreground colors.
 - Start new connections in the selected folder (or selected server's folder), retaining an empty root default when nothing is selected.

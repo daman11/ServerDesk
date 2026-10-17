@@ -13,6 +13,7 @@ Bieżące wydanie: [0.40.0 Public Beta](releases/release-0.40.0.md) — większa
 | Repozytorium i GitHub | [Git workflow and first upload](github.md) |
 | Pliki robocze i miejsce na dysku | [Artifact retention and cleanup](artifacts.md) |
 | Wydania | [Release procedure](releasing.md), [Release notes](releases/README.md), [Verification reports](reports/README.md) |
+| Przygotowanie wersji stabilnej | [Checklista konkretnego RC](rc-checklist.md) |
 | Zakres projektu | [Droga do 1.0](stable-release-plan.md), [Stan MVP](mvp-status.md), [Roadmap](roadmap.md), [UI](ui-redesign.md), [Icons](icons.md) |
 | RDP i zależności | [RDP integration](rdp-integration.md), [RDP matrix](rdp-test-matrix.md), [Dependencies](dependencies.md) |
 | Systemy, monitory i dostępność | [Macierz Windows/Linux, Kali/KDE/Wayland i checklista akceptacji](platform-support.md) |

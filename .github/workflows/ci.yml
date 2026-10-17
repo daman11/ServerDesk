@@ -49,6 +49,10 @@ jobs:
         run: ./scripts/check-repository.ps1
       - name: Restore locked dependencies
         run: dotnet restore ServerDesk.sln --locked-mode
+      - name: Dependency audit gate
+        run: ./scripts/audit-dependencies.ps1 -OutputDirectory artifacts/dependency-audit
+      - name: Audit gate regression checks
+        run: ./scripts/test-dependency-audit.ps1 -OutputDirectory artifacts/audit-gate-tests
       - name: Build
         run: dotnet build ServerDesk.sln -c Release --no-restore -m:1
       - name: Unit tests
@@ -72,6 +76,8 @@ jobs:
           name: test-results-${{ matrix.os }}
           path: |
             artifacts/test-results/*.trx
+            artifacts/dependency-audit/audit-summary.json
+            artifacts/audit-gate-tests/results.json
             artifacts/ci-*/*.png
             artifacts/ci-*/*.json
           if-no-files-found: ignore

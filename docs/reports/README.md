@@ -7,6 +7,7 @@ Current command module: [Smart Cheat Sheet / Command Snippets, 2026-10-16](comma
 Workspace panels: [Three/four panels and preferences, 2026-10-16](four-panel-workspace-2026-10-16.md).
 
 Current release: [0.40.0 verification](release-verification-0.40.0.md). Imported Git baseline: [0.31.1 verification](release-verification-0.31.1.md).
+RC preparation: [Older-version upgrade, three installer repairs, dependency audit gate and guides, 2026-10-17](rc-preparation-2026-10-17.md).
 
 Development after 0.37.0: [Linux monitoring compatibility and CPU counters, 2026-10-16](monitoring-compatibility-2026-10-16.md).
 Connection browser: [5,000 profiles, deferred visuals/menus and empty folders, 2026-10-16](browser-scalability-2026-10-16.md).

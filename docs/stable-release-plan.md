@@ -73,10 +73,13 @@ Małe kroki kończą się commitem, celowanymi sprawdzeniami i EXE do uruchomien
 
 ## 6. RC i dystrybucja — przed 1.0
 
+- [x] Sześć zadań roboczych po 0.40.0: automatyzacja aktualizacji starszego Setupu, napraw brakujących plików, uszkodzonych DLL i brakującego deinstalatora, bramka raportu audytu NuGet oraz spójne instrukcje RC/GitHub. Rzeczywista próba 0.39.1 → 0.40.0 i naprawy w izolowanych katalogach Windows; 23 kontrolowane decyzje audytu oraz aktualny wynik czterech projektów. [Dokładny zakres i ograniczenia](reports/rc-preparation-2026-10-17.md).
 - [ ] Aktualizacja ze wspieranych starszych wersji na czystych maszynach i naprawa niepełnej instalacji.
 - [ ] Pełne bramki [wydania](releasing.md), aktualny audyt zależności, spójne przewodniki i licencje.
 - [ ] Po decyzji o publikacji: GitHub/CI, kanał prywatnych zgłoszeń bezpieczeństwa i pilotaż RC. Podpis wydawcy Windows jest zalecany przed szeroką dystrybucją.
 - [ ] Brak otwartych błędów krytycznych dotyczących bezpieczeństwa, utraty danych, zawieszania i podstawowych połączeń; zakończona macierz deklarowanego wsparcia.
+
+Do konkretnego kandydata stosuj [checklistę RC](rc-checklist.md). Zakończone próby lokalne nie zaliczają czystych maszyn, rejestracji pominiętej w fixture ani przyszłych paczek z nowszego commita.
 
 Synchronizacja, bastion/forwarding, zewnętrzne pluginy, nowe platformy, integracje hypervisorów, YAML i dalsze biblioteki producentów nie blokują 1.0. Od 0.38.0 Linux RDP korzysta z osadzenia X11/XWayland. Natywny backend Wayland pozostaje dalszym zakresem. Ograniczony zakres wsparcia musi być jawny; nie nadajemy statusu stabilnego konfiguracji, której nie sprawdziliśmy.
 

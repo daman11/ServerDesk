@@ -26,6 +26,8 @@ Run `ServerDesk-0.40.0-win-x64-Setup.exe`. Setup installs for the current user, 
 
 This beta is not signed with a trusted publisher certificate. Use a trusted release source and do not disable Windows protection. Compare `Get-FileHash .\ServerDesk-0.40.0-win-x64-Setup.exe -Algorithm SHA256` with `SHA256SUMS.txt`. A checksum alongside a download detects corruption; it does not independently authenticate the publisher.
 
+If a partial Windows installation leaves missing files, prevents startup or loses its uninstaller, close ServerDesk and rerun a trusted Setup for the same version into the existing directory. Setup restores its own files without requiring database or saved-credential removal. First resolve any disk-space or permission failure that interrupted installation. Do not mix individual DLLs from different versions. [Tested repair scope](reports/rc-preparation-2026-10-17.md).
+
 ## Linux x64
 
 Ubuntu/Debian: `sudo apt install ./serverdesk_0.40.0_amd64.deb`, then launch ServerDesk from the menu or run `serverdesk`. Remembered passwords need `libsecret-tools` and an unlocked Secret Service such as GNOME Keyring. Install your distribution's FreeRDP client for RDP connections.

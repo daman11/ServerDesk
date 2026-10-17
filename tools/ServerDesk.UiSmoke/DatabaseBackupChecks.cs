@@ -1,6 +1,7 @@
 using System.Diagnostics;
 using Avalonia.Controls;
 using Avalonia.Headless;
+using Avalonia.Input.Platform;
 using Avalonia.Interactivity;
 using Avalonia.VisualTree;
 using ServerDesk.App;
@@ -26,13 +27,28 @@ internal static class DatabaseBackupChecks
             Named<TextBox>(settings,"SettingsSearch").Text=language=="pl"?"kopie":"backups"; RedesignChecks.Frames();
             var create=Named<Button>(settings,"CreateDatabaseBackup");
             if(!create.IsEffectivelyVisible || Named<TabControl>(settings,"SettingsCategories").SelectedIndex!=5)throw new Exception("Database backup settings cannot be found");
+            var browser=Named<DatabaseBackupBrowser>(settings,"DatabaseBackupBrowser"); RedesignChecks.Wait(browser.RefreshAsync());
+            if(Named<ListBox>(settings,"DatabaseBackupList").ItemCount!=0 || Named<Button>(settings,"DatabaseBackupOpenFolder").IsEnabled)throw new Exception("Missing backup directory looks available");
             create.RaiseEvent(new RoutedEventArgs(Button.ClickEvent)); Until(()=>create.IsEnabled);
             var file=Directory.GetFiles(repo.DatabaseBackupDirectory,"*.db").Single();
-            if(!Named<TextBlock>(settings,"DatabaseBackupStatus").IsEffectivelyVisible || !Named<TextBlock>(settings,"DatabaseBackupStatus").Text!.Contains(file,StringComparison.Ordinal))throw new Exception("Backup path/status is missing or hidden by search");
+            if(!Named<TextBlock>(settings,"DatabaseBackupStatus").IsEffectivelyVisible || Named<TextBlock>(settings,"DatabaseBackupStatus").Text!=AppText.T("Kopia została utworzona i sprawdzona.") || Named<SelectableTextBlock>(settings,"DatabaseBackupPath").Text!=file)throw new Exception("Backup path/status is missing or hidden by search");
+            var copies=Named<ListBox>(settings,"DatabaseBackupList");
+            if(copies.SelectedItem is not DatabaseBackupEntry entry || entry.Path!=file)throw new Exception("Created backup was not selected in the catalog");
+            Named<Button>(settings,"DatabaseBackupCopyPath").RaiseEvent(new RoutedEventArgs(Button.ClickEvent));
+            Until(()=>Named<TextBlock>(settings,"DatabaseBackupListStatus").Text==AppText.T("Skopiowano ścieżkę."));
+            if(settings.Clipboard!.TryGetTextAsync().GetAwaiter().GetResult()!=file)throw new Exception("Wrong snapshot path copied");
+            string? opened=null; browser.LaunchFolder=folder=> { opened=folder.FullName; return Task.FromResult(true); };
+            Named<Button>(settings,"DatabaseBackupOpenFolder").RaiseEvent(new RoutedEventArgs(Button.ClickEvent));
+            if(opened!=Path.GetFullPath(repo.DatabaseBackupDirectory))throw new Exception("Folder launcher target differs from backup directory");
             settings.Width=680; settings.Height=560; RedesignChecks.Frames(); settings.CaptureRenderedFrame()!.Save(Path.Combine(root,"database-backups-"+language+".png"));
+            Named<Button>(settings,"DatabaseBackupCopyPath").BringIntoView(); RedesignChecks.Frames(); settings.CaptureRenderedFrame()!.Save(Path.Combine(root,"database-backup-list-"+language+".png"));
+            RedesignChecks.Wait(browser.RefreshAsync());
+            if(copies.SelectedItem is not DatabaseBackupEntry refreshed || refreshed.Path!=file)throw new Exception("Refresh lost the selected backup");
             File.Delete(file); Directory.Delete(repo.DatabaseBackupDirectory); File.WriteAllText(repo.DatabaseBackupDirectory,"occupied");
             create.RaiseEvent(new RoutedEventArgs(Button.ClickEvent)); Until(()=>create.IsEnabled);
             if(!Named<TextBlock>(settings,"DatabaseBackupStatus").Text!.Contains(AppText.T("Nie udało się utworzyć kopii. Sprawdź wolne miejsce i uprawnienia katalogu danych. Istniejące kopie pozostają zachowane."),StringComparison.Ordinal))throw new Exception("Backup failure feedback is missing");
+            RedesignChecks.Wait(browser.RefreshAsync());
+            if(copies.ItemCount!=0 || Named<Button>(settings,"DatabaseBackupOpenFolder").IsEnabled || Named<TextBlock>(settings,"DatabaseBackupListStatus").Text!=AppText.T("Nie udało się odczytać listy kopii. Sprawdź folder i uprawnienia, a następnie odśwież listę."))throw new Exception("Catalog failure exposes stale backups");
             File.Delete(repo.DatabaseBackupDirectory); settings.Close(); RedesignChecks.Wait(editing); main.Close(); Until(()=>!main.IsVisible);
 
             var corruptPaths=new AppPaths(Path.Combine(root,"corrupt-"+language+"-"+Guid.NewGuid().ToString("N"))); var corrupt=new ProfileRepository(corruptPaths);
@@ -44,6 +60,6 @@ internal static class DatabaseBackupChecks
             message.GetVisualDescendants().OfType<Button>().Single(b=>b.Tag as string=="Zamknij").RaiseEvent(new RoutedEventArgs(Button.ClickEvent));
             Until(()=>!failed.IsVisible);
         }
-        Console.WriteLine("PASS database backup settings/search/create/failure/cancel in PL/EN and safe close after corrupt database startup; isolated data only");
+        Console.WriteLine("PASS database backup settings/search/create/list/refresh/clipboard/launcher target/failure in PL/EN and safe close after corrupt database startup; isolated data only");
     }
 }

@@ -88,6 +88,8 @@ internal static partial class DeskIcons
         "Wczytaj kolekcję" or "Utwórz kopię bazy"=>"archive",
         "Przejdź"=>"arrow-right",
         "Lista komend"=>"arrow-left",
+        "Kopiuj ścieżkę"=>"copy",
+        "Otwórz folder kopii"=>"folder-open",
         "Utwórz zdalne dowiązanie…"=>"link",
         "Większa czcionka"=>"font-increase",
         "Mniejsza czcionka"=>"font-decrease",

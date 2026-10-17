@@ -1,5 +1,7 @@
 # Pierwotne MVP — wydanie 0.39.0
 
+Zmiana robocza po 0.39.0 rozwija odzyskiwanie danych: w ustawieniach bezpieczeństwa jest lista 20 najnowszych kopii bazy z datą, rozmiarem, schematem i powodem, kopiowaniem ścieżki i dostępem do folderu. Odczyt metadanych nie otwiera bazy ani nie zmienia kopii. [Obsługa i przywracanie](database-backups.md).
+
 0.39.0 dodaje wbudowane pluginy Monitoring Linux i Komendy z przełącznikami po zapisie bez restartu. Rdzeń SSH/SFTP/RDP zachowuje niezależność od dodatków. [Wydanie](releases/release-0.39.0.md), [obsługa](plugins.md), [testy](reports/plugins-2026-10-17.md).
 
 0.38.0 osadza Linux RDP w karcie X11/XWayland i dodaje graficzne hasło/certyfikat. Zawiera również opisane poniżej zmiany rozwijane po 0.37.0. [Bieżące wydanie](releases/release-0.38.0.md), [weryfikacja](reports/release-verification-0.38.0.md), [model zaufania i ograniczenia RDP](rdp-integration.md).

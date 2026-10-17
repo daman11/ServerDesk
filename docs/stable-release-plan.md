@@ -7,6 +7,7 @@ Małe kroki kończą się commitem, celowanymi sprawdzeniami i EXE do uruchomien
 ## 1. Dane i odzyskiwanie — w toku
 
 - [x] Spójna ręczna kopia SQLite, także z zatwierdzonymi danymi WAL; sekcja ustawień PL/EN.
+- [x] Zmiana robocza po 0.39.0: przegląd 20 najnowszych kopii w ustawieniach, data/rozmiar/schemat/powód, kopiowanie ścieżki i otwieranie folderu; pomijanie plików częściowych. Lista metadanych nie potwierdza zawartości kopii i nie podmienia bazy.
 - [x] Sprawdzona kopia przed migracją starego schematu; odmowa migracji przy błędzie kopii.
 - [x] Komunikat o uszkodzonej/niedostępnej/nowszej bazie i zamknięcie bez zapisu układu zamiast automatycznego resetu.
 - [x] Celowany test odtworzenia profili, folderów i ustawień w osobnym katalogu; [instrukcja i ograniczenia](database-backups.md).

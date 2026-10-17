@@ -2,6 +2,12 @@
 
 Wersja rozwojowa po 0.36.2 dodaje **Ustawienia → Bezpieczeństwo → Kopie bazy danych → Utwórz kopię bazy**. Operacja działa od razu, niezależnie od Zapisz/Anuluj w ustawieniach. Po zakończeniu pokazuje pełną ścieżkę pliku. English: **Settings → Security → Database backups → Create database backup**.
 
+Zmiana robocza po 0.39.0 dodaje **Zapisane kopie bazy** w tej samej sekcji. Lista pokazuje 20 najnowszych plików według czasu UTC w nazwie kopii; data jest wyświetlana w czasie lokalnym. Widać rozmiar, wersję schematu i powód (ręczna/przed migracją). Po utworzeniu nowej kopii lista odświeża się i wybiera jej plik. Ręczne odświeżenie zachowuje wybrany plik, jeśli nadal istnieje.
+
+**Kopiuj ścieżkę** kopiuje ścieżkę zaznaczonej kopii, a gdy lista jest pusta — folderu. **Otwórz folder kopii** uruchamia systemowy menedżer plików na wyraźne kliknięcie. Pełna lista jest dostępna w folderze; ServerDesk niczego automatycznie nie usuwa. Pliki `.part`, nieznane nazwy i dowiązania plikowe nie trafiają na listę. Metadane są odczytywane poza UI, bez otwierania SQLite; widoczność pliku **nie potwierdza**, że jego zawartość jest poprawna. Sprawdzenie i ręczne przywracanie nadal wymagają kroków poniżej.
+
+English: **Saved database backups** lists up to 20 newest snapshot filenames with local time, size, schema and reason. Refresh preserves selection; creating a backup selects the new file. **Copy path** copies the selected snapshot or, for an empty list, the directory. **Open backup folder** uses the system file manager. The list only reads metadata, excludes partial/unknown/link entries, and does not certify or restore database contents.
+
 ## Zakres i przechowywanie
 
 - Kopia SQLite zawiera profile, foldery, ustawienia, historię, zaufane klucze SSH oraz referencje do danych w magazynie systemowym.

@@ -94,6 +94,7 @@ internal static partial class Dialogs
         backupContent.Children.Add(DesignSystem.Hint(L.T("Kopia obejmuje profile, foldery, ustawienia, historię i zaufane klucze SSH. Nie obejmuje haseł, prywatnych kluczy ani zaszyfrowanej treści komend i kolekcji z magazynu systemowego. Zawiera poufne dane infrastruktury — przechowuj ją prywatnie.")));
         var backupStatus=DesignSystem.Hint(L.T("Przed zmianą schematu istniejącej bazy ServerDesk automatycznie tworzy sprawdzoną kopię. Ręczna kopia działa od razu, niezależnie od zapisu ustawień."));
         backupStatus.Name="DatabaseBackupStatus";
+        var backupBrowser=new DatabaseBackupBrowser(repository.DatabaseBackupDirectory);
         Button? createBackup=null;
         createBackup=Button("Utwórz kopię bazy",async()=>
         {
@@ -102,7 +103,8 @@ internal static partial class Dialogs
             try
             {
                 var backup=await repository.CreateDatabaseBackupAsync();
-                backupStatus.Text=L.T("Kopia została utworzona i sprawdzona.")+"\n"+backup.Path;
+                backupStatus.Text=L.T("Kopia została utworzona i sprawdzona.");
+                await backupBrowser.RefreshAsync(backup.Path);
             }
             catch(Exception ex)
             {
@@ -112,7 +114,7 @@ internal static partial class Dialogs
             finally { createBackup.IsEnabled=true; }
         });
         createBackup.Name="CreateDatabaseBackup"; createBackup.HorizontalAlignment=HorizontalAlignment.Left;
-        backupContent.Children.Add(createBackup); backupContent.Children.Add(backupStatus);
+        backupContent.Children.Add(createBackup); backupContent.Children.Add(backupStatus); backupContent.Children.Add(backupBrowser);
         backupSection.Children.Add(backupContent);
         // Keep the result and privacy notice visible when the action is found by search.
         searchIndex.Field(backupSection,backupContent,"Kopia lokalnej bazy "+L.T("Kopia lokalnej bazy"));
@@ -337,7 +339,8 @@ internal static partial class Dialogs
             else if(e.Key==Avalonia.Input.Key.Escape && search.IsKeyboardFocusWithin && !string.IsNullOrEmpty(search.Text)) { search.Text=""; e.Handled=true; }
         },Avalonia.Interactivity.RoutingStrategies.Tunnel);
         dialog.Closing+=(_,e)=> { if(saving)e.Cancel=true; };
-        await dialog.ShowDialog(owner);
+        try { await dialog.ShowDialog(owner); }
+        finally { backupBrowser.Dispose(); await backupBrowser.Shutdown; }
         if(!saved) { if(main!=null)main.PreviewPreferences(runtime); else DesignSystem.ApplyPreferences(runtime); DesignSystem.Apply(originalTheme); }
         if(restartAfterSave!=null)main?.RequestRestart(restartAfterSave);
     }

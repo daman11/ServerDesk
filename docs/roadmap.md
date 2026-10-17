@@ -64,25 +64,14 @@ Wydanie 0.17.0 porządkuje edytor serwera, dodaje walidację pól i podgląd ora
 
 Wydanie 0.16.0 dodaje pliki przez schowek RDP, konfigurację klawiatury, autoreconnect i poprawki DPI/drag. Wykonane oraz pozostałe komórki testów: [rdp-test-matrix.md](rdp-test-matrix.md). Nie oznacza to zakończenia całej macierzy.
 
-# Stan i dalsza praca
+# Historyczne podsumowanie po 0.22.0
 
 Stan po 0.22.0: SSH/SFTP/monitoring i podstawowe zarządzanie profilami mają działającą implementację i rzeczywiste testy na Ubuntu/WSL z klienta Windows. Wdrożono redesign i poprawki wskazane przez audyt, ikony, personalizację oraz dwa panele/dokowanie. Wydanie 0.8.0 dodało wyszukiwarkę sesji i przywracanie kart bez automatycznego logowania. Wydanie 0.9.0 dodało automatyczny zapis układu, odzyskiwanie po awarii procesu i zabezpieczenia zamykania oraz weryfikację rozmiaru transferów SFTP. Wydanie 0.10.0 dopracowało główne okno i paski narzędziowe. Wydanie 0.10.1 naprawia wskaźnik ładowania wychodzący poza sesję i upraszcza oznaczenie aktywnej karty. Wydanie 0.11.0 dodaje dolny pasek parametrów, ikony folderów i wspólny nagłówek okna. Wydanie 0.12.0 usuwa kolizje nagłówka i parametrów oraz rozszerza ustawienia personalizacji. Wydanie 0.13.0 dodaje niezależne filtry/sortowanie SFTP, skróty i kolejkę z ponowieniami oraz rozliczaniem pominięć. Wydanie 0.14.0 dodaje diagnostykę NLA/TLS i sterowanie klientem RDP; na prywatnym serwerze Windows potwierdzono logowanie lokalnego konta oraz obraz przez FreeRDP/WSLg. Wydanie 0.15.0 dodaje osadzony RDP Windows z rzeczywistym logowaniem, skalowaniem i ciągłością sesji przy dokowaniu/split view. Wydanie 0.15.1 naprawia manifest Windows wymagany przez osadzone RDP i dodaje testy gotowego EXE oraz odzyskiwanie przez klienta zewnętrznego. Anulowanie transferów i skrócenie pliku podczas pobierania sprawdzono na rzeczywistym OpenSSH.
 
 Raport bazowy: [requirements-audit-0.4.0.md](reports/requirements-audit-0.4.0.md). Zrealizowane poprawki: wydania [0.5.0](releases/release-0.5.0.md), [0.6.0](releases/release-0.6.0.md), [0.7.0](releases/release-0.7.0.md), [0.8.0](releases/release-0.8.0.md), [0.9.0](releases/release-0.9.0.md), [0.10.0](releases/release-0.10.0.md), [0.10.1](releases/release-0.10.1.md), [0.11.0](releases/release-0.11.0.md), [0.12.0](releases/release-0.12.0.md), [0.13.0](releases/release-0.13.0.md), [0.14.0](releases/release-0.14.0.md), [0.15.0](releases/release-0.15.0.md) i [0.15.1](releases/release-0.15.1.md). Nie traktujemy pełnego MVP ani całego redesignu jako zakończonych.
 
-Pozostają:
+## Następne kroki przed 1.0
 
-- osadzony framebuffer RDP na Linux/Wayland; rzeczywiste mstsc oraz konta AD/Microsoft; schowek, pełna macierz klawiszy i fullscreen na Windows/Linux (lokalne konto/NLA/obraz zweryfikowano w osadzonym komponencie Windows oraz przez FreeRDP/WSLg);
-- rzeczywiste SSH hasłem, dodatkowe formaty kluczy, vim/htop/fish/zsh/MC oraz szersza macierz klawiszy;
-- Kubuntu/KWallet, Fedora, Debian, Windows 10 oraz niezależne X11/Wayland;
-- gesty D&D serwerów/plików/zakładek na systemach docelowych;
-- pełna macierz stanów szablonów kontrolek, czytniki ekranu i dalsza walidacja formularzy;
-- dalsza walidacja pozostałych formularzy i ergonomia dużych list SFTP;
-- Follow System ze zmianą ustawienia OS podczas pracy, wiele monitorów i mieszane DPI;
-- rozszerzenia opcjonalne obecnego dokowania: więcej niż dwie grupy i zagnieżdżone podziały; dodatkowe formaty grafik;
-- zachowywanie obiektów dowiązań między platformami (0.27.0 obsługuje jawne kopiowanie zawartości wybranego celu) oraz dalsze testy równoległych zmian i dużych drzew;
-- sprzątanie zdalnego .part po utracie sieci, serwery bez POSIX rename, utrata sieci podczas transferu;
-- testy setek serwerów, dużych katalogów, wielogodzinnych sesji, pamięci i wycieków;
-- AppImage/RPM (warunkowe), podpisy zaufanego wydawcy i dalszy przegląd zgodności notices upstream przy zmianach zależności.
+Aktualną kolejność etapów A–F, warunki ich zakończenia i najbliższą partię prac opisuje [plan wersji stabilnej](stable-release-plan.md). Szczegółowe kryteria pierwotnego MVP są w [tabeli MVP](mvp-status.md), a przygotowanie konkretnej paczki w [checkliście RC](rc-checklist.md).
 
-Synchronizacja, bastion, forwarding i pluginy są zakresem przyszłym.
+Starej listy zaległości po 0.22.0 nie należy używać do planowania bieżącej pracy: osadzone Linux RDP przez X11/XWayland, cztery panele i wbudowane pluginy już istnieją. Otwarte pozostają ich wskazane w planie próby awarii, natywna akceptacja systemów/sprzętu oraz długa praca. Natywny backend Wayland, zewnętrzne paczki pluginów, synchronizacja i bastion/forwarding pozostają poza zakresem 1.0.

@@ -4,6 +4,85 @@ Punkt wyjścia: 0.40.0 Public Beta. Funkcje rdzenia i dodatków istnieją; stan 
 
 Małe kroki kończą się commitem, celowanymi sprawdzeniami i EXE do uruchomienia z folderu. Pełna macierz i paczki są przeznaczone dla większych etapów, RC i wydania 1.0.
 
+## Kolejność następnych prac — 2026-10-17
+
+Ostatnim zamrożonym wydaniem jest **0.40.0 Public Beta**. Późniejsze commity obejmują m.in. usprawnienia drzewa i ikon oraz narzędzia przygotowania RC; nie znajdują się automatycznie w instalatorze 0.40.0. Działające implementacje nie zamykają akceptacji: otwarte pozostają rzeczywiste środowiska Linux, sprzęt, długie sesje i część scenariuszy awarii.
+
+Etapy A–F wyznaczają kolejność wykonania. Punkty 1–6 poniżej pozostają szczegółową listą postępu według obszarów. Przed 1.0 priorytetem są poprawki istniejących funkcji; kolejne moduły odkładamy poza ten cykl.
+
+### A. Ustalić zakres i macierz wydania
+
+- Zapisać konkretne wersje Windows/Linux, architekturę x64, pulpit, X11/XWayland oraz wymagane biblioteki i klienta FreeRDP w [macierzy platform](platform-support.md). Oddzielić środowiska wspierane od eksperymentalnych.
+- Zacząć akceptację od Windows 11 i natywnego Linuxa, w tym zgłoszonego Kali/KDE/Wayland. Pierwotne cele Windows 10, Ubuntu, Kubuntu, Debian i Fedora wymagają osobnego wyniku albo uzgodnionej zmiany zakresu; nie przypisywać im stabilnego wsparcia przez podobieństwo do WSL.
+- Do każdego wspieranego środowiska przypisać scenariusze, wykonawcę i dowody. Automatyzację wykonujemy na własnych fixtures; próby fizycznych klawiszy, monitorów, portfela i Serial wymagają dostępnego stanowiska maintenera/testera.
+- Potwierdzić zakres funkcji: rdzeń SSH/SFTP/profile/RDP, obecne VNC/Serial oraz wbudowane dodatki. Ograniczenia, np. VNC bez TLS, Linux RDP przez XWayland i brak transferu plików gestem do Linux RDP, muszą pozostać jawne w instrukcji i opisie wydania.
+
+**Warunek zakończenia:** jedna lista wspieranych konfiguracji i scenariuszy bez nieustalonych pozycji. Brak dostępnego sprzętu oznacza otwartą akceptację lub uzgodniony węższy zakres, a nie wynik PASS.
+
+### B. Domknąć ochronę danych i odzyskiwanie
+
+- Rozszerzyć próby zapisu/importu/eksportu o brak miejsca, odmowę uprawnień, blokady i awaryjne zakończenie procesu w kontrolowanych fazach. Używać wydzielonego dysku/katalogu testowego, nigdy zapełniania dysku użytkownika.
+- Sprawdzić zachowanie poprzednich danych, komunikat PL/EN, ponowienie po usunięciu problemu oraz pozostałości plików tymczasowych. Nie obiecywać odporności na odcięcie zasilania wyłącznie na podstawie zamknięcia procesu.
+- Przygotować reprezentatywne zestawy danych ze wspieranych starych schematów/wydań: profile, zagnieżdżone foldery, ikony, ustawienia i układ. Sprawdzić migrację, kopię sprzed migracji i ręczne odtworzenie; nowa pusta baza nie zastępuje takiej próby.
+- Osobno zweryfikować powiązania poświadczeń, własnych komend i kolekcji po imporcie/zmianie profilu/odtworzeniu. Sprawdzić zablokowany i niedostępny magazyn systemowy oraz łączenie bez zapamiętania hasła.
+
+**Warunek zakończenia:** brak utraty lub cichego resetu wcześniej zatwierdzonych danych w sprawdzonych awariach, udane ponowienie i udokumentowane odtworzenie. Kopia SQLite nadal nie jest pełną kopią sekretów i pozostałych magazynów.
+
+### C. Zamknąć scenariusze codziennej pracy i awarii sesji
+
+- SSH: fizyczne AltGr/układy/IME, mysz, aplikacje terminalowe, uśpienie/wznowienie oraz ponowne połączenie. Sprawdzić kilka sesji i trzy/cztery panele bez mieszania celu wejścia.
+- SFTP: upload/download i katalogi, nadpisanie, anulowanie, brak miejsca/quota oraz utrata sieci w różnych fazach; ochrona oryginału i porównanie SHA-256 po ponowieniu. Uwzględnić serwer inny niż OpenSSH i pozostawione `.part`.
+- RDP: uzupełnić [macierz](rdp-test-matrix.md) dla deklarowanych Windows/Linux: hasło/certyfikat, schowek w obie strony i obsługiwane pliki, klawiatura/fokus, rozmiar panelu/dokowanie oraz utrata sieci. Konta AD/Microsoft wymagają własnego stanowiska, jeśli mają wejść do potwierdzonego zakresu.
+- VNC i Serial: rzeczywisty serwer oraz fizyczny adapter, błędne parametry, rozłączenie i ponowienie. Zakresu tych protokołów nie rozszerzać przy okazji stabilizacji.
+- Monitoring, Komendy i Network Tools: reprezentatywne systemy/urządzenia, quoting i tożsamość celu, Start/Stop/zamykanie oraz wyłączenie pluginu bez przerwania SSH/SFTP i bez utraty zapisanej zawartości.
+
+**Warunek zakończenia:** scenariusze z etapu A mają wynik i dowód; błąd jednego połączenia/modułu nie zawiesza aplikacji, nie kieruje danych do innej sesji i pozwala bezpiecznie zamknąć lub ponowić operację.
+
+### D. Sprawdzić długą pracę, platformy i spójność UI
+
+- Zaplanować pierwszą próbę długotrwałą: co najmniej 4 godziny z ośmioma sesjami oraz 100 cykli otwarcia/ponowienia/zamknięcia, osobno na Windows i deklarowanym Linuxie. To cel przyszłej próby, nie opis wykonanego testu; wcześniejsze 10 minut nie zamyka tego zadania.
+- Zmierzyć pamięć, CPU, uchwyty/wątki lub odpowiedniki Linux przed rozgrzaniem, podczas pracy i po zamknięciu sesji. Przed próbą zapisać środowisko i progi regresji względem pomiaru bazowego; wyjaśnić narastanie zasobów między cyklami.
+- Sprawdzić duże drzewa/własne grafiki, sortowanie i wyszukiwanie, rzeczywiste przeciąganie serwerów/plików/kart, podziały i osobne okna. Zachować dotychczasowe wyniki 5000 profili jako pomiar ograniczony do opisanej konfiguracji.
+- Na natywnym Linuxie przejść instalację, Secret Service/KWallet, zablokowanie/odblokowanie portfela oraz osadzone RDP pod XWayland. Nie zastępować tej próby testem Xvfb/WSLg.
+- Wykonać przegląd PL/EN, pięciu motywów, większej czcionki, klawiatury i dostępności. Szczególnie sprawdzić ustawienia, dialogi, nakładanie tekstu, restart języka i położenie okien.
+- Fizycznie sprawdzić monitory 100%/150%/200%, przenoszenie i odłączenie ekranu. Przy obecnie potwierdzonym ekranie 100% pozostałe skale nadal wymagają stanowiska testowego.
+
+**Warunek zakończenia:** brak zawieszania, niewyjaśnionego przyrostu zasobów po powtarzanych cyklach, niedostępnych istotnych kontrolek i okien poza ekranem; raporty dla każdej zadeklarowanej konfiguracji.
+
+### E. Przygotować i sprawdzić kandydata RC
+
+- Po domknięciu wcześniejszych etapów wykonać przegląd bezpieczeństwa poświadczeń, zaufania hostów/certyfikatów, importów, wykonywania komend, eksportów i logów. Aktualny audyt zależności jest osobną bramką, nie dowodem pełnego bezpieczeństwa.
+- Zamrozić zakres i commit kandydata; ustalić jego numer zgodny z narzędziami wersjonowania. Przygotować paczki i raport według [procedury wydania](releasing.md) oraz [checklisty RC](rc-checklist.md).
+- Uruchomić pełne właściwe testy Windows/Linux, locked restore, Release build, audyt, kontrole licencji/zasobów/źródeł i gotowych plików. Dawne wyniki nie zaliczają nowego commita ani payloadu.
+- Na czystym koncie/VM sprawdzić świeży Setup, rejestrację Apps/menu Start, aktualizację ze wskazanych wspieranych wersji z rzeczywistą zawartością testową, naprawę i deinstalację bez kasowania danych użytkownika.
+- Sprawdzić instalację i start paczek Linux na deklarowanych systemach, zależności natywne, instrukcje PL/EN i listę ograniczeń. Zebrać wersję/commit/środowisko oraz wyniki PASS/FAIL/SKIP; SKIP nie zamyka wymaganej próby.
+
+**Warunek zakończenia:** kompletne paczki RC z sumami, pełnymi wymaganymi wynikami i bez błędów blokujących; gotowa instrukcja instalacji, aktualizacji i odzyskiwania.
+
+### F. Pilotaż, decyzja o 1.0 i publikacja
+
+- Udostępnić RC wybranym testerom po decyzji maintenera o dystrybucji. Ustalić okres i listę zadań pilotażu oraz zebrać odtwarzalne zgłoszenia bez haseł, kluczy i prywatnych baz.
+- Poprawić błędy blokujące; po zmianach sprawdzić regresje, a końcowy kandydat musi ponownie spełnić wszystkie wymagane bramki. Nie zmieniać po cichu wcześniej udostępnionych paczek.
+- Ustalić GitHub, prywatny kanał bezpieczeństwa, miejsce pobierania i decyzję o podpisie Windows. Uruchomienie zdalnego CI i publikacja wymagają autoryzowanego pushu; sama gotowa konfiguracja Actions nie zalicza CI.
+- Dopiero po spełnieniu definicji gotowości przygotować **1.0.0**, changelog, instrukcje, pakiety Windows/Linux/źródeł i sumy SHA-256. Commit, ProductVersion, paczki i nowy anotowany tag `v1.0.0` muszą być zgodne; zakończyć `scripts/check-release-state.ps1 -RequireCurrentRelease`.
+- Zdalna publikacja wymaga osobnej instrukcji użytkownika. Po wydaniu prowadzić zgłoszenia i poprawki 1.0.x; nowe funkcje planować w następnym cyklu.
+
+**Warunek zakończenia:** zaakceptowany pilotaż i gotowa, jednoznacznie identyfikowalna wersja 1.0.0; publikacja dopiero po decyzji maintenera.
+
+## Co dokładnie blokuje status stabilny
+
+- **P0:** utrata danych, ujawnienie sekretu, obejście zaufania albo wykonanie operacji na niewłaściwym serwerze. Każdy nierozwiązany przypadek blokuje wydanie.
+- **P1:** awaria/zawieszenie aplikacji, niedziałający podstawowy scenariusz deklarowanej funkcji lub brak bezpiecznego odzyskania po typowej awarii. Każdy nierozwiązany przypadek blokuje wydanie.
+- Pozostałe błędy muszą mieć ocenę, opis wpływu i świadomą decyzję o odłożeniu. Udokumentowanie ograniczenia nie zmienia błędu P0/P1 w akceptowalny problem kosmetyczny.
+- Wszystkie wymagane wiersze uzgodnionej macierzy mają PASS na końcowym kandydacie; wymagane FAIL/SKIP i brak dowodu pozostawiają etap otwarty. Nie deklarujemy testów każdej dystrybucji i każdego urządzenia, tylko jawny, sprawdzony zakres.
+- Zaliczone są bramki techniczne, odtworzenie/aktualizacja, długa praca i pilotaż, a dokumentacja wsparcia odpowiada faktycznym wynikom. Gotowości nie mierzymy liczbą nowych funkcji ani samą zmianą numeru wersji.
+
+## Najbliższa partia wykonawcza
+
+Po uzgodnieniu zakresu rozpocząć etap B: **(1)** przygotować historyczne dane testowe i oczekiwany stan, **(2)** sprawdzić migrację i odtworzenie, **(3)** wymusić brak miejsca/blokadę/odmowę zapisu w izolacji, **(4)** sprawdzić przerwanie procesu i ponowienie, **(5)** potwierdzić zgodność osobnych magazynów i komunikaty PL/EN. Naprawy i testy podzielić na logiczne commity. Równolegle można zbierać ręczne wyniki natywnego Linuxa i sprzętu do etapu D.
+
+Ten dokument ustala plan; nie zalicza tych przyszłych prób. Aktualizacja samego planu wymaga kontroli treści/linków i commita, bez buildu aplikacji, zmiany wersji ani nowego wydania.
+
 ## 1. Dane i odzyskiwanie — w toku
 
 - [x] Spójna ręczna kopia SQLite, także z zatwierdzonymi danymi WAL; sekcja ustawień PL/EN.

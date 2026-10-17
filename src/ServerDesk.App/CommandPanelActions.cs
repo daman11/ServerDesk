@@ -79,6 +79,8 @@ internal sealed partial class CommandPanel
     }
     internal async Task DispatchAsync(string action)
     {
+        lifetime.Token.ThrowIfCancellationRequested();
+        if(!owner.IsPluginEnabled(PluginCatalog.Commands))throw new OperationCanceledException();
         var c=selected??throw new InvalidOperationException(L.T("Wybierz komendę.")); var rendered=Render(); var captured=ticket; var destination=target;
         var confirmed=false; var dangerous=false;
         if(action=="copy")

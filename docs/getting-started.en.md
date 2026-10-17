@@ -1,6 +1,8 @@
-# ServerDesk 0.38.0 — getting started
+# ServerDesk 0.39.0 — getting started
 
-**New: Commands — Ctrl+Shift+K.** Browse 165 command variants offline or follow the active SSH host. Add encrypted user snippets, parameters and favorites. Insert never sends Enter; Execute requires confirmation. [Guide, architecture and limits](commands.md), [0.38.0 notes](releases/release-0.38.0.md).
+**Plugins (0.39.0):** Settings → Plugins independently enables Linux monitoring and Commands. Save applies without restarting; disabling preserves SSH, SFTP and custom snippets. Both built-in plugins default to enabled.
+
+**Commands — Ctrl+Shift+K.** Browse 165 command variants offline or follow the active SSH host. Add encrypted user snippets, parameters and favorites. Insert never sends Enter; Execute requires confirmation. [Guide, architecture and limits](commands.md), [0.39.0 notes](releases/release-0.39.0.md).
 
 Choose **Layout → Three panels (1 + 2)** or **Four panels (2 × 2)**. Spare docked tabs fill empty panels. Drag a tab to another panel or use its **Dock in panel 1–4** menu. Click an empty panel's number before opening a connection. Drag separators to resize; **Equalize panel sizes** resets both axes. Reducing the split keeps tabs open in the remaining groups.
 
@@ -16,15 +18,15 @@ Since 0.37.0, ServerDesk shows transfer failure guidance in the queue. Hover ove
 
 ## Windows x64
 
-Run `ServerDesk-0.38.0-win-x64-Setup.exe`. Setup installs for the current user, creates a Start menu shortcut and registers an uninstaller. No separate .NET installation is needed. Alternatively, extract the **entire** portable ZIP into its own directory and run `ServerDesk.App.exe`.
+Run `ServerDesk-0.39.0-win-x64-Setup.exe`. Setup installs for the current user, creates a Start menu shortcut and registers an uninstaller. No separate .NET installation is needed. Alternatively, extract the **entire** portable ZIP into its own directory and run `ServerDesk.App.exe`.
 
-This beta is not signed with a trusted publisher certificate. Use a trusted release source and do not disable Windows protection. Compare `Get-FileHash .\ServerDesk-0.38.0-win-x64-Setup.exe -Algorithm SHA256` with `SHA256SUMS.txt`. A checksum alongside a download detects corruption; it does not independently authenticate the publisher.
+This beta is not signed with a trusted publisher certificate. Use a trusted release source and do not disable Windows protection. Compare `Get-FileHash .\ServerDesk-0.39.0-win-x64-Setup.exe -Algorithm SHA256` with `SHA256SUMS.txt`. A checksum alongside a download detects corruption; it does not independently authenticate the publisher.
 
 ## Linux x64
 
-Ubuntu/Debian: `sudo apt install ./serverdesk_0.38.0_amd64.deb`, then launch ServerDesk from the menu or run `serverdesk`. Remembered passwords need `libsecret-tools` and an unlocked Secret Service such as GNOME Keyring. Install your distribution's FreeRDP client for RDP connections.
+Ubuntu/Debian: `sudo apt install ./serverdesk_0.39.0_amd64.deb`, then launch ServerDesk from the menu or run `serverdesk`. Remembered passwords need `libsecret-tools` and an unlocked Secret Service such as GNOME Keyring. Install your distribution's FreeRDP client for RDP connections.
 
-For TAR.GZ: `mkdir serverdesk-0.38.0`, then `tar -xzf ServerDesk-0.38.0-linux-x64.tar.gz -C serverdesk-0.38.0` and `./serverdesk-0.38.0/ServerDesk.App`. Native library requirements are listed in the DEB and [development.md](development.md). Linux testing used WSLg; other desktops need further verification.
+For TAR.GZ: `mkdir serverdesk-0.39.0`, then `tar -xzf ServerDesk-0.39.0-linux-x64.tar.gz -C serverdesk-0.39.0` and `./serverdesk-0.39.0/ServerDesk.App`. Native library requirements are listed in the DEB and [development.md](development.md). Linux testing used WSLg; other desktops need further verification.
 
 ## Connect
 

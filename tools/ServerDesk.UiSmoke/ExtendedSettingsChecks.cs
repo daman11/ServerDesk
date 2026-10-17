@@ -43,7 +43,7 @@ internal static class ExtendedSettingsChecks
             RedesignChecks.Frames(5);
             var before=terminals.Select(t=>SshAcceptanceChecks.Text(t).TrimEnd('\n')).ToArray(); var buffers=terminals.Select(t=>t.BufferSize).ToArray();
             var edit=Dialogs.Settings(main,repo,()=>Task.CompletedTask); RedesignChecks.Frames(); var w=main.OwnedWindows.Single();
-            if(Named<TabControl>(w,"SettingsCategories").ItemCount!=6)throw new Exception("Missing SFTP settings category");
+            if(Named<TabControl>(w,"SettingsCategories").ItemCount!=7)throw new Exception("Missing settings category");
             Page(w,1); Named<ComboBox>(w,"TerminalCursor").SelectedIndex=1; Setting<CheckBox>(w,"Migający kursor").IsChecked=false; Named<NumericUpDown>(w,"TerminalScrollbackLines").Value=0;
             foreach(var t in terminals)Cursor(t,XTerm.Common.CursorStyle.Block,false);
             for(var i=0;i<terminals.Length;i++)if(terminals[i].BufferSize!=buffers[i] || SshAcceptanceChecks.Text(terminals[i]).TrimEnd('\n')!=before[i])throw new Exception($"Preview discarded terminal history: terminal {i}, buffer {terminals[i].BufferSize}/{buffers[i]}");
@@ -90,7 +90,7 @@ internal static class ExtendedSettingsChecks
             Wait(ssh.CloseAsync()); Wait(serial.CloseAsync()); main.Close(); RedesignChecks.Frames();
         }
         AppText.SetLanguage("pl"); DesignSystem.Apply("dark");
-        Console.WriteLine("PASS extended settings PL/EN: six responsive categories, search, invalid-path recovery, cursor live preview and remote overrides, retained history, cancel/save/reopen/defaults; Graphite/Light font16 at 680x500 and 960x720");
+        Console.WriteLine("PASS extended settings PL/EN: seven responsive categories, search, invalid-path recovery, cursor live preview and remote overrides, retained history, cancel/save/reopen/defaults; Graphite/Light font16 at 680x500 and 960x720");
     }
     internal static void Network(string root,string host,string key)
     {

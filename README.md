@@ -1,4 +1,4 @@
-# ServerDesk — 0.38.0 Public Beta
+# ServerDesk — 0.39.0 Public Beta
 
 Native Windows/Linux workspace for SSH, SFTP, RDP, VNC and serial connections. Built with C#, .NET 10 and Avalonia 12. Free and open source under the [MIT license](LICENSE).
 
@@ -6,15 +6,15 @@ Native Windows/Linux workspace for SSH, SFTP, RDP, VNC and serial connections. B
 
 ## Downloads and installation
 
-0.38.0 brings Linux RDP into ServerDesk tabs, with graphical password entry and certificate review. It also includes the monitoring, connection-browser and desktop fixes developed after 0.37.0. [Release notes](docs/releases/release-0.38.0.md).
+0.39.0 adds built-in plugins for Linux monitoring and Commands, with independent live enable/disable controls in Settings. SSH, SFTP and existing user data are preserved. [Release notes](docs/releases/release-0.39.0.md).
 
 | System | Package | Start |
 |---|---|---|
-| Windows x64 | `ServerDesk-0.38.0-win-x64-Setup.exe` | Run Setup; current-user installation and Start menu shortcut |
-| Windows x64 portable | `ServerDesk-0.38.0-win-x64.zip` | Extract everything; run `ServerDesk.App.exe` |
-| Linux x64 DEB | `serverdesk_0.38.0_amd64.deb` | `sudo apt install ./serverdesk_0.38.0_amd64.deb` |
-| Linux x64 archive | `ServerDesk-0.38.0-linux-x64.tar.gz` | Extract into a new directory; run `./ServerDesk.App` |
-| Source | `ServerDesk-0.38.0-source.zip` | .NET 10 SDK required |
+| Windows x64 | `ServerDesk-0.39.0-win-x64-Setup.exe` | Run Setup; current-user installation and Start menu shortcut |
+| Windows x64 portable | `ServerDesk-0.39.0-win-x64.zip` | Extract everything; run `ServerDesk.App.exe` |
+| Linux x64 DEB | `serverdesk_0.39.0_amd64.deb` | `sudo apt install ./serverdesk_0.39.0_amd64.deb` |
+| Linux x64 archive | `ServerDesk-0.39.0-linux-x64.tar.gz` | Extract into a new directory; run `./ServerDesk.App` |
+| Source | `ServerDesk-0.39.0-source.zip` | .NET 10 SDK required |
 
 The binary packages include .NET. Linux additionally needs its system X11/fontconfig libraries, Secret Service for remembered passwords and an installed X11 FreeRDP client (`xfreerdp3` or `xfreerdp`) for in-tab RDP. Linux verification used Ubuntu/WSLg; other desktop/distribution combinations are experimental. ARM/macOS packages are not provided.
 
@@ -22,11 +22,12 @@ This beta is unsigned. Obtain it from a trusted release source and compare its S
 
 ## Features
 
+- Built-in [plugins](docs/plugins.md) for Linux monitoring and Commands; enable or disable after saving, without restarting.
 - Shared offline Smart Cheat Sheet / user snippets panel (Ctrl+Shift+K): 165 command variants, SSH OS/tool discovery, manual profiles, parameters, favorites, encrypted snippets and confirmed terminal actions. [Guide and limits](docs/commands.md).
 - SSH terminal, SFTP transfer queue, batch/recursive deletion with preview and Linux monitoring.
 - Local SSH/Serial scrollback search (Ctrl+Shift+F), reviewed SSH trust management in Settings, and cancellable background filtering/sorting for large file lists.
 - Independent SFTP directory histories, Back/Forward/Parent/Home controls and confirmed paths for file-operation destinations.
-- Six searchable settings categories; configurable terminal history/cursor and first-open SFTP directory, hidden files, sorting and active panel.
+- Seven searchable settings categories; configurable terminal history/cursor and first-open SFTP directory, hidden files, sorting and active panel.
 - Larger connection lists with batched updates; bounded transfer progress and tested cancellation/retry under network loss.
 - SSH VT keyboard fixes, background PTY setup and coalesced resizing; real password/OpenSSH terminal acceptance checks.
 - SFTP symbolic-link navigation/details, remote link creation and explicit copying of resolved contents, with bounded directory traversal and protected link destinations.

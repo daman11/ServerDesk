@@ -6,7 +6,7 @@ Current command module: [Smart Cheat Sheet / Command Snippets, 2026-10-16](comma
 
 Workspace panels: [Three/four panels and preferences, 2026-10-16](four-panel-workspace-2026-10-16.md).
 
-Current release: [0.38.0 verification](release-verification-0.38.0.md). Imported Git baseline: [0.31.1 verification](release-verification-0.31.1.md).
+Current release: [0.39.0 verification](release-verification-0.39.0.md). Imported Git baseline: [0.31.1 verification](release-verification-0.31.1.md).
 
 Development after 0.37.0: [Linux monitoring compatibility and CPU counters, 2026-10-16](monitoring-compatibility-2026-10-16.md).
 Connection browser: [5,000 profiles, deferred visuals/menus and empty folders, 2026-10-16](browser-scalability-2026-10-16.md).
@@ -26,3 +26,5 @@ File navigation: [SFTP history and confirmed paths, 2026-10-16](sftp-navigation-
 This directory preserves release verification, security/design reviews and earlier requirements audits. Reports describe the tested build and environment at the stated date; consult [known issues](../known-issues.md) for current limits. Plain paths in historical records can refer to the original package layout.
 
 Linux embedded RDP: [GUI, NLA and native X11 acceptance, 2026-10-16/17](embedded-linux-rdp-2026-10-16.md).
+
+Built-in plugins: [settings and SSH lifecycle, 2026-10-17](plugins-2026-10-17.md).

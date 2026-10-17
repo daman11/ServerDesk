@@ -2,6 +2,14 @@
 
 ## Unreleased
 
+## 0.39.0 — Public Beta — 2026-10-17
+
+- Add a stable built-in plugin catalogue and lifecycle contract for Linux monitoring and Commands, with independent settings, localized descriptions and live apply after Save.
+- Preserve older settings, immutable JSON value semantics, unknown opt-outs, user snippets and favorites. Hide and guard disabled entry points; keep the core status bar and transfer counter.
+- Cancel optional SSH work independently, drain monitor/discovery tasks, prevent late panel/sample updates, and retain the existing SSH terminal and SFTP during disable/enable.
+- Extend PL/EN UI and real disposable OpenSSH acceptance; no external DLL loader, NuGet dependency or database migration.
+
+
 ## 0.38.0 — Public Beta — 2026-10-17
 
 - Host Linux X11 FreeRDP inside ServerDesk tabs, retaining the same authenticated desktop across tab changes, split views and docking. Wayland sessions use XWayland.

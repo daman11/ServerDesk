@@ -35,6 +35,8 @@ if(args.Contains("--brand-assets")) { BrandAssets.Generate(root); return; }
 if(args.Contains("--ssh-acceptance")) { SshAcceptanceChecks.Run(root,args[1]); return; }
 if(args.Contains("--large-browser")) { LargeBrowserChecks.Run(root,args.Contains("--measure-only")); return; }
 if(args.Contains("--platform-ux")) { PlatformUxChecks.Run(root); return; }
+if(args.Contains("--plugins")) { PluginChecks.Run(root); return; }
+if(args.Contains("--plugins-network")) { PluginChecks.Network(root,args[1],args[2]); return; }
 if(args.Contains("--rdp-gui")) { RdpGuiChecks.Run(root); return; }
 if(args.Contains("--linux-desktop")) { LinuxDesktopChecks.Run(root); return; }
 if(args.Contains("--linux-rdp-certificate")) { LinuxDesktopChecks.Certificate(root,args[Array.IndexOf(args,"--linux-rdp-certificate")+1]); return; }

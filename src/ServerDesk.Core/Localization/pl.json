@@ -1407,5 +1407,14 @@
   "Nie udało się uzgodnić TLS/NLA lub certyfikat serwera zmienił się podczas łączenia. Połącz ponownie, sprawdź certyfikat i konfigurację serwera.": "Nie udało się uzgodnić TLS/NLA lub certyfikat serwera zmienił się podczas łączenia. Połącz ponownie, sprawdź certyfikat i konfigurację serwera.",
   "Klient RDP zakończył się z kodem {0}. Sprawdź konfigurację serwera i spróbuj połączyć ponownie.": "Klient RDP zakończył się z kodem {0}. Sprawdź konfigurację serwera i spróbuj połączyć ponownie.",
   "W zakładce ServerDesk": "W zakładce ServerDesk",
-  "Linux osadza klienta X11 FreeRDP w zakładce przez X11/XWayland.": "Linux osadza klienta X11 FreeRDP w zakładce przez X11/XWayland."
+  "Linux osadza klienta X11 FreeRDP w zakładce przez X11/XWayland.": "Linux osadza klienta X11 FreeRDP w zakładce przez X11/XWayland.",
+  "Plugin wbudowany · dostarczany z ServerDesk": "Plugin wbudowany · dostarczany z ServerDesk",
+  "Ściągawka poleceń, własne szablony i wykrywanie systemu przez SSH.": "Ściągawka poleceń, własne szablony i wykrywanie systemu przez SSH.",
+  "Włączaj dodatki i dostosuj zakres działania aplikacji.": "Włączaj dodatki i dostosuj zakres działania aplikacji.",
+  "Monitoring Linux": "Monitoring Linux",
+  "Niepoprawne ustawienia pluginów.": "Niepoprawne ustawienia pluginów.",
+  "Parametry serwera i pasek metryk. Korzysta z osobnego połączenia SSH.": "Parametry serwera i pasek metryk. Korzysta z osobnego połączenia SSH.",
+  "Zmiany pluginów działają po zapisaniu, bez restartu. Wyłączenie zatrzymuje ich pracę i ukrywa akcje; ustawienia oraz własne komendy pozostają zachowane.": "Zmiany pluginów działają po zapisaniu, bez restartu. Wyłączenie zatrzymuje ich pracę i ukrywa akcje; ustawienia oraz własne komendy pozostają zachowane.",
+  "Włącz plugin": "Włącz plugin",
+  "Pluginy": "Pluginy"
 }

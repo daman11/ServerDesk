@@ -7,27 +7,50 @@ internal sealed partial class SessionPane
     private Guid commandConnectionId;
     private CommandEnvironment? commandEnvironment;
     private Task<CommandEnvironment>? commandDiscovery;
+    private Task commandWarmup=Task.CompletedTask;
+    private CancellationTokenSource? commandPluginLifetime;
     internal Guid CommandConnectionId=>session is { Completion.IsCompleted:false }?commandConnectionId:Guid.Empty;
-    internal bool CanAcceptCommands=>Profile.Protocol==Protocol.SSH&&CommandConnectionId!=Guid.Empty&&disposed==0&&!connecting;
+    internal bool CanAcceptCommands=>owner.IsPluginEnabled(PluginCatalog.Commands)&&Profile.Protocol==Protocol.SSH&&CommandConnectionId!=Guid.Empty&&disposed==0&&!connecting;
     internal CommandEnvironment? KnownCommandEnvironment=>commandEnvironment;
-    private async Task WarmCommandDiscoveryAsync()
+    private Task WarmCommandDiscoveryAsync()
     {
-        try { if(await owner.CommandsAutomaticAsync(Profile))await DiscoverCommandsAsync(); }
-        catch { /* Discovery is optional. The panel exposes unknown state / manual refresh. */ }
+        if(!CanAcceptCommands || !commandWarmup.IsCompleted)return commandWarmup;
+        var scope=commandPluginLifetime??=CancellationTokenSource.CreateLinkedTokenSource(connectionLifetime.Token); var ct=scope.Token;
+        return commandWarmup=Warm();
+        async Task Warm()
+        {
+            try { if(await owner.CommandsAutomaticAsync(Profile,ct) && !ct.IsCancellationRequested && ReferenceEquals(commandPluginLifetime,scope))await DiscoverCommandsAsync(); }
+            catch { /* Optional discovery never changes terminal/session state. */ }
+        }
     }
     internal Task<CommandEnvironment> DiscoverCommandsAsync(bool refresh=false)
     {
         if(!CanAcceptCommands)return Task.FromResult(CommandDetection.Unknown());
         if(!refresh&&commandEnvironment!=null)return Task.FromResult(commandEnvironment);
         if(commandDiscovery is { IsCompleted:false })return commandDiscovery;
-        var connection=session!; var identity=CommandConnectionId; var ct=connectionLifetime.Token;
+        var connection=session!; var identity=CommandConnectionId;
+        var scope=commandPluginLifetime??=CancellationTokenSource.CreateLinkedTokenSource(connectionLifetime.Token); var ct=scope.Token;
         return commandDiscovery=Discover();
         async Task<CommandEnvironment> Discover()
         {
             var result=await CommandDetection.DetectAsync(connection.ProbeAsync,ct);
-            if(disposed==0 && CommandConnectionId==identity && ReferenceEquals(session,connection))commandEnvironment=result;
+            ct.ThrowIfCancellationRequested();
+            if(disposed==0 && CanAcceptCommands && ReferenceEquals(commandPluginLifetime,scope) && CommandConnectionId==identity && ReferenceEquals(session,connection))commandEnvironment=result;
             else throw new OperationCanceledException();
             return result;
+        }
+    }
+    internal void ResumeCommandPlugin() { if(CanAcceptCommands)_=WarmCommandDiscoveryAsync(); }
+    internal Task StopCommandPluginAsync()
+    {
+        var scope=commandPluginLifetime; commandPluginLifetime=null; scope?.Cancel();
+        var pending=commandDiscovery; commandDiscovery=null; commandEnvironment=null; var warmup=commandWarmup; commandWarmup=Task.CompletedTask;
+        return Drain();
+        async Task Drain()
+        {
+            try { await Task.WhenAll(warmup,pending??Task.CompletedTask); }
+            catch(Exception) when(scope?.IsCancellationRequested==true) { }
+            finally { scope?.Dispose(); }
         }
     }
     internal async Task SendCommandAsync(CommandDispatchTicket ticket,RenderedCommand command,CommandDefinition definition,bool execute,bool confirmed,bool dangerousConfirmed)

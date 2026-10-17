@@ -1407,5 +1407,14 @@
   "Nie udało się uzgodnić TLS/NLA lub certyfikat serwera zmienił się podczas łączenia. Połącz ponownie, sprawdź certyfikat i konfigurację serwera.": "TLS/NLA negotiation failed or the server certificate changed while connecting. Reconnect and check the certificate and server configuration.",
   "Klient RDP zakończył się z kodem {0}. Sprawdź konfigurację serwera i spróbuj połączyć ponownie.": "The RDP client exited with code {0}. Check the server configuration and try connecting again.",
   "W zakładce ServerDesk": "In a ServerDesk tab",
-  "Linux osadza klienta X11 FreeRDP w zakładce przez X11/XWayland.": "Linux embeds the X11 FreeRDP client in a tab through X11/XWayland."
+  "Linux osadza klienta X11 FreeRDP w zakładce przez X11/XWayland.": "Linux embeds the X11 FreeRDP client in a tab through X11/XWayland.",
+  "Plugin wbudowany · dostarczany z ServerDesk": "Built-in plugin · included with ServerDesk",
+  "Ściągawka poleceń, własne szablony i wykrywanie systemu przez SSH.": "Command cheat sheet, custom snippets and system detection over SSH.",
+  "Włączaj dodatki i dostosuj zakres działania aplikacji.": "Enable extensions and choose which features run in the application.",
+  "Monitoring Linux": "Linux monitoring",
+  "Niepoprawne ustawienia pluginów.": "Invalid plugin settings.",
+  "Parametry serwera i pasek metryk. Korzysta z osobnego połączenia SSH.": "Server metrics and the status bar. Uses a separate SSH connection.",
+  "Zmiany pluginów działają po zapisaniu, bez restartu. Wyłączenie zatrzymuje ich pracę i ukrywa akcje; ustawienia oraz własne komendy pozostają zachowane.": "Plugin changes apply after saving, without a restart. Disabling stops their work and hides their actions; settings and custom commands are preserved.",
+  "Włącz plugin": "Enable plugin",
+  "Pluginy": "Plugins"
 }

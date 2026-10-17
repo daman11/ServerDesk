@@ -60,6 +60,7 @@ internal sealed partial class SessionPane : WorkspacePane
     private LinuxMonitoring? monitor;
     private RdpProcessSession? rdpProcess;
     private string secret="";
+    private Button? commandsButton;
     private bool infoActive;
     private int disposed;
     private readonly List<CancellationTokenSource> transfers=[];
@@ -89,7 +90,7 @@ internal sealed partial class SessionPane : WorkspacePane
         {
 
             actions.Children.Add(PanelButton("Terminal",0)); actions.Children.Add(PanelButton("SFTP",1)); actions.Children.Add(PanelButton("Monitoring",2));
-            actions.Children.Add(Button("Komendy",owner.OpenCommandsPanelAsync));
+            commandsButton=Button("Komendy",owner.OpenCommandsPanelAsync); actions.Children.Add(commandsButton);
             var options=new Button { Content=DeskIcons.Create("more"),Tag="Opcje",Width=30,Classes={"chrome","icon"} }; optionsButton=options; ToolTip.SetTip(options,L.T("Opcje sesji")); Avalonia.Automation.AutomationProperties.SetName(options,L.T("Opcje sesji"));
             options.ContextMenu=new ContextMenu { ItemsSource=new[]{OperationMenu("Uruchom ponownie sesję",()=>owner.ReconnectAsync(this)),OperationMenu("Poświadczenia",()=>owner.ReauthenticateAsync(this)),OperationMenu("Kopiuj zaznaczenie",()=>terminal.CopyAsync()),OperationMenu("Wklej",()=>terminal.PasteAsync()),OperationMenu("Większa czcionka",()=> { terminal.FontSize=Math.Min(32,terminal.FontSize+1); return Task.CompletedTask; }),OperationMenu("Mniejsza czcionka",()=> { terminal.FontSize=Math.Max(9,terminal.FontSize-1); return Task.CompletedTask; })} };
             options.Click+=(_,_)=>options.ContextMenu.Open(options); actions.Children.Add(options);
@@ -109,7 +110,7 @@ internal sealed partial class SessionPane : WorkspacePane
         BuildOperationStatus(); BuildFiles(); BuildInfo(); DesignSystem.Resource(cpuChart,Polyline.StrokeProperty,"AccentPrimary");
         Loaded+=(_,_)=>_ = ApplyAppearanceAsync(); terminal.Loaded+=(_,_)=>_ = ApplyAppearanceAsync();
         terminal.ProcessExited+=(_,e)=> { if(Profile.Protocol==Protocol.RDP && disposed==0 && !terminal.IsLive && !stoppingRdp)RdpEnded(e.ExitCode,true); };
-        foreach(var child in actions.Children)child.Margin=new Thickness(0,2,DesignTokens.Small,2); UpdateConnectionActions();
+        foreach(var child in actions.Children)child.Margin=new Thickness(0,2,DesignTokens.Small,2); UpdatePluginPresentation(); UpdateConnectionActions();
     }
     private void SetStatus(string text,string glyph,SessionVisualState? visual=null)
     { VisualState=visual??(glyph switch { "●"=>SessionVisualState.Connected,"◌"=>SessionVisualState.Connecting,"↗"=>SessionVisualState.ExternalClient,"○"=>SessionVisualState.Closed,_=>SessionVisualState.Idle }); state.Text=text; ConnectionStatus=text; SetAndRaise(SessionTitleProperty,ref sessionTitle,$"{glyph} {Profile.Name}"); UpdateConnectionActions(); StatusChanged?.Invoke(); }
@@ -179,12 +180,12 @@ internal sealed partial class SessionPane : WorkspacePane
     }
     private void ResetConnections()
     {
-        commandConnectionId=Guid.Empty; commandEnvironment=null; commandDiscovery=null;
+        commandConnectionId=Guid.Empty;
         CancelFileViews();
         connectionLifetime.Cancel();
-        var oldSsh=session; var oldSftp=sftp; var oldMonitor=monitor; var oldMonitorLoop=monitorLoop;
+        var oldSsh=session; var oldSftp=sftp; var monitoringStop=DetachMonitoring(); var commandsStop=StopCommandPluginAsync();
         var oldRdp=rdpProcess; var oldVnc=vncSession; var oldSerial=serialSession; var oldLinuxRdp=linuxRdp; linuxRdp=null;
-        session=null; sftp=null; monitor=null; monitorLoop=Task.CompletedTask; ResetFileNavigation();
+        session=null; sftp=null; ResetFileNavigation();
         UpdateTransferActions();
         // Kill an owned PTY before detaching it; Kill requires a realized terminal template.
         if(Profile.Protocol==Protocol.RDP && terminal.IsLive)terminal.Kill();
@@ -197,11 +198,10 @@ internal sealed partial class SessionPane : WorkspacePane
         if(oldLinuxRdp!=null) { oldLinuxRdp.Dispose(); Children.Remove(oldLinuxRdp); }
         // SSH.NET channel shutdown can wait on network timeouts. Keep it off the UI,
         // but retain the tasks so reconnect and application exit can drain them.
-        var stopping=new List<Task> { oldMonitorLoop };
+        var stopping=new List<Task> { monitoringStop,commandsStop };
         if(oldLinuxRdp!=null)stopping.Add(oldLinuxRdp.Shutdown);
         if(oldSsh!=null) { stopping.Add(Task.Run(oldSsh.Dispose)); stopping.Add(oldSsh.Completion); }
         if(oldSftp!=null)stopping.Add(oldSftp.DisposeAsync().AsTask());
-        if(oldMonitor!=null)stopping.Add(Task.Run(oldMonitor.Dispose));
         if(oldRdp!=null)stopping.Add(oldRdp.StopAsync());
         if(oldVnc!=null)stopping.Add(oldVnc.Shutdown);
         if(oldSerial!=null)stopping.Add(oldSerial.Completion);
@@ -260,6 +260,7 @@ internal sealed partial class SessionPane : WorkspacePane
     },"○",SessionVisualState.Failed);
     internal async Task ShowAsync(int panel)
     {
+        if(panel==2 && !owner.IsPluginEnabled(PluginCatalog.LinuxMonitoring))return;
         if(connecting)throw new InvalidOperationException(L.T("Poczekaj na zakończenie łączenia."));
         if(Profile.Protocol!=Protocol.SSH)throw new InvalidOperationException(L.T("SFTP i monitoring są dostępne w sesji SSH."));
         if(!IsConnected)throw new InvalidOperationException(L.T("Najpierw połącz sesję SSH."));
@@ -490,7 +491,7 @@ internal sealed partial class SessionPane : WorkspacePane
         var waitingForFirstSample=true;
         try
         {
-            while(!ct.IsCancellationRequested)
+            while(!ct.IsCancellationRequested && owner.IsPluginEnabled(PluginCatalog.LinuxMonitoring))
             {
                 if(IsActive && IsConnected && (infoActive || owner.Preferences.ShowMetrics && owner.Preferences.ShowStatusBar))
                 {
@@ -506,12 +507,12 @@ internal sealed partial class SessionPane : WorkspacePane
                         source=monitor; if(source==null)return;
                         using var busy=waitingForFirstSample && infoActive?BeginBusy(L.T("Wczytywanie pierwszych danych serwera…")):null;
                         var snapshot=await source.SampleAsync(ct); ct.ThrowIfCancellationRequested();
-                        if(!ReferenceEquals(monitor,source) || disposed!=0 || !IsConnected)return;
+                        if(!owner.IsPluginEnabled(PluginCatalog.LinuxMonitoring) || !ReferenceEquals(monitor,source) || disposed!=0 || !IsConnected)return;
                         RenderMonitoringSnapshot(snapshot); waitingForFirstSample=false;
                     }
                     catch(Exception ex)
                     {
-                        if(ct.IsCancellationRequested)return;
+                        if(ct.IsCancellationRequested || !owner.IsPluginEnabled(PluginCatalog.LinuxMonitoring))return;
                         if(source!=null && ReferenceEquals(monitor,source)) { monitor=null; await Task.Run(source.Dispose); }
                         ClearMetrics(); MetricsError=L.F($"Parametry niedostępne ({ex.GetType().Name}). Ponowimy próbę automatycznie."); metricsNotice.Text=MetricsError; metricsNotice.IsVisible=true; StatusChanged?.Invoke();
                         waitingForFirstSample=true; await Task.Delay(TimeSpan.FromSeconds(30),ct);

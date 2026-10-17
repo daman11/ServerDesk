@@ -1,6 +1,8 @@
-# ServerDesk 0.38.0 — pierwsze kroki
+# ServerDesk 0.39.0 — pierwsze kroki
 
-**Nowość: Komendy — Ctrl+Shift+K.** Korzystaj offline ze 165 wariantów poleceń albo dopasuj bibliotekę do aktywnego SSH. Dodawaj własne szablony, parametry i ulubione. Wstawianie nie wysyła Enter; wykonanie wymaga potwierdzenia. [Instrukcja](commands.md), [wydanie 0.38.0](releases/release-0.38.0.md).
+**Pluginy (0.39.0):** w Ustawienia → Pluginy włącz lub wyłącz Monitoring Linux i Komendy. Zapis działa bez restartu; wyłączenie zachowuje terminal, SFTP i własne szablony. [Obsługa](plugins.md).
+
+**Komendy — Ctrl+Shift+K.** Korzystaj offline ze 165 wariantów poleceń albo dopasuj bibliotekę do aktywnego SSH. Dodawaj własne szablony, parametry i ulubione. Wstawianie nie wysyła Enter; wykonanie wymaga potwierdzenia. [Instrukcja](commands.md), [wydanie 0.39.0](releases/release-0.39.0.md).
 
 W menu **Układ** wybierz **Trzy panele (1 + 2)** albo **Cztery panele (2 × 2)**. Otwarte karty rozłożą się między pustymi panelami; możesz też przeciągać je do wybranego panelu lub użyć menu karty „Dokuj do panelu 1–4”. Kliknij numer pustego panelu przed otwarciem połączenia. Separatory zmieniają rozmiary, a **Wyrównaj wielkość paneli** przywraca równy podział. Przy zmniejszeniu liczby paneli karty pozostają otwarte w widocznych grupach.
 
@@ -16,15 +18,15 @@ Od 0.37.0 kolejka transferów podaje przyczynę błędu i wskazówki przed ponow
 
 ## Windows x64
 
-Uruchom `ServerDesk-0.38.0-win-x64-Setup.exe`. Instalator działa dla bieżącego użytkownika, dodaje skrót w menu Start i wpis na liście zainstalowanych aplikacji. Nie wymaga osobnej instalacji .NET. Dostępny jest też ZIP: rozpakuj **całe archiwum** do osobnego katalogu i uruchom `ServerDesk.App.exe`.
+Uruchom `ServerDesk-0.39.0-win-x64-Setup.exe`. Instalator działa dla bieżącego użytkownika, dodaje skrót w menu Start i wpis na liście zainstalowanych aplikacji. Nie wymaga osobnej instalacji .NET. Dostępny jest też ZIP: rozpakuj **całe archiwum** do osobnego katalogu i uruchom `ServerDesk.App.exe`.
 
-Wydanie nie ma podpisu zaufanego wydawcy. Pobieraj je z zaufanego źródła; nie wyłączaj ochrony Windows. Sumę paczki możesz porównać z `SHA256SUMS.txt` poleceniem `Get-FileHash .\ServerDesk-0.38.0-win-x64-Setup.exe -Algorithm SHA256`. Suma obok pliku potwierdza zgodność pobrania, ale sama nie potwierdza tożsamości wydawcy.
+Wydanie nie ma podpisu zaufanego wydawcy. Pobieraj je z zaufanego źródła; nie wyłączaj ochrony Windows. Sumę paczki możesz porównać z `SHA256SUMS.txt` poleceniem `Get-FileHash .\ServerDesk-0.39.0-win-x64-Setup.exe -Algorithm SHA256`. Suma obok pliku potwierdza zgodność pobrania, ale sama nie potwierdza tożsamości wydawcy.
 
 ## Linux x64
 
-Ubuntu/Debian: `sudo apt install ./serverdesk_0.38.0_amd64.deb`, następnie uruchom ServerDesk z menu lub poleceniem `serverdesk`. Do zapamiętywania haseł potrzebny jest `libsecret-tools` oraz odblokowany Secret Service (np. GNOME Keyring). Do RDP zainstaluj FreeRDP dla swojej dystrybucji.
+Ubuntu/Debian: `sudo apt install ./serverdesk_0.39.0_amd64.deb`, następnie uruchom ServerDesk z menu lub poleceniem `serverdesk`. Do zapamiętywania haseł potrzebny jest `libsecret-tools` oraz odblokowany Secret Service (np. GNOME Keyring). Do RDP zainstaluj FreeRDP dla swojej dystrybucji.
 
-Archiwum: `mkdir serverdesk-0.38.0`, następnie `tar -xzf ServerDesk-0.38.0-linux-x64.tar.gz -C serverdesk-0.38.0` i `./serverdesk-0.38.0/ServerDesk.App`. W razie braków bibliotek sprawdź zależności w pakiecie DEB lub [development.md](development.md). Testy Linux wykonano pod WSLg; pozostałe środowiska wymagają weryfikacji.
+Archiwum: `mkdir serverdesk-0.39.0`, następnie `tar -xzf ServerDesk-0.39.0-linux-x64.tar.gz -C serverdesk-0.39.0` i `./serverdesk-0.39.0/ServerDesk.App`. W razie braków bibliotek sprawdź zależności w pakiecie DEB lub [development.md](development.md). Testy Linux wykonano pod WSLg; pozostałe środowiska wymagają weryfikacji.
 
 ## Pierwsze połączenie
 

@@ -71,7 +71,7 @@ public sealed partial class MainWindow : Window
                     }
                 }
                 await profileSortSave; CancelPendingSnapshot(); if(workspaceReady)await Safe(SaveSessionSnapshotAsync);
-                await Safe(()=>commandPanel?.Shutdown??Task.CompletedTask); closing=true; statusTimer.Stop(); lifetime.Cancel(); commandPanel?.Dispose(); foreach(var session in sessions)session.StatusChanged-=PaneStatusChanged;
+                commandPanel?.Dispose(); await Safe(()=>commandPanel?.Shutdown??Task.CompletedTask); closing=true; statusTimer.Stop(); lifetime.Cancel(); foreach(var session in sessions)session.StatusChanged-=PaneStatusChanged;
                 var closingTools=networkPanes.ToArray(); foreach(var tool in closingTools)tool.Dispose(); await Task.WhenAll(closingTools.Select(tool=>tool.Shutdown)); networkPanes.Clear();
                 await Safe(()=>Task.WhenAll(sessions.Select(session=>session.CloseAsync()).Concat(closingSessions)));
                 foreach(var floating in floatingDocks.Values.ToArray())floating.Window.Close(); floatingDocks.Clear();
@@ -96,6 +96,7 @@ public sealed partial class MainWindow : Window
         if(!await InitializeDatabaseForStartupAsync())return;
         await RestoreMainPlacementAsync();
         PreviewPreferences(await repository.PreferencesAsync(lifetime.Token));
+        await ApplyPluginsAsync(preferences);
         UpdateLanguageRestartNotice(preferences.Language);
         if(await repository.SettingAsync("collapsedFolders") is {} foldersJson) { try { foreach(var f in System.Text.Json.JsonSerializer.Deserialize<string[]>(foldersJson)??[])collapsed.Add(f); } catch(System.Text.Json.JsonException) { } }
         await vm.LoadAsync(); await RestoreProfileOrderingAsync(); DesignSystem.Apply(await repository.SettingAsync("theme")??"dark");

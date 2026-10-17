@@ -11,12 +11,20 @@ public sealed partial class MainWindow
     private readonly Border commandPanelHost=new() { IsVisible=false,ClipToBounds=true };
     private readonly GridSplitter commandPanelSplitter=new() { IsVisible=false,ResizeDirection=GridResizeDirection.Columns,HorizontalAlignment=HorizontalAlignment.Stretch };
     private CommandPanel? commandPanel;
+    private Task commandPanelInitialization=Task.CompletedTask;
     private double commandWorkspaceWidth;
     internal SessionPane? CommandTarget=>ActiveSession;
     internal async Task OpenCommandsPanelAsync()
     {
-        if(!workspaceReady)return;
-        if(commandPanel==null) { commandPanel=new(this,new(repository,credentials)); commandPanelHost.Child=commandPanel; await commandPanel.InitializeAsync(); }
+        if(!workspaceReady || closing || closePending || !IsPluginEnabled(PluginCatalog.Commands))return;
+        var panel=commandPanel;
+        if(panel==null)
+        {
+            panel=new(this,new(repository,credentials)); commandPanel=panel; commandPanelHost.Child=panel;
+            try { await (commandPanelInitialization=panel.InitializeAsync()); }
+            catch(OperationCanceledException) when(!IsPluginEnabled(PluginCatalog.Commands)||closing) { return; }
+        }
+        if(!IsPluginEnabled(PluginCatalog.Commands)||!ReferenceEquals(panel,commandPanel))return;
         if(Bounds.Width<1150 && sidebar.IsVisible)ToggleSidebar();
         commandPanelHost.IsVisible=commandPanelSplitter.IsVisible=true;
         commandWorkspace.ColumnDefinitions[1].Width=new GridLength(4);
@@ -34,13 +42,15 @@ public sealed partial class MainWindow
         Grid.SetColumn(commandPanelHost,2); commandWorkspace.Children.Add(commandPanelHost);
     }
     private void UpdateCommandTarget() { if(commandPanelHost.IsVisible)commandPanel?.RefreshTarget(); }
-    internal async Task<bool> CommandsAutomaticAsync(ServerProfile profile)
+    internal async Task<bool> CommandsAutomaticAsync(ServerProfile profile,CancellationToken ct=default)
     {
+        if(!IsPluginEnabled(PluginCatalog.Commands))return false;
         try
         {
-            var state=await new ServerDesk.Infrastructure.CommandStore(repository,credentials).ReadStateAsync(lifetime.Token);
+            using var linked=CancellationTokenSource.CreateLinkedTokenSource(ct,lifetime.Token);
+            var state=await new ServerDesk.Infrastructure.CommandStore(repository,credentials).ReadStateAsync(linked.Token);
             if(state.Preferences.Pinned)return false;
-            var settings=state.Hosts.GetValueOrDefault(profile.Id,state.Preferences); return settings.Automatic&&!settings.Pinned;
+            var settings=state.Hosts.GetValueOrDefault(profile.Id,state.Preferences); return IsPluginEnabled(PluginCatalog.Commands)&&!linked.IsCancellationRequested&&settings.Automatic&&!settings.Pinned;
         }
         catch { return false; }
     }

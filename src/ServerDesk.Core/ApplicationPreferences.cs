@@ -7,6 +7,7 @@ public enum WorkspaceStartup { Remember,Single,Columns,Rows,Three,Grid }
 public enum NewTabPlacement { FocusedPanel,FirstPanel,LeastPopulated }
 public sealed record ApplicationPreferences
 {
+    public PluginSelection DisabledPlugins { get; init; }=PluginSelection.Empty;
     public string Language { get; init; }="pl";
     public int InterfaceFontSize { get; init; }=13;
     public InterfaceDensity Density { get; init; }=InterfaceDensity.Standard;
@@ -45,6 +46,7 @@ public sealed record ApplicationPreferences
     public static IReadOnlyList<string> TerminalFonts { get; }=Array.AsReadOnly<string>(["Domyślna","Cascadia Mono","Consolas","JetBrains Mono","DejaVu Sans Mono"]);
     public void Validate()
     {
+        PluginCatalog.Validate(DisabledPlugins);
         if(!AppText.IsSupported(Language))throw new ArgumentException(AppText.T("Nieobsługiwany język aplikacji."));
         if(!Enum.IsDefined(WorkspaceOnStartup) || !Enum.IsDefined(NewTabTarget) || TabStripHeight is <30 or >48 || PaneSeparatorSize is <4 or >12)throw new ArgumentException(L.T("Niepoprawne ustawienia paneli obszaru pracy."),nameof(WorkspaceOnStartup));
         if(TerminalScrollbackLines is <0 or >100000)throw new ArgumentException(L.T("Historia terminala musi mieć od 0 do 100000 wierszy."),nameof(TerminalScrollbackLines));

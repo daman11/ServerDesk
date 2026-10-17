@@ -69,6 +69,17 @@ internal static partial class Dialogs
         var workspacePage=Page("layers","Obszar pracy","Panele, karty i zachowanie przy uruchamianiu.");
         var monitoringPage=Page("chart-no-axes-combined","Monitoring","Parametry serwera i informacje na pasku statusu.");
         var securityPage=Page("key","Bezpieczeństwo","Tożsamość serwerów i zapisane zaufanie SSH.");
+        var pluginsPage=Page("layers","Pluginy","Włączaj dodatki i dostosuj zakres działania aplikacji.");
+        foreach(var plugin in PluginCatalog.BuiltIn)
+        {
+            var section=Section(pluginsPage,plugin.Icon,plugin.Name);
+            var toggle=Flag(section,"plugin:"+plugin.Id,"Włącz plugin",PluginCatalog.IsEnabled(p,plugin.Id));
+            toggle.Name="PluginEnabled_"+plugin.Id.Replace('-','_'); AutomationProperties.SetName(toggle,L.T(plugin.Name));
+            var description=Text(L.T(plugin.Description),12); section.Children.Add(description);
+            searchIndex.Field(section,description,plugin.Description+" "+L.T(plugin.Description));
+            section.Children.Add(Text(L.T("Plugin wbudowany · dostarczany z ServerDesk"),12));
+        }
+        pluginsPage.Children.Add(Text(L.T("Zmiany pluginów działają po zapisaniu, bez restartu. Wyłączenie zatrzymuje ich pracę i ukrywa akcje; ustawienia oraz własne komendy pozostają zachowane."),12));
         var trustSection=Section(securityPage,"key","Weryfikacja serwerów SSH");
         Window? settingsOwner=null;
         var manageTrust=Button("Zarządzaj kluczami…",async()=> { if(settingsOwner!=null)await TrustedHosts(settingsOwner,repository); }); manageTrust.Name="ManageTrustedHosts";
@@ -189,6 +200,7 @@ internal static partial class Dialogs
         bool On(string key)=>flags[key].IsChecked==true;
         ApplicationPreferences Draft()=>new()
         {
+            DisabledPlugins=new(p.DisabledPlugins.Where(id=>!PluginCatalog.IsKnown(id)).Concat(PluginCatalog.BuiltIn.Where(plugin=>!On("plugin:"+plugin.Id)).Select(plugin=>plugin.Id))),
             Language=language.SelectedIndex==1?"en":"pl",
             InterfaceFontSize=(int)(uiFont.Value??13),Density=(InterfaceDensity)Math.Max(0,density.SelectedIndex),AccentColor=accent.Text?.Trim()??"",TerminalFontFamily=family.SelectedItem as string??"Domyślna",
             TerminalScrollbackLines=(int)(scrollback.Value??10000),TerminalCursor=(TerminalCursorShape)Math.Max(0,cursor.SelectedIndex),TerminalCursorBlink=On("blink"),
@@ -217,7 +229,7 @@ internal static partial class Dialogs
             return new TabItem { Classes={"page-navigation","settings-category"},Header=DeskIcons.Labelled(glyph,L.T(title)),Content=scroll };
         }
         var categories=new TabControl { Name="SettingsCategories",TabStripPlacement=Dock.Left,Padding=new Thickness(0),ItemsSource=new[] {
-            Category("settings","Wygląd",appearancePage),Category("ssh","Terminal",terminalPage),Category("folder","SFTP",sftpPage),Category("layers","Obszar pracy",workspacePage),Category("chart-no-axes-combined","Monitoring",monitoringPage),Category("key","Bezpieczeństwo",securityPage)
+            Category("settings","Wygląd",appearancePage),Category("ssh","Terminal",terminalPage),Category("folder","SFTP",sftpPage),Category("layers","Obszar pracy",workspacePage),Category("chart-no-axes-combined","Monitoring",monitoringPage),Category("key","Bezpieczeństwo",securityPage),Category("layers","Pluginy",pluginsPage)
         },SelectedIndex=0 };
         SettingsNavigation.Configure(categories);
         DesignSystem.Resource(categories,TabControl.BackgroundProperty,"BackgroundSecondary");
@@ -264,7 +276,7 @@ internal static partial class Dialogs
         void ResizeNavigation()
         {
             var compact=dialog.Bounds.Width<820;
-            var icons=new[]{"settings","ssh","folder","layers","chart-no-axes-combined","key"}; var names=new[]{"Wygląd","Terminal","SFTP","Obszar pracy","Monitoring","Bezpieczeństwo"};
+            var icons=new[]{"settings","ssh","folder","layers","chart-no-axes-combined","key","layers"}; var names=new[]{"Wygląd","Terminal","SFTP","Obszar pracy","Monitoring","Bezpieczeństwo","Pluginy"};
             var index=0;
             foreach(var category in categories.Items.OfType<TabItem>())
             {
@@ -285,7 +297,7 @@ internal static partial class Dialogs
         async Task SaveAsync(bool restart)
         {
             if(saving)return; saving=true; categories.IsEnabled=false; actions.IsEnabled=false; search.IsEnabled=false; saveRestart.IsEnabled=false;
-            try { var draft=Draft(); draft.Validate(); await repository.SaveApplicationSettingsAsync(new(theme.SelectedIndex==5?"system":DesignSystem.Themes[Math.Max(0,theme.SelectedIndex)].Id,palette.SelectedItem as string??TerminalAppearance.Names[0],(int)(terminalFont.Value??14),(int)(interval.Value??5),On("remember"),draft)); saved=true; main?.UpdateLanguageRestartNotice(draft.Language); preview(); await changed(); restartAfterSave=restart?draft.Language:null; saving=false; dialog.Close(); }
+            try { var draft=Draft(); draft.Validate(); await repository.SaveApplicationSettingsAsync(new(theme.SelectedIndex==5?"system":DesignSystem.Themes[Math.Max(0,theme.SelectedIndex)].Id,palette.SelectedItem as string??TerminalAppearance.Names[0],(int)(terminalFont.Value??14),(int)(interval.Value??5),On("remember"),draft)); saved=true; main?.UpdateLanguageRestartNotice(draft.Language); preview(); if(main!=null)await main.ApplyPluginsAsync(draft); await changed(); restartAfterSave=restart?draft.Language:null; saving=false; dialog.Close(); }
             catch(ArgumentException ex)
             {
                 ShowValidation(ex); search.Text="";

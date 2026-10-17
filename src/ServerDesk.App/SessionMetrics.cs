@@ -4,6 +4,35 @@ namespace ServerDesk.App;
 
 internal sealed partial class SessionPane
 {
+    private CancellationTokenSource? monitoringLifetime;
+    private Task DetachMonitoring()
+    {
+        var scope=monitoringLifetime; monitoringLifetime=null; scope?.Cancel();
+        var source=monitor; monitor=null; var pending=monitorLoop; monitorLoop=Task.CompletedTask;
+        return Drain();
+        async Task Drain()
+        {
+            try { await Task.WhenAll(pending,source==null?Task.CompletedTask:Task.Run(source.Dispose)); }
+            finally { scope?.Dispose(); }
+        }
+    }
+    internal async Task ApplyMonitoringPluginAsync(bool enabled)
+    {
+        UpdatePluginPresentation();
+        if(enabled)
+        {
+            if(IsConnected && owner.Preferences.ShowMetrics && owner.Preferences.ShowStatusBar)_=StartMonitoringAsync(connectionLifetime.Token);
+            return;
+        }
+        var inFlight=monitoringLifetime!=null; var stopping=DetachMonitoring();
+        transportShutdown=Task.WhenAll(transportShutdown,stopping); ClearMetrics(); StatusChanged?.Invoke();
+        if(inFlight)
+        {
+            try { await connectionGate.WaitAsync(lifetime.Token); connectionGate.Release(); }
+            catch(OperationCanceledException) when(lifetime.IsCancellationRequested) { }
+        }
+        await stopping;
+    }
     internal ServerSnapshot? LatestSnapshot { get; private set; }
     internal DateTimeOffset? LastSampleAt { get; private set; }
     internal string MetricsError { get; private set; }="";
@@ -41,17 +70,21 @@ internal sealed partial class SessionPane
     }
     private async Task EnsureMonitoringAsync(CancellationToken ct)
     {
-        if(Profile.Protocol!=ServerDesk.Core.Protocol.SSH || monitor!=null || !IsConnected)return;
-        var client=await factory.SshAsync(Profile,secret,ct);
-        if(ct.IsCancellationRequested || !IsConnected) { await Task.Run(client.Dispose); ct.ThrowIfCancellationRequested(); return; }
+        if(!owner.IsPluginEnabled(ServerDesk.Core.PluginCatalog.LinuxMonitoring) || Profile.Protocol!=ServerDesk.Core.Protocol.SSH || monitor!=null || !IsConnected)return;
+        var scope=monitoringLifetime??=CancellationTokenSource.CreateLinkedTokenSource(connectionLifetime.Token); var token=scope.Token;
+        Renci.SshNet.SshClient client;
+        try { client=await factory.SshAsync(Profile,secret,token); }
+        catch(OperationCanceledException) when(!owner.IsPluginEnabled(ServerDesk.Core.PluginCatalog.LinuxMonitoring)&&token.IsCancellationRequested) { return; }
+        if(token.IsCancellationRequested || ct.IsCancellationRequested || !ReferenceEquals(monitoringLifetime,scope) || !owner.IsPluginEnabled(ServerDesk.Core.PluginCatalog.LinuxMonitoring) || !IsConnected) { await Task.Run(client.Dispose); ct.ThrowIfCancellationRequested(); return; }
         monitor=new LinuxMonitoring(client);
-        if(monitorLoop.IsCompleted)monitorLoop=MonitorAsync(ct);
+        if(monitorLoop.IsCompleted)monitorLoop=MonitorAsync(token);
     }
     private async Task StartMonitoringAsync(CancellationToken ct)
     {
+        if(!owner.IsPluginEnabled(ServerDesk.Core.PluginCatalog.LinuxMonitoring))return;
         var acquired=false;
         try { await connectionGate.WaitAsync(ct); acquired=true; await EnsureMonitoringAsync(ct); }
-        catch(Exception ex) { if(ct.IsCancellationRequested || disposed!=0)return; MetricsError=L.F($"Parametry niedostępne ({ex.GetType().Name}). Otwórz Monitoring, aby ponowić próbę."); StatusChanged?.Invoke(); }
+        catch(Exception ex) { if(!owner.IsPluginEnabled(ServerDesk.Core.PluginCatalog.LinuxMonitoring) || ct.IsCancellationRequested || disposed!=0)return; MetricsError=L.F($"Parametry niedostępne ({ex.GetType().Name}). Otwórz Monitoring, aby ponowić próbę."); StatusChanged?.Invoke(); }
         finally { if(acquired)connectionGate.Release(); }
     }
 }

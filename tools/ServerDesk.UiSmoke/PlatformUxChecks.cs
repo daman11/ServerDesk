@@ -65,7 +65,7 @@ internal static class PlatformUxChecks
             dialog.Width=960; dialog.Height=720; categories.SelectedIndex=0; RedesignChecks.Frames();
             categories.Items.OfType<TabItem>().First().Focus(); Press(dialog,Key.Down);
             if(categories.SelectedIndex!=1)throw new Exception("Settings category Down navigation failed");
-            Press(dialog,Key.End); if(categories.SelectedIndex!=5)throw new Exception("Settings category End navigation failed");
+            Press(dialog,Key.End); if(categories.SelectedIndex!=categories.ItemCount-1)throw new Exception("Settings category End navigation failed");
             Press(dialog,Key.Home); if(categories.SelectedIndex!=0)throw new Exception("Settings category Home navigation failed");
             Press(dialog,Key.F,RawInputModifiers.Control); if(!search.IsKeyboardFocusWithin)throw new Exception("Ctrl+F did not focus settings search");
             search.Text="CPU"; RedesignChecks.Frames(); Press(dialog,Key.Escape);

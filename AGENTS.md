@@ -30,3 +30,8 @@ Reserve full tests and local releases for larger changes or an explicit release 
 - Keep upstream notices and branded assets byte-for-byte where hashes are pinned. Respect `.gitattributes` and `.editorconfig`.
 - Run integration/hardware tests only against explicit disposable fixtures, never against a maintainer's saved production connections or credentials.
 - Keep Markdown links and packaging documentation paths valid after moving files. Packaging source exports must include GitHub/repository configuration.
+
+## Optional features
+
+- New non-core capabilities should be registered built-in plugins. Keep protocol sessions and file transfers independent of optional modules.
+- Use stable IDs in `PluginCatalog` and the `IWorkspacePlugin` lifecycle registry. Apply changes only after settings are saved; cancel and drain optional work without cancelling the terminal or SFTP. Preserve user data across disable/enable. See `docs/plugins.md`.

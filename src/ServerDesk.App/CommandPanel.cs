@@ -21,7 +21,8 @@ internal sealed partial class CommandPanel : Border,IDisposable
     private long contextRevision;
     private bool updating,ready,libraryLocked,working;
     private Task preferenceSave=Task.CompletedTask;
-    internal Task Shutdown=>preferenceSave;
+    private Task actionWork=Task.CompletedTask;
+    internal Task Shutdown=>Task.WhenAll(preferenceSave,actionWork);
     private readonly TextBlock context=Dialogs.Text("",12),notice=Dialogs.Text("",12),count=DesignSystem.Label("",true,12);
     private readonly ComboBox mode=new() { Name="CommandMode",ItemsSource=new[]{L.T("Automatyczny"),L.T("Ręczny")},SelectedIndex=0,MinWidth=130 };
     private readonly CheckBox pin=new() { Name="CommandPin",Content=L.T("Przypnij profil") };
@@ -98,21 +99,21 @@ internal sealed partial class CommandPanel : Border,IDisposable
     }
     private Button Action(string label,Func<Task> action)=>Dialogs.Button(label,()=>Run(action));
     private MenuItem Menu(string label,Func<Task> action) { var m=DeskIcons.ActionMenu(label); m.Click+=(_,_)=>Run(action); return m; }
-    private void Run(Func<Task> action)=>_ = RunAsync(action);
+    private void Run(Func<Task> action) { if(!working && !lifetime.IsCancellationRequested && owner.IsPluginEnabled(PluginCatalog.Commands))actionWork=RunAsync(action); }
     private async Task RunAsync(Func<Task> action)
     {
         if(working||lifetime.IsCancellationRequested)return; working=true; SetButtons(false);
         try { await action(); }
         catch(OperationCanceledException) { }
         catch(Exception ex) { notice.Text=ex is ArgumentException or InvalidDataException or InvalidOperationException?ex.Message:L.T("Operacja komend nie powiodła się. Sprawdź magazyn systemowy i dostęp do pliku."); }
-        finally { working=false; UpdatePreview(); }
+        finally { working=false; if(!lifetime.IsCancellationRequested)UpdatePreview(); }
     }
     internal async Task InitializeAsync()
     {
         var invalidState=false;
         try { state=await store.ReadStateAsync(lifetime.Token); }
         catch(InvalidDataException) { invalidState=true; }
-        await ReloadLibraryAsync(); updating=true;
+        await ReloadLibraryAsync(); lifetime.Token.ThrowIfCancellationRequested(); updating=true;
         if(invalidState)notice.Text=L.T("Niepoprawny stan panelu komend. Biblioteka pozostaje zachowana.");
         ApplyPreferences(state.Preferences); updating=false; ready=true; RefreshTarget(true); RefreshList();
     }

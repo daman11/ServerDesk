@@ -1,6 +1,6 @@
 # Dokumentacja / Documentation
 
-Bieżące wydanie: [0.38.0 Public Beta](releases/release-0.38.0.md) — osadzone RDP Linux i graficzne logowanie/certyfikaty. [Zakres testów wydania](reports/release-verification-0.38.0.md).
+Bieżące wydanie: [0.39.0 Public Beta](releases/release-0.39.0.md) — wbudowane pluginy monitoringu i komend. [Zakres testów wydania](reports/release-verification-0.39.0.md).
 
 | Temat / Topic | Dokument |
 |---|---|
@@ -18,3 +18,5 @@ Bieżące wydanie: [0.38.0 Public Beta](releases/release-0.38.0.md) — osadzone
 | Systemy, monitory i dostępność | [Macierz Windows/Linux, Kali/KDE/Wayland i checklista akceptacji](platform-support.md) |
 
 `releases/` zawiera opis zmian poszczególnych wersji, a `reports/` — historyczne wyniki testów i audytów. Bieżące instrukcje są bezpośrednio w `docs/`. Starsze raporty dokumentują stan w dniu testu; nie potwierdzają automatycznie obecnego działania.
+
+Plugins: [enabling built-in modules and extension contract](plugins.md).

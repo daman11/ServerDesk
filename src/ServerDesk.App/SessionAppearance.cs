@@ -27,6 +27,7 @@ internal sealed partial class SessionPane
     { var changed=SelectedPanel!=panel; SelectedPanel=panel; foreach(var (id,button) in panelButtons) { button.Classes.Set("active",id==panel); button.FontWeight=id==panel?FontWeight.SemiBold:FontWeight.Normal; } if(changed)owner.QueueWorkspaceSave(); }
     internal void PrepareRestored(int panel)
     {
+        if(panel==2 && !owner.IsPluginEnabled(PluginCatalog.LinuxMonitoring))panel=0;
         restoredPanel=panel; SelectPanel(panel); terminal.IsVisible=files.IsVisible=info.IsVisible=false;
         if(rdpNotice!=null)rdpNotice.IsVisible=false;
         if(additionalNotice!=null)additionalNotice.IsVisible=false;
@@ -93,7 +94,13 @@ internal sealed partial class SessionPane
         }
         finally { if(acquired)appearanceGate.Release(); }
     }
-    internal void ApplySessionPreferences(ApplicationPreferences value) { state.IsVisible=value.ShowSessionStatus; ApplyTerminalCursor(value); }
+    internal void ApplySessionPreferences(ApplicationPreferences value) { state.IsVisible=value.ShowSessionStatus; ApplyTerminalCursor(value); UpdatePluginPresentation(); }
+    internal void UpdatePluginPresentation()
+    {
+        if(commandsButton!=null)commandsButton.IsVisible=owner.IsPluginEnabled(PluginCatalog.Commands);
+        if(panelButtons.TryGetValue(2,out var button))button.IsVisible=owner.IsPluginEnabled(PluginCatalog.LinuxMonitoring);
+        if(!owner.IsPluginEnabled(PluginCatalog.LinuxMonitoring) && SelectedPanel==2) { terminal.IsVisible=true; info.IsVisible=false; infoActive=false; SelectPanel(0); }
+    }
     private void ConfigureFileTables()
     {
         files.RowDefinitions=new RowDefinitions("Auto,Auto,Auto,Auto,*,Auto");

@@ -76,3 +76,5 @@ bash scripts/package-deb.sh
 SDK pobrane na potrzeby tej pracy znajduje się w `.tools/dotnet`, poza plikami dystrybucji. Skrypty PowerShell używają go, jeśli jest dostępne. Dane i testowe klucze `.tools` nie wchodzą do paczek.
 
 Dokumentacja: `docs/architecture.md`, `docs/development.md`, `docs/reports/test-report.md`, `docs/roadmap.md`, `docs/dependencies.md`.
+
+Pluginy wbudowane: **Ustawienia → Pluginy** niezależnie włączają Monitoring Linux oraz Komendy. Zapis działa bez restartu; wyłączenie zachowuje terminal/SFTP, ustawienia i szablony. [Szczegóły](plugins.md).

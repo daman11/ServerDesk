@@ -38,3 +38,5 @@ This is a public beta. Keep a backup before upgrading and validate the workflows
 - **Commands:** own templates require an unlocked OS credential store. Import/export is JSON v1; YAML is not supported. Multiline scripts and secret parameters are copy-only. Automatic shell detection describes the login interpreter, not nested shells/editors/REPLs; verify the current program and empty input line before Execute. Tool presence does not prove version/permissions/plugin compatibility. Windows SSH has parser/channel fixtures but no new real Windows SSH server acceptance; the real network fixture is OpenSSH Linux. RDP/VNC/Serial remain browse/manual only. [Full guide and limits](commands.md).
 
 Please include version, OS, language and a minimal reproduction when reporting a problem. Do not include secrets or unredacted connection data.
+
+- **Plugins (0.39.0):** Linux monitoring and Commands are built-in modules controlled under Settings → Plugins. Toggle changes apply after Save without restart; stored snippets/settings are preserved. External plugin packages/DLL loading and a public plugin SDK are not implemented. [Guide](plugins.md).

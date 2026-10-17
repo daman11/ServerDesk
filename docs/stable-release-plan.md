@@ -1,6 +1,6 @@
 # Droga do ServerDesk 1.0
 
-Punkt wyjścia: 0.38.0 Public Beta. Funkcje rdzenia i dodatków istnieją; stan implementacji oraz granice wcześniejszych testów opisuje [MVP](mvp-status.md). Poniższa lista jest bieżącym planem stabilizacji, a nie deklaracją gotowości 1.0.
+Punkt wyjścia: 0.39.0 Public Beta. Funkcje rdzenia i dodatków istnieją; stan implementacji oraz granice wcześniejszych testów opisuje [MVP](mvp-status.md). Poniższa lista jest bieżącym planem stabilizacji, a nie deklaracją gotowości 1.0.
 
 Małe kroki kończą się commitem, celowanymi sprawdzeniami i EXE do uruchomienia z folderu. Pełna macierz i paczki są przeznaczone dla większych etapów, RC i wydania 1.0.
 
@@ -61,4 +61,6 @@ Małe kroki kończą się commitem, celowanymi sprawdzeniami i EXE do uruchomien
 - [ ] Po decyzji o publikacji: GitHub/CI, kanał prywatnych zgłoszeń bezpieczeństwa i pilotaż RC. Podpis wydawcy Windows jest zalecany przed szeroką dystrybucją.
 - [ ] Brak otwartych błędów krytycznych dotyczących bezpieczeństwa, utraty danych, zawieszania i podstawowych połączeń; zakończona macierz deklarowanego wsparcia.
 
-Synchronizacja, bastion/forwarding, pluginy, nowe platformy, integracje hypervisorów, YAML i dalsze biblioteki producentów nie blokują 1.0. Od 0.38.0 Linux RDP korzysta z osadzenia X11/XWayland. Natywny backend Wayland pozostaje dalszym zakresem. Ograniczony zakres wsparcia musi być jawny; nie nadajemy statusu stabilnego konfiguracji, której nie sprawdziliśmy.
+Synchronizacja, bastion/forwarding, zewnętrzne pluginy, nowe platformy, integracje hypervisorów, YAML i dalsze biblioteki producentów nie blokują 1.0. Od 0.38.0 Linux RDP korzysta z osadzenia X11/XWayland. Natywny backend Wayland pozostaje dalszym zakresem. Ograniczony zakres wsparcia musi być jawny; nie nadajemy statusu stabilnego konfiguracji, której nie sprawdziliśmy.
+
+Od 0.39.0 Monitoring Linux i Komendy są przełączanymi pluginami wbudowanymi. Zewnętrzne paczki pluginów nadal pozostają dalszym zakresem; [kontrakt i obsługa](plugins.md).

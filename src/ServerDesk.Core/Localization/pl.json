@@ -1459,5 +1459,19 @@
   "Schemat zapisany w bazie różni się od nazwy kopii. Plik pozostawiono bez zmian.": "Schemat zapisany w bazie różni się od nazwy kopii. Plik pozostawiono bez zmian.",
   "Nie można potwierdzić poprawności SQLite w tej kopii. Plik pozostawiono bez zmian.": "Nie można potwierdzić poprawności SQLite w tej kopii. Plik pozostawiono bez zmian.",
   "Obok kopii znaleziono pliki dziennika SQLite. Nie sprawdzamy jej jako samodzielnej kopii; utwórz nową kopię w ServerDesk.": "Obok kopii znaleziono pliki dziennika SQLite. Nie sprawdzamy jej jako samodzielnej kopii; utwórz nową kopię w ServerDesk.",
-  "Nie udało się sprawdzić kopii. Plik mógł zostać usunięty, zablokowany lub jest niedostępny. Odśwież listę i spróbuj ponownie.": "Nie udało się sprawdzić kopii. Plik mógł zostać usunięty, zablokowany lub jest niedostępny. Odśwież listę i spróbuj ponownie."
+  "Nie udało się sprawdzić kopii. Plik mógł zostać usunięty, zablokowany lub jest niedostępny. Odśwież listę i spróbuj ponownie.": "Nie udało się sprawdzić kopii. Plik mógł zostać usunięty, zablokowany lub jest niedostępny. Odśwież listę i spróbuj ponownie.",
+  "Krój czcionki interfejsu": "Krój czcionki interfejsu",
+  "Brak wybranej czcionki w systemie zastępuje domyślny krój. Czcionka terminala jest ustawiana osobno.": "Brak wybranej czcionki w systemie zastępuje domyślny krój. Czcionka terminala jest ustawiana osobno.",
+  "Zaokrąglenie kontrolek (px)": "Zaokrąglenie kontrolek (px)",
+  "Odstęp pionowy w menu (px)": "Odstęp pionowy w menu (px)",
+  "Lista połączeń": "Lista połączeń",
+  "Odstęp pionowy w liście połączeń (px)": "Odstęp pionowy w liście połączeń (px)",
+  "Pokaż adresy pod nazwami serwerów": "Pokaż adresy pod nazwami serwerów",
+  "Pokaż ikony na kartach": "Pokaż ikony na kartach",
+  "Pokaż przyciski zamykania kart": "Pokaż przyciski zamykania kart",
+  "Gdy przyciski zamykania są ukryte, zamkniesz kartę przez jej menu lub Ctrl+Shift+W. Wskaźniki stanu sesji pozostają widoczne.": "Gdy przyciski zamykania są ukryte, zamkniesz kartę przez jej menu lub Ctrl+Shift+W. Wskaźniki stanu sesji pozostają widoczne.",
+  "Nieobsługiwany krój czcionki interfejsu.": "Nieobsługiwany krój czcionki interfejsu.",
+  "Zaokrąglenie kontrolek musi mieć od 0 do 12 px.": "Zaokrąglenie kontrolek musi mieć od 0 do 12 px.",
+  "Odstęp w wierszu połączenia musi mieć od 0 do 10 px.": "Odstęp w wierszu połączenia musi mieć od 0 do 10 px.",
+  "Odstęp w pozycji menu musi mieć od 2 do 12 px.": "Odstęp w pozycji menu musi mieć od 2 do 12 px."
 }

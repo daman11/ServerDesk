@@ -10,6 +10,10 @@ public sealed record ApplicationPreferences
     public PluginSelection DisabledPlugins { get; init; }=PluginSelection.Empty;
     public string Language { get; init; }="pl";
     public int InterfaceFontSize { get; init; }=13;
+    public string InterfaceFontFamily { get; init; }="Domyślna";
+    public int ControlCornerRadius { get; init; }=6;
+    public int ConnectionRowPadding { get; init; }=1;
+    public int MenuItemPadding { get; init; }=7;
     public InterfaceDensity Density { get; init; }=InterfaceDensity.Standard;
     public string AccentColor { get; init; }="";
     public string TerminalFontFamily { get; init; }="Domyślna";
@@ -32,6 +36,9 @@ public sealed record ApplicationPreferences
     public int PaneSeparatorSize { get; init; }=4;
     public bool ShowPanelNumbers { get; init; }=true;
     public bool ShowProtocolBadges { get; init; }=true;
+    public bool ShowConnectionAddresses { get; init; }
+    public bool ShowTabIcons { get; init; }=true;
+    public bool ShowTabCloseButtons { get; init; }=true;
     public bool ShowSessionStatus { get; init; }=true;
     public bool ShowStatusBar { get; init; }=true;
     public bool ShowMetrics { get; init; }=true;
@@ -44,10 +51,15 @@ public sealed record ApplicationPreferences
     public bool MetricSystem { get; init; }=true;
     public bool MetricClock { get; init; }=true;
     public static IReadOnlyList<string> TerminalFonts { get; }=Array.AsReadOnly<string>(["Domyślna","Cascadia Mono","Consolas","JetBrains Mono","DejaVu Sans Mono"]);
+    public static IReadOnlyList<string> InterfaceFonts { get; }=Array.AsReadOnly<string>(["Domyślna","Inter","Segoe UI","Noto Sans","DejaVu Sans","Arial"]);
     public void Validate()
     {
         PluginCatalog.Validate(DisabledPlugins);
         if(!AppText.IsSupported(Language))throw new ArgumentException(AppText.T("Nieobsługiwany język aplikacji."));
+        if(!InterfaceFonts.Contains(InterfaceFontFamily))throw new ArgumentException(L.T("Nieobsługiwany krój czcionki interfejsu."),nameof(InterfaceFontFamily));
+        if(ControlCornerRadius is <0 or >12)throw new ArgumentException(L.T("Zaokrąglenie kontrolek musi mieć od 0 do 12 px."),nameof(ControlCornerRadius));
+        if(ConnectionRowPadding is <0 or >10)throw new ArgumentException(L.T("Odstęp w wierszu połączenia musi mieć od 0 do 10 px."),nameof(ConnectionRowPadding));
+        if(MenuItemPadding is <2 or >12)throw new ArgumentException(L.T("Odstęp w pozycji menu musi mieć od 2 do 12 px."),nameof(MenuItemPadding));
         if(!Enum.IsDefined(WorkspaceOnStartup) || !Enum.IsDefined(NewTabTarget) || TabStripHeight is <30 or >48 || PaneSeparatorSize is <4 or >12)throw new ArgumentException(L.T("Niepoprawne ustawienia paneli obszaru pracy."),nameof(WorkspaceOnStartup));
         if(TerminalScrollbackLines is <0 or >100000)throw new ArgumentException(L.T("Historia terminala musi mieć od 0 do 100000 wierszy."),nameof(TerminalScrollbackLines));
         if(!Enum.IsDefined(TerminalCursor))throw new ArgumentException(L.T("Nieobsługiwany kształt kursora terminala."),nameof(TerminalCursor));

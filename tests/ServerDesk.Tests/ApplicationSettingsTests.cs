@@ -16,7 +16,7 @@ public sealed class ApplicationSettingsTests : IDisposable
     [Fact] public async Task Complete_settings_roundtrip_and_opt_out_clears_workspace()
     {
         var repo=Repo(); await repo.InitializeAsync(); await repo.SetSettingAsync("lastWorkspace","old snapshot");
-        var value=new ApplicationSettings("light","Nord",17,15,false,new() { InterfaceFontSize=16,Density=InterfaceDensity.Comfortable,AccentColor="#69CFB6",TerminalFontFamily="Consolas",SidebarWidth=350,SidebarOnStartup=SidebarStartup.Hide,TabLabelWidth=180,ShowProtocolBadges=false,ShowMetrics=false,MetricSystem=false });
+        var value=new ApplicationSettings("light","Nord",17,15,false,new() { InterfaceFontSize=16,InterfaceFontFamily="Inter",ControlCornerRadius=0,ConnectionRowPadding=10,MenuItemPadding=2,ShowConnectionAddresses=true,ShowTabIcons=false,ShowTabCloseButtons=false,Density=InterfaceDensity.Comfortable,AccentColor="#69CFB6",TerminalFontFamily="Consolas",SidebarWidth=350,SidebarOnStartup=SidebarStartup.Hide,TabLabelWidth=180,ShowProtocolBadges=false,ShowMetrics=false,MetricSystem=false });
         await repo.SaveApplicationSettingsAsync(value); Assert.Equal(value,await Repo().ApplicationSettingsAsync()); Assert.Equal("",await repo.SettingAsync("lastWorkspace"));
     }
     [Fact] public async Task Invalid_preference_does_not_partially_save_other_settings()
@@ -39,6 +39,31 @@ public sealed class ApplicationSettingsTests : IDisposable
         Assert.Throws<ArgumentException>(()=>new ApplicationPreferences { TerminalFontFamily="injected" }.Validate());
         Assert.Throws<ArgumentException>(()=>new ApplicationPreferences { SidebarWidth=100 }.Validate());
         Assert.Throws<ArgumentException>(()=>new ApplicationPreferences { Density=(InterfaceDensity)999 }.Validate());
+    }
+    [Fact] public async Task Older_preferences_keep_existing_values_and_gain_customization_defaults()
+    {
+        var repo=Repo(); await repo.InitializeAsync(); await repo.SetSettingAsync("applicationPreferences","{\"InterfaceFontSize\":16,\"AccentColor\":\"#123456\"}");
+        Assert.Equal(new ApplicationPreferences { InterfaceFontSize=16,AccentColor="#123456" },await repo.PreferencesAsync());
+    }
+    [Theory]
+    [InlineData(-1,1,7)] [InlineData(13,1,7)]
+    [InlineData(6,-1,7)] [InlineData(6,11,7)]
+    [InlineData(6,1,1)] [InlineData(6,1,13)]
+    public async Task Customization_bounds_reject_the_entire_save(int radius,int row,int menu)
+    {
+        var repo=Repo(); await repo.InitializeAsync(); var before=await repo.ApplicationSettingsAsync();
+        await Assert.ThrowsAsync<ArgumentException>(()=>repo.SaveApplicationSettingsAsync(before with { Theme="light",Preferences=before.Preferences with { ControlCornerRadius=radius,ConnectionRowPadding=row,MenuItemPadding=menu } }));
+        Assert.Equal(before,await repo.ApplicationSettingsAsync());
+    }
+    [Theory] [InlineData(null)] [InlineData("file:///untrusted.ttf")] [InlineData("Unknown font")]
+    public void Unknown_interface_font_is_rejected(string? font)=>Assert.Throws<ArgumentException>(()=>new ApplicationPreferences { InterfaceFontFamily=font! }.Validate());
+    [Fact] public void All_interface_font_presets_and_size_boundaries_are_valid()
+    {
+        foreach(var font in ApplicationPreferences.InterfaceFonts)
+        {
+            new ApplicationPreferences { InterfaceFontFamily=font,ControlCornerRadius=0,ConnectionRowPadding=0,MenuItemPadding=2 }.Validate();
+            new ApplicationPreferences { InterfaceFontFamily=font,ControlCornerRadius=12,ConnectionRowPadding=10,MenuItemPadding=12 }.Validate();
+        }
     }
     public void Dispose() { DatabaseTestCleanup.Clear(root); if(Directory.Exists(root))Directory.Delete(root,true); }
 }

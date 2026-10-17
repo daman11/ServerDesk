@@ -12,6 +12,13 @@ internal static partial class DesignSystem
     {
         value.Validate(); Preferences=value;
         var resources=Application.Current!.Resources; var font=value.InterfaceFontSize;
+        var fallback=OperatingSystem.IsWindows()?"Segoe UI,Inter":"Inter,Noto Sans,DejaVu Sans";
+        resources["InterfaceFont"]=new FontFamily(value.InterfaceFontFamily=="Domyślna"?fallback:value.InterfaceFontFamily+","+fallback);
+        resources["RadiusSmall"]=new CornerRadius(value.ControlCornerRadius);
+        resources["ConnectionRowPadding"]=new Thickness(4,value.ConnectionRowPadding);
+        resources["MenuItemPadding"]=new Thickness(10,value.MenuItemPadding);
+        resources["ShowTabIcons"]=value.ShowTabIcons;
+        resources["ShowTabCloseButtons"]=value.ShowTabCloseButtons;
         resources["FontBody"]=(double)font; resources["FontCaption"]=(double)Math.Max(11,font-1); resources["FontMicro"]=(double)Math.Max(10,font-2);
         var height=value.Density switch { InterfaceDensity.Compact=>26d,InterfaceDensity.Comfortable=>34d,_=>30d };
         var spacing=value.Density switch { InterfaceDensity.Compact=>5d,InterfaceDensity.Comfortable=>12d,_=>8d };

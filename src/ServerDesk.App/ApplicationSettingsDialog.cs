@@ -133,7 +133,11 @@ internal static partial class Dialogs
         });
         Label(appearance,"Motyw aplikacji",theme);
         var uiFont=Number(appearance,"Rozmiar tekstu interfejsu",p.InterfaceFontSize,11,16);
+        var interfaceFamily=new ComboBox { Name="InterfaceFontFamily",ItemsSource=ApplicationPreferences.InterfaceFonts,SelectedItem=p.InterfaceFontFamily,HorizontalAlignment=HorizontalAlignment.Stretch,ItemTemplate=new FuncDataTemplate<string>((name,_)=>DesignSystem.Label(L.T(name??""))) }; Label(appearance,"Krój czcionki interfejsu",interfaceFamily);
+        appearance.Children.Add(DesignSystem.Hint(L.T("Brak wybranej czcionki w systemie zastępuje domyślny krój. Czcionka terminala jest ustawiana osobno.")));
         var density=new ComboBox { ItemsSource=new[]{L.T("Kompaktowy"),L.T("Standardowy"),L.T("Przestronny")},SelectedIndex=(int)p.Density,HorizontalAlignment=HorizontalAlignment.Stretch }; Label(appearance,"Odstępy i wysokość kontrolek",density);
+        var cornerRadius=Number(appearance,"Zaokrąglenie kontrolek (px)",p.ControlCornerRadius,0,12); cornerRadius.Name="ControlCornerRadius";
+        var menuPadding=Number(appearance,"Odstęp pionowy w menu (px)",p.MenuItemPadding,2,12); menuPadding.Name="MenuItemPadding";
         var accent=new TextBox { Text=p.AccentColor,PlaceholderText=L.T("Domyślny lub #RRGGBB"),HorizontalAlignment=HorizontalAlignment.Stretch }; Label(appearance,"Kolor akcentu",accent);
         var colors=new StackPanel { Orientation=Orientation.Horizontal,Spacing=8 };
         foreach(var (name,color) in new[]{(L.T("Motyw"),""),(L.T("Niebieski"),"#58A6FF"),(L.T("Miętowy"),"#69CFB6"),(L.T("Fioletowy"),"#B39DFF"),(L.T("Pomarańczowy"),"#E5B567")})
@@ -179,14 +183,20 @@ internal static partial class Dialogs
         Flag(fileSettings,"localDescending","Sortuj lokalne pliki malejąco",p.SftpLocalDescending,false);
         var remoteFileSort=Sort("Sortowanie zdalnego panelu",p.SftpRemoteSort); remoteFileSort.Name="SftpRemoteSort";
         Flag(fileSettings,"remoteDescending","Sortuj zdalne pliki malejąco",p.SftpRemoteDescending,false);
-        var workspace=Section(workspacePage,"layers","Panele i karty");
+        var workspace=Section(workspacePage,"server","Lista połączeń");
         var sidebarWidth=Number(workspace,"Szerokość panelu połączeń",p.SidebarWidth,220,500);
         var sidebarStart=new ComboBox { ItemsSource=new[]{L.T("Zapamiętaj ostatni stan"),L.T("Zawsze pokaż"),L.T("Zawsze ukryj")},SelectedIndex=(int)p.SidebarOnStartup,HorizontalAlignment=HorizontalAlignment.Stretch }; Label(workspace,"Panel połączeń przy uruchomieniu",sidebarStart);
+        var connectionPadding=Number(workspace,"Odstęp pionowy w liście połączeń (px)",p.ConnectionRowPadding,0,10); connectionPadding.Name="ConnectionRowPadding";
+        Flag(workspace,"protocols","Pokaż oznaczenia protokołów przy serwerach",p.ShowProtocolBadges);
+        Flag(workspace,"addresses","Pokaż adresy pod nazwami serwerów",p.ShowConnectionAddresses,false);
+        workspace=Section(workspacePage,"layers","Panele i karty");
         var tabWidth=Number(workspace,"Maksymalna szerokość nazwy karty",p.TabLabelWidth,140,360);
         var tabHeight=Number(workspace,"Wysokość paska kart",p.TabStripHeight,30,48); tabHeight.Name="TabStripHeight";
         var separatorSize=Number(workspace,"Szerokość separatorów paneli",p.PaneSeparatorSize,4,12); separatorSize.Name="PaneSeparatorSize";
         Flag(workspace,"panelNumbers","Pokaż numery paneli w podzielonym widoku",p.ShowPanelNumbers);
-        Flag(workspace,"protocols","Pokaż oznaczenia protokołów przy serwerach",p.ShowProtocolBadges);
+        Flag(workspace,"tabIcons","Pokaż ikony na kartach",p.ShowTabIcons);
+        Flag(workspace,"tabClose","Pokaż przyciski zamykania kart",p.ShowTabCloseButtons);
+        workspace.Children.Add(DesignSystem.Hint(L.T("Gdy przyciski zamykania są ukryte, zamkniesz kartę przez jej menu lub Ctrl+Shift+W. Wskaźniki stanu sesji pozostają widoczne.")));
         var tabTarget=new ComboBox { Name="NewTabTarget",ItemsSource=new[]{L.T("Aktywny panel"),L.T("Zawsze panel 1"),L.T("Panel z najmniejszą liczbą kart")},SelectedIndex=(int)p.NewTabTarget,HorizontalAlignment=HorizontalAlignment.Stretch }; Label(workspace,"Otwieraj nowe karty w",tabTarget);
         workspace.Children.Add(DesignSystem.Hint(L.T("Rozmiary pasków i separatorów mają podgląd na żywo. Anuluj przywraca poprzedni wygląd. Nowe karty używają wybranej reguły bez przenoszenia otwartych sesji.")));
         workspace=Section(workspacePage,"history","Przy uruchomieniu");
@@ -209,6 +219,8 @@ internal static partial class Dialogs
             DisabledPlugins=new(p.DisabledPlugins.Where(id=>!PluginCatalog.IsKnown(id)).Concat(PluginCatalog.BuiltIn.Where(plugin=>!On("plugin:"+plugin.Id)).Select(plugin=>plugin.Id))),
             Language=language.SelectedIndex==1?"en":"pl",
             InterfaceFontSize=(int)(uiFont.Value??13),Density=(InterfaceDensity)Math.Max(0,density.SelectedIndex),AccentColor=accent.Text?.Trim()??"",TerminalFontFamily=family.SelectedItem as string??"Domyślna",
+            InterfaceFontFamily=interfaceFamily.SelectedItem as string??"Domyślna",ControlCornerRadius=(int)(cornerRadius.Value??6),MenuItemPadding=(int)(menuPadding.Value??7),ConnectionRowPadding=(int)(connectionPadding.Value??1),
+            ShowConnectionAddresses=On("addresses"),ShowTabIcons=On("tabIcons"),ShowTabCloseButtons=On("tabClose"),
             TerminalScrollbackLines=(int)(scrollback.Value??10000),TerminalCursor=(TerminalCursorShape)Math.Max(0,cursor.SelectedIndex),TerminalCursorBlink=On("blink"),
             SftpLocalDirectory=localDirectory.Text??"",SftpShowHidden=On("hidden"),SftpLocalSort=(FileSort)Math.Max(0,localFileSort.SelectedIndex),SftpRemoteSort=(FileSort)Math.Max(0,remoteFileSort.SelectedIndex),SftpLocalDescending=On("localDescending"),SftpRemoteDescending=On("remoteDescending"),SftpStartRemote=startSide.SelectedIndex==1,
             SidebarWidth=(int)(sidebarWidth.Value??272),SidebarOnStartup=(SidebarStartup)Math.Max(0,sidebarStart.SelectedIndex),TabLabelWidth=(int)(tabWidth.Value??220),ShowProtocolBadges=On("protocols"),ShowSessionStatus=On("sessionStatus"),
@@ -226,6 +238,7 @@ internal static partial class Dialogs
             error.Text=ex.Message; accent.Classes.Set("error",ex.ParamName==nameof(ApplicationPreferences.AccentColor)); localDirectory.Classes.Set("error",ex.ParamName==nameof(ApplicationPreferences.SftpLocalDirectory));
         }
         theme.SelectionChanged+=(_,_)=>preview(); density.SelectionChanged+=(_,_)=>preview(); family.SelectionChanged+=(_,_)=>preview(); sidebarStart.SelectionChanged+=(_,_)=>preview(); accent.TextChanged+=(_,_)=>preview();
+        interfaceFamily.SelectionChanged+=(_,_)=>preview();
         cursor.SelectionChanged+=(_,_)=>preview(); localDirectory.TextChanged+=(_,_)=>preview(); localFileSort.SelectionChanged+=(_,_)=>preview(); remoteFileSort.SelectionChanged+=(_,_)=>preview(); startSide.SelectionChanged+=(_,_)=>preview();
         tabTarget.SelectionChanged+=(_,_)=>preview(); startupLayout.SelectionChanged+=(_,_)=>preview();
         TabItem Category(string glyph,string title,StackPanel page)
@@ -296,7 +309,7 @@ internal static partial class Dialogs
         var defaults=Button("Domyślne ustawienia",()=>
         {
             resetting=true;
-            try { language.SelectedIndex=0; theme.SelectedIndex=0; uiFont.Value=13; density.SelectedIndex=1; accent.Text=""; palette.SelectedItem=TerminalAppearance.Names[0]; terminalFont.Value=14; family.SelectedItem="Domyślna"; scrollback.Value=10000; cursor.SelectedIndex=0; localDirectory.Text=""; localFileSort.SelectedIndex=remoteFileSort.SelectedIndex=0; startSide.SelectedIndex=1; sidebarWidth.Value=272; sidebarStart.SelectedIndex=0; tabWidth.Value=220; tabHeight.Value=35; separatorSize.Value=4; tabTarget.SelectedIndex=startupLayout.SelectedIndex=0; interval.Value=5; foreach(var (key,flag) in flags)flag.IsChecked=flagDefaults[key]; }
+            try { language.SelectedIndex=0; theme.SelectedIndex=0; uiFont.Value=13; interfaceFamily.SelectedItem="Domyślna"; cornerRadius.Value=6; menuPadding.Value=7; connectionPadding.Value=1; density.SelectedIndex=1; accent.Text=""; palette.SelectedItem=TerminalAppearance.Names[0]; terminalFont.Value=14; family.SelectedItem="Domyślna"; scrollback.Value=10000; cursor.SelectedIndex=0; localDirectory.Text=""; localFileSort.SelectedIndex=remoteFileSort.SelectedIndex=0; startSide.SelectedIndex=1; sidebarWidth.Value=272; sidebarStart.SelectedIndex=0; tabWidth.Value=220; tabHeight.Value=35; separatorSize.Value=4; tabTarget.SelectedIndex=startupLayout.SelectedIndex=0; interval.Value=5; foreach(var (key,flag) in flags)flag.IsChecked=flagDefaults[key]; }
             finally { resetting=false; preview(); }
         }); defaults.HorizontalAlignment=HorizontalAlignment.Left; actions.Children.Add(defaults);
         var cancel=Button("Anuluj",()=> { if(!saving)dialog.Close(); }); Grid.SetColumn(cancel,1); actions.Children.Add(cancel);
@@ -313,6 +326,10 @@ internal static partial class Dialogs
                     nameof(ApplicationPreferences.TerminalCursor)=>(1,cursor),
                     nameof(ApplicationPreferences.TerminalScrollbackLines)=>(1,scrollback),
                     nameof(ApplicationPreferences.WorkspaceOnStartup)=>(3,startupLayout),
+                    nameof(ApplicationPreferences.InterfaceFontFamily)=>(0,interfaceFamily),
+                    nameof(ApplicationPreferences.ControlCornerRadius)=>(0,cornerRadius),
+                    nameof(ApplicationPreferences.MenuItemPadding)=>(0,menuPadding),
+                    nameof(ApplicationPreferences.ConnectionRowPadding)=>(3,connectionPadding),
                     _=>(0,accent)
                 };
                 categories.SelectedIndex=index; field.BringIntoView(); field.Focus();

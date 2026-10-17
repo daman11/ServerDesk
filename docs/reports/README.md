@@ -15,6 +15,7 @@ Credential-save feedback: [Explicit use-once/cancel and Linux Secret Service gui
 Linux desktop: [FreeRDP certificate prompt, retained console and resize hit areas, 2026-10-16](linux-rdp-resize-2026-10-16.md).
 
 Personalization: [Terminal and SFTP preferences, 2026-10-16](extended-settings-2026-10-16.md).
+Additional customization: [Interface, menus, connection list and tabs, 2026-10-17](customization-2026-10-17.md).
 
 Repository maintenance: [Git/GitHub preparation, 2026-10-16](repository-preparation-2026-10-16.md).
 Generated output: [Artifact cleanup, 2026-10-16](artifact-cleanup-2026-10-16.md).

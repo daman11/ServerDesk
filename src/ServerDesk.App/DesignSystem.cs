@@ -30,6 +30,8 @@ internal static partial class DesignSystem
         app.Resources["TabHeight"]=DesignTokens.TabHeight; app.Resources["RowPadding"]=new Thickness(DesignTokens.IconGap,DesignTokens.Small);
         app.Resources["SessionTabMaxWidth"]=220d;
         app.Resources["FileRowHeight"]=26d;
+        app.Resources["ConnectionRowPadding"]=new Thickness(4,1); app.Resources["MenuItemPadding"]=new Thickness(10,7);
+        app.Resources["ShowTabIcons"]=true; app.Resources["ShowTabCloseButtons"]=true;
         app.Resources["InterfaceFont"]=new FontFamily(OperatingSystem.IsWindows()?"Segoe UI,Inter":"Inter,Noto Sans,DejaVu Sans");
         using(var icon=typeof(DesignSystem).Assembly.GetManifestResourceStream("ServerDesk.App.Assets.Brand.serverdesk.png")) { if(icon!=null)app.Resources["ApplicationIcon"]=new WindowIcon(icon); }
         SetResources(app,Themes[0],ThemeVariant.Dark); SetResources(app,Themes[4],ThemeVariant.Light);
@@ -48,7 +50,7 @@ internal static partial class DesignSystem
         Style<TreeView>(TreeView.BackgroundProperty,new DynamicResourceExtension("BackgroundSecondary"));
         Style<ProgressBar>(ProgressBar.ForegroundProperty,new DynamicResourceExtension("AccentPrimary")); Style<ProgressBar>(ProgressBar.BackgroundProperty,new DynamicResourceExtension("SurfaceHover"));
         Style<TabItem>(TabItem.MinHeightProperty,new DynamicResourceExtension("TabHeight")); Style<TabItem>(TabItem.PaddingProperty,new Thickness(10,4));
-        Style<ListBoxItem>(ListBoxItem.PaddingProperty,new DynamicResourceExtension("RowPadding")); Style<TreeViewItem>(TreeViewItem.PaddingProperty,new Thickness(4,3));
+        Style<ListBoxItem>(ListBoxItem.PaddingProperty,new DynamicResourceExtension("RowPadding")); Style<TreeViewItem>(TreeViewItem.PaddingProperty,new DynamicResourceExtension("ConnectionRowPadding"));
         foreach(var type in new[]{typeof(Button),typeof(ListBoxItem),typeof(TreeViewItem),typeof(TabItem)})
         {
             app.Styles.Add(new Style(s=>s.OfType(type).Class(":pointerover")) { Setters={new Setter(TemplatedControl.BackgroundProperty,new DynamicResourceExtension("SurfaceHover"))} });

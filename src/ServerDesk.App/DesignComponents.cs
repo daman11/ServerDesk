@@ -75,7 +75,7 @@ internal static partial class DesignSystem
         }
         Add(s=>s.OfType<TreeViewItem>(),new Setter(TreeViewItem.CornerRadiusProperty,new CornerRadius(5)));
         Add(s=>s.OfType<ContextMenu>(),new Setter(ContextMenu.CornerRadiusProperty,new CornerRadius(8)),new Setter(ContextMenu.BorderThicknessProperty,new Thickness(1)),R(ContextMenu.BorderBrushProperty,"BorderDefault"),new Setter(ContextMenu.PaddingProperty,new Thickness(5)));
-        Add(s=>s.OfType<MenuItem>(),new Setter(MenuItem.CornerRadiusProperty,new CornerRadius(5)),new Setter(MenuItem.PaddingProperty,new Thickness(10,7)));
+        Add(s=>s.OfType<MenuItem>(),new Setter(MenuItem.CornerRadiusProperty,new CornerRadius(5)),R(MenuItem.PaddingProperty,"MenuItemPadding"));
         Add(s=>s.OfType<ToolTip>(),new Setter(ToolTip.CornerRadiusProperty,new CornerRadius(6)));
     }
 }

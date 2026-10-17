@@ -48,7 +48,9 @@ public sealed partial class MainWindow
         var tool=(NetworkToolPane)pane; var title=DesignSystem.Label(tool.DisplayName); DesignSystem.Resource(title,TextBlock.MaxWidthProperty,"SessionTabMaxWidth"); title.TextTrimming=Avalonia.Media.TextTrimming.CharacterEllipsis; title.Bind(TextBlock.TextProperty,new Binding(nameof(NetworkToolPane.Caption)) { Source=tool });
         var state=new BusyIndicator { Width=14,Height=14,Classes={"busy"} }; state.Bind(Visual.IsVisibleProperty,new Binding(nameof(NetworkToolPane.IsRunning)) { Source=tool }); state.Glyph="circle-dashed";
         var close=DeskIcons.Button("close",L.T("Zamknij ")+tool.DisplayName,()=>_=Safe(()=>CloseWorkspacePaneAsync(pane)),24);
-        var header=new StackPanel { Orientation=Orientation.Horizontal,Spacing=6,Children={DeskIcons.Create(NetworkToolCatalog.Icon(tool.Tool)),state,title,close} };
+        close.Name="WorkspaceTabClose"; DesignSystem.Resource(close,Visual.IsVisibleProperty,"ShowTabCloseButtons");
+        var icon=DeskIcons.Create(NetworkToolCatalog.Icon(tool.Tool)); icon.Name="WorkspaceTabIcon"; DesignSystem.Resource(icon,Visual.IsVisibleProperty,"ShowTabIcons");
+        var header=new StackPanel { Orientation=Orientation.Horizontal,Spacing=6,Children={icon,state,title,close} };
         header.Bind(ToolTip.TipProperty,new Binding(nameof(NetworkToolPane.Caption)) { Source=tool });
         close.Bind(ToolTip.TipProperty,new Binding(nameof(NetworkToolPane.Caption)) { Source=tool,StringFormat=L.T("Zamknij ")+"{0}" });
         close.Bind(Avalonia.Automation.AutomationProperties.NameProperty,new Binding(nameof(NetworkToolPane.Caption)) { Source=tool,StringFormat=L.T("Zamknij ")+"{0}" }); return header;

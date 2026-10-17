@@ -117,6 +117,7 @@ public sealed partial class MainWindow
         {
             if(p==null)return null;
             var detail=sortMode==ProfileSort.Host?SortAddress(p):sortMode==ProfileSort.LastConnected?p.LastConnected?.ToLocalTime().ToString("g")??"—":null;
+            if(preferences.ShowConnectionAddresses && sortMode!=ProfileSort.Host)detail=detail==null?SortAddress(p):SortAddress(p)+" · "+detail;
             return Row(ProfileIcons.Resolve(p),p.Name,p.Favorite,connectedIds.Contains(p.Id),badges?p.Protocol.ToString():null,p,detail:detail);
         });
         var counts=new Dictionary<string,int>(); foreach(var item in profiles) { var path=item.Folder; while(path.Length>0) { counts[path]=counts.GetValueOrDefault(path)+1; var split=path.LastIndexOf('/'); path=split<0?"":path[..split]; } }
@@ -173,10 +174,10 @@ public sealed partial class MainWindow
     {
         var header=new StackPanel { Orientation=Orientation.Horizontal,Spacing=DesignTokens.IconGap };
         var color=new Border { Name="SessionColorMarker",Width=6,Height=6,CornerRadius=new CornerRadius(3),VerticalAlignment=VerticalAlignment.Center }; color.Bind(Border.BackgroundProperty,new Binding(nameof(SessionPane.PresentationProfile)+".Color") { Source=p,Converter=new FuncValueConverter<string,IBrush>(value=>ProfileVisual.ColorBrush(value??"")) }); color.Bind(Visual.IsVisibleProperty,new Binding(nameof(SessionPane.PresentationProfile)+".Color") { Source=p,Converter=new FuncValueConverter<string,bool>(value=>!string.IsNullOrEmpty(value)) }); ToolTip.SetTip(color,L.T("Kolor serwera")); header.Children.Add(color);
-        var profileIcon=new ProfileVisual(p.PresentationProfile); profileIcon.Bind(ProfileVisual.ProfileProperty,new Binding(nameof(SessionPane.PresentationProfile)) { Source=p }); header.Children.Add(profileIcon);
+        var profileIcon=new ProfileVisual(p.PresentationProfile) { Name="WorkspaceTabIcon" }; profileIcon.Bind(ProfileVisual.ProfileProperty,new Binding(nameof(SessionPane.PresentationProfile)) { Source=p }); DesignSystem.Resource(profileIcon,Visual.IsVisibleProperty,"ShowTabIcons"); header.Children.Add(profileIcon);
         var status=new SessionStatusIcon(); status.Bind(SessionStatusIcon.StateProperty,new Binding(nameof(SessionPane.VisualState)) { Source=p }); header.Children.Add(status);
         var name=new TextBlock { Name="SessionTabName",VerticalAlignment=VerticalAlignment.Center,TextTrimming=TextTrimming.CharacterEllipsis }; DesignSystem.Resource(name,TextBlock.MaxWidthProperty,"SessionTabMaxWidth"); name.Bind(TextBlock.TextProperty,new Binding(nameof(SessionPane.PresentationProfile)+".Name") { Source=p }); DesignSystem.Resource(name,TextBlock.FontSizeProperty,"FontBody"); header.Children.Add(name);
-        header.VerticalAlignment=VerticalAlignment.Center; var close=DeskIcons.Button("close","Zamknij "+p.Profile.Name,()=>_ = Safe(()=>CloseSessionAsync(p)),24); header.Children.Add(close); ToolTip.SetTip(header,$"{p.Profile.Name} · {p.Profile.Host}");
+        header.VerticalAlignment=VerticalAlignment.Center; var close=DeskIcons.Button("close","Zamknij "+p.Profile.Name,()=>_ = Safe(()=>CloseSessionAsync(p)),24); close.Name="WorkspaceTabClose"; DesignSystem.Resource(close,Visual.IsVisibleProperty,"ShowTabCloseButtons"); header.Children.Add(close); ToolTip.SetTip(header,$"{p.Profile.Name} · {p.Profile.Host}");
         return header;
     }
     private async Task SelectSectionAsync(string id)

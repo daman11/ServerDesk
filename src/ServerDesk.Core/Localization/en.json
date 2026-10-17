@@ -1459,5 +1459,19 @@
   "Schemat zapisany w bazie różni się od nazwy kopii. Plik pozostawiono bez zmian.": "The schema stored in the database differs from the backup name. The file was left unchanged.",
   "Nie można potwierdzić poprawności SQLite w tej kopii. Plik pozostawiono bez zmian.": "Could not confirm SQLite integrity in this backup. The file was left unchanged.",
   "Obok kopii znaleziono pliki dziennika SQLite. Nie sprawdzamy jej jako samodzielnej kopii; utwórz nową kopię w ServerDesk.": "SQLite journal files were found beside this backup. It cannot be checked as a standalone snapshot; create a new backup in ServerDesk.",
-  "Nie udało się sprawdzić kopii. Plik mógł zostać usunięty, zablokowany lub jest niedostępny. Odśwież listę i spróbuj ponownie.": "Could not check the backup. The file may have been removed, locked or become unavailable. Refresh the list and try again."
+  "Nie udało się sprawdzić kopii. Plik mógł zostać usunięty, zablokowany lub jest niedostępny. Odśwież listę i spróbuj ponownie.": "Could not check the backup. The file may have been removed, locked or become unavailable. Refresh the list and try again.",
+  "Krój czcionki interfejsu": "Interface font family",
+  "Brak wybranej czcionki w systemie zastępuje domyślny krój. Czcionka terminala jest ustawiana osobno.": "If the selected font is unavailable, the default font is used. The terminal font is configured separately.",
+  "Zaokrąglenie kontrolek (px)": "Control corner radius (px)",
+  "Odstęp pionowy w menu (px)": "Vertical menu item padding (px)",
+  "Lista połączeń": "Connection list",
+  "Odstęp pionowy w liście połączeń (px)": "Vertical connection row padding (px)",
+  "Pokaż adresy pod nazwami serwerów": "Show addresses below server names",
+  "Pokaż ikony na kartach": "Show tab icons",
+  "Pokaż przyciski zamykania kart": "Show tab close buttons",
+  "Gdy przyciski zamykania są ukryte, zamkniesz kartę przez jej menu lub Ctrl+Shift+W. Wskaźniki stanu sesji pozostają widoczne.": "When close buttons are hidden, use the tab menu or Ctrl+Shift+W to close a tab. Session status indicators remain visible.",
+  "Nieobsługiwany krój czcionki interfejsu.": "Unsupported interface font family.",
+  "Zaokrąglenie kontrolek musi mieć od 0 do 12 px.": "Control corner radius must be between 0 and 12 px.",
+  "Odstęp w wierszu połączenia musi mieć od 0 do 10 px.": "Connection row padding must be between 0 and 10 px.",
+  "Odstęp w pozycji menu musi mieć od 2 do 12 px.": "Menu item padding must be between 2 and 12 px."
 }

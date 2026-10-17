@@ -3,6 +3,7 @@ using Avalonia;
 using Avalonia.Automation;
 using Avalonia.Controls;
 using Avalonia.Headless;
+using Avalonia.Input;
 using Avalonia.Interactivity;
 using Avalonia.VisualTree;
 using Iciclecreek.Terminal;
@@ -26,16 +27,45 @@ internal static class ExtendedSettingsChecks
         if(view.CursorStyle!=style || view.CursorBlink!=blink || terminal.Terminal.Options.CursorStyle!=style || terminal.Terminal.Options.CursorBlink!=blink)
             throw new Exception($"Cursor not applied to renderer and emulator: {view.CursorStyle}/{view.CursorBlink} vs {style}/{blink}");
     }
+    private static void Customize(Window w)
+    {
+        Page(w,0); Named<ComboBox>(w,"InterfaceFontFamily").SelectedItem="Inter";
+        Named<NumericUpDown>(w,"ControlCornerRadius").Value=12; Named<NumericUpDown>(w,"MenuItemPadding").Value=12;
+        Page(w,3); Named<NumericUpDown>(w,"ConnectionRowPadding").Value=10;
+        Setting<CheckBox>(w,"Pokaż adresy pod nazwami serwerów").IsChecked=true;
+        Setting<CheckBox>(w,"Pokaż ikony na kartach").IsChecked=false;
+        Setting<CheckBox>(w,"Pokaż przyciski zamykania kart").IsChecked=false; RedesignChecks.Frames(4);
+    }
+    private static void Customization(MainWindow main,Window owner,bool custom)
+    {
+        RedesignChecks.Frames(4);
+        if(custom && !main.FontFamily.Name.StartsWith("Inter",StringComparison.Ordinal))throw new Exception("Interface font was not applied to the existing window");
+        var headers=main.GetVisualDescendants().OfType<Control>().Where(c=>c.Name is "WorkspaceTabIcon" or "WorkspaceTabClose").ToArray();
+        if(headers.Length!=6 || headers.Any(c=>c.IsVisible==custom))throw new Exception("Tab customization did not update all existing session and tool headers");
+        if(!main.GetVisualDescendants().OfType<SessionStatusIcon>().Any(c=>c.IsVisible))throw new Exception("Hiding tab icons hid session status");
+        var tree=main.GetVisualDescendants().OfType<TreeView>().Single();
+        var row=tree.GetVisualDescendants().OfType<TreeViewItem>().Single(t=>t.Tag is ServerProfile);
+        if(row.Padding!=new Thickness(4,custom?10:1))throw new Exception("Connection padding not applied to existing tree");
+        var addresses=row.GetVisualDescendants().OfType<TextBlock>().Where(t=>t.Name=="ConnectionSortValue").ToArray();
+        if(custom?addresses.Length!=1 || addresses[0].Text!="fixture.invalid:22":addresses.Length!=0)throw new Exception("Connection address visibility ignored");
+        var input=owner.GetVisualDescendants().OfType<TextBox>().First();
+        if(input.CornerRadius!=new CornerRadius(custom?12:6))throw new Exception("Control radius did not update existing input");
+        var item=new MenuItem { Header="Padding fixture" }; var menu=new ContextMenu { ItemsSource=new[]{item} };
+        try { menu.Open(owner); RedesignChecks.Frames(3); if(item.Padding!=new Thickness(10,custom?12:7))throw new Exception("Context menu spacing ignored"); }
+        finally { menu.Close(); }
+    }
     internal static void Run(string root)
     {
         foreach(var language in new[]{"pl","en"})
         {
             AppText.SetLanguage(language); var paths=new AppPaths(Path.Combine(root,language)); var repo=new ProfileRepository(paths); Wait(repo.InitializeAsync());
             var original=Result(repo.ApplicationSettingsAsync()) with { Preferences=new() { Language=language } }; Wait(repo.SaveApplicationSettingsAsync(original));
+            var profile=new ServerProfile { Name="Settings SSH",Host="fixture.invalid",Username="fixture" }; Wait(repo.SaveAsync(profile));
             var main=new MainWindow(new(repo),repo,new CredentialStore(paths),new SshConnectionFactory(repo),new ExternalRdpClient()); main.Show(); RedesignChecks.Frames(20);
-            using var ssh=new SessionPane(main,new() { Name="Settings SSH",Host="fixture.invalid",Username="fixture" },new SshConnectionFactory(repo),new ExternalRdpClient(),repo);
+            using var ssh=new SessionPane(main,profile,new SshConnectionFactory(repo),new ExternalRdpClient(),repo);
             using var serial=new SessionPane(main,new() { Name="Settings Serial",Protocol=Protocol.Serial,Serial=new() { PortName="fixture" } },new SshConnectionFactory(repo),new ExternalRdpClient(),repo);
             main.RegisterPane(ssh); main.RegisterPane(serial); RedesignChecks.Frames(20);
+            var tool=main.OpenNetworkTool(NetworkToolKind.Subnet); RedesignChecks.Frames(5);
             // Both panels are realized to exercise cursor changes without opening a physical serial port.
             main.FocusSession(ssh); RedesignChecks.Frames(10);
             var terminals=new[]{Terminal(ssh),Terminal(serial)};
@@ -44,6 +74,15 @@ internal static class ExtendedSettingsChecks
             var before=terminals.Select(t=>SshAcceptanceChecks.Text(t).TrimEnd('\n')).ToArray(); var buffers=terminals.Select(t=>t.BufferSize).ToArray();
             var edit=Dialogs.Settings(main,repo,()=>Task.CompletedTask); RedesignChecks.Frames(); var w=main.OwnedWindows.Single();
             if(Named<TabControl>(w,"SettingsCategories").ItemCount!=7)throw new Exception("Missing settings category");
+            Customize(w); Customization(main,w,true);
+            var sort=(ComboBox)typeof(MainWindow).GetField("sortSelector",BindingFlags.Instance|BindingFlags.NonPublic)!.GetValue(main)!;
+            foreach(var index in new[]{1,3})
+            {
+                sort.SelectedIndex=index; RedesignChecks.Frames(4);
+                var details=main.GetVisualDescendants().OfType<TextBlock>().Single(t=>t.Name=="ConnectionSortValue").Text;
+                if(details!=(index==1?"fixture.invalid:22":"fixture.invalid:22 · —"))throw new Exception("Address setting duplicates or loses the current sort value");
+            }
+            sort.SelectedIndex=0; RedesignChecks.Frames(4);
             Page(w,1); Named<ComboBox>(w,"TerminalCursor").SelectedIndex=1; Setting<CheckBox>(w,"Migający kursor").IsChecked=false; Named<NumericUpDown>(w,"TerminalScrollbackLines").Value=0;
             foreach(var t in terminals)Cursor(t,XTerm.Common.CursorStyle.Block,false);
             for(var i=0;i<terminals.Length;i++)if(terminals[i].BufferSize!=buffers[i] || SshAcceptanceChecks.Text(terminals[i]).TrimEnd('\n')!=before[i])throw new Exception($"Preview discarded terminal history: terminal {i}, buffer {terminals[i].BufferSize}/{buffers[i]}");
@@ -54,7 +93,7 @@ internal static class ExtendedSettingsChecks
             foreach(var theme in new[]{"graphite","light"})foreach(var width in new[]{680,960})
             {
                 DesignSystem.Apply(theme); w.Width=width; w.Height=width==680?500:720;
-                foreach(var page in new[]{1,2})
+                foreach(var page in new[]{0,1,2,3})
                 {
                     Page(w,page); var tabs=Named<TabControl>(w,"SettingsCategories"); var scroll=(ScrollViewer)((TabItem)tabs.SelectedItem!).Content!;
                     var navigation=Named<ScrollViewer>(w,"SettingsNavigationScroll");
@@ -63,7 +102,7 @@ internal static class ExtendedSettingsChecks
                     var save=w.GetVisualDescendants().OfType<Button>().Single(b=>b.Tag as string=="Zapisz");
                     var footer=save.TranslatePoint(default,w)!.Value;
                     if(footer.Y+save.Bounds.Height>w.Bounds.Height+1 || scroll.TranslatePoint(default,w)!.Value.Y+scroll.Bounds.Height>footer.Y+1)throw new Exception("Settings page overlaps footer");
-                    var input=page==2?(Control)Named<TextBox>(w,"SftpLocalDirectory"):Named<ComboBox>(w,"TerminalCursor"); input.BringIntoView(); RedesignChecks.Frames(3);
+                    Control input=page switch { 0=>Named<NumericUpDown>(w,"ControlCornerRadius"),2=>Named<TextBox>(w,"SftpLocalDirectory"),3=>Named<NumericUpDown>(w,"ConnectionRowPadding"),_=>Named<ComboBox>(w,"TerminalCursor") }; input.BringIntoView(); RedesignChecks.Frames(3);
                     var point=input.TranslatePoint(default,scroll)!.Value;
                     if(point.X<0 || point.X+input.Bounds.Width>scroll.Bounds.Width+1)throw new Exception("New setting escapes page width");
                     w.CaptureRenderedFrame()!.Save(Path.Combine(root,$"extended-settings-{language}-{theme}-{width}-{page}.png"));
@@ -73,24 +112,38 @@ internal static class ExtendedSettingsChecks
             if(Result(repo.ApplicationSettingsAsync())!=original || main.CurrentPreferences!=original.Preferences)throw new Exception("Cancel persisted new preferences");
             Cursor(active,XTerm.Common.CursorStyle.Bar,true);
             edit=Dialogs.Settings(main,repo,()=>Task.CompletedTask); RedesignChecks.Frames(); w=main.OwnedWindows.Single(); Page(w,2);
+            Customization(main,w,false);
             var local=Named<TextBox>(w,"SftpLocalDirectory"); local.Text="relative/path"; Named<TextBox>(w,"SettingsSearch").Text="CPU"; Click(w,"Zapisz"); RedesignChecks.Frames();
             if(edit.IsCompleted || Named<TabControl>(w,"SettingsCategories").SelectedIndex!=2 || !local.IsEffectivelyVisible || !local.Classes.Contains("error") || Result(repo.ApplicationSettingsAsync())!=original)throw new Exception("Invalid path saved or validation did not reveal its category");
             local.Text=root; Named<ComboBox>(w,"SftpLocalSort").SelectedIndex=3; Named<ComboBox>(w,"SftpRemoteSort").SelectedIndex=2;
             Named<ComboBox>(w,"SftpStartSide").SelectedIndex=0; Setting<CheckBox>(w,"Pokaż ukryte pliki po otwarciu SFTP").IsChecked=true; Setting<CheckBox>(w,"Sortuj lokalne pliki malejąco").IsChecked=true;
             Page(w,1); Named<ComboBox>(w,"TerminalCursor").SelectedIndex=2; Setting<CheckBox>(w,"Migający kursor").IsChecked=false; Named<NumericUpDown>(w,"TerminalScrollbackLines").Value=100000;
+            Customize(w);
             Click(w,"Zapisz"); Wait(edit); var saved=Result(repo.PreferencesAsync());
+            if(saved.InterfaceFontFamily!="Inter" || saved.ControlCornerRadius!=12 || saved.MenuItemPadding!=12 || saved.ConnectionRowPadding!=10 || !saved.ShowConnectionAddresses || saved.ShowTabIcons || saved.ShowTabCloseButtons)throw new Exception("Appearance customization failed to persist");
             if(saved.TerminalScrollbackLines!=100000 || saved.TerminalCursor!=TerminalCursorShape.Underline || saved.TerminalCursorBlink || saved.SftpLocalDirectory!=root || saved.SftpLocalSort!=FileSort.Type || saved.SftpRemoteSort!=FileSort.Modified || !saved.SftpShowHidden || !saved.SftpLocalDescending || saved.SftpStartRemote)throw new Exception("New settings failed to persist together");
             if(active.BufferSize!=buffers[0] || SshAcceptanceChecks.Text(active).TrimEnd('\n')!=before[0])throw new Exception("Save trimmed the existing terminal buffer");
             edit=Dialogs.Settings(main,repo,()=>Task.CompletedTask); RedesignChecks.Frames(); w=main.OwnedWindows.Single(); Page(w,2);
+            Customization(main,w,true);
             if(Named<TextBox>(w,"SftpLocalDirectory").Text!=root || Named<ComboBox>(w,"SftpRemoteSort").SelectedIndex!=2)throw new Exception("Reopening lost SFTP preferences");
             var search=Named<TextBox>(w,"SettingsSearch"); search.Text=AppText.T("Wiersze historii terminala"); RedesignChecks.Frames();
             if(Named<TabControl>(w,"SettingsCategories").SelectedIndex!=1 || !Named<NumericUpDown>(w,"TerminalScrollbackLines").IsEffectivelyVisible)throw new Exception("New terminal preferences are not searchable");
-            search.Text=""; Click(w,"Domyślne ustawienia"); Click(w,"Zapisz"); Wait(edit);
+            search.Text=AppText.T("Krój czcionki interfejsu"); RedesignChecks.Frames();
+            if(Named<TabControl>(w,"SettingsCategories").SelectedIndex!=0 || Named<ComboBox>(w,"InterfaceFontFamily").SelectedItem as string!="Inter")throw new Exception("Appearance customization is not searchable or lost on reopen");
+            search.Text=""; Click(w,"Domyślne ustawienia"); Customization(main,w,false); Click(w,"Zapisz"); Wait(edit);
             if(Result(repo.PreferencesAsync())!=new ApplicationPreferences())throw new Exception("Defaults failed to restore mixed true/false settings");
+            main.FocusSession(tool); RedesignChecks.Frames(3); var count=main.Workspace.All.Count();
+            main.PreviewPreferences(main.CurrentPreferences with { ShowTabCloseButtons=false });
+            main.KeyPress(Key.W,RawInputModifiers.Control|RawInputModifiers.Shift,PhysicalKey.W,null); RedesignChecks.Wait(tool.Shutdown); RedesignChecks.Frames(4);
+            if(main.Workspace.All.Count()!=count-1)throw new Exception("Hidden close button removed keyboard access to closing a tab");
             Wait(ssh.CloseAsync()); Wait(serial.CloseAsync()); main.Close(); RedesignChecks.Frames();
+            Wait(repo.SaveApplicationSettingsAsync(original with { Preferences=saved }));
+            var restored=new MainWindow(new(repo),repo,new CredentialStore(paths),new SshConnectionFactory(repo),new ExternalRdpClient()); restored.Show(); RedesignChecks.Frames(20);
+            if(restored.CurrentPreferences!=saved || !restored.FontFamily.Name.StartsWith("Inter",StringComparison.Ordinal))throw new Exception("New window ignored saved customization");
+            restored.Close(); RedesignChecks.Frames();
         }
         AppText.SetLanguage("pl"); DesignSystem.Apply("dark");
-        Console.WriteLine("PASS extended settings PL/EN: seven responsive categories, search, invalid-path recovery, cursor live preview and remote overrides, retained history, cancel/save/reopen/defaults; Graphite/Light font16 at 680x500 and 960x720");
+        Console.WriteLine("PASS extended settings PL/EN: interface font/radius/menu and tree spacing/address/tab controls, live preview and rollback, search/save/reopen/defaults, keyboard closing; cursor overrides and retained history; seven responsive categories Graphite/Light font16 at 680x500 and 960x720");
     }
     internal static void Network(string root,string host,string key)
     {

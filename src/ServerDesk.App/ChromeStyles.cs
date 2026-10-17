@@ -69,6 +69,6 @@ internal static partial class DesignSystem
                 new KeyFrame { Cue=new Cue(1),Setters={new Setter(BusyIndicator.AngleProperty,360d)} }
             } }}
         });
-        Add(s=>s.OfType<TreeViewItem>(),new Setter(TreeViewItem.PaddingProperty,new Thickness(4,1)));
+        Add(s=>s.OfType<TreeViewItem>(),Resource(TreeViewItem.PaddingProperty,"ConnectionRowPadding"));
     }
 }

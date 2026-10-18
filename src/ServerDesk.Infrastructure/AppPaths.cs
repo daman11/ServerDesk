@@ -4,6 +4,7 @@ public sealed class AppPaths
 {
     public string Data { get; }
     public string Config { get; }
+    public string Logs=>Path.Combine(Data,"logs");
     public AppPaths(string? root = null)
     {
         root ??= Environment.GetEnvironmentVariable("SERVERDESK_DATA_HOME");

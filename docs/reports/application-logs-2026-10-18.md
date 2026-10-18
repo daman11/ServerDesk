@@ -1,0 +1,17 @@
+# Application logs in settings — 2026-10-18
+
+Focused development increment after 0.41.0; no application version, release tag or package rebuild.
+
+- Add a searchable **Settings → Security → Logs and diagnostics** section and a resizable **Open logs** dialog. Reuse the existing security category, search index and dialog placement. The viewer uses the same `AppPaths.Logs` location as Serilog, including a custom `SERVERDESK_DATA_HOME`/Linux data root. Existing daily rotation and seven-file retention remain unchanged.
+- List up to 50 newest valid daily/size-suffixed log filenames. Read only regular matching files in that directory; ignore unrelated files, invalid dates, nested paths and file reparse points. A missing directory is an empty state and is never created by the viewer.
+- Read a maximum of 128 KiB from the end of the selected log on a worker task, with UTF-8 boundary/partial-line handling. Preserve multiline traces, allow selection/copy, literal case-insensitive find-next with wrap, Ctrl+F, and F5 refresh. Keep a found position visible after resizing. This is a preview rather than a full-file search or severity parser.
+- **Save log copy** uses the native save picker for a local `.log` destination. Stream the whole captured source length through the existing atomic replacement helper, without buffering the entire log or following later appends indefinitely. Reads share the file with the active writer and rotation. Reject destinations inside the live log directory. Source/read/write/cancellation errors preserve an existing destination and clean staging files.
+- Provide an explicit folder-opening action, empty/loading/error/export feedback, PL/EN text and icons, compact layout and a reminder about local paths/profile identifiers. No upload, deletion, telemetry, automatic refresh loop or settings persistence is added. Closing cancels and drains in-flight reads/exports; late results cannot update a closed viewer. No protocol, credential or plugin lifecycle changes.
+
+Validation:
+
+- **19 tests passed**: 11 `ApplicationLogFilesTests` cases and 8 `LocalizationTests`. Cover missing directories, bounded ordered listing, ignored files/date/path validation, empty/large/UTF-8/multiline previews, full export while a writer remains open, preservation of source data, source-directory protection, cancelled/missing-source export, and a real locked destination on Windows.
+- Isolated `--application-logs` UI scenario passed for PL/EN, Graphite/Light, font16 and 920×680 / 600×480. Cover settings search, newest/older selection, bounded read-only preview, selected error search and visibility after resize, full export through an injected picker result, picker cancellation, unsafe-destination feedback, folder launcher target/failure, footer/label bounds, missing-directory refresh, close cancellation and unchanged unsaved settings.
+- Incremental Release application/harness build: zero warnings/errors. Repository/link/pinned-asset and whitespace checks. Selected renders, TRX and summary are kept in `artifacts/reports/application-logs-2026-10-18/`; disposable databases/log fixtures are removed afterwards.
+
+Tests use owned fixtures only, not the maintainer's logs, profiles or credentials. Native OS picker/launcher interactions, native Linux desktop and a complete application test matrix are not claimed; the UI scenario injects those external boundaries. Existing logger files and frozen releases are untouched.

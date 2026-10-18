@@ -118,6 +118,12 @@ internal static partial class Dialogs
         backupSection.Children.Add(backupContent);
         // Keep the result and privacy notice visible when the action is found by search.
         searchIndex.Field(backupSection,backupContent,"Kopia lokalnej bazy "+L.T("Kopia lokalnej bazy"));
+        var logSection=Section(securityPage,"file","Logi i diagnostyka");
+        var logContent=new StackPanel { Spacing=10 };
+        logContent.Children.Add(DesignSystem.Hint(L.T("Przeczytaj logi aplikacji, wyszukaj komunikat błędu lub zapisz kopię do zgłoszenia problemu. Działanie nie wymaga zapisywania ustawień.")));
+        var showLogs=Button("Otwórz logi",async()=> { if(settingsOwner!=null)await ApplicationLogs(settingsOwner,repository.LogDirectory); }); showLogs.Name="OpenApplicationLogs"; showLogs.HorizontalAlignment=HorizontalAlignment.Left;
+        logContent.Children.Add(showLogs); logSection.Children.Add(logContent);
+        searchIndex.Field(logSection,logContent,"Logi logs diagnostyka diagnostics pobierz download "+L.T("Logi i diagnostyka"));
         var languageSection=Section(appearancePage,"globe","Język interfejsu");
         var language=new ComboBox { Name="ApplicationLanguage",ItemsSource=new[]{"Polski","English"},SelectedIndex=p.Language=="en"?1:0,HorizontalAlignment=HorizontalAlignment.Stretch };
         Label(languageSection,"Język aplikacji / Language",language);

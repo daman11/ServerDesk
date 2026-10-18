@@ -27,7 +27,7 @@ public sealed class App : Application
         var services = new ServiceCollection(); services.AddSingleton<AppPaths>(); services.AddSingleton<ProfileRepository>(); services.AddSingleton<ICredentialStore,CredentialStore>(); services.AddSingleton<SshConnectionFactory>(); services.AddSingleton<IRdpClient,ExternalRdpClient>(); services.AddSingleton<MainViewModel>(); services.AddSingleton<MainWindow>();
         var provider = services.BuildServiceProvider();
         var paths = provider.GetRequiredService<AppPaths>();
-        Log.Logger = new LoggerConfiguration().WriteTo.File(Path.Combine(paths.Data,"logs","serverdesk-.log"),rollingInterval:RollingInterval.Day,retainedFileCountLimit:7).CreateLogger();
+        Log.Logger = new LoggerConfiguration().WriteTo.File(Path.Combine(paths.Logs,"serverdesk-.log"),rollingInterval:RollingInterval.Day,retainedFileCountLimit:7).CreateLogger();
         AppDomain.CurrentDomain.UnhandledException += (_, e) => Log.Error("Nieobsłużony wyjątek typu {Type}",e.ExceptionObject.GetType().Name);
         try
         {

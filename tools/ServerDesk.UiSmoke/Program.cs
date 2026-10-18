@@ -65,6 +65,7 @@ if(args.Contains("--commands")) { CommandPanelChecks.Run(root); return; }
 if(args.Contains("--command-profile")) { CommandPanelChecks.ProfileLayout(root); return; }
 if(args.Contains("--about")) { AboutChecks.Run(root); return; }
 if(args.Contains("--profile-deletion")) { ProfileDeletionChecks.Run(root); return; }
+if(args.Contains("--application-logs")) { ApplicationLogsChecks.Run(root); return; }
 if(args.Contains("--presentation-consistency")) { PresentationConsistencyChecks.Run(root); return; }
 if(args.Contains("--commands-network")) { CommandPanelChecks.Network(root,args[1],args[2]); return; }
 if(args.Contains("--four-panels-network")) { FourPanelChecks.Network(root,args[1],args[2]); return; }

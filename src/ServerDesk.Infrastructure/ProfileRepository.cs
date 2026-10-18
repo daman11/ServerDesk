@@ -11,11 +11,13 @@ public sealed partial class ProfileRepository
     private readonly string databasePath;
     public string DatabasePath=>databasePath;
     public string DatabaseBackupDirectory { get; }
+    public string LogDirectory { get; }
     private readonly SemaphoreSlim initializationGate=new(1);
     public ProfileRepository(AppPaths paths)
     {
         databasePath=Path.Combine(paths.Data,"serverdesk.db");
         DatabaseBackupDirectory=Path.Combine(paths.Data,"backups");
+        LogDirectory=paths.Logs;
         connectionString=new SqliteConnectionStringBuilder { DataSource=databasePath }.ToString();
     }
     private async Task<SqliteConnection> Open(CancellationToken ct)

@@ -79,6 +79,8 @@ Windows: SQLite i szyfrowane DPAPI poświadczenia w `%APPDATA%\ServerDesk`. Linu
 
 Zmiennej `SERVERDESK_DATA_HOME` można użyć do izolacji danych testowych lub trybu portable. Nie wskazuj współdzielonego, niezaufanego katalogu. Logi rotują codziennie, zachowują 7 plików i nie zapisują treści terminala ani sekretów.
 
+**Podgląd i pobieranie logów:** **Ustawienia → Bezpieczeństwo → Logi i diagnostyka → Otwórz logi** pokazuje pliki dziennika z bieżącego katalogu danych. Możesz też wpisać „logi” lub „logs” w wyszukiwarce ustawień. Wybierz plik z listy; Ctrl+F ustawia wyszukiwanie w podglądzie, Enter/lupa przechodzi do następnego wyniku, a F5 odświeża listę. Duże pliki mają podgląd ostatnich 128 KiB. **Zapisz kopię logu** zapisuje pełny plik z chwili rozpoczęcia eksportu, po wskazaniu miejsca poza katalogiem logów. Odczyt działa także podczas dopisywania zdarzeń. **Otwórz folder logów** otwiera lokalny katalog. Operacje działają od razu i nie zapisują roboczych ustawień aplikacji; zamknięcie podglądu przerywa odczyt/eksport. Przed udostępnieniem sprawdź ścieżki i identyfikatory w pliku. [Zakres weryfikacji](reports/application-logs-2026-10-18.md).
+
 ## Budowanie
 
 Wymagane .NET SDK 10. `global.json` dopuszcza nowsze feature bands .NET 10.

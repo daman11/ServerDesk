@@ -2,6 +2,7 @@
 
 ## Unreleased
 
+- Add Settings → Security → Logs and diagnostics with a read-only daily-log viewer, preview search, refresh, folder opening and full-file copy export. Bound large previews to 128 KiB and preserve existing exports on failures/cancellation.
 - Fix saved SSH/RDP profile deletion when the Windows credential directory is absent. Treat missing credential files/directories as already forgotten, preserve real access/IO failures, distinguish filesystem/database/network errors, and log deletion failures with paths and stack traces. Add scoped persistence, restart and failure regression checks.
 - Replace the brief About message with localized application, license and component tabs. Include the original MIT license offline and copyable build/runtime information for bug reports.
 - Improve the Commands plugin with fixed search/filter controls above its scrolling system profile, a risk filter, contextual empty-state actions and Enter/Down/Escape/Ctrl+F navigation. Give cards category/risk information and organize details into parameters, preview and guidance, with visible explanations of unavailable dispatch actions.

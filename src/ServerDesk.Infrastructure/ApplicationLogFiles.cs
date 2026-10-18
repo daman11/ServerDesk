@@ -60,7 +60,9 @@ public sealed partial class ApplicationLogFiles
     public Task ExportAsync(string name,string destination,CancellationToken ct=default)=>Task.Run(async()=>
     {
         ct.ThrowIfCancellationRequested(); var target=Path.GetFullPath(destination);
-        if(target.Equals(DirectoryPath,PathComparison) || target.StartsWith(DirectoryPath+Path.DirectorySeparatorChar,PathComparison))throw new ArgumentException("Choose a destination outside the application log directory.",nameof(destination));
+        var physicalLogs=PhysicalDirectory(DirectoryPath);
+        var physicalTarget=Path.Combine(PhysicalDirectory(Path.GetDirectoryName(target)!),Path.GetFileName(target));
+        if(Inside(target,DirectoryPath) || Inside(physicalTarget,physicalLogs))throw new ArgumentException("Choose a destination outside the application log directory.",nameof(destination));
         await using var source=Open(name); var length=source.Length;
         await AtomicFile.ReplaceAsync(target,async(output,token)=>
         {
@@ -73,6 +75,26 @@ public sealed partial class ApplicationLogFiles
             }
         },ct).ConfigureAwait(false);
     },ct);
-    [GeneratedRegex(@"^serverdesk-\d{8}(?:_\d{3,})?\.log$",RegexOptions.CultureInvariant)]
+    private static bool Inside(string path,string directory)=>path.Equals(directory,PathComparison) || path.StartsWith(Path.TrimEndingDirectorySeparator(directory)+Path.DirectorySeparatorChar,PathComparison);
+    private static string PhysicalDirectory(string path)
+    {
+        var full=Path.GetFullPath(path); var followed=0;
+        // Resolve aliases in every ancestor, including ancestors of a link's
+        // target. A lexical prefix alone misses junction/symlink destinations.
+        while(true)
+        {
+            var root=Path.GetPathRoot(full)!; var current=root; var parts=full[root.Length..].Split(new[]{Path.DirectorySeparatorChar,Path.AltDirectorySeparatorChar},StringSplitOptions.RemoveEmptyEntries); var restart=false;
+            for(var i=0;i<parts.Length;i++)
+            {
+                var directory=new DirectoryInfo(Path.Combine(current,parts[i]));
+                if(directory.LinkTarget==null) { current=directory.FullName; continue; }
+                if(++followed>40)throw new IOException("Too many directory links in the log export path.");
+                var target=directory.ResolveLinkTarget(true)??throw new IOException("The log export directory link is unavailable.");
+                full=Path.Combine(new[]{target.FullName}.Concat(parts.Skip(i+1)).ToArray()); restart=true; break;
+            }
+            if(!restart)return Path.TrimEndingDirectorySeparator(current);
+        }
+    }
+    [GeneratedRegex(@"\Aserverdesk-[0-9]{8}(?:_[0-9]{3,})?\.log\z",RegexOptions.CultureInvariant)]
     private static partial Regex LogName();
 }

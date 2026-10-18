@@ -1,6 +1,8 @@
 # Droga do ServerDesk 1.0
 
-Punkt wyjścia: 0.41.0 Public Beta. Funkcje rdzenia i dodatków istnieją; stan implementacji oraz granice wcześniejszych testów opisuje [MVP](mvp-status.md). Poniższa lista jest bieżącym planem stabilizacji, a nie deklaracją gotowości 1.0.
+Punkt wyjścia: 0.42.0 Public Beta. Funkcje rdzenia i dodatków istnieją; stan implementacji oraz granice wcześniejszych testów opisuje [MVP](mvp-status.md). Poniższa lista jest bieżącym planem stabilizacji, a nie deklaracją gotowości 1.0.
+
+0.42.0 zbiera usprawnienia tagów, motywów, edytora SFTP i komend, dodaje informacje o aplikacji oraz logi w ustawieniach. Obejmuje naprawę usuwania profili i próby rotacji logów, aliasów katalogów, równoległych eksportów i dużych plików. [Zakres bieżącej weryfikacji](reports/release-verification-0.42.0.md). Testy VMware, sprzętu i pilotaż pozostają otwarte.
 
 Małe kroki kończą się commitem, celowanymi sprawdzeniami i EXE do uruchomienia z folderu. Pełna macierz i paczki są przeznaczone dla większych etapów, RC i wydania 1.0.
 

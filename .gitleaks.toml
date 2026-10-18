@@ -4,6 +4,14 @@ title = "ServerDesk secret scanning"
 useDefault = true
 
 [[allowlists]]
+description = "Exact prose protocol list in an acceptance report, not a credential"
+targetRules = ["generic-api-key"]
+condition = "AND"
+paths = ['''^docs/reports/ergonomics-2026-10-17\.md$''']
+regexTarget = "match"
+regexes = ['''^password URLs, SSH/RDP/VNC/Serial $''']
+
+[[allowlists]]
 description = "Public disposable Net-SNMP fixture password; not a user credential"
 targetRules = ["generic-api-key"]
 condition = "AND"

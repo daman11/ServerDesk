@@ -2,6 +2,11 @@
 
 ## Unreleased
 
+## 0.42.0 — Public Beta — 2026-10-18
+
+- Reject newline-suffixed log filenames and prevent exports through directory junctions/symlinks from overwriting live logs. Add cross-platform edge-case tests for nested aliases, rotation, parallel exports, sparse files and unavailable destination directories.
+- Complete icon metadata for tag-filter actions; align localization and protocol smoke checks with the current sidebar and cover every settings category.
+- Add colored connection tags, editable tag chips and Any/All/Untagged filtering with draft color previews. Improve workspace navigation, quick connection, session switching and calm selected-row presentation.
 - Add Settings → Security → Logs and diagnostics with a read-only daily-log viewer, preview search, refresh, folder opening and full-file copy export. Bound large previews to 128 KiB and preserve existing exports on failures/cancellation.
 - Fix saved SSH/RDP profile deletion when the Windows credential directory is absent. Treat missing credential files/directories as already forgotten, preserve real access/IO failures, distinguish filesystem/database/network errors, and log deletion failures with paths and stack traces. Add scoped persistence, restart and failure regression checks.
 - Replace the brief About message with localized application, license and component tabs. Include the original MIT license offline and copyable build/runtime information for bug reports.

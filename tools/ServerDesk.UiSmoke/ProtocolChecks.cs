@@ -33,9 +33,9 @@ internal static class ProtocolChecks
         RedesignChecks.Wait(repo.SaveAsync(vncProfile)); RedesignChecks.Wait(repo.SaveAsync(serial)); RedesignChecks.Wait(((MainViewModel)main.DataContext!).LoadAsync()); RedesignChecks.Frames();
         foreach(var protocol in new[]{Protocol.Serial,Protocol.VNC})
         {
-            Click(Action(main,"Filtr protokołu: "+protocol)); var entries=main.GetVisualDescendants().OfType<TreeViewItem>().Where(t=>t.Tag is ServerProfile).ToArray(); if(entries.Length!=1 || ((ServerProfile)entries[0].Tag!).Protocol!=protocol)throw new Exception("New protocol filter inconsistent");
+            Field<ComboBox>(main,"ConnectionProtocolFilter").SelectedItem=protocol.ToString(); RedesignChecks.Frames(); var entries=main.GetVisualDescendants().OfType<TreeViewItem>().Where(t=>t.Tag is ServerProfile).ToArray(); if(entries.Length!=1 || ((ServerProfile)entries[0].Tag!).Protocol!=protocol)throw new Exception("New protocol filter inconsistent");
         }
-        Click(Action(main,"Filtr protokołu: Wszystkie"));
+        Field<ComboBox>(main,"ConnectionProtocolFilter").SelectedIndex=0; RedesignChecks.Frames();
         Console.WriteLine("PASS VNC/Serial editor: protocol defaults, hidden network/login fields, required device/baud errors, full line parameters, dark/light small windows, persistence and filters");
 
         using var server=new VncTestServer();

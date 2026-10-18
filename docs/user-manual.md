@@ -1,6 +1,6 @@
 # ServerDesk
 
-Natywny klient administracyjny C# / .NET 10 / Avalonia 12 dla Windows i Linux. Wersja 0.41.0 Public Beta; [status MVP](mvp-status.md), [ograniczenia](known-issues.md) i [zmiany tego wydania](releases/release-0.41.0.md). Instrukcja opisuje także zmiany w bieżącej wersji deweloperskiej.
+Natywny klient administracyjny C# / .NET 10 / Avalonia 12 dla Windows i Linux. Wersja 0.42.0 Public Beta; [status MVP](mvp-status.md), [ograniczenia](known-issues.md) i [zmiany tego wydania](releases/release-0.42.0.md). 
 
 ## Uruchomienie
 

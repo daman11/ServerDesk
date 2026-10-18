@@ -64,6 +64,8 @@ internal static partial class DeskIcons
         "Otwarte sesje" or "Pokaż wszystkie ustawienia" or "Znajdź połączenie"=>"search",
         "Edytuj jako profil"=>"edit",
         "Tagi i kolory"=>"tags",
+        "Bez tagów"=>"tags",
+        "Zaznacz widoczne"=>"check",
         "Przenieś do folderu" or "Przenieś do katalogu"=>"folder-input",
         "SFTP" or "Zmień ikonę folderu" or "Domyślna ikona" or "Kategorie komend"=>"folder",
         "Monitoring" or "Server Info"=>"chart-no-axes-combined",

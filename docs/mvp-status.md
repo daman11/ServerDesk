@@ -1,4 +1,6 @@
-# Pierwotne MVP — wydanie 0.41.0
+# Pierwotne MVP — wydanie 0.42.0
+
+0.42.0 dodaje kolorowe tagi i filtrowanie, motywy, wybór edytora SFTP, ergonomię nawigacji i komend oraz informacje o aplikacji i logi w ustawieniach. Naprawia usuwanie zapisanych profili przy braku katalogu poświadczeń oraz eksport logów przez alias katalogu. [Bieżąca weryfikacja](reports/release-verification-0.42.0.md). Pozostaje Public Beta; testy maszyn i sprzętu odłożono na prośbę maintenera.
 
 0.41.0 zbiera opisane poniżej zmiany robocze drzewa/ikon/grafik i narzędzi RC. Chroni sekrety kolekcji przed utratą przy błędzie indeksu oraz dodaje rzeczywiste próby migracji/odtworzenia, przerwania procesu i braku miejsca. Testy VMware/sprzętu odłożono na prośbę maintenera; status nadal Public Beta. [Weryfikacja i otwarte warunki 1.0](reports/release-verification-0.41.0.md).
 

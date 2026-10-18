@@ -1,5 +1,7 @@
 # ServerDesk Public Beta — known issues
 
+- **Diagnostics and profile deletion (0.42.0):** missing credential directories no longer block saved-profile deletion. Settings provides a bounded log preview and full-copy export; exported logs can contain addresses and paths, so review them before sharing. Stable symlink/junction aliases are resolved before export. This is not protection against a hostile process changing directory links concurrently. Native VM/hardware and long-running acceptance remain pending. See the [current verification scope](reports/release-verification-0.42.0.md).
+
 This is a public beta. Keep a backup before upgrading and validate the workflows you need in a test environment.
 
 - **1.0 preparation (0.41.0):** native VMware/hardware acceptance is deferred at the maintainer's request. Windows/Linux automated checks and Ubuntu/WSL do not certify native Kali/KDE, clean-VM installer registration, physical Serial, mixed-DPI monitors or multi-hour pilot sessions. A failed collection-index write preserves its saved secret; after a committed deletion, an unavailable credential provider can leave an unused encrypted blob. Database backups still exclude those blobs. See the [release verification scope](reports/release-verification-0.41.0.md).

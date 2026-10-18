@@ -1,6 +1,6 @@
 # Dokumentacja / Documentation
 
-Bieżące wydanie: [0.41.0 Public Beta](releases/release-0.41.0.md) — foldery i ikony, ochrona kolekcji oraz rozszerzone próby odzyskiwania danych i instalatora. Kandydat do dalszej akceptacji 1.0; testy VM/sprzętu odłożone. [Zakres testów wydania](reports/release-verification-0.41.0.md).
+Bieżące wydanie: [0.42.0 Public Beta](releases/release-0.42.0.md) — kolorowe tagi i filtry, motywy, edytor SFTP, usprawnienia komend, informacje o aplikacji i przeglądarka logów. Poprawki usuwania profili i eksportu diagnostyki. Testy VM/sprzętu pozostają odłożone. [Zakres testów wydania](reports/release-verification-0.42.0.md).
 
 | Temat / Topic | Dokument |
 |---|---|

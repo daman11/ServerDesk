@@ -22,14 +22,14 @@ internal static class LocalizationChecks
         main.Close(); RedesignChecks.Frames(20);
         AppText.SetLanguage(repo.PreferencesAsync().Result.Language);
         var paths=new AppPaths(); var english=new MainWindow(new MainViewModel(repo),repo,new CredentialStore(paths),new SshConnectionFactory(repo),new ExternalRdpClient()); english.Show(); RedesignChecks.Frames(25);
-        if(!Text(english,"CONNECTIONS") || !Text(english,"Ready to work") || !Text(english,"Layout"))throw new Exception("English main window is incomplete");
+        if(!Text(english,"Connections") || !Text(english,"Ready to work") || !Text(english,"Layout"))throw new Exception("English main window is incomplete");
         var sentinel=new ServerProfile { Name="Połącz",Host="localhost",Username="test",Folder="Ustawienia" }; RedesignChecks.Wait(repo.SaveAsync(sentinel)); RedesignChecks.Wait(((MainViewModel)english.DataContext!).LoadAsync()); RedesignChecks.Frames(20);
         if(!Text(english,"Połącz") || !Text(english,"Ustawienia"))throw new Exception("User profile or folder was translated");
         english.CaptureRenderedFrame()!.Save(Path.Combine(root,"main-en.png"));
         edit=Dialogs.Settings(english,repo,()=>Task.CompletedTask); RedesignChecks.Frames(); w=english.OwnedWindows.Single();
         if(w.Title!="ServerDesk settings" || Field<ComboBox>(w,"ApplicationLanguage").SelectedIndex!=1 || !Text(w,"The language change takes effect after restarting ServerDesk."))throw new Exception("English language settings or restart notice missing");
         var categories=Field<TabControl>(w,"SettingsCategories");
-        foreach(var index in Enumerable.Range(0,6))
+        foreach(var index in Enumerable.Range(0,categories.Items.Count))
         {
             categories.SelectedIndex=index; RedesignChecks.Frames();
             w.CaptureRenderedFrame()!.Save(Path.Combine(root,"settings-en-"+index+".png"));

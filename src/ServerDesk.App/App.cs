@@ -31,10 +31,10 @@ public sealed class App : Application
         AppDomain.CurrentDomain.UnhandledException += (_, e) => Log.Error("Nieobsłużony wyjątek typu {Type}",e.ExceptionObject.GetType().Name);
         try
         {
-            var language=Task.Run(async()=> { var repository=provider.GetRequiredService<ProfileRepository>(); await repository.InitializeAsync(); if(await repository.ApplyPendingFactorySettingsResetAsync())Log.Information("Factory settings reset applied; saved connections and user data preserved"); return (await repository.PreferencesAsync()).Language; }).GetAwaiter().GetResult();
+            var language=Task.Run(async()=> { var repository=provider.GetRequiredService<ProfileRepository>(); await repository.InitializeAsync(); if(await repository.ApplyPendingFactorySettingsResetAsync())Log.Information("Factory settings reset applied atomically"); return (await repository.PreferencesAsync()).Language; }).GetAwaiter().GetResult();
             L.SetLanguage(language);
         }
-        catch(Exception ex) { Log.Error("Could not load application language: {Type}",ex.GetType().Name); L.SetLanguage("pl"); }
+        catch(Exception ex) { Log.Error("Could not initialize application preferences: {ExceptionDetails}",ExceptionDiagnostics.Describe(ex)); L.SetLanguage("pl"); }
         Log.Information("Application started in {Language}",L.Language);
         if (ApplicationLifetime is IClassicDesktopStyleApplicationLifetime desktop)
         { desktop.MainWindow=provider.GetRequiredService<MainWindow>(); desktop.Exit+=(_,_)=> { provider.Dispose(); Log.CloseAndFlush(); }; }

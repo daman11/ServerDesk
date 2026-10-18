@@ -3,7 +3,10 @@ using System.Text.RegularExpressions;
 
 namespace ServerDesk.Infrastructure;
 
-public sealed record DatabaseBackupEntry(string Path,DateTimeOffset CreatedUtc,long Bytes,int SchemaVersion,bool BeforeMigration);
+public sealed record DatabaseBackupEntry(string Path,DateTimeOffset CreatedUtc,long Bytes,int SchemaVersion,bool BeforeMigration)
+{
+    public bool BeforeReset { get; init; }
+}
 public sealed record DatabaseBackupListing(IReadOnlyList<DatabaseBackupEntry> Entries,int TotalCount,bool DirectoryExists);
 
 // Metadata only: listing a filename never certifies the contents as restorable.
@@ -26,7 +29,7 @@ public static partial class DatabaseBackupCatalog
                 {
                     var file=new FileInfo(path); file.Refresh();
                     if(!file.Exists || (file.Attributes & (FileAttributes.ReparsePoint|FileAttributes.Directory))!=0)continue;
-                    var entry=new DatabaseBackupEntry(file.FullName,created,file.Length,schema,match.Groups["reason"].Value=="before-migration"); total++;
+                    var entry=new DatabaseBackupEntry(file.FullName,created,file.Length,schema,match.Groups["reason"].Value=="before-migration") { BeforeReset=match.Groups["reason"].Value=="before-reset" }; total++;
                     recent.Enqueue(entry,(created.UtcTicks,name)); if(recent.Count>VisibleLimit)recent.Dequeue();
                 }
                 catch(FileNotFoundException) { /* A completed backup may be removed during enumeration. */ }
@@ -36,6 +39,6 @@ public static partial class DatabaseBackupCatalog
         ct.ThrowIfCancellationRequested();
         return new(recent.UnorderedItems.Select(i=>i.Element).OrderByDescending(e=>e.CreatedUtc).ThenBy(e=>e.Path,StringComparer.Ordinal).ToArray(),total,true);
     }
-    [GeneratedRegex(@"^serverdesk-(?<time>\d{8}-\d{9})-v(?<schema>\d+)-(?<reason>manual|before-migration)-[a-f0-9]{32}\.db$",RegexOptions.CultureInvariant)]
+    [GeneratedRegex(@"^serverdesk-(?<time>\d{8}-\d{9})-v(?<schema>\d+)-(?<reason>manual|before-migration|before-reset)-[a-f0-9]{32}\.db$",RegexOptions.CultureInvariant)]
     private static partial Regex BackupName();
 }

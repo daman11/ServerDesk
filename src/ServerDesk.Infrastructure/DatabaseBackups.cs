@@ -6,7 +6,7 @@ namespace ServerDesk.Infrastructure;
 public sealed record DatabaseBackup(string Path,long Bytes,int SchemaVersion);
 
 public sealed class DatabaseBackupException(Exception innerException) : IOException(
-    L.T("Nie udało się utworzyć sprawdzonej kopii bazy. Sprawdź wolne miejsce i uprawnienia katalogu danych. Migracja nie została rozpoczęta."),innerException);
+    L.T("Nie udało się utworzyć sprawdzonej kopii bazy. Sprawdź wolne miejsce i uprawnienia katalogu danych. Operacja wymagająca kopii nie została rozpoczęta."),innerException);
 
 internal static class DatabaseBackups
 {
@@ -35,6 +35,14 @@ internal static class DatabaseBackups
                 if(!string.Equals(check.ExecuteScalar() as string,"ok",StringComparison.Ordinal))throw new InvalidDataException();
                 check.CommandText="PRAGMA user_version";
                 if(Convert.ToInt32(check.ExecuteScalar())!=version)throw new InvalidDataException();
+                if(version==3)
+                {
+                    // Restoring a backup must never replay a scheduled reset.
+                    check.CommandText="DELETE FROM settings WHERE key='pendingFactorySettingsReset'";
+                    check.ExecuteNonQuery();
+                    check.CommandText="PRAGMA quick_check(1)";
+                    if(!string.Equals(check.ExecuteScalar() as string,"ok",StringComparison.Ordinal))throw new InvalidDataException();
+                }
             }
             using(var file=new FileStream(temporary,FileMode.Open,FileAccess.Write,FileShare.None))file.Flush(flushToDisk:true);
             ct.ThrowIfCancellationRequested();

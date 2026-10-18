@@ -16,6 +16,9 @@ English: **Saved database backups** lists up to 20 newest snapshot filenames wit
 
 ## Zakres i przechowywanie
 
+- Wersja deweloperska po 0.42.0: pełny reset fabryczny tworzy kopię przy planowaniu oraz świeżą kopię `before-reset` przy następnym starcie, przed wyczyszczeniem danych. Druga kopia obejmuje końcowy zapis podczas zamykania. W katalogu kopii ma opis **Przed resetem**. Błąd kopii lub transakcji zatrzymuje reset; oryginalna baza i plan pozostają do ponownej próby.
+- Kopie utworzone przez tę wersję pomijają jedynie znacznik zaplanowanego resetu, aby odtworzenie nie wyczyściło danych ponownie. Dotyczy to także ręcznej kopii wykonanej przy zaplanowanym resecie. Plan w działającej bazie pozostaje bez zmian.
+- Pełny reset usuwa wszystkie aktywne dane z bazy: profile z notatkami, foldery/ikony, historię, zaufanie SSH, ustawienia/tagi i odnośniki pluginów. Zabezpieczone treści DPAPI/Secret Service pozostają na tym komputerze, co umożliwia ich odczyt po przywróceniu odnośników z kopii, o ile magazyn nadal jest dostępny. Nie są odczytywane ani eksportowane do jawnego pliku. Logi, poprzednie kopie i zewnętrzne pliki (np. klucze prywatne, pliki pobrane SFTP) pozostają zachowane. To reset stanu aplikacji, bez bezpiecznego wymazywania dysku lub przenośnej kopii sekretów.
 - Kopia SQLite zawiera profile, foldery, ustawienia, historię, zaufane klucze SSH oraz referencje do danych w magazynie systemowym.
 - Nie zawiera haseł, prywatnych kluczy ani treści własnych komend i kolekcji przechowywanych w DPAPI/Secret Service. Referencja w starej kopii może wskazywać wpis magazynu, który został później usunięty. Sama kopia bazy nie odtwarza tego wpisu. Nie jest to pełna ani przenośna kopia wszystkich danych aplikacji.
 - Metadane infrastruktury są poufne. Plik bazy nie jest szyfrowany. Nie publikuj go w zgłoszeniu ani repozytorium.

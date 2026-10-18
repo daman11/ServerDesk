@@ -125,7 +125,7 @@ internal static partial class Dialogs
         logContent.Children.Add(showLogs); logSection.Children.Add(logContent);
         searchIndex.Field(logSection,logContent,"Logi logs diagnostyka diagnostics pobierz download "+L.T("Logi i diagnostyka"));
         var resetSection=Section(securityPage,"refresh","Przywracanie ustawień");
-        var factoryReset=new FactorySettingsResetView(repository,()=>settingsOwner,await repository.IsFactorySettingsResetPendingAsync(),main==null?null:()=> { restartAfterSave="pl"; settingsOwner?.Close(); },backup=>backupBrowser.RefreshAsync(backup.Path));
+        var factoryReset=new FactorySettingsResetView(repository,()=>settingsOwner,await repository.PendingFactorySettingsResetAsync(),main==null?null:()=> { restartAfterSave="pl"; settingsOwner?.Close(); },backup=>backupBrowser.RefreshAsync(backup.Path));
         resetSection.Children.Add(factoryReset);
         searchIndex.Field(resetSection,factoryReset,"Przywracanie ustawień domyślne fabryczne reset defaults factory "+L.T("Przywracanie ustawień"));
         var languageSection=Section(appearancePage,"globe","Język interfejsu");

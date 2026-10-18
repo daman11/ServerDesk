@@ -1,5 +1,7 @@
 # Settings recovery — 2026-10-18
 
+Historical scope of commit `262d711`: preferences-only reset. The maintainer subsequently selected a full application reset; [the follow-up report](full-reset-2026-10-18.md) describes the current implementation. Already scheduled preferences-only requests retain their original scope.
+
 Focused development increment after 0.42.0; no version change, release package or tag rebuild. Existing frozen release files are preserved.
 
 ## Behavior

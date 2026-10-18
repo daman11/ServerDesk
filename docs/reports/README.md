@@ -2,7 +2,7 @@
 
 SSH diagnostics: [Connection failure reasons and safe protocol/network details, 2026-10-18](ssh-errors-2026-10-18.md).
 
-Settings recovery: [Draft defaults and cancellable factory settings reset, 2026-10-18](settings-reset-2026-10-18.md).
+Settings recovery: [Full application reset with recoverable snapshots, 2026-10-18](full-reset-2026-10-18.md); [earlier preferences-only increment](settings-reset-2026-10-18.md).
 
 Current UI presentation: [Module boundaries](module-boundaries-2026-10-17.md), [theme presets and SFTP editor](themes-editor-2026-10-17.md), [settings search and empty-section usability](ui-ux-refinements-2026-10-17.md), [folder headers and service icons](tree-icons-2026-10-17.md), [0.36.2 icon and label verification scope](release-verification-0.36.2.md).
 

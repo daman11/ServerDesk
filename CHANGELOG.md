@@ -3,7 +3,7 @@
 ## Unreleased
 
 - Explain SSH authentication, local private-key, DNS, connection-refused, timeout and server disconnect failures in Polish and English. Keep the specific reason in the session header/tooltip and record safe protocol/network codes without exposing credentials or claiming an opaque authentication rejection proves a wrong password.
-- Clarify draft-only defaults and add a cancellable factory settings reset in Security settings. Create a verified database backup before scheduling, consume the request atomically at startup after shutdown writes, and reset only preferences/window/workspace/sort keys while preserving saved connections, credentials, history, trust, tag colors and plugin documents.
+- Separate draft-only preference defaults from a confirmed, cancellable full application reset. Before resetting at startup, create a fresh verified database snapshot including final shutdown writes; atomically clear connections, folders/notes, history, SSH trust, tag colors and plugin state. Preserve protected vault entries for local backup recovery, logs, previous backups and external files. Strip pending reset requests from snapshots so restoring a backup never replays the reset; legacy preferences-only requests retain their original scope.
 ## 0.42.0 — Public Beta — 2026-10-18
 
 - Reject newline-suffixed log filenames and prevent exports through directory junctions/symlinks from overwriting live logs. Add cross-platform edge-case tests for nested aliases, rotation, parallel exports, sparse files and unavailable destination directories.

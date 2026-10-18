@@ -36,7 +36,7 @@ internal sealed class DatabaseBackupBrowser:StackPanel,IDisposable
         {
             if(entry==null)return null;
             var title=DesignSystem.Label(entry.CreatedUtc.ToLocalTime().ToString("g")); title.FontWeight=FontWeight.SemiBold;
-            var kind=L.T(entry.BeforeMigration?"Przed migracją":"Ręczna kopia");
+            var kind=L.T(entry.BeforeMigration?"Przed migracją":entry.BeforeReset?"Przed resetem":"Ręczna kopia");
             var info=DesignSystem.Hint(kind+" · "+L.F($"Schemat {entry.SchemaVersion}")+" · "+(entry.Bytes/1024d).ToString("N1")+" KiB");
             var name=DesignSystem.Hint(System.IO.Path.GetFileName(entry.Path)); name.TextWrapping=TextWrapping.NoWrap; name.TextTrimming=TextTrimming.CharacterEllipsis;
             var row=new StackPanel { Spacing=3,Margin=new Thickness(4,5),Children={title,info,name} }; ToolTip.SetTip(row,entry.Path); return row;

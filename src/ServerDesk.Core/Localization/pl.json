@@ -1616,5 +1616,18 @@
   "Składniki": "Składniki",
   "Kopiuj informacje": "Kopiuj informacje",
   "Skopiowano informacje o wersji.": "Skopiowano informacje o wersji.",
-  "Nie udało się skopiować informacji. Możesz zaznaczyć dane techniczne i skopiować je ręcznie.": "Nie udało się skopiować informacji. Możesz zaznaczyć dane techniczne i skopiować je ręcznie."
+  "Nie udało się skopiować informacji. Możesz zaznaczyć dane techniczne i skopiować je ręcznie.": "Nie udało się skopiować informacji. Możesz zaznaczyć dane techniczne i skopiować je ręcznie.",
+  "Operacja na lokalnej bazie danych nie powiodła się. Sprawdź uprawnienia, wolne miejsce i blokadę bazy. Szczegóły zapisano w dzienniku aplikacji.": "Operacja na lokalnej bazie danych nie powiodła się. Sprawdź uprawnienia, wolne miejsce i blokadę bazy. Szczegóły zapisano w dzienniku aplikacji.",
+  "Serwer SSH odrzucił logowanie. Sprawdź login i sposób uwierzytelniania.": "Serwer SSH odrzucił logowanie. Sprawdź login i sposób uwierzytelniania.",
+  "Operacja SSH/SFTP nie powiodła się. Sprawdź stan sesji i dostępność serwera.": "Operacja SSH/SFTP nie powiodła się. Sprawdź stan sesji i dostępność serwera.",
+  "Nie udało się ukończyć operacji sieciowej. Sprawdź dostępność serwera i połączenie z siecią.": "Nie udało się ukończyć operacji sieciowej. Sprawdź dostępność serwera i połączenie z siecią.",
+  "Nie znaleziono lokalnego katalogu. Sprawdź ścieżkę danych na komputerze. Szczegóły zapisano w dzienniku aplikacji.": "Nie znaleziono lokalnego katalogu. Sprawdź ścieżkę danych na komputerze. Szczegóły zapisano w dzienniku aplikacji.",
+  "Nie znaleziono lokalnego pliku. Sprawdź ścieżkę na komputerze. Szczegóły zapisano w dzienniku aplikacji.": "Nie znaleziono lokalnego pliku. Sprawdź ścieżkę na komputerze. Szczegóły zapisano w dzienniku aplikacji.",
+  "Brak uprawnień do lokalnego pliku lub katalogu. Sprawdź uprawnienia aplikacji. Szczegóły zapisano w dzienniku aplikacji.": "Brak uprawnień do lokalnego pliku lub katalogu. Sprawdź uprawnienia aplikacji. Szczegóły zapisano w dzienniku aplikacji.",
+  "Błąd lokalnego systemu plików. Sprawdź ścieżkę, wolne miejsce i blokadę pliku. Szczegóły zapisano w dzienniku aplikacji.": "Błąd lokalnego systemu plików. Sprawdź ścieżkę, wolne miejsce i blokadę pliku. Szczegóły zapisano w dzienniku aplikacji.",
+  "Operacja nie powiodła się ({0}). Szczegóły zapisano w dzienniku aplikacji.": "Operacja nie powiodła się ({0}). Szczegóły zapisano w dzienniku aplikacji.",
+  "Nie można usunąć pliku zapisanych poświadczeń. Profil pozostaje w bazie. Sprawdź uprawnienia do lokalnego katalogu danych i blokadę pliku. Szczegóły zapisano w dzienniku.": "Nie można usunąć pliku zapisanych poświadczeń. Profil pozostaje w bazie. Sprawdź uprawnienia do lokalnego katalogu danych i blokadę pliku. Szczegóły zapisano w dzienniku.",
+  "Nie udało się potwierdzić zapisu usunięcia połączenia w lokalnej bazie danych. Sprawdź uprawnienia, wolne miejsce i blokadę bazy. Odśwież listę i spróbuj ponownie. Szczegóły zapisano w dzienniku.": "Nie udało się potwierdzić zapisu usunięcia połączenia w lokalnej bazie danych. Sprawdź uprawnienia, wolne miejsce i blokadę bazy. Odśwież listę i spróbuj ponownie. Szczegóły zapisano w dzienniku.",
+  "Połączenie zostało trwale usunięte, ale nie udało się odświeżyć listy. Uruchom ponownie aplikację. Pozostałe połączenia nie zostały usunięte.": "Połączenie zostało trwale usunięte, ale nie udało się odświeżyć listy. Uruchom ponownie aplikację. Pozostałe połączenia nie zostały usunięte.",
+  "Usunięto zapisane połączenie.": "Usunięto zapisane połączenie."
 }

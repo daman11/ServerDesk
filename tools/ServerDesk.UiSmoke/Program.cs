@@ -13,6 +13,11 @@ using Iciclecreek.Terminal;
 using Avalonia.Controls;
 using System.Text;
 
+if(args.Length==5 && args[0]=="--profile-deletion-readback")
+{
+    ProfileDeletionChecks.ReadBack(args[1],args[2],Guid.Parse(args[3]),Guid.Parse(args[4])); return;
+}
+
 // Opt-in child process used only by the isolated external-editor acceptance fixture.
 if(Environment.GetEnvironmentVariable("SERVERDESK_EDITOR_TEST_ROOT") is {} editorRoot && args.Length==1)
 {
@@ -59,6 +64,7 @@ if(args.Contains("--four-panels")) { FourPanelChecks.Run(root); return; }
 if(args.Contains("--commands")) { CommandPanelChecks.Run(root); return; }
 if(args.Contains("--command-profile")) { CommandPanelChecks.ProfileLayout(root); return; }
 if(args.Contains("--about")) { AboutChecks.Run(root); return; }
+if(args.Contains("--profile-deletion")) { ProfileDeletionChecks.Run(root); return; }
 if(args.Contains("--presentation-consistency")) { PresentationConsistencyChecks.Run(root); return; }
 if(args.Contains("--commands-network")) { CommandPanelChecks.Network(root,args[1],args[2]); return; }
 if(args.Contains("--four-panels-network")) { FourPanelChecks.Network(root,args[1],args[2]); return; }

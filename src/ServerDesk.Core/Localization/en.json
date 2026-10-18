@@ -1616,5 +1616,18 @@
   "Składniki": "Components",
   "Kopiuj informacje": "Copy information",
   "Skopiowano informacje o wersji.": "Version information copied.",
-  "Nie udało się skopiować informacji. Możesz zaznaczyć dane techniczne i skopiować je ręcznie.": "Could not copy the information. You can select the technical details and copy them manually."
+  "Nie udało się skopiować informacji. Możesz zaznaczyć dane techniczne i skopiować je ręcznie.": "Could not copy the information. You can select the technical details and copy them manually.",
+  "Operacja na lokalnej bazie danych nie powiodła się. Sprawdź uprawnienia, wolne miejsce i blokadę bazy. Szczegóły zapisano w dzienniku aplikacji.": "The local database operation failed. Check permissions, free space and database locks. Details were recorded in the application log.",
+  "Serwer SSH odrzucił logowanie. Sprawdź login i sposób uwierzytelniania.": "The SSH server rejected the login. Check the user name and authentication method.",
+  "Operacja SSH/SFTP nie powiodła się. Sprawdź stan sesji i dostępność serwera.": "The SSH/SFTP operation failed. Check the session state and server availability.",
+  "Nie udało się ukończyć operacji sieciowej. Sprawdź dostępność serwera i połączenie z siecią.": "The network operation could not be completed. Check server availability and the network connection.",
+  "Nie znaleziono lokalnego katalogu. Sprawdź ścieżkę danych na komputerze. Szczegóły zapisano w dzienniku aplikacji.": "The local directory could not be found. Check the data path on this computer. Details were recorded in the application log.",
+  "Nie znaleziono lokalnego pliku. Sprawdź ścieżkę na komputerze. Szczegóły zapisano w dzienniku aplikacji.": "The local file could not be found. Check the path on this computer. Details were recorded in the application log.",
+  "Brak uprawnień do lokalnego pliku lub katalogu. Sprawdź uprawnienia aplikacji. Szczegóły zapisano w dzienniku aplikacji.": "Access to a local file or directory was denied. Check the application permissions. Details were recorded in the application log.",
+  "Błąd lokalnego systemu plików. Sprawdź ścieżkę, wolne miejsce i blokadę pliku. Szczegóły zapisano w dzienniku aplikacji.": "A local filesystem error occurred. Check the path, free space and file locks. Details were recorded in the application log.",
+  "Operacja nie powiodła się ({0}). Szczegóły zapisano w dzienniku aplikacji.": "The operation failed ({0}). Details were recorded in the application log.",
+  "Nie można usunąć pliku zapisanych poświadczeń. Profil pozostaje w bazie. Sprawdź uprawnienia do lokalnego katalogu danych i blokadę pliku. Szczegóły zapisano w dzienniku.": "The saved credential file could not be deleted. The profile remains in the database. Check local data directory permissions and file locks. Details were recorded in the log.",
+  "Nie udało się potwierdzić zapisu usunięcia połączenia w lokalnej bazie danych. Sprawdź uprawnienia, wolne miejsce i blokadę bazy. Odśwież listę i spróbuj ponownie. Szczegóły zapisano w dzienniku.": "Deletion of the connection could not be confirmed in the local database. Check permissions, free space and database locks. Refresh the list and try again. Details were recorded in the log.",
+  "Połączenie zostało trwale usunięte, ale nie udało się odświeżyć listy. Uruchom ponownie aplikację. Pozostałe połączenia nie zostały usunięte.": "The connection was permanently deleted, but the list could not be refreshed. Restart the application. Other connections were not deleted.",
+  "Usunięto zapisane połączenie.": "Saved connection deleted."
 }

@@ -87,11 +87,11 @@ public sealed partial class MainWindow : Window
     {
         try { await action(); }
         catch(OperationCanceledException) { vm.Status=L.T("Operacja anulowana"); }
-        catch(RdpHostUnavailableException ex) { Log.Error("Nie udało się osadzić RDP: {Type}",ex.InnerException?.GetType().Name); vm.Status=ex.Message; }
-        catch(Exception ex) { Log.Error("Błąd operacji typu {Type}",ex.GetType().Name); vm.Status=ex is ArgumentException or InvalidDataException or FileNotFoundException or InvalidOperationException or NotSupportedException ? ex.Message : L.F($"Operacja nie powiodła się ({ex.GetType().Name}). Sprawdź adres, uprawnienia i połączenie."); await Dialogs.Message(this,L.T("ServerDesk — błąd"),vm.Status); }
+        catch(RdpHostUnavailableException ex) { Log.Error("RDP host failure: {ExceptionDetails}",ExceptionDiagnostics.Describe(ex)); vm.Status=ex.Message; }
+        catch(Exception ex) { Log.Error("Operation {Operation} failed: {ExceptionDetails}",action.Method.Name,ExceptionDiagnostics.Describe(ex)); vm.Status=OperationErrorMessages.Describe(ex); await Dialogs.Message(this,L.T("ServerDesk — błąd"),vm.Status); }
     }
     private void PaneStatusChanged() { if(!closing) { UpdateStatus(); UpdateResumeNotice(); } }
-    internal void ReportBackgroundError(string message,Exception ex) { Log.Error("Błąd ustawień tła typu {Type}; {Stack}",ex.GetType().Name,ex.StackTrace); vm.Status=message; }
+    internal void ReportBackgroundError(string message,Exception ex) { Log.Error("Background operation failed: {ExceptionDetails}",ExceptionDiagnostics.Describe(ex)); vm.Status=message; }
     private async Task InitializeAsync()
     {
         if(!await InitializeDatabaseForStartupAsync())return;
@@ -147,10 +147,7 @@ public sealed partial class MainWindow : Window
     private async Task DeleteAsync()
     {
         if(vm.SelectedServer is not {} p || !await Dialogs.Confirm(this,L.T("Usunąć serwer?"),p.Name))return;
-        try { await credentials.DeleteAsync(p.Id); await credentials.DeleteAsync(CredentialReference.Vnc(p.Id)); }
-        catch(InvalidOperationException)
-        { if(!await Dialogs.Confirm(this,L.T("Magazyn poświadczeń jest niedostępny"),L.T("Nie można potwierdzić usunięcia hasła z magazynu systemowego. Usunąć sam profil serwera? Poświadczenie może pozostać w magazynie — usuń je później, gdy będzie dostępny.")))return; }
-        await repository.DeleteAsync(p.Id); await vm.LoadAsync();
+        await DeleteSavedProfileAsync(p);
     }
     private async Task ForgetSecretAsync() { if(vm.SelectedServer is {} p) { await credentials.DeleteAsync(p.Id); await credentials.DeleteAsync(CredentialReference.Vnc(p.Id)); vm.Status=L.T("Usunięto zapisane poświadczenie"); } }
     private async Task QuickAsync()

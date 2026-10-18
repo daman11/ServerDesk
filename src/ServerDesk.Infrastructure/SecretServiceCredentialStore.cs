@@ -23,11 +23,11 @@ public sealed class SecretServiceCredentialStore(string executable="secret-tool"
     public async Task DeleteAsync(Guid id,CancellationToken ct=default)
     {
         try { await ExecuteAsync("clear",id,null,ct); }
-        catch(System.ComponentModel.Win32Exception) { throw Unavailable(); }
-        catch(OperationCanceledException) when(!ct.IsCancellationRequested) { throw Unavailable(); }
-        catch(Exception ex) when(ex is InvalidDataException or IOException) { throw Unavailable(); }
+        catch(System.ComponentModel.Win32Exception ex) { throw Unavailable(ex); }
+        catch(OperationCanceledException ex) when(!ct.IsCancellationRequested) { throw Unavailable(ex); }
+        catch(Exception ex) when(ex is InvalidDataException or IOException) { throw Unavailable(ex); }
     }
-    private static InvalidOperationException Unavailable()=>new(L.T("Magazyn Secret Service jest niedostępny lub zablokowany. Podaj hasło bez zapisywania albo odblokuj magazyn systemowy."));
+    private static InvalidOperationException Unavailable(Exception? cause=null)=>new(L.T("Magazyn Secret Service jest niedostępny lub zablokowany. Podaj hasło bez zapisywania albo odblokuj magazyn systemowy."),cause);
     private async Task<string?> ExecuteAsync(string action,Guid id,string? secret,CancellationToken ct)
     {
         ct.ThrowIfCancellationRequested();

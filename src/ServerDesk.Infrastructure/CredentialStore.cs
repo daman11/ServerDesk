@@ -56,7 +56,16 @@ public sealed class CredentialStore(AppPaths paths) : ICredentialStore
         if (OperatingSystem.IsWindows())
         {
             await gate.WaitAsync(ct).ConfigureAwait(false);
-            try { File.Delete(SecretPath(id)); } finally { gate.Release(); }
+            try
+            {
+                // Forgetting an absent credential is successful, including first use
+                // before the credentials directory has ever been created. Do not
+                // pre-check Exists: the directory can disappear between check/delete.
+                try { File.Delete(SecretPath(id)); }
+                catch(FileNotFoundException) { }
+                catch(DirectoryNotFoundException) { }
+            }
+            finally { gate.Release(); }
         }
         else { await new SecretServiceCredentialStore().DeleteAsync(id,ct); }
     }

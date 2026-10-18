@@ -9,6 +9,7 @@ public sealed partial class ProfileRepository
     private readonly string connectionString;
     private static readonly JsonSerializerOptions Json = new() { WriteIndented = true };
     private readonly string databasePath;
+    public string DatabasePath=>databasePath;
     public string DatabaseBackupDirectory { get; }
     private readonly SemaphoreSlim initializationGate=new(1);
     public ProfileRepository(AppPaths paths)

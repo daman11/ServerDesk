@@ -2,6 +2,7 @@
 
 ## Unreleased
 
+- Explain SSH authentication, local private-key, DNS, connection-refused, timeout and server disconnect failures in Polish and English. Keep the specific reason in the session header/tooltip and record safe protocol/network codes without exposing credentials or claiming an opaque authentication rejection proves a wrong password.
 - Clarify draft-only defaults and add a cancellable factory settings reset in Security settings. Create a verified database backup before scheduling, consume the request atomically at startup after shutdown writes, and reset only preferences/window/workspace/sort keys while preserving saved connections, credentials, history, trust, tag colors and plugin documents.
 ## 0.42.0 — Public Beta — 2026-10-18
 

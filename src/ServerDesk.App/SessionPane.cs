@@ -44,6 +44,7 @@ internal sealed partial class SessionPane : WorkspacePane
     public bool IsConnected => session is { Completion.IsCompleted:false } || serialSession is { Completion.IsCompleted:false } || vncSession is { IsConnected:true };
     private readonly TerminalControl terminal=new() { Process="",FontSize=14,BufferSize=10000,Options=new XTerm.Options.TerminalOptions { ClipboardReadEnabled=false,ClipboardWriteEnabled=false } };
     private readonly TextBlock state=Dialogs.Text(L.T("Łączenie…"),12);
+    internal string? SshFailureDetails { get; private set; }
     private readonly Grid files=new() { ColumnDefinitions=new ColumnDefinitions("*,4,*"),RowDefinitions=new RowDefinitions("Auto,Auto,*"),ClipToBounds=true };
     private readonly ScrollViewer info=new() { IsVisible=false };
     private readonly ListBox localList=new() { Focusable=true },remoteList=new() { Focusable=true };
@@ -130,7 +131,7 @@ internal sealed partial class SessionPane : WorkspacePane
             if(disposed==0)SetStatus(L.T("Anulowano łączenie · ")+Profile.Endpoint,"○",SessionVisualState.Idle);
             if(outer.IsCancellationRequested || lifetime.IsCancellationRequested)throw new OperationCanceledException(L.T("Anulowano łączenie."),ex,outer.IsCancellationRequested?outer:lifetime.Token);
         }
-        catch(Exception ex) { await ResetConnectionsAsync(); if(Profile.Protocol==Protocol.RDP)rdpError=ex.Message; if(disposed==0)MarkFailed(); throw; }
+        catch(Exception ex) { await ResetConnectionsAsync(); if(Profile.Protocol==Protocol.RDP)rdpError=ex.Message; if(Profile.Protocol==Protocol.SSH) { SshFailureDetails=OperationErrorMessages.Describe(ex); ToolTip.SetTip(state,SshFailureDetails); } if(disposed==0)MarkFailed(); throw; }
         finally { connecting=false; RenderOperationStatus(); connectionGate.Release(); }
         if(Profile.Protocol==Protocol.SSH&&IsConnected)_=WarmCommandDiscoveryAsync();
         if(IsConnected || IsRdpLoggedIn)await RecordSuccessfulConnectionAsync();
@@ -147,6 +148,7 @@ internal sealed partial class SessionPane : WorkspacePane
         if(disposed!=0)throw new ObjectDisposedException(nameof(SessionPane));
         cancelRequested=false; connectionAttempt++;
         HasAttemptedConnection=true; restoredNotice.IsVisible=false;
+        SshFailureDetails=null; ToolTip.SetTip(state,null);
         if(additionalNotice!=null)additionalNotice.IsVisible=true;
         await ResetConnectionsAsync();
         lifetime.Token.ThrowIfCancellationRequested(); outer.ThrowIfCancellationRequested();
@@ -260,7 +262,7 @@ internal sealed partial class SessionPane : WorkspacePane
         Protocol.Serial=>L.T("Nie otwarto portu · sprawdź urządzenie i parametry, następnie Połącz ponownie"),
         Protocol.VNC=>L.T("Nie połączono VNC · sprawdź adres i uwierzytelnianie, następnie Połącz ponownie"),
         Protocol.RDP=>rdpHostUnavailable?L.T("Błąd osadzenia RDP · użyj Połącz ponownie lub Otwórz w osobnym oknie"):L.T("Nie uruchomiono klienta RDP — sprawdź dostępność klienta i ustawienia, następnie Połącz ponownie"),
-        _=>L.T("Połączenie nie powiodło się — użyj Połącz ponownie lub Opcje → Poświadczenia")
+        _=>SshFailureDetails?.Split('\n',2)[0]??L.T("Połączenie nie powiodło się — użyj Połącz ponownie lub Opcje → Poświadczenia")
     },"○",SessionVisualState.Failed);
     internal async Task ShowAsync(int panel)
     {

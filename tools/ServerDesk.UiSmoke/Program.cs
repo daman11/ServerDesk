@@ -56,6 +56,7 @@ if(args.Contains("--rdp-gui")) { RdpGuiChecks.Run(root); return; }
 if(args.Contains("--linux-desktop")) { LinuxDesktopChecks.Run(root); return; }
 if(args.Contains("--linux-rdp-certificate")) { LinuxDesktopChecks.Certificate(root,args[Array.IndexOf(args,"--linux-rdp-certificate")+1]); return; }
 if(args.Contains("--credential-save")) { CredentialSaveChecks.Run(root); return; }
+if(args.Contains("--ssh-errors")) { SshErrorChecks.Run(root); return; }
 if(args.Contains("--credential-save-network")) { CredentialSaveChecks.Network(root,args[1],args[2]); return; }
 if(args.Contains("--large-file-views")) { LargeFileViewChecks.Run(root); return; }
 if(args.Contains("--sftp-navigation")) { SftpNavigationChecks.Run(root); return; }

@@ -1,4 +1,5 @@
 using Renci.SshNet;
+using Renci.SshNet.Common;
 using ServerDesk.Core;
 
 namespace ServerDesk.Infrastructure;
@@ -12,7 +13,21 @@ public sealed class SshConnectionFactory(ProfileRepository repository)
         AuthenticationMethod auth;
         if (profile.Authentication == Authentication.PrivateKey)
         {
-            key = string.IsNullOrEmpty(secret) ? new PrivateKeyFile(profile.PrivateKeyPath) : new PrivateKeyFile(profile.PrivateKeyPath, secret);
+            try
+            {
+                if(string.IsNullOrWhiteSpace(profile.PrivateKeyPath))throw new FileNotFoundException();
+                key = string.IsNullOrEmpty(secret) ? new PrivateKeyFile(profile.PrivateKeyPath) : new PrivateKeyFile(profile.PrivateKeyPath, secret);
+            }
+            catch(Exception ex) when(ex is SshException or System.Security.Cryptography.CryptographicException or IOException or UnauthorizedAccessException or ArgumentException or NotSupportedException)
+            {
+                var reason=ex switch {
+                    FileNotFoundException or DirectoryNotFoundException=>SshPrivateKeyFailure.Missing,
+                    UnauthorizedAccessException=>SshPrivateKeyFailure.AccessDenied,
+                    SshPassPhraseNullOrEmptyException=>SshPrivateKeyFailure.PassphraseRequired,
+                    IOException=>SshPrivateKeyFailure.ReadFailure,
+                    _=>SshPrivateKeyFailure.InvalidOrPassphrase };
+                throw new SshPrivateKeyException(reason,ex);
+            }
             auth = new PrivateKeyAuthenticationMethod(profile.Username, key);
         }
         else auth = new PasswordAuthenticationMethod(profile.Username, secret);
@@ -33,7 +48,8 @@ public sealed class SshConnectionFactory(ProfileRepository repository)
             if (ConfirmHostKey?.Invoke(new(profile.Host, profile.Port, e.HostKeyName, fingerprint, null), ct).GetAwaiter().GetResult() == true)
             { accepted = fingerprint; e.CanTrust = true; }
         };
-        await client.ConnectAsync(ct).ConfigureAwait(false);
+        try { await client.ConnectAsync(ct).ConfigureAwait(false); }
+        catch(SshAuthenticationException ex) { throw new SshLoginException(profile.Authentication,client.ConnectionInfo.AuthenticationMethods.SelectMany(method=>method.AllowedAuthentications??[]),ex); }
         if (accepted != null) await repository.TrustHostAsync(profile.Host, profile.Port, accepted, ct);
     }
     public Task<SshClient> SshAsync(ServerProfile profile,string secret,CancellationToken ct)=>CreateAsync(profile,secret,info=>new SshClient(info),ct);

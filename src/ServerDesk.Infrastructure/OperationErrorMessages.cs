@@ -11,7 +11,7 @@ public static class OperationErrorMessages
     {
         ArgumentNullException.ThrowIfNull(error);
         if(error is SqliteException)return L.T("Operacja na lokalnej bazie danych nie powiodła się. Sprawdź uprawnienia, wolne miejsce i blokadę bazy. Szczegóły zapisano w dzienniku aplikacji.");
-        if(error is SshAuthenticationException)return L.T("Serwer SSH odrzucił logowanie. Sprawdź login i sposób uwierzytelniania.");
+        if(SshErrorMessages.Describe(error) is {} ssh)return ssh;
         if(error is SshException)return L.T("Operacja SSH/SFTP nie powiodła się. Sprawdź stan sesji i dostępność serwera.");
         if(error is SocketException or TimeoutException)return L.T("Nie udało się ukończyć operacji sieciowej. Sprawdź dostępność serwera i połączenie z siecią.");
         // Keep application validation and missing external-tool guidance actionable.

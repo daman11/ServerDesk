@@ -1654,5 +1654,19 @@
   "Zapisano pełną kopię wybranego logu.": "Saved a full copy of the selected log.",
   "Nie udało się zapisać kopii logu. Wybierz plik poza folderem logów i sprawdź uprawnienia oraz wolne miejsce. Istniejący plik docelowy nie został zastąpiony.": "Could not save the log copy. Choose a file outside the log folder and check permissions and free space. The existing destination file was not replaced.",
   "Nie udało się otworzyć folderu logów. Skopiuj widoczną ścieżkę i otwórz ją w menedżerze plików.": "Could not open the log folder. Copy the displayed path and open it in your file manager.",
-  "Nie znaleziono tekstu w bieżącym podglądzie.": "No matching text in the current preview."
+  "Nie znaleziono tekstu w bieżącym podglądzie.": "No matching text in the current preview.",
+  "Przywracanie ustawień": "Restore settings",
+  "Ustawienia domyślne zmieniają tylko formularz. Zastosuj je przyciskiem Zapisz; Anuluj przywraca poprzednie preferencje.": "Default settings only change the form. Apply them with Save; Cancel restores the previous preferences.",
+  "Ustawienia fabryczne przywracają preferencje, język, układ paneli, pozycję okna i sortowanie przy następnym uruchomieniu. Połączenia, hasła, historia, zaufane klucze SSH, kolory tagów i dane pluginów pozostają zachowane.": "Factory settings restore preferences, language, panel layout, window position and sorting at the next startup. Connections, passwords, history, trusted SSH keys, tag colors and plugin data are preserved.",
+  "Przed zaplanowaniem resetu powstaje sprawdzona kopia bazy. Zaplanowanie i anulowanie resetu działają niezależnie od Zapisz i Anuluj w ustawieniach. Zamknij pozostałe instancje ServerDesk przed ponownym uruchomieniem.": "A verified database backup is created before scheduling a reset. Scheduling and cancelling a reset are independent of Save and Cancel in settings. Close other ServerDesk instances before restarting.",
+  "Przywróć ustawienia fabryczne": "Restore factory settings",
+  "Anuluj zaplanowany reset": "Cancel scheduled reset",
+  "Reset ustawień fabrycznych jest zaplanowany na następne uruchomienie. Do tego czasu możesz go anulować.": "A factory settings reset is scheduled for the next startup. You can cancel it until then.",
+  "Brak zaplanowanego resetu ustawień.": "No settings reset is scheduled.",
+  "Nie udało się zmienić planu resetu. Sprawdź wolne miejsce, uprawnienia i logi aplikacji. Żadne ustawienia nie zostały przywrócone.": "Could not change the reset schedule. Check free space, permissions and application logs. No settings have been reset.",
+  "Przywrócić ustawienia fabryczne?": "Restore factory settings?",
+  "Po następnym uruchomieniu ServerDesk przywróci domyślne preferencje i zapomni układ okien oraz kart. Zapisane połączenia i dane użytkownika pozostaną zachowane. Najpierw utworzymy kopię bazy; jeśli kopia się nie powiedzie, reset nie zostanie zaplanowany.": "At the next startup, ServerDesk will restore default preferences and forget the window and tab layout. Saved connections and user data will be preserved. We will create a database backup first; if it fails, the reset will not be scheduled.",
+  "Tworzenie kopii bazy i planowanie resetu…": "Creating a database backup and scheduling the reset…",
+  "Kopia bazy:": "Database backup:",
+  "Zaplanowany reset został anulowany. Kopia bazy pozostaje zachowana.": "The scheduled reset was cancelled. The database backup is preserved."
 }

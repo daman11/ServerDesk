@@ -2,6 +2,7 @@
 
 ## Unreleased
 
+- Clarify draft-only defaults and add a cancellable factory settings reset in Security settings. Create a verified database backup before scheduling, consume the request atomically at startup after shutdown writes, and reset only preferences/window/workspace/sort keys while preserving saved connections, credentials, history, trust, tag colors and plugin documents.
 ## 0.42.0 — Public Beta — 2026-10-18
 
 - Reject newline-suffixed log filenames and prevent exports through directory junctions/symlinks from overwriting live logs. Add cross-platform edge-case tests for nested aliases, rotation, parallel exports, sparse files and unavailable destination directories.

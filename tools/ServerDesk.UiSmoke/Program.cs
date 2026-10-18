@@ -38,6 +38,7 @@ if(args.Contains("--native-rdp"))
     ui.SetApartmentState(ApartmentState.STA); ui.Start(); ui.Join(); if(error!=null)throw error; return;
 }
 if(args.Contains("--published-startup")) { PublishedStartupChecks.Run(root,args[Array.IndexOf(args,"--published-startup")+1]).GetAwaiter().GetResult(); return; }
+if(args.Contains("--published-settings-reset")) { PublishedSettingsResetChecks.Run(root,args[Array.IndexOf(args,"--published-settings-reset")+1]).GetAwaiter().GetResult(); return; }
 if(args.Contains("--published-restart")) { RestartProcessChecks.Run(root,args[Array.IndexOf(args,"--published-restart")+1]).GetAwaiter().GetResult(); return; }
 if(args.Contains("--native-restart-helper")) { AppBuilder.Configure<App>().UsePlatformDetect().WithInterFont().SetupWithoutStarting(); RestartProcessChecks.Helper(root,args[Array.IndexOf(args,"--native-restart-helper")+1]); return; }
 if(args.Contains("--native-startup")) { AppBuilder.Configure<App>().UsePlatformDetect().WithInterFont().SetupWithoutStarting(); NativeStartupChecks.Run(root); return; }
@@ -66,6 +67,7 @@ if(args.Contains("--command-profile")) { CommandPanelChecks.ProfileLayout(root);
 if(args.Contains("--about")) { AboutChecks.Run(root); return; }
 if(args.Contains("--profile-deletion")) { ProfileDeletionChecks.Run(root); return; }
 if(args.Contains("--application-logs")) { ApplicationLogsChecks.Run(root); return; }
+if(args.Contains("--settings-reset")) { SettingsResetChecks.Run(root); return; }
 if(args.Contains("--presentation-consistency")) { PresentationConsistencyChecks.Run(root); return; }
 if(args.Contains("--commands-network")) { CommandPanelChecks.Network(root,args[1],args[2]); return; }
 if(args.Contains("--four-panels-network")) { FourPanelChecks.Network(root,args[1],args[2]); return; }

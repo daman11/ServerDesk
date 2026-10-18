@@ -7,7 +7,7 @@ public sealed partial class MainWindow
 {
     private async Task<bool> InitializeDatabaseForStartupAsync()
     {
-        try { await repository.InitializeAsync(lifetime.Token); return true; }
+        try { await repository.InitializeAsync(lifetime.Token); if(await repository.ApplyPendingFactorySettingsResetAsync(lifetime.Token))Log.Information("Factory settings reset applied; saved connections and user data preserved"); return true; }
         catch(Exception ex) when(ex is SqliteException or IOException or InvalidDataException or UnauthorizedAccessException)
         {
             Log.Error("Database initialization failed: {Type}",ex.GetType().Name);

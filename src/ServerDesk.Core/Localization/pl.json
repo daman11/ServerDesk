@@ -1654,5 +1654,19 @@
   "Zapisano pełną kopię wybranego logu.": "Zapisano pełną kopię wybranego logu.",
   "Nie udało się zapisać kopii logu. Wybierz plik poza folderem logów i sprawdź uprawnienia oraz wolne miejsce. Istniejący plik docelowy nie został zastąpiony.": "Nie udało się zapisać kopii logu. Wybierz plik poza folderem logów i sprawdź uprawnienia oraz wolne miejsce. Istniejący plik docelowy nie został zastąpiony.",
   "Nie udało się otworzyć folderu logów. Skopiuj widoczną ścieżkę i otwórz ją w menedżerze plików.": "Nie udało się otworzyć folderu logów. Skopiuj widoczną ścieżkę i otwórz ją w menedżerze plików.",
-  "Nie znaleziono tekstu w bieżącym podglądzie.": "Nie znaleziono tekstu w bieżącym podglądzie."
+  "Nie znaleziono tekstu w bieżącym podglądzie.": "Nie znaleziono tekstu w bieżącym podglądzie.",
+  "Przywracanie ustawień": "Przywracanie ustawień",
+  "Ustawienia domyślne zmieniają tylko formularz. Zastosuj je przyciskiem Zapisz; Anuluj przywraca poprzednie preferencje.": "Ustawienia domyślne zmieniają tylko formularz. Zastosuj je przyciskiem Zapisz; Anuluj przywraca poprzednie preferencje.",
+  "Ustawienia fabryczne przywracają preferencje, język, układ paneli, pozycję okna i sortowanie przy następnym uruchomieniu. Połączenia, hasła, historia, zaufane klucze SSH, kolory tagów i dane pluginów pozostają zachowane.": "Ustawienia fabryczne przywracają preferencje, język, układ paneli, pozycję okna i sortowanie przy następnym uruchomieniu. Połączenia, hasła, historia, zaufane klucze SSH, kolory tagów i dane pluginów pozostają zachowane.",
+  "Przed zaplanowaniem resetu powstaje sprawdzona kopia bazy. Zaplanowanie i anulowanie resetu działają niezależnie od Zapisz i Anuluj w ustawieniach. Zamknij pozostałe instancje ServerDesk przed ponownym uruchomieniem.": "Przed zaplanowaniem resetu powstaje sprawdzona kopia bazy. Zaplanowanie i anulowanie resetu działają niezależnie od Zapisz i Anuluj w ustawieniach. Zamknij pozostałe instancje ServerDesk przed ponownym uruchomieniem.",
+  "Przywróć ustawienia fabryczne": "Przywróć ustawienia fabryczne",
+  "Anuluj zaplanowany reset": "Anuluj zaplanowany reset",
+  "Reset ustawień fabrycznych jest zaplanowany na następne uruchomienie. Do tego czasu możesz go anulować.": "Reset ustawień fabrycznych jest zaplanowany na następne uruchomienie. Do tego czasu możesz go anulować.",
+  "Brak zaplanowanego resetu ustawień.": "Brak zaplanowanego resetu ustawień.",
+  "Nie udało się zmienić planu resetu. Sprawdź wolne miejsce, uprawnienia i logi aplikacji. Żadne ustawienia nie zostały przywrócone.": "Nie udało się zmienić planu resetu. Sprawdź wolne miejsce, uprawnienia i logi aplikacji. Żadne ustawienia nie zostały przywrócone.",
+  "Przywrócić ustawienia fabryczne?": "Przywrócić ustawienia fabryczne?",
+  "Po następnym uruchomieniu ServerDesk przywróci domyślne preferencje i zapomni układ okien oraz kart. Zapisane połączenia i dane użytkownika pozostaną zachowane. Najpierw utworzymy kopię bazy; jeśli kopia się nie powiedzie, reset nie zostanie zaplanowany.": "Po następnym uruchomieniu ServerDesk przywróci domyślne preferencje i zapomni układ okien oraz kart. Zapisane połączenia i dane użytkownika pozostaną zachowane. Najpierw utworzymy kopię bazy; jeśli kopia się nie powiedzie, reset nie zostanie zaplanowany.",
+  "Tworzenie kopii bazy i planowanie resetu…": "Tworzenie kopii bazy i planowanie resetu…",
+  "Kopia bazy:": "Kopia bazy:",
+  "Zaplanowany reset został anulowany. Kopia bazy pozostaje zachowana.": "Zaplanowany reset został anulowany. Kopia bazy pozostaje zachowana."
 }

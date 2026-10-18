@@ -64,6 +64,8 @@ internal static partial class DeskIcons
         "Otwarte sesje" or "Pokaż wszystkie ustawienia" or "Znajdź połączenie"=>"search",
         "Edytuj jako profil"=>"edit",
         "Tagi i kolory"=>"tags",
+        "Przywróć ustawienia fabryczne"=>"refresh",
+        "Anuluj zaplanowany reset"=>"close",
         "Bez tagów"=>"tags",
         "Zaznacz widoczne"=>"check",
         "Przenieś do folderu" or "Przenieś do katalogu"=>"folder-input",

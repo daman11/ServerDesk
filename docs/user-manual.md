@@ -1,5 +1,7 @@
 # ServerDesk
 
+Wersja deweloperska po 0.42.0: **Domyślne ustawienia** na dole formularza przywracają preferencje w podglądzie; dopiero **Zapisz** je utrwala, a **Anuluj** cofa. W **Ustawienia → Bezpieczeństwo → Przywracanie ustawień** dostępny jest też reset fabryczny preferencji, języka, sortowania, położenia okna i układu kart/paneli. Wymaga potwierdzenia i najpierw tworzy sprawdzoną kopię bazy. Działa przy następnym uruchomieniu, dzięki czemu zapis układu podczas zamykania nie odtwarza starych wartości. Do tego czasu można wybrać **Anuluj zaplanowany reset**; kopia pozostaje zachowana. Zaplanowanie resetu działa niezależnie od Zapisz/Anuluj formularza. Przycisk **Uruchom ponownie** korzysta ze zwykłego potwierdzania zamknięcia sesji; po odwołaniu restartu reset nadal pozostaje zaplanowany. Zamknij pozostałe instancje aplikacji przed restartem. Połączenia, hasła, historia, klucze SSH, kolory tagów i własne dane pluginów pozostają zachowane. Katalog danych nie jest kasowany.
+
 Natywny klient administracyjny C# / .NET 10 / Avalonia 12 dla Windows i Linux. Wersja 0.42.0 Public Beta; [status MVP](mvp-status.md), [ograniczenia](known-issues.md) i [zmiany tego wydania](releases/release-0.42.0.md). 
 
 ## Uruchomienie

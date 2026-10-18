@@ -1,5 +1,7 @@
 # Verification and historical reviews
 
+Settings recovery: [Draft defaults and cancellable factory settings reset, 2026-10-18](settings-reset-2026-10-18.md).
+
 Current UI presentation: [Module boundaries](module-boundaries-2026-10-17.md), [theme presets and SFTP editor](themes-editor-2026-10-17.md), [settings search and empty-section usability](ui-ux-refinements-2026-10-17.md), [folder headers and service icons](tree-icons-2026-10-17.md), [0.36.2 icon and label verification scope](release-verification-0.36.2.md).
 
 Current command module: [System profile layout, 2026-10-17](command-profile-layout-2026-10-17.md), [Commands usability, 2026-10-17](commands-usability-2026-10-17.md), [Smart Cheat Sheet / Command Snippets, 2026-10-16](commands-2026-10-16.md).

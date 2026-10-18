@@ -7,6 +7,7 @@ namespace ServerDesk.Infrastructure;
 
 public sealed record ApplicationSettings(string Theme,string TerminalPalette,int TerminalFont,int MonitorInterval,bool RememberWorkspace,ApplicationPreferences Preferences)
 {
+    public static ApplicationSettings Defaults=>new("dark","ServerDesk Default",14,5,true,new());
     public void Validate()
     {
         Preferences.Validate();

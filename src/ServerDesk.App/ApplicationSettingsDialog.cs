@@ -124,6 +124,10 @@ internal static partial class Dialogs
         var showLogs=Button("Otwórz logi",async()=> { if(settingsOwner!=null)await ApplicationLogs(settingsOwner,repository.LogDirectory); }); showLogs.Name="OpenApplicationLogs"; showLogs.HorizontalAlignment=HorizontalAlignment.Left;
         logContent.Children.Add(showLogs); logSection.Children.Add(logContent);
         searchIndex.Field(logSection,logContent,"Logi logs diagnostyka diagnostics pobierz download "+L.T("Logi i diagnostyka"));
+        var resetSection=Section(securityPage,"refresh","Przywracanie ustawień");
+        var factoryReset=new FactorySettingsResetView(repository,()=>settingsOwner,await repository.IsFactorySettingsResetPendingAsync(),main==null?null:()=> { restartAfterSave="pl"; settingsOwner?.Close(); },backup=>backupBrowser.RefreshAsync(backup.Path));
+        resetSection.Children.Add(factoryReset);
+        searchIndex.Field(resetSection,factoryReset,"Przywracanie ustawień domyślne fabryczne reset defaults factory "+L.T("Przywracanie ustawień"));
         var languageSection=Section(appearancePage,"globe","Język interfejsu");
         var language=new ComboBox { Name="ApplicationLanguage",ItemsSource=new[]{"Polski","English"},SelectedIndex=p.Language=="en"?1:0,HorizontalAlignment=HorizontalAlignment.Stretch };
         Label(languageSection,"Język aplikacji / Language",language);
@@ -348,13 +352,14 @@ internal static partial class Dialogs
         var defaults=Button("Domyślne ustawienia",()=>
         {
             resetting=true;
-            try { language.SelectedIndex=0; theme.SelectedIndex=0; uiFont.Value=13; interfaceFamily.SelectedItem="Domyślna"; cornerRadius.Value=6; menuPadding.Value=7; connectionPadding.Value=1; density.SelectedIndex=1; accent.Text=""; palette.SelectedItem=TerminalAppearance.Names[0]; terminalFont.Value=14; family.SelectedItem="Domyślna"; scrollback.Value=10000; cursor.SelectedIndex=0; localDirectory.Text=""; editor.SelectedIndex=0; editorPath.Text=""; localFileSort.SelectedIndex=remoteFileSort.SelectedIndex=0; startSide.SelectedIndex=1; sidebarWidth.Value=272; sidebarStart.SelectedIndex=0; tabWidth.Value=220; tabHeight.Value=35; separatorSize.Value=4; tabTarget.SelectedIndex=startupLayout.SelectedIndex=0; interval.Value=5; foreach(var (key,flag) in flags)flag.IsChecked=flagDefaults[key]; }
+            try { var d=ApplicationSettings.Defaults; var pref=d.Preferences; language.SelectedIndex=pref.Language=="en"?1:0; theme.SelectedIndex=Array.FindIndex(DesignSystem.Themes,t=>t.Id==d.Theme); uiFont.Value=pref.InterfaceFontSize; interfaceFamily.SelectedItem=pref.InterfaceFontFamily; cornerRadius.Value=pref.ControlCornerRadius; menuPadding.Value=pref.MenuItemPadding; connectionPadding.Value=pref.ConnectionRowPadding; density.SelectedIndex=(int)pref.Density; accent.Text=pref.AccentColor; palette.SelectedItem=d.TerminalPalette; terminalFont.Value=d.TerminalFont; family.SelectedItem=pref.TerminalFontFamily; scrollback.Value=pref.TerminalScrollbackLines; cursor.SelectedIndex=(int)pref.TerminalCursor; localDirectory.Text=pref.SftpLocalDirectory; editor.SelectedIndex=(int)pref.SftpTextEditor; editorPath.Text=pref.SftpTextEditorPath; localFileSort.SelectedIndex=(int)pref.SftpLocalSort; remoteFileSort.SelectedIndex=(int)pref.SftpRemoteSort; startSide.SelectedIndex=pref.SftpStartRemote?1:0; sidebarWidth.Value=pref.SidebarWidth; sidebarStart.SelectedIndex=(int)pref.SidebarOnStartup; tabWidth.Value=pref.TabLabelWidth; tabHeight.Value=pref.TabStripHeight; separatorSize.Value=pref.PaneSeparatorSize; tabTarget.SelectedIndex=(int)pref.NewTabTarget; startupLayout.SelectedIndex=(int)pref.WorkspaceOnStartup; interval.Value=d.MonitorInterval; foreach(var (key,flag) in flags)flag.IsChecked=flagDefaults[key]; }
             finally { resetting=false; preview(); }
-        }); defaults.HorizontalAlignment=HorizontalAlignment.Left; actions.Children.Add(defaults);
-        var cancel=Button("Anuluj",()=> { if(!saving)dialog.Close(); }); Grid.SetColumn(cancel,1); actions.Children.Add(cancel);
+        }); defaults.Name="RestoreDefaultSettings"; defaults.HorizontalAlignment=HorizontalAlignment.Left; ToolTip.SetTip(defaults,L.T("Ustawienia domyślne zmieniają tylko formularz. Zastosuj je przyciskiem Zapisz; Anuluj przywraca poprzednie preferencje.")); actions.Children.Add(defaults);
+        var cancel=Button("Anuluj",()=> { if(!saving && !factoryReset.IsBusy)dialog.Close(); }); Grid.SetColumn(cancel,1); actions.Children.Add(cancel);
+        factoryReset.BusyChanged+=()=> { var enabled=!saving && !factoryReset.IsBusy; categories.IsEnabled=actions.IsEnabled=search.IsEnabled=saveRestart.IsEnabled=enabled; };
         async Task SaveAsync(bool restart)
         {
-            if(saving)return; saving=true; categories.IsEnabled=false; actions.IsEnabled=false; search.IsEnabled=false; saveRestart.IsEnabled=false;
+            if(saving || factoryReset.IsBusy)return; saving=true; categories.IsEnabled=false; actions.IsEnabled=false; search.IsEnabled=false; saveRestart.IsEnabled=false;
             try { var draft=Draft(); draft.Validate(); await repository.SaveApplicationSettingsAsync(new(SelectedTheme(),palette.SelectedItem as string??TerminalAppearance.Names[0],(int)(terminalFont.Value??14),(int)(interval.Value??5),On("remember"),draft)); saved=true; main?.UpdateLanguageRestartNotice(draft.Language); preview(); if(main!=null)await main.ApplyPluginsAsync(draft); await changed(); restartAfterSave=restart?draft.Language:null; saving=false; dialog.Close(); }
             catch(ArgumentException ex)
             {
@@ -396,9 +401,9 @@ internal static partial class Dialogs
             if(e.Key==Avalonia.Input.Key.F && e.KeyModifiers==Avalonia.Input.KeyModifiers.Control) { search.Focus(); search.SelectAll(); e.Handled=true; }
             else if(e.Key==Avalonia.Input.Key.Escape && search.IsKeyboardFocusWithin && !string.IsNullOrEmpty(search.Text)) { search.Text=""; e.Handled=true; }
         },Avalonia.Interactivity.RoutingStrategies.Tunnel);
-        dialog.Closing+=(_,e)=> { if(saving)e.Cancel=true; };
+        dialog.Closing+=(_,e)=> { if(saving || factoryReset.IsBusy)e.Cancel=true; };
         try { await dialog.ShowDialog(owner); }
-        finally { backupBrowser.Dispose(); await backupBrowser.Shutdown; }
+        finally { factoryReset.Dispose(); backupBrowser.Dispose(); await Task.WhenAll(factoryReset.ShutdownAsync(),backupBrowser.Shutdown); }
         if(!saved) { if(main!=null)main.PreviewPreferences(runtime); else DesignSystem.ApplyPreferences(runtime); DesignSystem.Apply(originalTheme); }
         if(restartAfterSave!=null)main?.RequestRestart(restartAfterSave);
     }

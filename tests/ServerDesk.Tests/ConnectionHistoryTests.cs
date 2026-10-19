@@ -60,8 +60,8 @@ public sealed class ConnectionHistoryTests : IDisposable
     [Fact] public async Task Newer_schema_is_rejected_without_overwriting_version()
     {
         var repo=Repo(); await repo.InitializeAsync();
-        await using var db=new SqliteConnection("Data Source="+Path.Combine(root,"serverdesk.db")); await db.OpenAsync(); using var cmd=db.CreateCommand(); cmd.CommandText="PRAGMA user_version=4"; await cmd.ExecuteNonQueryAsync();
-        await Assert.ThrowsAsync<InvalidDataException>(()=>repo.InitializeAsync()); cmd.CommandText="PRAGMA user_version"; Assert.Equal(4L,await cmd.ExecuteScalarAsync());
+        await using var db=new SqliteConnection("Data Source="+Path.Combine(root,"serverdesk.db")); await db.OpenAsync(); using var cmd=db.CreateCommand(); cmd.CommandText="PRAGMA user_version=5"; await cmd.ExecuteNonQueryAsync();
+        await Assert.ThrowsAsync<InvalidDataException>(()=>repo.InitializeAsync()); cmd.CommandText="PRAGMA user_version"; Assert.Equal(5L,await cmd.ExecuteScalarAsync());
     }
     [Fact] public void Identity_comparison_respects_protocol_username_and_linux_device_case()
     {

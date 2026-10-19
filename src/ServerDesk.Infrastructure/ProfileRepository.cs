@@ -6,6 +6,7 @@ namespace ServerDesk.Infrastructure;
 
 public sealed partial class ProfileRepository
 {
+    public const int CurrentSchemaVersion=4;
     private readonly string connectionString;
     private static readonly JsonSerializerOptions Json = new() { WriteIndented = true };
     private readonly string databasePath;
@@ -18,7 +19,7 @@ public sealed partial class ProfileRepository
         databasePath=Path.Combine(paths.Data,"serverdesk.db");
         DatabaseBackupDirectory=Path.Combine(paths.Data,"backups");
         LogDirectory=paths.Logs;
-        connectionString=new SqliteConnectionStringBuilder { DataSource=databasePath }.ToString();
+        connectionString=new SqliteConnectionStringBuilder { DataSource=databasePath,DefaultTimeout=5 }.ToString();
     }
     private async Task<SqliteConnection> Open(CancellationToken ct)
     {
@@ -42,11 +43,11 @@ public sealed partial class ProfileRepository
             using var inspect=db.CreateCommand(); inspect.Transaction=inspection;
             inspect.CommandText="PRAGMA user_version";
             var previous=Convert.ToInt32(await inspect.ExecuteScalarAsync(ct));
-            if(previous>3)throw new InvalidDataException(L.T("Baza pochodzi z nowszej wersji ServerDesk."));
+            if(previous>CurrentSchemaVersion)throw new InvalidDataException(L.T("Baza pochodzi z nowszej wersji ServerDesk."));
             inspect.CommandText="PRAGMA quick_check(1)";
             if(!string.Equals(await inspect.ExecuteScalarAsync(ct) as string,"ok",StringComparison.Ordinal))
                 throw new InvalidDataException(L.T("Kontrola bazy wykryła uszkodzenie. Zamknij aplikację i przywróć sprawdzoną kopię danych. Oryginalna baza nie została usunięta."));
-            if(previous==3)return;
+            if(previous==CurrentSchemaVersion)return;
             inspect.CommandText="SELECT count(*) FROM sqlite_master WHERE type='table' AND name NOT LIKE 'sqlite_%'";
             if(Convert.ToInt64(await inspect.ExecuteScalarAsync(ct))>0)
                 DatabaseBackups.Create(db,DatabaseBackupDirectory,previous,"before-migration",ct);
@@ -58,15 +59,17 @@ public sealed partial class ProfileRepository
         cmd.Transaction=transaction;
         cmd.CommandText="PRAGMA user_version";
         var version=Convert.ToInt32(await cmd.ExecuteScalarAsync(ct));
-        if(version>3) throw new InvalidDataException(L.T("Baza pochodzi z nowszej wersji ServerDesk."));
-        if(version==3)return; // Another instance may have completed the migration.
+        if(version>CurrentSchemaVersion) throw new InvalidDataException(L.T("Baza pochodzi z nowszej wersji ServerDesk."));
+        if(version==CurrentSchemaVersion)return; // Another instance may have completed the migration.
         cmd.CommandText = "CREATE TABLE IF NOT EXISTS profiles(id TEXT PRIMARY KEY, json TEXT NOT NULL); CREATE TABLE IF NOT EXISTS folders(path TEXT PRIMARY KEY); CREATE TABLE IF NOT EXISTS folder_icons(path TEXT PRIMARY KEY,icon TEXT NOT NULL); CREATE TABLE IF NOT EXISTS hostkeys(host TEXT NOT NULL,port INTEGER NOT NULL,fingerprint TEXT NOT NULL,PRIMARY KEY(host,port)); CREATE TABLE IF NOT EXISTS settings(key TEXT PRIMARY KEY,value TEXT NOT NULL); CREATE TABLE IF NOT EXISTS history(id INTEGER PRIMARY KEY,profile TEXT NOT NULL,time TEXT NOT NULL);";
         await cmd.ExecuteNonQueryAsync(ct);
         cmd.CommandText="PRAGMA table_info(history)";
         var hasSnapshot=false;
         await using(var columns=await cmd.ExecuteReaderAsync(ct))while(await columns.ReadAsync(ct))if(columns.GetString(1)=="snapshot")hasSnapshot=true;
         if(!hasSnapshot) { cmd.CommandText="ALTER TABLE history ADD COLUMN snapshot TEXT"; await cmd.ExecuteNonQueryAsync(ct); }
-        cmd.CommandText="PRAGMA user_version=3"; await cmd.ExecuteNonQueryAsync(ct); await transaction.CommitAsync(ct);
+        // Version 4 prevents older clients from ignoring rotated vault bindings
+        // and accidentally reusing a legacy secret after a destination edit.
+        cmd.CommandText="PRAGMA user_version="+CurrentSchemaVersion; await cmd.ExecuteNonQueryAsync(ct); await transaction.CommitAsync(ct);
     }
     public async Task<List<ServerProfile>> ListAsync(CancellationToken ct = default)
     {
@@ -207,7 +210,7 @@ public sealed partial class ProfileRepository
         await using(var db=await Open(ct))
         using(var snapshot=db.BeginTransaction(deferred:true))
         {
-            data=new(2,await ReadProfilesAsync(db,snapshot,ct),await ReadFoldersAsync(db,snapshot,ct)) { FolderIcons=await ReadFolderIconsAsync(db,snapshot,ct),TagColors=await ReadTagColorsAsync(db,snapshot,ct) };
+            data=new(2,(await ReadProfilesAsync(db,snapshot,ct)).Select(p=>p with { CredentialId=null }).ToList(),await ReadFoldersAsync(db,snapshot,ct)) { FolderIcons=await ReadFolderIconsAsync(db,snapshot,ct),TagColors=await ReadTagColorsAsync(db,snapshot,ct) };
             await snapshot.CommitAsync(ct);
         }
         var bytes=JsonSerializer.SerializeToUtf8Bytes(data,Json);
@@ -250,7 +253,7 @@ public sealed partial class ProfileRepository
         foreach (var p in data.Servers)
         {
             // Imported profiles get new identities; never reuse a local credential reference.
-            var imported = p with { Id = Guid.NewGuid(), LastConnected = null };
+            var imported = p with { Id = Guid.NewGuid(),CredentialId=null, LastConnected = null };
             using var cmd = db.CreateCommand(); cmd.Transaction = (SqliteTransaction)transaction; cmd.CommandText = "INSERT INTO profiles VALUES($id,$json)"; cmd.Parameters.AddWithValue("$id", imported.Id.ToString()); cmd.Parameters.AddWithValue("$json", JsonSerializer.Serialize(imported)); await cmd.ExecuteNonQueryAsync(ct);
         }
         foreach (var folder in importedFolders)

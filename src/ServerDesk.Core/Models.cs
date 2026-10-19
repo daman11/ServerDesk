@@ -7,6 +7,9 @@ public enum Authentication { Password, PrivateKey }
 public sealed record ServerProfile
 {
     public Guid Id { get; init; } = Guid.NewGuid();
+    // Local vault binding. Rotated when the destination/authentication changes;
+    // never carried into a configuration export or a duplicated/imported profile.
+    [JsonIgnore(Condition=JsonIgnoreCondition.WhenWritingNull)] public Guid? CredentialId { get; init; }
     public string Name { get; init; } = "";
     public string Host { get; init; } = "";
     public int Port { get; init; } = 22;
@@ -30,6 +33,7 @@ public sealed record ServerProfile
     [JsonIgnore] public string Display => $"{(Favorite ? "★ " : "")}{Name}  ·  {Protocol}\n{Endpoint}  {Folder}";
     public void Validate()
     {
+        if(CredentialId==Guid.Empty)throw new ArgumentException(L.T("Niepoprawne dane profilu."));
         if(Name==null || Host==null || Username==null || Domain==null || PrivateKeyPath==null || Tags==null || Description==null)throw new ArgumentException(L.T("Niepoprawne dane profilu."));
         ProfileIcons.Validate(IconId);
         ProfileAppearance.Validate(Color,CustomIconPng);

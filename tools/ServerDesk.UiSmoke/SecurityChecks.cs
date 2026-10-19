@@ -19,15 +19,23 @@ internal static class SecurityChecks
             var renamed=profile with { Name="Renamed fixture",Color="#112233" };
             RedesignChecks.Wait(window.SaveEditedProfileAsync(profile,renamed));
             if(!credentials.Secrets.ContainsKey(profile.Id) || credentials.Deleted.Count!=0)throw new Exception("Appearance edit removed credentials");
+            using(var db=new Microsoft.Data.Sqlite.SqliteConnection(new Microsoft.Data.Sqlite.SqliteConnectionStringBuilder { DataSource=repository.DatabasePath,Pooling=false }.ToString()))
+            {
+                db.Open(); using var command=db.CreateCommand(); command.CommandText="CREATE TRIGGER reject_credential_edit BEFORE UPDATE ON profiles BEGIN SELECT RAISE(ABORT,'fixture edit failure'); END"; command.ExecuteNonQuery();
+                try { RedesignChecks.Wait(window.SaveEditedProfileAsync(renamed,renamed with { Host="blocked.example" })); throw new Exception("Edit fixture did not fail"); } catch(Microsoft.Data.Sqlite.SqliteException) { }
+                if(credentials.Deleted.Count!=0 || !credentials.Secrets.ContainsKey(profile.Id))throw new Exception("Failed profile write removed its password");
+                command.CommandText="DROP TRIGGER reject_credential_edit"; command.ExecuteNonQuery();
+            }
             var changed=renamed with { Host="new.example" };
             RedesignChecks.Wait(window.SaveEditedProfileAsync(renamed,changed));
             if(credentials.Secrets.Count!=0 || !credentials.Deleted.Contains(profile.Id) || !credentials.Deleted.Contains(CredentialReference.Vnc(profile.Id)))throw new Exception("Destination edit retained credentials");
             credentials.FailDeletion=true;
-            try { RedesignChecks.Wait(window.SaveEditedProfileAsync(changed,changed with { Host="unsafe.example" })); throw new Exception("Failed credential removal allowed destination change"); }
-            catch(InvalidOperationException) { }
+            var previous=repository.ListAsync(); RedesignChecks.Wait(previous); var bound=previous.Result.Single(p=>p.Id==profile.Id); credentials.Secrets[CredentialReference.ForProfile(bound)]="previous-target-fixture";
+            RedesignChecks.Wait(window.SaveEditedProfileAsync(bound,bound with { Host="safe-new.example" }));
             var saved=repository.ListAsync(); RedesignChecks.Wait(saved);
-            if(saved.Result.Single(p=>p.Id==profile.Id).Host!="new.example")throw new Exception("Profile changed despite credential store failure");
-            Console.WriteLine("PASS appearance edits preserve credentials; destination changes clear both credential references; unavailable store blocks destination save");
+            var safe=saved.Result.Single(p=>p.Id==profile.Id);
+            if(safe.Host!="safe-new.example" || CredentialReference.ForProfile(safe)==CredentialReference.ForProfile(bound) || credentials.Secrets.ContainsKey(CredentialReference.ForProfile(safe)))throw new Exception("New destination can reuse an old secret after cleanup failure");
+            Console.WriteLine("PASS appearance edits preserve credentials; destination changes atomically rotate credential binding; unavailable cleanup never exposes a previous target's secret");
 
             using var pane=new SessionPane(window,profile,new SshConnectionFactory(repository),new ExternalRdpClient(),repository);
             var terminalWindow=new Window { Content=pane,Width=800,Height=500 }; terminalWindow.Show(); RedesignChecks.Frames();

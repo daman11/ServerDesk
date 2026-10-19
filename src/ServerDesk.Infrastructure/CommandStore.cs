@@ -11,6 +11,8 @@ public sealed class CommandStore(ProfileRepository repository,ICredentialStore c
 {
     private readonly SemaphoreSlim gate=new(1);
     private const string VaultKey="commands.vault.v1",StateKey="commands.state.v1";
+    private bool versionKnown;
+    private string? loadedPointer;
     private sealed record Manifest(int Version,Guid[] Parts);
     private static Guid[] Parts(string? value)
     {
@@ -27,7 +29,7 @@ public sealed class CommandStore(ProfileRepository repository,ICredentialStore c
     }
     private async Task<CommandUserLibrary> ReadLibraryCoreAsync(CancellationToken ct)
     {
-        var pointer=await repository.SettingAsync(VaultKey,ct).ConfigureAwait(false); if(pointer==null)return new();
+        var pointer=await repository.SettingAsync(VaultKey,ct).ConfigureAwait(false); if(pointer==null) { versionKnown=true; loadedPointer=null; return new(); }
         using var bytes=new MemoryStream();
         foreach(var id in Parts(pointer))
         {
@@ -35,7 +37,7 @@ public sealed class CommandStore(ProfileRepository repository,ICredentialStore c
             if(text.Length>50000)throw new InvalidDataException("Invalid command vault part.");
             var part=Convert.FromBase64String(text); if(bytes.Length+part.Length>CommandValidation.MaxDocumentBytes)throw new InvalidDataException("Command vault too large."); bytes.Write(part);
         }
-        return Parse(new UTF8Encoding(false,true).GetString(bytes.ToArray()));
+        var library=Parse(new UTF8Encoding(false,true).GetString(bytes.ToArray())); loadedPointer=pointer; versionKnown=true; return library;
     }
     public async Task SaveLibraryAsync(CommandUserLibrary library,CancellationToken ct=default)
     {
@@ -46,7 +48,9 @@ public sealed class CommandStore(ProfileRepository repository,ICredentialStore c
         await gate.WaitAsync(ct).ConfigureAwait(false);
         try
         {
-            var previous=Parts(await repository.SettingAsync(VaultKey,ct).ConfigureAwait(false)); var parts=new List<Guid>(); string? newPointer=null;
+            var previousPointer=await repository.SettingAsync(VaultKey,ct).ConfigureAwait(false);
+            if(versionKnown && previousPointer!=loadedPointer)throw new InvalidOperationException(L.T("Zapisane dane zmieniły się w innym oknie. Wczytaj je ponownie przed zapisem. Dotychczasowa zawartość pozostaje zachowana."));
+            var previous=Parts(previousPointer); var parts=new List<Guid>(); string? newPointer=null;
             try
             {
                 var bytes=Encoding.UTF8.GetBytes(text);
@@ -56,7 +60,7 @@ public sealed class CommandStore(ProfileRepository repository,ICredentialStore c
                     await credentials.SaveAsync(id,Convert.ToBase64String(bytes,offset,Math.Min(32768,bytes.Length-offset)),ct).ConfigureAwait(false);
                 }
                 newPointer=JsonSerializer.Serialize(new Manifest(1,parts.ToArray()),CommandValidation.Json);
-                await repository.SetSettingAsync(VaultKey,newPointer,ct).ConfigureAwait(false);
+                await repository.CompareExchangeSettingAsync(VaultKey,previousPointer,newPointer,ct).ConfigureAwait(false);
             }
             catch
             {
@@ -68,6 +72,7 @@ public sealed class CommandStore(ProfileRepository repository,ICredentialStore c
                 throw;
             }
             // The new snapshot is committed before retiring the old encrypted blob.
+            loadedPointer=newPointer; versionKnown=true;
             foreach(var old in previous)try { await credentials.DeleteAsync(old,CancellationToken.None).ConfigureAwait(false); } catch { /* harmless encrypted orphan; never roll back a committed snapshot */ }
         }
         finally { gate.Release(); }

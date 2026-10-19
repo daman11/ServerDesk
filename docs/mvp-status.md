@@ -1,4 +1,6 @@
-# Pierwotne MVP — wydanie 0.42.0
+# Pierwotne MVP — wydanie 0.43.0
+
+0.43.0 rozwija ochronę danych i odzyskiwanie SSH/SFTP: atomowe powiązanie hasła przy edycji celu, bezpieczną kolejność usuwania profilu, kontrolę równoległego zapisu pluginów, schemat 4 z kopią przed migracją, limity cichego łącza i zachowanie kontekstu SFTP po reconnect. Transfer nie jest samoczynnie ponawiany. [Dowody i granice](reports/release-verification-0.43.0.md). Nie zalicza fizycznego suspend/resume ani odłożonych VM, sprzętu i długiej pracy.
 
 0.42.0 dodaje kolorowe tagi i filtrowanie, motywy, wybór edytora SFTP, ergonomię nawigacji i komend oraz informacje o aplikacji i logi w ustawieniach. Naprawia usuwanie zapisanych profili przy braku katalogu poświadczeń oraz eksport logów przez alias katalogu. [Bieżąca weryfikacja](reports/release-verification-0.42.0.md). Pozostaje Public Beta; testy maszyn i sprzętu odłożono na prośbę maintenera.
 
@@ -59,7 +61,7 @@ Ta lista odnosi się do pierwotnej specyfikacji ServerDesk i jej kryteriów goto
 | Skonfigurowanie i uruchomienie RDP | Windows: osadzony natywny host i wcześniejsze rzeczywiste logowanie lokalne. Linux 0.38.0: X11 FreeRDP osadzony w karcie, okna hasła i certyfikatu, XWayland w sesji Wayland. | Osadzony framebuffer Linux, AD/Microsoft, pełny schowek/input/utrata sieci i fizyczne mieszane DPI. Test hosta EXE nie oznacza nowego testu logowania. |
 | Bezpieczne przechowywanie poświadczeń | Windows DPAPI, Linux Secret Service, opcjonalny zapis, powiązanie z tożsamością profilu; JSON i SQLite bez sekretów. GNOME Keyring zweryfikowano w izolacji. | KWallet/Secret Service w rzeczywistym KDE; inne sesje keyringu. |
 | Import/eksport między platformami | Wersjonowany JSON bez haseł i kluczy prywatnych, foldery/ikony/personalizacja, nowe identyfikatory importowanych profili i atomowa walidacja. | Dodatkowe rzeczywiste migracje konfiguracji użytkowników i bardzo duże importy. |
-| Ciemny i jasny motyw, wygodny UI | Pięć motywów, czcionka/gęstość/akcent, ikony/grafiki, PL/EN, ustawienia z wyszukiwaniem, responsywność i poprawianie położenia okna poza ekranem. | Czytniki ekranu, zmiany motywu OS w pracy, fizyczne DPI i pozostałe kombinacje sprzętu. |
+| Ciemny i jasny motyw, wygodny UI | Gotowe motywy, czcionka/gęstość/akcent, ikony/grafiki, PL/EN, ustawienia z wyszukiwaniem, responsywność i poprawianie położenia okna poza ekranem. | Czytniki ekranu, zmiany motywu OS w pracy, fizyczne DPI i pozostałe kombinacje sprzętu. |
 
 ## Wykonany etap
 

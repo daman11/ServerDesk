@@ -35,7 +35,7 @@ internal static class DatabaseBackups
                 if(!string.Equals(check.ExecuteScalar() as string,"ok",StringComparison.Ordinal))throw new InvalidDataException();
                 check.CommandText="PRAGMA user_version";
                 if(Convert.ToInt32(check.ExecuteScalar())!=version)throw new InvalidDataException();
-                if(version==3)
+                if(version>=3)
                 {
                     // Restoring a backup must never replay a scheduled reset.
                     check.CommandText="DELETE FROM settings WHERE key='pendingFactorySettingsReset'";
@@ -71,7 +71,7 @@ public sealed partial class ProfileRepository
         using var snapshot=source.BeginTransaction(deferred:true);
         using var version=source.CreateCommand(); version.Transaction=snapshot; version.CommandText="PRAGMA user_version";
         var schema=Convert.ToInt32(version.ExecuteScalar());
-        if(schema>3)throw new InvalidDataException(L.T("Baza pochodzi z nowszej wersji ServerDesk."));
+        if(schema>CurrentSchemaVersion)throw new InvalidDataException(L.T("Baza pochodzi z nowszej wersji ServerDesk."));
         return DatabaseBackups.Create(source,DatabaseBackupDirectory,schema,"manual",ct);
     },ct);
 }

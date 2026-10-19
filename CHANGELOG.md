@@ -2,6 +2,14 @@
 
 ## Unreleased
 
+## 0.43.0 — Public Beta — 2026-10-19
+
+- Save profile identity changes with a new local credential binding in the same database transaction, then retire old secrets. Failed writes preserve the original profile/password; unavailable cleanup cannot expose an old password to a new destination. Clear bindings on duplicate/import/export and reject stale editor saves.
+- Commit profile deletion before credential cleanup. A failed database delete retains the saved password; a locked/unavailable vault after a committed deletion produces a separate cleanup warning.
+- Protect Commands from stale/concurrent writers with an optimistic snapshot check and atomic pointer exchange. Serialize Network Tools index/history mutations in SQLite across windows/processes; partial or cancelled vault writes preserve the previous complete library.
+- Migrate to schema 4 with a verified pre-migration backup, retaining legacy credential bindings and profile bytes. Older applications must reject this schema rather than ignore new credential bindings. Backup verification supports schemas 0–4.
+- Bound silent SFTP uploads/downloads by a progress-based idle timeout; close only their owned connection and retain destination/partial-file protections. Check quiet SSH connections with a bounded read-only exec channel, allowing explicit recovery after a silent outage or long idle/suspend.
+- Preserve SFTP panel/directories, navigation, filters and selection across SSH reconnect. Distinguish transfers interrupted by transport loss from user cancellation; require explicit retry and fresh overwrite consent.
 - Explain SSH authentication, local private-key, DNS, connection-refused, timeout and server disconnect failures in Polish and English. Keep the specific reason in the session header/tooltip and record safe protocol/network codes without exposing credentials or claiming an opaque authentication rejection proves a wrong password.
 - Separate draft-only preference defaults from a confirmed, cancellable full application reset. Before resetting at startup, create a fresh verified database snapshot including final shutdown writes; atomically clear connections, folders/notes, history, SSH trust, tag colors and plugin state. Preserve protected vault entries for local backup recovery, logs, previous backups and external files. Strip pending reset requests from snapshots so restoring a backup never replays the reset; legacy preferences-only requests retain their original scope.
 ## 0.42.0 — Public Beta — 2026-10-18

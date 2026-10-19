@@ -1,6 +1,6 @@
 # Dokumentacja / Documentation
 
-Bieżące wydanie: [0.42.0 Public Beta](releases/release-0.42.0.md) — kolorowe tagi i filtry, motywy, edytor SFTP, usprawnienia komend, informacje o aplikacji i przeglądarka logów. Poprawki usuwania profili i eksportu diagnostyki. Testy VM/sprzętu pozostają odłożone. [Zakres testów wydania](reports/release-verification-0.42.0.md).
+Bieżące wydanie: [0.43.0 Public Beta](releases/release-0.43.0.md) — spójność profili i haseł, równoległy zapis pluginów, schemat 4 z kopią przed migracją i odzyskiwanie SSH/SFTP po ciszy na łączu. Obejmuje też reset fabryczny i dokładniejsze błędy SSH. [Weryfikacja i ograniczenia](reports/release-verification-0.43.0.md).
 
 | Temat / Topic | Dokument |
 |---|---|

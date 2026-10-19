@@ -29,17 +29,22 @@ public sealed partial class SftpSession
     }
     private static IOException Changed()=>new(L.T("Zawartość zmieniła się od przygotowania podglądu. Odśwież listę i przygotuj usuwanie ponownie."));
     private static FileEntry Entry(ISftpFile file)=>new(file.Name,file.FullName,file.IsDirectory,file.IsSymbolicLink,file.IsSymbolicLink?0:file.Length,file.LastWriteTime,Permissions(file.Attributes));
-    private IAsyncEnumerable<ISftpFile> DeletionListAsync(string path,CancellationToken ct)=>client.ListDirectoryAsync(path,ct).WhereDeletionEntries(ct);
+    private async IAsyncEnumerable<ISftpFile> DeletionListAsync(string path,[System.Runtime.CompilerServices.EnumeratorCancellation] CancellationToken ct)
+    {
+        await foreach(var entry in client.ListDirectoryAsync(path,ct).WhereDeletionEntries(ct)) { transferActivity?.Invoke(); yield return entry; }
+    }
     private async Task<ISftpFile> ReadDeletionFileAsync(string path,CancellationToken ct,Exception? missingSource=null)
     {
         path=FileDeletionService.Normalize(path,false);
         var parent=RemotePath.Parent(path);
         var container=await client.GetAsync(parent,ct);
+        transferActivity?.Invoke();
         if(container.FullName!=parent || !container.IsDirectory || container.IsSymbolicLink)
             throw new IOException(L.T("Katalog nadrzędny jest dowiązaniem. Otwórz rzeczywistą lokalizację i spróbuj ponownie."));
         try
         {
             var file=await client.GetAsync(path,ct);
+            transferActivity?.Invoke();
             if(file.FullName==path && !file.IsSymbolicLink)return Supported(file);
         }
         catch(Exception ex) when(ex is Renci.SshNet.Common.SftpPathNotFoundException or Renci.SshNet.Common.SftpPermissionDeniedException)

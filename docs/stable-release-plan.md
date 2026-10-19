@@ -1,6 +1,8 @@
 # Droga do ServerDesk 1.0
 
-Punkt wyjścia: 0.42.0 Public Beta. Funkcje rdzenia i dodatków istnieją; stan implementacji oraz granice wcześniejszych testów opisuje [MVP](mvp-status.md). Poniższa lista jest bieżącym planem stabilizacji, a nie deklaracją gotowości 1.0.
+0.43.0 domyka kolejną partię etapów B/C: błędy zapisu a hasła profili, równoległe magazyny pluginów, migracja do schematu 4 i odzyskiwanie po cichej utracie SSH/SFTP. [Zakres i granice](reports/release-verification-0.43.0.md). Pozostałe odmiany serwerów, WAN, sprzęt i rzeczywiste suspend/resume wymagają dalszej akceptacji; nie otwieramy ponownie zakończonych kontrolowanych prób.
+
+Punkt wyjścia: 0.43.0 Public Beta. Funkcje rdzenia i dodatków istnieją; stan implementacji oraz granice wcześniejszych testów opisuje [MVP](mvp-status.md). Poniższa lista jest bieżącym planem stabilizacji, a nie deklaracją gotowości 1.0.
 
 0.42.0 zbiera usprawnienia tagów, motywów, edytora SFTP i komend, dodaje informacje o aplikacji oraz logi w ustawieniach. Obejmuje naprawę usuwania profili i próby rotacji logów, aliasów katalogów, równoległych eksportów i dużych plików. [Zakres bieżącej weryfikacji](reports/release-verification-0.42.0.md). Testy VMware, sprzętu i pilotaż pozostają otwarte.
 
@@ -81,12 +83,14 @@ Etapy A–F wyznaczają kolejność wykonania. Punkty 1–6 poniżej pozostają 
 
 ## Najbliższa partia wykonawcza
 
-Po 0.41.0 kontynuować etap B: pozostałe fazy przerwania operacji, blokady, odmowy dostępu i zgodność pełnego zestawu osobnych magazynów. Wykonane migracje, awarie procesu i ENOSPC mają zakres opisany w raporcie 0.41.0; nie powtarzać ich jako nowych zaległości bez przyczyny. Po przygotowaniu przez maintenera maszyn i dostępu uzupełnić natywną akceptację z etapów A/C/D oraz instalację z rejestracją na czystej VM. Długa praca i pilotaż pozostają osobnymi otwartymi zadaniami.
+Po 0.43.0 nie powtarzać jako nowych zaległości zaliczonych prób odmowy zapisu profilu, blokady SQLite, przerwania zapisu komend, równoległych kolekcji i cichej utraty SSH/SFTP. Ich zakres opisuje [raport 0.43.0](reports/release-verification-0.43.0.md); migracje, przerwanie procesu i ENOSPC mają również wcześniejsze dowody. Następna partia to szersza akceptacja RDP, innych serwerów/WAN i długiej pracy. Po przygotowaniu przez maintenera maszyn i dostępu uzupełnić natywne A/C/D, KWallet, fizyczne suspend/resume oraz instalację z rejestracją na czystej VM. Pełny przenośny backup sekretów i pilotaż pozostają oddzielnymi zagadnieniami.
 
 Ten dokument ustala plan; nie zalicza tych przyszłych prób. Aktualizacja samego planu wymaga kontroli treści/linków i commita, bez buildu aplikacji, zmiany wersji ani nowego wydania.
 
 ## 1. Dane i odzyskiwanie — w toku
 
+- [x] 0.43.0: atomowa edycja tożsamości profilu z rotacją lokalnego powiązania hasła, zachowanie hasła przy odmowie zapisu/usunięcia w SQLite, ostrzeżenie po niepotwierdzonym sprzątaniu i kontrola nieaktualnego edytora. Eksport/import/duplikat nie przenoszą powiązania. Schemat 4 z kopią chroni przed starszym klientem ignorującym to pole.
+- [x] 0.43.0: kontrola równoległych zapisów Komend i transakcyjne indeksy/historia Network Tools między oknami; błąd/anulowanie po części chunków zachowuje poprzednią bibliotekę. Rzeczywista blokada pisarza SQLite, odmowa katalogu Unix i ponowienie na własnych danych. [Zakres](reports/release-verification-0.43.0.md).
 - [x] Spójna ręczna kopia SQLite, także z zatwierdzonymi danymi WAL; sekcja ustawień PL/EN.
 - [x] Zmiana robocza po 0.39.0: przegląd 20 najnowszych kopii w ustawieniach, data/rozmiar/schemat/powód, kopiowanie ścieżki i otwieranie folderu; pomijanie plików częściowych. Lista metadanych nie potwierdza zawartości kopii i nie podmienia bazy.
 - [x] Sprawdzona kopia przed migracją starego schematu; odmowa migracji przy błędzie kopii.
@@ -108,6 +112,7 @@ Ten dokument ustala plan; nie zalicza tych przyszłych prób. Aktualizacja sameg
 
 ## 2. Rdzeń MVP — do domknięcia akceptacji
 
+- [x] 0.43.0: limit bezczynności transferu i odczytu katalogu SFTP, produkcyjna kontrola cichego SSH, pomijanie zajętego kanału Komend bez fałszywego rozłączenia, zachowanie kontekstu SFTP przy reconnect i jawne retry z SHA-256. Cztery równoległe SSH/16 reconnect i zamykanie cichego łącza sprawdzone na własnym OpenSSH Windows/Linux. Nie zalicza fizycznego suspend/resume, wszystkich serwerów ani wielogodzinnej pracy.
 - [x] Regresja kolejki SFTP: zatrzymane odświeżanie listy nie zajmuje slotów kopiowania; błąd odświeżania zachowuje sukces transferu; anulowanie zadania oczekującego i ponowienie po utracie SSH do pierwotnego celu sprawdzone na własnym OpenSSH.
 - [x] Ręczne odzyskiwanie wykrytego zerwania połączenia przeglądania SFTP przez Odśwież/F5 bez resetu terminala, historii i filtrów; odmowa zmienionego klucza hosta i anulowanie przy zamknięciu sprawdzone na własnym OpenSSH.
 - [x] Komunikaty błędów transferów PL/EN z instrukcjami ponowienia i poprawne chmod; rzeczywista odmowa zapisu oraz zniknięcie źródła zachowują istniejące cele, a retry po naprawie uprawnień kończy się zgodnymi bajtami na własnym OpenSSH. [Zakres i ograniczenia](reports/transfer-errors-2026-10-16.md).

@@ -24,10 +24,10 @@ public sealed class DatabaseBackupTests : IDisposable
     [Fact] public async Task Fresh_and_current_databases_do_not_create_automatic_backups()
     {
         var repo=Repo(); await repo.InitializeAsync(); await repo.InitializeAsync(); await Repo().InitializeAsync();
-        Assert.Equal(3L,await Scalar("PRAGMA user_version")); Assert.False(Directory.Exists(repo.DatabaseBackupDirectory));
+        Assert.Equal((long)ProfileRepository.CurrentSchemaVersion,await Scalar("PRAGMA user_version")); Assert.False(Directory.Exists(repo.DatabaseBackupDirectory));
     }
 
-    [Theory] [InlineData(0)] [InlineData(1)] [InlineData(2)]
+    [Theory] [InlineData(0)] [InlineData(1)] [InlineData(2)] [InlineData(3)]
     public async Task Migration_keeps_a_valid_pre_migration_snapshot_and_is_idempotent(int version)
     {
         await Legacy(version); var repo=Repo(); await repo.InitializeAsync(); await repo.InitializeAsync();
@@ -36,7 +36,7 @@ public sealed class DatabaseBackupTests : IDisposable
         Assert.Equal((long)version,await Scalar("PRAGMA user_version",backup)); Assert.Equal("ok",await Scalar("PRAGMA quick_check(1)",backup));
         Assert.Equal(0L,await Scalar("SELECT count(*) FROM pragma_table_info('history') WHERE name='snapshot'",backup));
         Assert.Equal(1L,await Scalar("SELECT count(*) FROM history WHERE id=7",backup));
-        Assert.Equal(3L,await Scalar("PRAGMA user_version")); Assert.Equal("light",await repo.SettingAsync("theme"));
+        Assert.Equal((long)ProfileRepository.CurrentSchemaVersion,await Scalar("PRAGMA user_version")); Assert.Equal("light",await repo.SettingAsync("theme"));
         Assert.Equal(1L,await Scalar("SELECT count(*) FROM history WHERE id=7"));
         Assert.Empty(Directory.GetFiles(repo.DatabaseBackupDirectory,"*.part*"));
     }
@@ -58,7 +58,7 @@ public sealed class DatabaseBackupTests : IDisposable
         cmd.CommandText="PRAGMA journal_mode=WAL; PRAGMA wal_autocheckpoint=0; INSERT INTO settings VALUES('wal-marker','committed');"; await cmd.ExecuteNonQueryAsync();
         Assert.True(new FileInfo(DatabasePath+"-wal").Length>0);
         var backup=await repo.CreateDatabaseBackupAsync();
-        Assert.True(backup.Bytes>0); Assert.Equal(3,backup.SchemaVersion); Assert.Equal("ok",await Scalar("PRAGMA quick_check(1)",backup.Path));
+        Assert.True(backup.Bytes>0); Assert.Equal(ProfileRepository.CurrentSchemaVersion,backup.SchemaVersion); Assert.Equal("ok",await Scalar("PRAGMA quick_check(1)",backup.Path));
         Assert.Equal("committed",await Scalar("SELECT value FROM settings WHERE key='wal-marker'",backup.Path));
         Assert.Equal("committed",await repo.SettingAsync("wal-marker"));
         Assert.False(File.Exists(backup.Path+"-wal"));
@@ -86,10 +86,10 @@ public sealed class DatabaseBackupTests : IDisposable
 
     [Fact] public async Task A_newer_schema_is_rejected_without_creating_a_backup_or_downgrading()
     {
-        await Legacy(4); var repo=Repo();
+        await Legacy(5); var repo=Repo();
         await Assert.ThrowsAsync<InvalidDataException>(()=>repo.InitializeAsync());
         await Assert.ThrowsAsync<InvalidDataException>(()=>repo.CreateDatabaseBackupAsync());
-        Assert.Equal(4L,await Scalar("PRAGMA user_version")); Assert.False(Directory.Exists(repo.DatabaseBackupDirectory));
+        Assert.Equal(5L,await Scalar("PRAGMA user_version")); Assert.False(Directory.Exists(repo.DatabaseBackupDirectory));
     }
 
     [Fact] public async Task Corrupt_source_is_not_replaced_by_a_new_database()
@@ -127,7 +127,7 @@ public sealed class DatabaseBackupTests : IDisposable
         var repo=Repo(); await repo.InitializeAsync(); await repo.SetSettingAsync("theme","dark");
         await File.WriteAllTextAsync(repo.DatabaseBackupDirectory,"occupied");
         await Assert.ThrowsAsync<DatabaseBackupException>(()=>repo.CreateDatabaseBackupAsync());
-        Assert.Equal("dark",await repo.SettingAsync("theme")); Assert.Equal(3L,await Scalar("PRAGMA user_version"));
+        Assert.Equal("dark",await repo.SettingAsync("theme")); Assert.Equal((long)ProfileRepository.CurrentSchemaVersion,await Scalar("PRAGMA user_version"));
     }
 
     public void Dispose()

@@ -16,7 +16,7 @@ public sealed class DatabaseBackupVerificationTests:IDisposable
         { await db.OpenAsync(); using var command=db.CreateCommand(); command.CommandText=$"CREATE TABLE settings(key TEXT PRIMARY KEY,value TEXT); INSERT INTO settings VALUES('fixture','keep'); PRAGMA user_version={actual}"; await command.ExecuteNonQueryAsync(); }
         return new(path,DateTimeOffset.UtcNow,new FileInfo(path).Length,named??actual,false);
     }
-    [Theory] [InlineData(0)] [InlineData(1)] [InlineData(2)] [InlineData(3)]
+    [Theory] [InlineData(0)] [InlineData(1)] [InlineData(2)] [InlineData(3)] [InlineData(4)]
     public async Task Supported_schema_checks_are_read_only_and_do_not_migrate_or_create_sidecars(int schema)
     {
         var entry=await Snapshot(schema); var before=await File.ReadAllBytesAsync(entry.Path); var files=Directory.GetFiles(root);
@@ -29,7 +29,7 @@ public sealed class DatabaseBackupVerificationTests:IDisposable
         var entry=Assert.Single((await DatabaseBackupCatalog.ReadAsync(repo.DatabaseBackupDirectory)).Entries); var bytes=await File.ReadAllBytesAsync(entry.Path); var live=await ReadLiveBytes(Path.Combine(root,"serverdesk.db"));
         var attributes=File.GetAttributes(backup.Path); if(readOnly)File.SetAttributes(backup.Path,attributes|FileAttributes.ReadOnly);
         var preparedAttributes=File.GetAttributes(backup.Path);
-        try { Assert.Equal(3,await DatabaseBackupCatalog.VerifyAsync(entry)); Assert.Equal(bytes,await File.ReadAllBytesAsync(entry.Path)); Assert.Equal(live,await ReadLiveBytes(Path.Combine(root,"serverdesk.db"))); Assert.Equal(preparedAttributes,File.GetAttributes(backup.Path)); }
+        try { Assert.Equal(ProfileRepository.CurrentSchemaVersion,await DatabaseBackupCatalog.VerifyAsync(entry)); Assert.Equal(bytes,await File.ReadAllBytesAsync(entry.Path)); Assert.Equal(live,await ReadLiveBytes(Path.Combine(root,"serverdesk.db"))); Assert.Equal(preparedAttributes,File.GetAttributes(backup.Path)); }
         finally { File.SetAttributes(backup.Path,attributes); }
         Assert.Equal("preserve",await repo.SettingAsync("marker")); Assert.Single(Directory.GetFiles(repo.DatabaseBackupDirectory));
     }
@@ -39,7 +39,7 @@ public sealed class DatabaseBackupVerificationTests:IDisposable
         var entry=await Snapshot(); var bytes=kind=="empty"?[]:kind=="text"?"not SQLite"u8.ToArray():(await File.ReadAllBytesAsync(entry.Path))[..128]; await File.WriteAllBytesAsync(entry.Path,bytes); entry=entry with { Bytes=bytes.Length };
         await Assert.ThrowsAsync<InvalidDataException>(()=>DatabaseBackupCatalog.VerifyAsync(entry)); Assert.Equal(bytes,await File.ReadAllBytesAsync(entry.Path)); Assert.Single(Directory.GetFiles(root));
     }
-    [Theory] [InlineData(4,4)] [InlineData(3,2)]
+    [Theory] [InlineData(5,5)] [InlineData(3,2)]
     public async Task Newer_or_misnamed_schemas_are_rejected_without_changes(int actual,int named)
     {
         var entry=await Snapshot(actual,named); var bytes=await File.ReadAllBytesAsync(entry.Path); await Assert.ThrowsAsync<InvalidDataException>(()=>DatabaseBackupCatalog.VerifyAsync(entry)); Assert.Equal(bytes,await File.ReadAllBytesAsync(entry.Path)); Assert.Single(Directory.GetFiles(root));

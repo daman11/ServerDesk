@@ -7,7 +7,7 @@
     <Deterministic>true</Deterministic>
     <UseSharedCompilation>false</UseSharedCompilation>
     <RestorePackagesWithLockFile>true</RestorePackagesWithLockFile>
-    <Version>0.42.0</Version>
+    <Version>0.43.0</Version>
     <RuntimeIdentifiers>win-x64;linux-x64</RuntimeIdentifiers>
     <Product>ServerDesk</Product>
     <Authors>ServerDesk contributors</Authors>

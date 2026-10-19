@@ -6,7 +6,11 @@ internal static class DatabaseTestCleanup
 {
     internal static void Clear(string root)
     {
-        using var connection=new SqliteConnection(new SqliteConnectionStringBuilder { DataSource=Path.Combine(root,"serverdesk.db") }.ToString());
-        SqliteConnection.ClearPool(connection);
+        using(var original=new SqliteConnection(new SqliteConnectionStringBuilder { DataSource=Path.Combine(root,"serverdesk.db") }.ToString()))SqliteConnection.ClearPool(original);
+        foreach(var timeout in new[]{5,30})
+        {
+            using var connection=new SqliteConnection(new SqliteConnectionStringBuilder { DataSource=Path.Combine(root,"serverdesk.db"),DefaultTimeout=timeout }.ToString());
+            SqliteConnection.ClearPool(connection);
+        }
     }
 }

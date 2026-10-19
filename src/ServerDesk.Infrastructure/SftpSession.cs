@@ -10,28 +10,43 @@ public sealed partial class SftpSession(SftpClient client) : IDisposable,IAsyncD
     private readonly ConnectionInfo connectionInfo=client.ConnectionInfo;
     private int disposed;
     private readonly List<TransferCleanupWarning> cleanupWarnings=[];
+    private Action? transferActivity;
+    private Action<Exception>? transferFailure;
     public IReadOnlyList<TransferCleanupWarning> CleanupWarnings=>cleanupWarnings.ToArray();
     public bool IsConnected
     {
         get { try { return Volatile.Read(ref disposed)==0 && client.IsConnected; } catch(ObjectDisposedException) { return false; } }
     }
     public string WorkingDirectory => client.WorkingDirectory;
-    private async Task<T> Run<T>(Func<T> action, CancellationToken ct)
-    {
-        await gate.WaitAsync(ct);
-        try { return await Task.Run(() => { ct.ThrowIfCancellationRequested(); return action(); }, ct); }
-        finally { gate.Release(); }
-    }
-    private async Task RunAsync(Func<Task> action,CancellationToken ct)
-    { await gate.WaitAsync(ct); try { await Task.Run(action,ct); } finally { gate.Release(); } }
+    private Task<T> Run<T>(Func<T> action,CancellationToken ct)=>RunAsync(()=>Task.FromResult(action()),ct);
+    private Task RunAsync(Func<Task> action,CancellationToken ct)=>RunAsync(async()=> { await action().ConfigureAwait(false); return true; },ct);
     private async Task<T> RunAsync<T>(Func<Task<T>> action,CancellationToken ct)
-    { await gate.WaitAsync(ct); try { return await Task.Run(action,ct); } finally { gate.Release(); } }
-    private Task RunTransferAsync(Func<Task> action,CancellationToken ct)=>RunAsync(async()=>
+    { await gate.WaitAsync(ct); try { return await Task.Run(()=>RunOwnedOperationAsync(action,ct),ct); } finally { gate.Release(); } }
+    private Task RunTransferAsync(Func<Task> action,CancellationToken ct)=>RunAsync(action,ct);
+    private async Task<T> RunOwnedOperationAsync<T>(Func<Task<T>> action,CancellationToken ct)
     {
         // Give normal cancellation/temporary-file cleanup a short grace period.
         // SSH.NET can otherwise wait for an unanswered packet even after its
         // transfer token is cancelled. Abort only this session if it stays stuck.
         using var finished=new CancellationTokenSource(); var completed=finished.Token; Task abort=Task.CompletedTask;
+        var idleBudget=client.OperationTimeout;
+        if(idleBudget<=TimeSpan.Zero || idleBudget==Timeout.InfiniteTimeSpan)idleBudget=TimeSpan.FromSeconds(30);
+        using var idle=new CancellationTokenSource(idleBudget);
+        transferActivity=()=> { try { idle.CancelAfter(idleBudget); } catch(ObjectDisposedException) { } };
+        var timedOut=false;
+        async Task WatchIdleAsync()
+        {
+            using var watching=CancellationTokenSource.CreateLinkedTokenSource(completed,idle.Token);
+            try { await Task.Delay(Timeout.InfiniteTimeSpan,watching.Token).ConfigureAwait(false); }
+            catch(OperationCanceledException) { }
+            if(completed.IsCancellationRequested || ct.IsCancellationRequested)return;
+            Volatile.Write(ref timedOut,true);
+            Volatile.Read(ref transferFailure)?.Invoke(new Renci.SshNet.Common.SshOperationTimeoutException("SFTP transfer idle timeout."));
+            // Own transfer connection only. Disposing it releases outstanding
+            // packet waits, including a silent peer that never acknowledges.
+            try { Dispose(); } catch(Exception ex) { Trace.TraceWarning("SFTP idle-timeout cleanup: {0}",ex.GetType().Name); }
+        }
+        var watchdog=WatchIdleAsync();
         using var registration=ct.Register(()=>abort=AbortStalledAsync());
         async Task AbortStalledAsync()
         {
@@ -47,15 +62,17 @@ public sealed partial class SftpSession(SftpClient client) : IDisposable,IAsyncD
             catch(OperationCanceledException) { }
             catch(ObjectDisposedException) { }
         }
-        try { await action().ConfigureAwait(false); }
-        finally { registration.Dispose(); finished.Cancel(); await abort.ConfigureAwait(false); }
-    },ct);
+        try { ct.ThrowIfCancellationRequested(); var result=await action().ConfigureAwait(false); if(Volatile.Read(ref timedOut))throw new Renci.SshNet.Common.SshOperationTimeoutException("SFTP operation idle timeout."); return result; }
+        catch(Exception) when(Volatile.Read(ref timedOut) && !ct.IsCancellationRequested) { throw new Renci.SshNet.Common.SshOperationTimeoutException("SFTP transfer idle timeout."); }
+        finally { transferActivity=null; transferFailure=null; registration.Dispose(); finished.Cancel(); await Task.WhenAll(abort,watchdog).ConfigureAwait(false); }
+    }
     private sealed class ProgressBridge<T>(Action<T> report) : IProgress<T> { public void Report(T value)=>report(value); }
     public Task<List<FileEntry>> ListAsync(string path,CancellationToken ct)=>RunAsync(async()=>
     {
         var entries=new List<FileEntry>();
         await foreach(var entry in client.ListDirectoryAsync(path,ct))
         {
+            transferActivity?.Invoke();
             ct.ThrowIfCancellationRequested();
             if(entry.Name is not ("." or ".."))entries.Add(new(entry.Name,entry.FullName,entry.IsDirectory,entry.IsSymbolicLink,entry.Length,entry.LastWriteTime,Permissions(entry.Attributes)));
         }
@@ -96,11 +113,12 @@ public sealed partial class SftpSession(SftpClient client) : IDisposable,IAsyncD
         try
         {
             using var input=new AcknowledgedReadStream(file);
-            var report=new ProgressBridge<UploadFileProgressReport>(p=> { input.Acknowledge((long)p.TotalBytesUploaded); if(!ct.IsCancellationRequested)progress.Report(new((long)p.TotalBytesUploaded,length,p.TotalBytesUploaded/Math.Max(.01,clock.Elapsed.TotalSeconds))); });
+            transferFailure=input.Fail;
+            var report=new ProgressBridge<UploadFileProgressReport>(p=> { transferActivity?.Invoke(); input.Acknowledge((long)p.TotalBytesUploaded); if(!ct.IsCancellationRequested)progress.Report(new((long)p.TotalBytesUploaded,length,p.TotalBytesUploaded/Math.Max(.01,clock.Elapsed.TotalSeconds))); });
             EventHandler<Renci.SshNet.Common.ExceptionEventArgs> failure=(_,e)=>input.Fail(e.Exception);
             client.ErrorOccurred+=failure;
             try { attempted=true; await client.UploadFileAsync(input, temporary, false, report, ct); }
-            finally { client.ErrorOccurred-=failure; }
+            finally { transferFailure=null; client.ErrorOccurred-=failure; }
             ct.ThrowIfCancellationRequested();
             if(file.Position!=length || (await client.GetAttributesAsync(temporary,ct)).Size!=length)
                 throw new IOException(L.T("Rozmiar wysłanego pliku nie zgadza się ze źródłem. Plik docelowy pozostał bez zmian."));
@@ -154,7 +172,7 @@ public sealed partial class SftpSession(SftpClient client) : IDisposable,IAsyncD
                     var buffer=new byte[65536]; long received=0; int count;
                     while((count=await input.ReadAsync(buffer,ct))>0)
                     {
-                        await file.WriteAsync(buffer.AsMemory(0,count),ct); received+=count;
+                        transferActivity?.Invoke(); await file.WriteAsync(buffer.AsMemory(0,count),ct); received+=count;
                         if(!ct.IsCancellationRequested)progress.Report(new(received,length,received/Math.Max(.01,clock.Elapsed.TotalSeconds)));
                     }
                 }

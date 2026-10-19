@@ -52,7 +52,10 @@ public sealed partial class ProfileRepository
             // Include final shutdown writes, not just the earlier scheduling
             // snapshot. Keep encrypted vault blobs in place for local recovery;
             // remove every active reference to them from the application state.
-            DatabaseBackups.Create(db,DatabaseBackupDirectory,3,"before-reset",ct);
+            command.CommandText="PRAGMA user_version";
+            var schema=Convert.ToInt32(await command.ExecuteScalarAsync(ct));
+            if(schema!=CurrentSchemaVersion)throw new InvalidDataException(L.T("Baza pochodzi z nowszej wersji ServerDesk."));
+            DatabaseBackups.Create(db,DatabaseBackupDirectory,schema,"before-reset",ct);
             command.Parameters.Clear();
             command.CommandText="DELETE FROM history; DELETE FROM folder_icons; DELETE FROM folders; DELETE FROM hostkeys; DELETE FROM profiles; DELETE FROM settings";
             await command.ExecuteNonQueryAsync(ct);

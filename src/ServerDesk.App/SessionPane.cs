@@ -30,6 +30,7 @@ internal sealed partial class SessionPane : WorkspacePane
     private long connectionStarted;
     private bool connecting;
     private bool cancelRequested;
+    private bool interruptedTransport;
     private readonly Button connectButton;
     private readonly Button cancelConnectionButton;
     private Button? optionsButton;
@@ -151,6 +152,7 @@ internal sealed partial class SessionPane : WorkspacePane
         SshFailureDetails=null; ToolTip.SetTip(state,null);
         if(additionalNotice!=null)additionalNotice.IsVisible=true;
         await ResetConnectionsAsync();
+        interruptedTransport=false;
         lifetime.Token.ThrowIfCancellationRequested(); outer.ThrowIfCancellationRequested();
         connectionLifetime.Dispose(); connectionLifetime=CancellationTokenSource.CreateLinkedTokenSource(outer,lifetime.Token);
         connecting=true; using var busy=BeginBusy(L.T("Łączenie z ")+Profile.Endpoint+"…");
@@ -172,13 +174,20 @@ internal sealed partial class SessionPane : WorkspacePane
         try { ct.ThrowIfCancellationRequested(); terminal.ApplyTemplate(); terminalSearch?.Reset(); terminal.Terminal.Reset(); ApplyTerminalConnectionPreferences(preferences); TerminalAppearance.Apply(terminal,await repository.SettingAsync("terminalPalette",ct)??TerminalAppearance.Names[0],(int)terminal.FontSize,preferences.TerminalFontFamily); session=await SshTerminalSession.CreateAsync(client,ct); terminal.AttachConnection(session); commandConnectionId=Guid.NewGuid(); session.Resize(terminal.Terminal.Cols,terminal.Terminal.Rows); terminal.Focus(); connectionStarted=Stopwatch.GetTimestamp(); SetStatus(L.F($"● SSH · {Profile.Username}@{Profile.Host}:{Profile.Port} · połączono"),"●"); _=ObserveEndAsync(session); if(owner.Preferences.ShowMetrics && owner.Preferences.ShowStatusBar)_=StartMonitoringAsync(ct); }
         catch { client.Dispose(); throw; }
     }
-    public Task ReconnectAsync(string? replacementSecret=null) => ConnectAsync(replacementSecret??secret,lifetime.Token);
+    public async Task ReconnectAsync(string? replacementSecret=null)
+    {
+        if(restoredPanel==null)restoredPanel=SelectedPanel;
+        await ConnectAsync(replacementSecret??secret,lifetime.Token);
+        if(IsConnected)await ShowRestoredPanelAsync();
+    }
     private async Task ObserveEndAsync(SshTerminalSession observed)
     {
         var result=await observed.Completion;
         await Dispatcher.UIThread.InvokeAsync(()=>
         {
             if(disposed!=0 || !ReferenceEquals(session,observed))return;
+            interruptedTransport=result.Reason==TerminalEndReason.TransportError;
+            if(observed.TransportFailure is {} error)Serilog.Log.Warning("SSH transport ended: {ExceptionDetails}",ExceptionDiagnostics.Describe(error));
             // An ended terminal must also stop its monitoring and file connections.
             ResetConnections();
             SetStatus(result.Reason==TerminalEndReason.TransportError?L.F($"Utracono połączenie · {Profile.Host} ({result.ErrorType}). Użyj Połącz ponownie."):L.F($"Zakończono sesję · {Profile.Host}. Użyj Połącz ponownie."),"○",result.Reason==TerminalEndReason.TransportError?SessionVisualState.Failed:SessionVisualState.Closed);
@@ -191,7 +200,8 @@ internal sealed partial class SessionPane : WorkspacePane
         connectionLifetime.Cancel();
         var oldSsh=session; var oldSftp=sftp; var monitoringStop=DetachMonitoring(); var commandsStop=StopCommandPluginAsync();
         var oldRdp=rdpProcess; var oldVnc=vncSession; var oldSerial=serialSession; var oldLinuxRdp=linuxRdp; linuxRdp=null;
-        session=null; sftp=null; ResetFileNavigation();
+        session=null; sftp=null;
+        if(disposed!=0 || Profile.Protocol!=Protocol.SSH)ResetFileNavigation(); else UpdateFileNavigation();
         UpdateTransferActions();
         // Kill an owned PTY before detaching it; Kill requires a realized terminal template.
         if(Profile.Protocol==Protocol.RDP && terminal.IsLive)terminal.Kill();
@@ -206,7 +216,7 @@ internal sealed partial class SessionPane : WorkspacePane
         // but retain the tasks so reconnect and application exit can drain them.
         var stopping=new List<Task> { monitoringStop,commandsStop };
         if(oldLinuxRdp!=null)stopping.Add(oldLinuxRdp.Shutdown);
-        if(oldSsh!=null) { stopping.Add(Task.Run(oldSsh.Dispose)); stopping.Add(oldSsh.Completion); }
+        if(oldSsh!=null) { stopping.Add(Task.Run(oldSsh.Dispose)); stopping.Add(oldSsh.Shutdown); }
         if(oldSftp!=null)stopping.Add(oldSftp.DisposeAsync().AsTask());
         if(oldRdp!=null)stopping.Add(oldRdp.StopAsync());
         if(oldVnc!=null)stopping.Add(oldVnc.Shutdown);

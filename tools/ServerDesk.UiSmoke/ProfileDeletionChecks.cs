@@ -92,15 +92,17 @@ internal static class ProfileDeletionChecks
                     Wait(windows.SaveAsync(target.Id,"disposable-fixture-secret")); var path=Path.Combine(paths.Data,"credentials",target.Id+".bin");
                     using(var locked=new FileStream(path,FileMode.Open,FileAccess.Read,FileShare.None))
                     {
-                        var failure=Failure(next.DeleteSavedProfileAsync(target));
-                        if(failure.InnerException is not IOException || !Read(reopened.ListAsync()).Any(p=>p.Id==target.Id))throw new Exception("Locked credential was ignored or removed its profile");
+                        Wait(next.DeleteSavedProfileAsync(target));
+                        if(Read(reopened.ListAsync()).Any(p=>p.Id==target.Id) || !nextVm.Status.Contains(language=="en"?"credential":"poświadczenia"))throw new Exception("Committed deletion with locked credential lost its cleanup warning");
                         var log=events.Entries.Last(e=>e.Exception is IOException);
                         if(log.Exception?.StackTrace?.Contains("CredentialStore.DeleteAsync")!=true || !log.Exception.Message.Contains(path) || log.RenderMessage().Contains("disposable-fixture-secret"))throw new Exception("Credential failure log lacks the path/stack or contains a secret");
                     }
                 }
+                Wait(reopened.SaveAsync(target)); Wait(nextVm.LoadAsync());
                 Sql(reopened,"CREATE TRIGGER reject_profile_delete BEFORE DELETE ON profiles BEGIN SELECT RAISE(ABORT,'Fixture delete blocked'); END;");
                 var databaseFailure=Failure(next.DeleteSavedProfileAsync(target));
                 if(databaseFailure.InnerException is not SqliteException || !Read(reopened.ListAsync()).Any(p=>p.Id==target.Id))throw new Exception("Database failure was presented as successful deletion");
+                if(vault is CredentialStore && Read(vault.GetAsync(target.Id))!="disposable-fixture-secret")throw new Exception("A failed database delete removed the still-saved password");
                 var databaseLog=events.Entries.Last(e=>e.Exception is SqliteException);
                 if(databaseLog.Exception?.StackTrace==null || !databaseLog.Properties.ContainsKey("DatabasePath"))throw new Exception("Database failure log lacks the database path or stack");
                 Sql(reopened,"DROP TRIGGER reject_profile_delete;"); Wait(next.DeleteSavedProfileAsync(target)); if(Read(reopened.ListAsync()).Single()!=otherBefore)throw new Exception("Retry failed or changed another profile");
@@ -112,9 +114,8 @@ internal static class ProfileDeletionChecks
             }
             var blockedRepo=new ProfileRepository(new AppPaths(Path.Combine(root,"unavailable-vault"))); Wait(blockedRepo.InitializeAsync()); var blocked=new ServerProfile { Name="Unavailable vault fixture",Host="192.0.2.3",Username="fixture" }; Wait(blockedRepo.SaveAsync(blocked));
             var unavailable=new MissingVault { Unavailable=true }; var blockedMain=new MainWindow(new(blockedRepo),blockedRepo,unavailable,new(blockedRepo),new ExternalRdpClient()); blockedMain.Show(); RedesignChecks.Frames(12);
-            var cancelled=blockedMain.DeleteSavedProfileAsync(blocked); RedesignChecks.Frames(3); Click(blockedMain.OwnedWindows.Single(),"Anuluj"); Wait(cancelled); if(Read(blockedRepo.ListAsync()).Count!=1)throw new Exception("Unavailable vault confirmation was bypassed");
-            var approved=blockedMain.DeleteSavedProfileAsync(blocked); RedesignChecks.Frames(3); Click(blockedMain.OwnedWindows.Single(),"Potwierdź"); Wait(approved); if(Read(blockedRepo.ListAsync()).Count!=0)throw new Exception("Approved profile-only deletion failed"); Close(blockedMain);
-            Console.WriteLine("PASS profile deletion UI: SSH/PL and RDP/EN; confirmation/cancel; missing credentials; preserved peer profile, notes, history and file; fresh-process read-only DB verification and workspace restart; locked credential and SQLite-trigger failure; path/stack logs; retry, post-commit refresh failure and unavailable-vault consent. Isolated fixtures, no network.");
+            Wait(blockedMain.DeleteSavedProfileAsync(blocked)); if(Read(blockedRepo.ListAsync()).Count!=0)throw new Exception("Profile-only deletion failed"); Close(blockedMain);
+            Console.WriteLine("PASS profile deletion UI: SSH/PL and RDP/EN; confirmation/cancel; missing credentials; preserved peer profile, notes, history and file; fresh-process verification/restart; locked-vault cleanup warning; SQLite failure preserves profile/password; path/stack logs; retry and post-commit refresh failure. Isolated fixtures, no network.");
         }
         finally { Log.Logger=oldLogger; AppText.SetLanguage("pl"); }
     }

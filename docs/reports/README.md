@@ -1,5 +1,7 @@
 # Verification and historical reviews
 
+Data/session recovery: [0.43.0 profile/vault consistency, migration and silent-link recovery](release-verification-0.43.0.md).
+
 SSH diagnostics: [Connection failure reasons and safe protocol/network details, 2026-10-18](ssh-errors-2026-10-18.md).
 
 Settings recovery: [Full application reset with recoverable snapshots, 2026-10-18](full-reset-2026-10-18.md); [earlier preferences-only increment](settings-reset-2026-10-18.md).

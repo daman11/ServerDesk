@@ -8,7 +8,8 @@ public static class CredentialReference
 {
     // VNC must not receive an existing SSH/RDP secret after changing a profile's protocol.
     public static Guid Vnc(Guid profileId)=>new(SHA256.HashData(Encoding.UTF8.GetBytes("ServerDesk.VNC.v1:"+profileId.ToString("D"))).AsSpan(0,16));
-    public static Guid ForProfile(ServerProfile profile)=>profile.Protocol==Protocol.VNC?Vnc(profile.Id):profile.Id;
+    public static Guid ForProfile(ServerProfile profile)=>profile.CredentialId??(profile.Protocol==Protocol.VNC?Vnc(profile.Id):profile.Id);
+    public static IEnumerable<Guid> AllForProfile(ServerProfile profile)=>new[]{ForProfile(profile),profile.Id,Vnc(profile.Id)}.Distinct();
     public static bool CanReuse(ServerProfile before,ServerProfile after)
     {
         if(before.Id!=after.Id || before.Protocol!=after.Protocol || before.Port!=after.Port || !before.Host.Equals(after.Host,StringComparison.OrdinalIgnoreCase))return false;

@@ -1,12 +1,14 @@
-# ServerDesk 0.42.0 — getting started
+# ServerDesk 0.43.0 — getting started
 
-Release 0.42.0 groups side navigation into connections (including Favorites and Recent), transfers, network tools and plugins. Each sidebar module has an icon, title and short description. Commands carry a Plugin badge, and session toolbars separate Terminal/SFTP from optional add-ons. Disabled plugins leave no empty frames or separators.
+**New in 0.43.0:** consistent profile/password saves, concurrent plugin storage and quiet-link SSH/SFTP recovery. Reconnect preserves SFTP directories; retrying transfers remains explicit. First startup creates a verified backup and migrates to schema 4, which older clients reject. [Changes](releases/release-0.43.0.md), [database recovery](database-backups.md).
 
-**Release 0.42.0:** **Settings → Appearance → Application theme** also offers Ocean, Forest, Aubergine, Dracula, Solar Paper and Sandstone (11 themes plus System). Preview is immediate; Cancel restores the previous appearance.
+Release 0.43.0 groups side navigation into connections (including Favorites and Recent), transfers, network tools and plugins. Each sidebar module has an icon, title and short description. Commands carry a Plugin badge, and session toolbars separate Terminal/SFTP from optional add-ons. Disabled plugins leave no empty frames or separators.
+
+**Release 0.43.0:** **Settings → Appearance → Application theme** also offers Ocean, Forest, Aubergine, Dracula, Solar Paper and Sandstone (11 themes plus System). Preview is immediate; Cancel restores the previous appearance.
 
 **Settings → SFTP → File editing → Default text editor:** select automatic, VS Code, Notepad++, Kate, GNOME Text Editor or a custom executable (full path without arguments). The program must be installed. Automatic uses Notepad on Windows or an available text editor on Linux. The choice takes effect after Save. In the SFTP file menu, choose **Download and edit** for a remote file or **Edit file** for a local one; **F4** edits the selected file in the focused panel. Remote copies go into the open local directory with the existing overwrite confirmation. After saving changes, use **Upload** to send them to the intended remote directory; changes are not synchronized automatically. Directories, symbolic links and multiple selections cannot be edited.
 
-**0.42.0:** colored connection tags and filters, calmer navigation, improved Commands browsing, application/license information and log preview/export in Settings. Missing credential files no longer block profile deletion. Native VM/hardware acceptance is deferred and the status remains Public Beta. [Changes and limits](releases/release-0.42.0.md).
+**0.43.0:** colored connection tags and filters, calmer navigation, improved Commands browsing, application/license information and log preview/export in Settings. Missing credential files no longer block profile deletion. Native VM/hardware acceptance is deferred and the status remains Public Beta. [Changes and limits](releases/release-0.43.0.md).
 
 **0.39.1:** safer exports/imports, a database backup catalog in Settings and command cards. Invalid saved diagnostic data is reported without an automatic reset; a history-save failure preserves tool results. [Changes](releases/release-0.39.1.md).
 
@@ -28,17 +30,17 @@ Since 0.37.0, ServerDesk shows transfer failure guidance in the queue. Hover ove
 
 ## Windows x64
 
-Run `ServerDesk-0.42.0-win-x64-Setup.exe`. Setup installs for the current user, creates a Start menu shortcut and registers an uninstaller. No separate .NET installation is needed. Alternatively, extract the **entire** portable ZIP into its own directory and run `ServerDesk.App.exe`.
+Run `ServerDesk-0.43.0-win-x64-Setup.exe`. Setup installs for the current user, creates a Start menu shortcut and registers an uninstaller. No separate .NET installation is needed. Alternatively, extract the **entire** portable ZIP into its own directory and run `ServerDesk.App.exe`.
 
-This beta is not signed with a trusted publisher certificate. Use a trusted release source and do not disable Windows protection. Compare `Get-FileHash .\ServerDesk-0.42.0-win-x64-Setup.exe -Algorithm SHA256` with `SHA256SUMS.txt`. A checksum alongside a download detects corruption; it does not independently authenticate the publisher.
+This beta is not signed with a trusted publisher certificate. Use a trusted release source and do not disable Windows protection. Compare `Get-FileHash .\ServerDesk-0.43.0-win-x64-Setup.exe -Algorithm SHA256` with `SHA256SUMS.txt`. A checksum alongside a download detects corruption; it does not independently authenticate the publisher.
 
 If a partial Windows installation leaves missing files, prevents startup or loses its uninstaller, close ServerDesk and rerun a trusted Setup for the same version into the existing directory. Setup restores its own files without requiring database or saved-credential removal. First resolve any disk-space or permission failure that interrupted installation. Do not mix individual DLLs from different versions. [Tested repair scope](reports/rc-preparation-2026-10-17.md).
 
 ## Linux x64
 
-Ubuntu/Debian: `sudo apt install ./serverdesk_0.42.0_amd64.deb`, then launch ServerDesk from the menu or run `serverdesk`. Remembered passwords need `libsecret-tools` and an unlocked Secret Service such as GNOME Keyring. Install your distribution's FreeRDP client for RDP connections.
+Ubuntu/Debian: `sudo apt install ./serverdesk_0.43.0_amd64.deb`, then launch ServerDesk from the menu or run `serverdesk`. Remembered passwords need `libsecret-tools` and an unlocked Secret Service such as GNOME Keyring. Install your distribution's FreeRDP client for RDP connections.
 
-For TAR.GZ: `mkdir serverdesk-0.42.0`, then `tar -xzf ServerDesk-0.42.0-linux-x64.tar.gz -C serverdesk-0.42.0` and `./serverdesk-0.42.0/ServerDesk.App`. Native library requirements are listed in the DEB and [development.md](development.md). Linux testing used WSLg; other desktops need further verification.
+For TAR.GZ: `mkdir serverdesk-0.43.0`, then `tar -xzf ServerDesk-0.43.0-linux-x64.tar.gz -C serverdesk-0.43.0` and `./serverdesk-0.43.0/ServerDesk.App`. Native library requirements are listed in the DEB and [development.md](development.md). Linux testing used WSLg; other desktops need further verification.
 
 ## Connect
 

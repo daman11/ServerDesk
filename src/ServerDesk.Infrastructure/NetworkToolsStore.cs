@@ -9,7 +9,11 @@ public sealed class NetworkToolsStore(ProfileRepository repository,ICredentialSt
     public static NetworkRequest SafeHistory(NetworkRequest request)=>request with { Target=request.Tool==NetworkToolKind.Http?new Uri(request.Target).GetLeftPart(UriPartial.Authority):request.Target,Headers="",Query="",Body="",Username="",Authentication="None" };
     private async Task<List<T>> ReadAsync<T>(string key,CancellationToken ct)
     {
-        var json=await repository.SettingAsync(key,ct).ConfigureAwait(false); if(json==null)return [];
+        return Parse<T>(await repository.SettingAsync(key,ct).ConfigureAwait(false));
+    }
+    private static List<T> Parse<T>(string? json)
+    {
+        if(json==null)return [];
         try
         {
             if(json.Length>600000)throw new JsonException();
@@ -38,13 +42,13 @@ public sealed class NetworkToolsStore(ProfileRepository repository,ICredentialSt
     public async Task AddHistoryAsync(NetworkRequest request,CancellationToken ct=default)
     {
         await gate.WaitAsync(ct).ConfigureAwait(false);
-        try { var rows=await ReadAsync<NetworkHistory>(HistoryKey,ct).ConfigureAwait(false); rows.Insert(0,new(Guid.NewGuid(),DateTimeOffset.UtcNow,SafeHistory(request))); await repository.SetSettingAsync(HistoryKey,JsonSerializer.Serialize(rows.Take(100)),ct).ConfigureAwait(false); }
+        try { await repository.UpdateSettingAsync(HistoryKey,json=> { var rows=Parse<NetworkHistory>(json); rows.Insert(0,new(Guid.NewGuid(),DateTimeOffset.UtcNow,SafeHistory(request))); return JsonSerializer.Serialize(rows.Take(100)); },ct).ConfigureAwait(false); }
         finally { gate.Release(); }
     }
     public async Task ClearHistoryAsync(CancellationToken ct=default)
     { await gate.WaitAsync(ct).ConfigureAwait(false); try { await repository.SetSettingAsync(HistoryKey,"[]",ct).ConfigureAwait(false); } finally { gate.Release(); } }
     public async Task DeleteHistoryAsync(Guid id,CancellationToken ct=default)
-    { await gate.WaitAsync(ct).ConfigureAwait(false); try { var rows=await ReadAsync<NetworkHistory>(HistoryKey,ct).ConfigureAwait(false); await repository.SetSettingAsync(HistoryKey,JsonSerializer.Serialize(rows.Where(row=>row.Id!=id)),ct).ConfigureAwait(false); } finally { gate.Release(); } }
+    { await gate.WaitAsync(ct).ConfigureAwait(false); try { await repository.UpdateSettingAsync(HistoryKey,json=>JsonSerializer.Serialize(Parse<NetworkHistory>(json).Where(row=>row.Id!=id)),ct).ConfigureAwait(false); } finally { gate.Release(); } }
     public async Task<IReadOnlyList<NetworkCollection>> CollectionsAsync(CancellationToken ct=default)=>await ReadAsync<NetworkCollection>(CollectionsKey,ct).ConfigureAwait(false);
     public async Task SaveCollectionAsync(string name,NetworkRequest request,NetworkSecrets secrets,CancellationToken ct=default)
     {
@@ -55,7 +59,7 @@ public sealed class NetworkToolsStore(ProfileRepository repository,ICredentialSt
         {
             var rows=await ReadAsync<NetworkCollection>(CollectionsKey,ct).ConfigureAwait(false); if(rows.Count>=100)throw new ArgumentException(L.T("Usuń kolekcję przed dodaniem kolejnej (limit 100)."));
             var entry=new NetworkCollection(Guid.NewGuid(),name,request.Tool); await credentials.SaveAsync(entry.Id,json,ct).ConfigureAwait(false);
-            try { rows.Insert(0,entry); await repository.SetSettingAsync(CollectionsKey,JsonSerializer.Serialize(rows),ct).ConfigureAwait(false); }
+            try { await repository.UpdateSettingAsync(CollectionsKey,json=> { var latest=Parse<NetworkCollection>(json); if(latest.Count>=100)throw new ArgumentException(L.T("Usuń kolekcję przed dodaniem kolejnej (limit 100).")); latest.Insert(0,entry); return JsonSerializer.Serialize(latest); },ct).ConfigureAwait(false); }
             catch
             {
                 // A failed acknowledgement may follow a committed SQLite write.
@@ -88,7 +92,7 @@ public sealed class NetworkToolsStore(ProfileRepository repository,ICredentialSt
             var rows=await ReadAsync<NetworkCollection>(CollectionsKey,ct).ConfigureAwait(false); if(!rows.Any(row=>row.Id==id))return;
             // Commit removal first: a database error must leave the saved request
             // readable. Failure to retire an encrypted orphan cannot undo deletion.
-            await repository.SetSettingAsync(CollectionsKey,JsonSerializer.Serialize(rows.Where(row=>row.Id!=id)),ct).ConfigureAwait(false);
+            await repository.UpdateSettingAsync(CollectionsKey,json=>JsonSerializer.Serialize(Parse<NetworkCollection>(json).Where(row=>row.Id!=id)),ct).ConfigureAwait(false);
             try { await credentials.DeleteAsync(id,CancellationToken.None).ConfigureAwait(false); } catch { }
         }
         finally { gate.Release(); }
@@ -97,7 +101,7 @@ public sealed class NetworkToolsStore(ProfileRepository repository,ICredentialSt
     public async Task RememberAsync(string key,string value,CancellationToken ct=default)
     {
         if(value.Length is <1 or >512)return; await gate.WaitAsync(ct).ConfigureAwait(false);
-        try { var values=await ValuesAsync(key,ct).ConfigureAwait(false); await repository.SetSettingAsync("networkTools."+key,JsonSerializer.Serialize(new[]{value}.Concat(values).Distinct().Take(30)),ct).ConfigureAwait(false); }
+        try { await repository.UpdateSettingAsync("networkTools."+key,json=>JsonSerializer.Serialize(new[]{value}.Concat(Parse<string>(json)).Distinct().Take(30)),ct).ConfigureAwait(false); }
         finally { gate.Release(); }
     }
 }

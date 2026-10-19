@@ -29,7 +29,7 @@ public static partial class DatabaseBackupCatalog
             command.CommandText="PRAGMA quick_check(1)";
             if(!string.Equals(command.ExecuteScalar() as string,"ok",StringComparison.Ordinal))throw new InvalidDataException(L.T("Kontrola SQLite wykryła uszkodzenie kopii. Plik pozostawiono bez zmian."));
             ct.ThrowIfCancellationRequested(); command.CommandText="PRAGMA user_version"; var version=Convert.ToInt32(command.ExecuteScalar());
-            if(version is <0 or >3)throw new InvalidDataException(L.T("Kopia pochodzi z nowszej lub nieobsługiwanej wersji ServerDesk. Plik pozostawiono bez zmian."));
+            if(version is <0 or >ProfileRepository.CurrentSchemaVersion)throw new InvalidDataException(L.T("Kopia pochodzi z nowszej lub nieobsługiwanej wersji ServerDesk. Plik pozostawiono bez zmian."));
             if(version!=namedVersion)throw new InvalidDataException(L.T("Schemat zapisany w bazie różni się od nazwy kopii. Plik pozostawiono bez zmian."));
             ct.ThrowIfCancellationRequested(); info.Refresh(); RejectJournals(path);
             if(!info.Exists || info.Length!=length || info.LastWriteTimeUtc!=modified)throw new InvalidDataException(L.T("Plik kopii zmienił się lub jest niepoprawny. Odśwież listę i spróbuj ponownie."));

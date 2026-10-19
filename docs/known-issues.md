@@ -1,5 +1,7 @@
 # ServerDesk Public Beta — known issues
 
+- **Data and session recovery (0.43.0):** schema 4 requires a verified pre-migration backup and is rejected by clients up to 0.42.0. Profile identity edits rotate the local credential binding; vault cleanup failures can retain protected unused entries. Commands reject stale saves and require reload. Quiet SSH uses a separate read-only `echo` exec channel after 30 s with a 12 s response limit; this never sends input to the user terminal. SFTP's default progress idle limit is 30 s. Reconnect preserves its browsing context, but interrupted writes require explicit retry from zero and fresh overwrite consent. Physical suspend/resume and every server/WAN behavior remain unverified. See [verification scope](reports/release-verification-0.43.0.md).
+
 - **Diagnostics and profile deletion (0.42.0):** missing credential directories no longer block saved-profile deletion. Settings provides a bounded log preview and full-copy export; exported logs can contain addresses and paths, so review them before sharing. Stable symlink/junction aliases are resolved before export. This is not protection against a hostile process changing directory links concurrently. Native VM/hardware and long-running acceptance remain pending. See the [current verification scope](reports/release-verification-0.42.0.md).
 
 This is a public beta. Keep a backup before upgrading and validate the workflows you need in a test environment.

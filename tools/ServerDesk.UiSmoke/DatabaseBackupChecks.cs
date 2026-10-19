@@ -38,7 +38,7 @@ internal static class DatabaseBackupChecks
             if(!verify.IsEnabled || Avalonia.Automation.AutomationProperties.GetName(verify)!=AppText.T("Sprawdź kopię") || !verify.GetVisualDescendants().OfType<DeskIcon>().Any())throw new Exception("Backup verification action is missing, unlocalized or has no icon");
             verify.RaiseEvent(new RoutedEventArgs(Button.ClickEvent)); RedesignChecks.Wait(browser.Shutdown);
             var check=Named<TextBlock>(settings,"DatabaseBackupVerificationStatus");
-            if(!check.IsVisible || check.Text!=AppText.F($"Kontrola SQLite poprawna · schemat {3}. Przed przywróceniem sprawdź dane w osobnym katalogu.") || !original.SequenceEqual(File.ReadAllBytes(file)))throw new Exception("Read-only backup verification did not return localized success");
+            if(!check.IsVisible || check.Text!=AppText.F($"Kontrola SQLite poprawna · schemat {ProfileRepository.CurrentSchemaVersion}. Przed przywróceniem sprawdź dane w osobnym katalogu.") || !original.SequenceEqual(File.ReadAllBytes(file)))throw new Exception("Read-only backup verification did not return localized success");
             Named<Button>(settings,"DatabaseBackupCopyPath").RaiseEvent(new RoutedEventArgs(Button.ClickEvent));
             Until(()=>Named<TextBlock>(settings,"DatabaseBackupListStatus").Text==AppText.T("Skopiowano ścieżkę."));
             if(settings.Clipboard!.TryGetTextAsync().GetAwaiter().GetResult()!=file)throw new Exception("Wrong snapshot path copied");

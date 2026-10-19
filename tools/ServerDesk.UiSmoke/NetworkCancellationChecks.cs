@@ -40,10 +40,19 @@ internal static class NetworkCancellationChecks
             var delay=Field<CancellationTokenSource>(subnet,"subnetDelay"); var manual=subnet.StartAsync();
             Verify(delay.IsCancellationRequested,"Manual Start leaves an automatic subnet run queued"); RedesignChecks.Wait(manual); RedesignChecks.Frames(20); Verify(runs==1,"Automatic recalculation replaced an explicit result");
             target.Text="198.51.100.0/24"; RedesignChecks.Frames(1); Verify(Field<Button>(subnet,"stop").IsEnabled,"Stop cannot cancel a pending subnet calculation"); Click(subnet,"Stop"); RedesignChecks.Wait(subnet.Shutdown); RedesignChecks.Frames(16); Verify(runs==1 && subnet.StatusText==AppText.T("Zatrzymano"),"Stop did not cancel the delayed subnet calculation");
-            target.Text="203.0.113.0/24"; RedesignChecks.Frames(1); target.Focus(); window.KeyPress(Key.Escape,RawInputModifiers.None,PhysicalKey.Escape,null); RedesignChecks.Wait(subnet.Shutdown); RedesignChecks.Frames(16); Verify(runs==1,"Escape left a subnet calculation queued");
-            for(var i=0;i<8;i++) { target.Text=$"192.0.{i}.0/24"; RedesignChecks.Frames(1); }
-            RedesignChecks.Wait(subnet.Shutdown); Verify(runs==2,"Rapid subnet edits were not coalesced");
-            target.Text="198.51.100.1/32"; RedesignChecks.Frames(1); subnet.Dispose(); var draining=subnet.Shutdown; RedesignChecks.Wait(draining); var closedStatus=subnet.StatusText; RedesignChecks.Frames(16); Verify(runs==2 && subnet.StatusText==closedStatus,"Closed subnet pane received a late update"); window.Close();
+            target.Text="203.0.113.0/24"; RedesignChecks.Frames(1); RedesignChecks.Wait(subnet.Shutdown);
+            // Rendering a frame can exceed the 250 ms production debounce under
+            // load. Queue a fresh recalculation only after focus is established;
+            // assert that Escape cancels that exact task, not a past render's run.
+            Verify(target.Focus(),"Subnet target could not receive keyboard focus"); var beforeEscape=runs;
+            var pendingEscape=(Task)typeof(NetworkToolPane).GetMethod("RecalculateAsync",BindingFlags.NonPublic|BindingFlags.Instance)!.Invoke(subnet,null)!;
+            var escapeDelay=Field<CancellationTokenSource>(subnet,"subnetDelay"); window.KeyPress(Key.Escape,RawInputModifiers.None,PhysicalKey.Escape,null);
+            RedesignChecks.Wait(pendingEscape); RedesignChecks.Wait(subnet.Shutdown); RedesignChecks.Frames(16); Verify(escapeDelay.IsCancellationRequested && runs==beforeEscape,"Escape left a subnet calculation queued");
+            for(var i=0;i<8;i++)target.Text=$"192.0.{i}.0/24";
+            RedesignChecks.Frames(1); RedesignChecks.Wait(subnet.Shutdown); Verify(runs==beforeEscape+1,"Rapid subnet edits were not coalesced");
+            target.Text="198.51.100.1/32"; RedesignChecks.Frames(1); RedesignChecks.Wait(subnet.Shutdown); var beforeClose=runs;
+            var pendingClose=(Task)typeof(NetworkToolPane).GetMethod("RecalculateAsync",BindingFlags.NonPublic|BindingFlags.Instance)!.Invoke(subnet,null)!;
+            subnet.Dispose(); var draining=subnet.Shutdown; RedesignChecks.Wait(Task.WhenAll(draining,pendingClose)); var closedStatus=subnet.StatusText; RedesignChecks.Frames(16); Verify(runs==beforeClose && subnet.StatusText==closedStatus,"Closed subnet pane received a late update"); window.Close();
 
             RedesignChecks.Wait(store.SaveCollectionAsync("Held collection",new() { Tool=NetworkToolKind.Http,Target="https://example.test" },new("fixture secret")));
             var http=new NetworkToolPane(owner,NetworkToolKind.Http,store,new NetworkToolsService(),[],""); window=new Window { Content=http,Width=900,Height=700 }; window.Show();
@@ -61,7 +70,9 @@ internal static class NetworkCancellationChecks
                 for(var i=0;i<12;i++)
                 {
                     var pane=new NetworkToolPane(owner,NetworkToolKind.Http,store,new NetworkToolsService(),[],""); window=new Window { Content=pane,Width=700,Height=500 }; window.Show(); pane.ApplyRequest(new() { Tool=NetworkToolKind.Http,Target=server.Url,TimeoutMs=10000 });
-                    _=pane.StartAsync(); Until(()=>server.Accepted>i); if(i%2==0)Click(pane,"Stop"); pane.Dispose(); RedesignChecks.Wait(pane.Shutdown); Verify(!pane.IsRunning,"Closed HTTP request stayed active"); window.Close();
+                    var httpRun=pane.StartAsync(); Until(()=>server.Accepted>i || httpRun.IsCompleted);
+                    Verify(server.Accepted>i,$"HTTP cancellation fixture {language}/{i}: request did not arrive; status={pane.StatusText}; task={httpRun.Status}; target={pane.ReadRequest().Target}");
+                    if(i%2==0)Click(pane,"Stop"); pane.Dispose(); RedesignChecks.Wait(pane.Shutdown); Verify(!pane.IsRunning,"Closed HTTP request stayed active"); window.Close();
                 }
                 var retry=new NetworkToolPane(owner,NetworkToolKind.Http,store,new NetworkToolsService(),[],""); window=new Window { Content=retry,Width=700,Height=500 }; window.Show(); retry.ApplyRequest(new() { Tool=NetworkToolKind.Http,Target=server.Url,TimeoutMs=10000 });
                 _=retry.StartAsync(); Until(()=>server.Accepted==13); Click(retry,"Restart"); var restarting=Field<Task>(retry,"restarting"); Click(retry,"Restart"); Verify(ReferenceEquals(restarting,Field<Task>(retry,"restarting")),"Repeated Restart queued independent operations"); Click(retry,"Stop"); RedesignChecks.Wait(retry.Shutdown); RedesignChecks.Frames(8); Verify(server.Accepted==13 && !retry.IsRunning,"Stop allowed a pending Restart to start another request");

@@ -120,17 +120,17 @@ public sealed partial class MainWindow : Window
     {
         edited.Validate();
         var changed=original!=null && !CredentialReference.CanReuse(original,edited);
+        edited=await repository.SaveEditedProfileAsync(original,edited,lifetime.Token);
+        var cleanupFailed=false;
         if(changed)
         {
-            // Fail before saving a new destination if its old secret cannot be removed.
-            await credentials.DeleteAsync(original!.Id,lifetime.Token);
-            await credentials.DeleteAsync(CredentialReference.Vnc(original.Id),lifetime.Token);
+            try { foreach(var id in CredentialReference.AllForProfile(original!))await credentials.DeleteAsync(id,lifetime.Token); }
+            catch(Exception ex) { cleanupFailed=true; Serilog.Log.Warning("Saved profile credential retirement failed: {ExceptionDetails}",ExceptionDiagnostics.Describe(ex)); }
         }
-        if(original!=null && (changed || !ConnectionHistorySnapshot.Capture(original).Matches(edited)))edited=edited with { LastConnected=null };
-        await repository.SaveAsync(edited);
         foreach(var session in sessions.Where(s=>s.Profile.Id==edited.Id))session.UpdatePresentation(edited);
         await vm.LoadAsync(); vm.SelectedServer=edited;
         if(changed)vm.Status=L.T("Zmieniono cel lub sposób logowania. Przy następnym połączeniu podaj hasło ponownie.");
+        if(cleanupFailed)vm.Status=L.T("Połączenie zostało zapisane z nowym powiązaniem hasła. Stare poświadczenie może pozostać w magazynie, ale nie zostanie użyte dla nowego celu.");
     }
     private async Task FolderAsync() { var name=await Dialogs.Prompt(this,L.T("Folder, np. Produkcja/Linux")); if(name==null)return; await repository.AddFolderAsync(name); await vm.LoadAsync(); }
     internal async Task EditFolderIconAsync(string path)
@@ -141,7 +141,13 @@ public sealed partial class MainWindow : Window
     }
     private bool RealFolder()=>vm.SelectedFolder is not ("Wszystkie" or "★ Ulubione" or "◷ Ostatnie" or "" or null);
     private async Task SettingsAsync() { await Dialogs.Settings(this,repository,()=>Task.WhenAll(sessions.Select(p=>p.ApplyAppearanceAsync()))); QueueWorkspaceSave(); }
-    private async Task DuplicateAsync() { if(vm.SelectedServer is {} p) await EditAsync(p with { Id=Guid.NewGuid(),Name=p.Name+" — "+L.T("kopia"),LastConnected=null }); }
+    private async Task DuplicateAsync()
+    {
+        if(vm.SelectedServer is not {} p)return;
+        var draft=p with { Id=Guid.NewGuid(),CredentialId=null,Name=p.Name+" — "+L.T("kopia"),LastConnected=null };
+        var edited=await Dialogs.Edit(this,draft,vm.Folders,vm.AllServers.SelectMany(s=>ProfileTags.Parse(s.Tags)),vm.TagColors);
+        if(edited!=null)await SaveEditedProfileAsync(null,edited);
+    }
     private async Task FavoriteAsync() { if(vm.SelectedServer is {} p) { await repository.SaveAsync(p with { Favorite=!p.Favorite }); await vm.LoadAsync(); } }
     private async Task MoveAsync() { if(vm.SelectedServer is {} p) { var folder=await Dialogs.Prompt(this,L.T("Folder docelowy"),p.Folder); if(folder!=null) { await repository.MoveToFolderAsync(p.Id,folder); await vm.LoadAsync(); } } }
     private async Task DeleteAsync()
@@ -149,7 +155,7 @@ public sealed partial class MainWindow : Window
         if(vm.SelectedServer is not {} p || !await Dialogs.Confirm(this,L.T("Usunąć serwer?"),p.Name))return;
         await DeleteSavedProfileAsync(p);
     }
-    private async Task ForgetSecretAsync() { if(vm.SelectedServer is {} p) { await credentials.DeleteAsync(p.Id); await credentials.DeleteAsync(CredentialReference.Vnc(p.Id)); vm.Status=L.T("Usunięto zapisane poświadczenie"); } }
+    private async Task ForgetSecretAsync() { if(vm.SelectedServer is {} p) { foreach(var id in CredentialReference.AllForProfile(p))await credentials.DeleteAsync(id); vm.Status=L.T("Usunięto zapisane poświadczenie"); } }
     private async Task QuickAsync()
     {
         var chosen=await Dialogs.QuickConnection(this); if(chosen==null)return;

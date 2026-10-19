@@ -55,7 +55,7 @@ internal sealed partial class SessionPane
     {
         foreach(var (remote,buttons) in fileNavigationButtons)
         {
-            var history=remote?remoteNavigation:localNavigation; var ready=sftp!=null && fileRefreshes==0 && disposed==0;
+            var history=remote?remoteNavigation:localNavigation; var ready=IsConnected && sftp?.IsConnected==true && fileRefreshes==0 && disposed==0;
             buttons.Back.IsEnabled=ready && history.Back!=null; buttons.Forward.IsEnabled=ready && history.Forward!=null;
             buttons.Home.IsEnabled=ready && (!remote || remoteHome.Length>0);
             buttons.Up.IsEnabled=ready && FilePathConfirmed(remote) && (remote?loadedRemotePath!="/":Directory.GetParent(loadedLocalPath)!=null);
@@ -63,6 +63,8 @@ internal sealed partial class SessionPane
         foreach(var remote in new[]{false,true})
         {
             var list=remote?remoteList:localList; var loaded=remote?loadedRemotePath:loadedLocalPath;
+            // Cached rows stay focusable for inspection after transport loss.
+            // Mutations remain gated by connection state in UpdateFileSelection.
             list.IsEnabled=fileRefreshes==0 && (loaded.Length==0 || FilePathConfirmed(remote));
         }
         UpdateFileSelection();

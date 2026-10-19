@@ -56,7 +56,7 @@ try
     if(diskFull)await Check("real-enospc-preservation-and-retry",DiskFull);
     else
     {
-        for(var version=0;version<3;version++)await Check("historical-schema-"+version,()=>Migration(version));
+        for(var version=0;version<ProfileRepository.CurrentSchemaVersion;version++)await Check("historical-schema-"+version,()=>Migration(version));
         await Check("terminated-export-and-retry",ExportCrash);
         for(var attempt=0;attempt<3;attempt++)await Check("terminated-folder-transaction-"+attempt,()=>DatabaseCrash(attempt));
     }
@@ -116,7 +116,7 @@ async Task Migration(int version)
     Require((string?)await Scalar(backup,"SELECT json FROM profiles")==original,"Backup lost original profile JSON");
     Require((string?)await Scalar(dbPath,"SELECT json FROM profiles")==original,"Migration rewrote profile JSON");
     Require((string?)await Scalar(dbPath,"PRAGMA quick_check(1)")=="ok","Migrated database is invalid");
-    Require(Convert.ToInt64(await Scalar(dbPath,"PRAGMA user_version"))==3,"Migration did not reach schema 3");
+    Require(Convert.ToInt64(await Scalar(dbPath,"PRAGMA user_version"))==ProfileRepository.CurrentSchemaVersion,"Migration did not reach the current schema");
     var profile=(await repo.ListAsync()).Single(); profile.Validate();
     Require(profile.Id==id && profile.Favorite && profile.Folder=="Lab/Zażółć/SSH","Profile identity or folder lost");
     Require(await repo.HostKeyAsync("example.test",22)=="SHA256:fixture","Host trust lost");

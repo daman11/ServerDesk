@@ -3,6 +3,8 @@ using Renci.SshNet;
 using System.Threading.Channels;
 using ServerDesk.Core;
 using Renci.SshNet.Common;
+using System.Diagnostics;
+using System.Net.Sockets;
 
 namespace ServerDesk.Infrastructure;
 
@@ -14,16 +16,21 @@ public sealed class SshTerminalSession : IPtyConnection
     private readonly CancellationTokenSource lifetime = new();
     private readonly Channel<byte[]> output = Channel.CreateBounded<byte[]>(new BoundedChannelOptions(128) { FullMode = BoundedChannelFullMode.Wait, SingleReader = true, SingleWriter = true });
     private readonly Task pump;
+    private readonly Task health;
+    private long lastResponse=Stopwatch.GetTimestamp();
     private readonly TerminalResizeQueue resize;
     private readonly TaskCompletionSource<TerminalCompletion> completion = new(TaskCreationOptions.RunContinuationsAsynchronously);
     private Exception? transportError;
     private int exitCode = -1;
     private int disposed;
     private readonly SemaphoreSlim commandProbeGate=new(1);
-    public async Task<CommandProbeResult> ProbeAsync(string command,CancellationToken ct)
+    public Task Shutdown=>Task.WhenAll(pump,health);
+    public Exception? TransportFailure=>Volatile.Read(ref transportError);
+    public Task<CommandProbeResult> ProbeAsync(string command,CancellationToken ct)=>ProbeCoreAsync(command,ct,false);
+    private async Task<CommandProbeResult> ProbeCoreAsync(string command,CancellationToken ct,bool gateAlreadyHeld)
     {
         using var timeout=CancellationTokenSource.CreateLinkedTokenSource(ct,lifetime.Token); timeout.CancelAfter(TimeSpan.FromSeconds(12));
-        await commandProbeGate.WaitAsync(timeout.Token).ConfigureAwait(false);
+        if(!gateAlreadyHeld)await commandProbeGate.WaitAsync(timeout.Token).ConfigureAwait(false);
         try
         {
             return await Task.Run(async()=>
@@ -64,6 +71,7 @@ public sealed class SshTerminalSession : IPtyConnection
         client.ErrorOccurred += OnTransportError;
         ReaderStream = new ChannelReadStream(output.Reader);
         pump = Task.Run(PumpAsync);
+        health=Task.Run(WatchHealthAsync);
     }
     public static async Task<SshTerminalSession> CreateAsync(SshClient client,CancellationToken ct)
     {
@@ -91,12 +99,14 @@ public sealed class SshTerminalSession : IPtyConnection
             {
                 var count = await shell.ReadAsync(bytes.AsMemory(), lifetime.Token);
                 if (count == 0) break;
+                Volatile.Write(ref lastResponse,Stopwatch.GetTimestamp());
                 await output.Writer.WriteAsync(bytes[..count].ToArray(), lifetime.Token);
             }
         }
         catch (Exception ex) { failure = Volatile.Read(ref disposed) != 0 ? null : ex; }
         finally
         {
+            lifetime.Cancel();
             failure = Volatile.Read(ref transportError) ?? failure;
             client.ErrorOccurred -= OnTransportError;
             resize.Stop();
@@ -110,6 +120,55 @@ public sealed class SshTerminalSession : IPtyConnection
             output.Writer.TryComplete(Volatile.Read(ref disposed)!=0?null:failure);
             completion.TrySetResult(result);
         }
+    }
+    // SSH.NET's ordinary keepalive sends an unacknowledged IGNORE packet. It
+    // cannot detect a blackholed link. A separate bounded, read-only exec channel
+    // checks a quiet connection without inserting anything into the user's PTY.
+    private async Task WatchHealthAsync()
+    {
+        using var timer=new PeriodicTimer(TimeSpan.FromSeconds(5));
+        try
+        {
+            while(await timer.WaitForNextTickAsync(lifetime.Token).ConfigureAwait(false))
+                if(Stopwatch.GetElapsedTime(Volatile.Read(ref lastResponse))>=TimeSpan.FromSeconds(30))
+                    await VerifyTransportAsync(TimeSpan.FromSeconds(12),lifetime.Token).ConfigureAwait(false);
+        }
+        catch(OperationCanceledException) when(lifetime.IsCancellationRequested) { }
+    }
+    internal async Task VerifyTransportAsync(TimeSpan timeout,CancellationToken ct)
+    {
+        using var checking=CancellationTokenSource.CreateLinkedTokenSource(ct,lifetime.Token);
+        // Waiting behind a legitimate Commands probe is not a missing server
+        // reply. Skip this tick rather than disconnect a healthy busy terminal.
+        if(!await commandProbeGate.WaitAsync(0,checking.Token).ConfigureAwait(false))return;
+        var probe=ProbeCoreAsync("echo ServerDesk",checking.Token,true);
+        var deadline=Task.Delay(timeout,checking.Token);
+        var first=await Task.WhenAny(probe,deadline).ConfigureAwait(false);
+        if(first!=probe && !ct.IsCancellationRequested && !lifetime.IsCancellationRequested)
+            await AbortUnresponsiveAsync(new SshOperationTimeoutException("SSH liveness response timed out.")).ConfigureAwait(false);
+        checking.Cancel();
+        try { await probe.ConfigureAwait(false); }
+        catch(Exception) when(ct.IsCancellationRequested || lifetime.IsCancellationRequested) { }
+        catch(Exception ex)
+        {
+            // Restricted servers can refuse exec promptly while keeping a valid
+            // interactive terminal. That reply still proves transport liveness.
+            if(ex is OperationCanceledException)
+                await AbortUnresponsiveAsync(new SshOperationTimeoutException("SSH liveness response timed out.")).ConfigureAwait(false);
+            else if(ex is SshConnectionException or SshOperationTimeoutException or SocketException || !client.IsConnected)
+                await AbortUnresponsiveAsync(ex).ConfigureAwait(false);
+        }
+        Volatile.Write(ref lastResponse,Stopwatch.GetTimestamp());
+    }
+    private Task AbortUnresponsiveAsync(Exception error)
+    {
+        Interlocked.CompareExchange(ref transportError,error,null); lifetime.Cancel(); resize.Stop(); output.Writer.TryComplete(error);
+        return Task.Run(()=>
+        {
+            connectionInfo.ChannelCloseTimeout=TimeSpan.FromMilliseconds(500);
+            try { client.Dispose(); } catch(Exception ex) { Trace.TraceWarning("SSH unresponsive-client cleanup: {0}",ex.GetType().Name); }
+            try { shell.Dispose(); } catch(Exception ex) { Trace.TraceWarning("SSH unresponsive-shell cleanup: {0}",ex.GetType().Name); }
+        });
     }
     private void OnTransportError(object? sender, ExceptionEventArgs e)
     {
@@ -135,7 +194,7 @@ public sealed class SshTerminalSession : IPtyConnection
         finally
         {
             try { client.Dispose(); }
-            finally { output.Writer.TryComplete(); _ = pump.ContinueWith(_ => lifetime.Dispose(), TaskScheduler.Default); }
+            finally { output.Writer.TryComplete(); _ = Shutdown.ContinueWith(_ => lifetime.Dispose(), TaskScheduler.Default); }
         }
     }
     private sealed class ChannelReadStream(ChannelReader<byte[]> reader) : Stream

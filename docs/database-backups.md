@@ -6,13 +6,13 @@ Od 0.39.1 dostępne są **Zapisane kopie bazy** w tej samej sekcji. Lista pokazu
 
 **Kopiuj ścieżkę** kopiuje ścieżkę zaznaczonej kopii, a gdy lista jest pusta — folderu. **Otwórz folder kopii** uruchamia systemowy menedżer plików na wyraźne kliknięcie. Pełna lista jest dostępna w folderze; ServerDesk niczego automatycznie nie usuwa. Pliki `.part`, nieznane nazwy i dowiązania plikowe nie trafiają na listę. Metadane są odczytywane poza UI, bez otwierania SQLite; widoczność pliku **nie potwierdza**, że jego zawartość jest poprawna.
 
-0.40.0 dodaje **Sprawdź kopię**. Zaznacz plik i uruchom kontrolę: program odczyta go poza wątkiem UI, wykona `quick_check(1)` i porówna schemat SQLite z nazwą kopii. Obsługiwane są schematy 0–3, bez migracji. Wynik lub błąd pojawia się pod przyciskami. Zmiana zaznaczenia i odświeżenie listy usuwają poprzedni wynik kontroli.
+0.40.0 dodaje **Sprawdź kopię**. Zaznacz plik i uruchom kontrolę: program odczyta go poza wątkiem UI, wykona `quick_check(1)` i porówna schemat SQLite z nazwą kopii. Obsługiwane są schematy 0–4, bez migracji. Wynik lub błąd pojawia się pod przyciskami. Zmiana zaznaczenia i odświeżenie listy usuwają poprzedni wynik kontroli.
 
 Kontrola nie podmienia działającej bazy, nie naprawia kopii, nie tworzy obok niej WAL/SHM i nie odczytuje magazynu poświadczeń. Odmawia sprawdzania pliku z towarzyszącym dziennikiem SQLite jako samodzielnej kopii. Zamknięcie ustawień anuluje oczekującą pracę i czeka na zakończenie rozpoczętej kontroli; natywny odczyt SQLite może zakończyć się dopiero po bieżącym sprawdzeniu. Poprawny wynik dotyczy struktury SQLite i wersji schematu, bez potwierdzania pól profili, sekretów czy późniejszych zmian pliku. Pełna próba odtworzenia nadal wymaga kroków poniżej. [Zakres testów i ograniczenia](reports/backup-verification-2026-10-17.md).
 
 English: **Saved database backups** lists up to 20 newest snapshot filenames with local time, size, schema and reason. Refresh preserves selection; creating a backup selects the new file. **Copy path** copies the selected snapshot or, for an empty list, the directory. **Open backup folder** uses the system file manager. The list only reads metadata, excludes partial/unknown/link entries, and does not certify or restore database contents.
 
-0.40.0 adds **Check backup** for a selected snapshot. It checks SQLite integrity and filename/schema agreement on a worker without modifying or migrating the file, creating journal files, restoring data or accessing credentials. Schemas 0–3 are supported. Corrupt, missing, changed, newer and journal-dependent snapshots are reported. Refresh/selection changes clear the result. A successful SQLite check does not validate application fields or missing secrets; test restoration in a separate data directory.
+0.40.0 adds **Check backup** for a selected snapshot. It checks SQLite integrity and filename/schema agreement on a worker without modifying or migrating the file, creating journal files, restoring data or accessing credentials. Schemas 0–4 are supported. Corrupt, missing, changed, newer and journal-dependent snapshots are reported. Refresh/selection changes clear the result. A successful SQLite check does not validate application fields or missing secrets; test restoration in a separate data directory.
 
 ## Zakres i przechowywanie
 
@@ -31,7 +31,7 @@ Kopia powstaje przez SQLite Online Backup z transakcji odczytu. Obejmuje zatwier
 
 Najpierw zapisywany jest unikalny plik `.part`, następnie sprawdzane `quick_check` i wersja schematu. Dopiero zamknięta, sprawdzona kopia otrzymuje końcową nazwę `.db`. Nieudana próba sprząta własne pliki tymczasowe, zachowując wcześniejsze kopie. Po nagłym zakończeniu procesu może pozostać `.part`; nie traktuj go jako ukończonej kopii.
 
-Przed migracją istniejącej bazy ze schematu 0/1/2 do 3 aplikacja musi utworzyć kopię `before-migration`. Błąd kopii zatrzymuje migrację. Nowa pusta baza i baza w bieżącym schemacie nie tworzą takiej kopii przy każdym uruchomieniu. Schemat 3 pozostaje bez zmian. Baza z nowszego programu jest odrzucana bez obniżania wersji. Kontrola struktury SQLite nie potwierdza poprawności każdego pola JSON ani dostępności sekretów.
+Przed migracją istniejącej bazy ze schematu 0/1/2/3 do 4 aplikacja musi utworzyć kopię `before-migration`. Błąd kopii zatrzymuje migrację. Nowa pusta baza i baza w bieżącym schemacie nie tworzą takiej kopii przy każdym uruchomieniu. Schemat 4 zapisuje wersję rozumiejącą nowe powiązania poświadczeń. Migracja nie przepisuje JSON-ów profili ani sekretów. Starsze aplikacje (do 0.42.0) odmawiają uruchomienia bazy 4; przed powrotem do nich odtwórz kopię sprzed migracji, po zabezpieczeniu całego katalogu danych. Baza z nowszego programu jest odrzucana bez obniżania wersji. Kontrola struktury SQLite nie potwierdza poprawności każdego pola JSON ani dostępności sekretów.
 
 ## Przywracanie
 

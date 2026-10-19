@@ -109,8 +109,8 @@ internal sealed partial class SessionPane
         }
         catch(Exception) when(cancel.IsCancellationRequested)
         {
-            job.State=TransferState.Cancelled;
-            job.Detail.Text=L.T("Anulowano. Ukończone pliki pozostają na miejscu. Ponów przesyła plik od początku; nadpisanie wymaga potwierdzenia.");
+            job.State=interruptedTransport?TransferState.Failed:TransferState.Cancelled;
+            job.Detail.Text=interruptedTransport?L.T("Transfer przerwany przez utratę połączenia SSH. Ukończone pliki pozostają na miejscu. Połącz sesję ponownie, a następnie wybierz Ponów. Plik zostanie przesłany od początku; nadpisanie wymaga potwierdzenia."):L.T("Anulowano. Ukończone pliki pozostają na miejscu. Ponów przesyła plik od początku; nadpisanie wymaga potwierdzenia.");
             if(!IsConnected)job.Detail.Text+=" "+L.T("Możesz ponowić zadanie po połączeniu sesji.");
         }
         catch(Exception ex) { job.State=TransferState.Failed; job.Detail.Text=TransferErrorMessages.Describe(ex); ToolTip.SetTip(job.Detail,job.Detail.Text); owner.ReportBackgroundError(L.T("Transfer SFTP nie powiódł się."),ex); }

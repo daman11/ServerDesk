@@ -35,6 +35,7 @@ public sealed partial class MainWindow
     private double sidebarWidth=272;
     private bool treePending;
     private bool rebuildingTree;
+    private bool syncingBrowserSelection;
     private string connectedKey="";
     private readonly HashSet<string> collapsed=[];
     private void BuildWorkspace()
@@ -62,6 +63,7 @@ public sealed partial class MainWindow
         var add=DeskIcons.Button("plus","Dodaj połączenie",()=>_ = Safe(()=>EditAsync(null))); connectionHeaderActions.Children.Add(add);
         var newFolder=DeskIcons.Button("folder","Dodaj folder",()=>_ = Safe(FolderAsync)); connectionHeaderActions.Children.Add(newFolder);
         var sideHeader=BuildSidebarModuleHeader(); DockPanel.SetDock(sideHeader,Dock.Top); sidebar.Children.Add(sideHeader);
+        BuildBrowserContextMenu();
         connectionTools.Name="ConnectionBrowserTools"; DockPanel.SetDock(connectionTools,Dock.Top); sidebar.Children.Add(connectionTools);
         var search=connectionSearch=new TextBox { Name="ConnectionSearch",PlaceholderText=L.T("Nazwa, adres, login lub tag"),Margin=new Thickness(10,0,10,8) }; search.Bind(TextBox.TextProperty,new Binding(nameof(vm.Search)) { Mode=BindingMode.TwoWay }); connectionTools.Children.Add(search);
         ToolTip.SetTip(search,L.T("Ctrl+Shift+O: znajdź połączenie. Szukaj po nazwie, adresie, loginie, tagach, opisie, folderze i protokole. ↓ / Enter przenosi do wyników; Escape czyści zapytanie."));
@@ -76,13 +78,21 @@ public sealed partial class MainWindow
         search.TextChanged+=(_,_)=>clearSearch.IsVisible=!string.IsNullOrEmpty(search.Text); Avalonia.Automation.AutomationProperties.SetName(search,L.T("Szukaj połączeń"));
         BuildBrowserFilters();
         connectionTools.Children.Add(BuildConnectionSorting());
-        tree.SelectionChanged+=(_,_)=> { if(!rebuildingTree && tree.SelectedItem is TreeViewItem node) { if(node.Tag is ServerProfile p) { vm.SelectedServer=p; servers.SelectedItem=p; } else if(node.Tag is string f) { vm.SelectedServer=null; vm.SelectedFolder=f; } } };
+        tree.SelectionChanged+=(_,_)=>
+        {
+            if(rebuildingTree || tree.SelectedItem is not TreeViewItem node)return;
+            // Selecting a folder filters the legacy list, but does not change this
+            // tree. Rebuilding here detaches the row before right-button release.
+            syncingBrowserSelection=true;
+            try { if(node.Tag is ServerProfile p) { vm.SelectedServer=p; servers.SelectedItem=p; } else if(node.Tag is string f) { vm.SelectedServer=null; vm.SelectedFolder=f; } }
+            finally { syncingBrowserSelection=false; }
+        };
         tree.DoubleTapped+=(_,_)=> { if(tree.SelectedItem is TreeViewItem { Tag:ServerProfile p } && IsBrowserProfileVisible(p))_ = Safe(()=>ConnectAsync(p)); };
         tree.KeyDown+=HandleBrowserKeys;
         tree.SetValue(ScrollViewer.HorizontalScrollBarVisibilityProperty,ScrollBarVisibility.Disabled); connectionBrowser.Children.Add(tree); connectionBrowser.Children.Add(browserEmpty);
         BuildProfileDropTargets();
         BuildTransferOverview(); BuildNetworkBrowser(); sidebar.Children.Add(new Grid { Children={connectionBrowser,transferOverview,networkBrowserHost } });
-        vm.Servers.CollectionChanged+=(_,_)=>QueueTree();
+        vm.Servers.CollectionChanged+=(_,_)=> { if(!syncingBrowserSelection)QueueTree(); };
         var splitter=new GridSplitter { ResizeDirection=GridResizeDirection.Columns,HorizontalAlignment=HorizontalAlignment.Stretch }; Grid.SetColumn(splitter,2); Grid.SetRow(splitter,1); layout.Children.Add(splitter);
         splitter.DragCompleted+=(_,_)=> { if(sidebar.IsVisible)sidebarWidth=layout.ColumnDefinitions[1].ActualWidth; };
         BuildDockWorkspace(); BuildCommandWorkspace(); Grid.SetColumn(commandWorkspace,3); Grid.SetRow(commandWorkspace,1); layout.Children.Add(commandWorkspace);
@@ -130,7 +140,7 @@ public sealed partial class MainWindow
             // Detached/rebuilt search nodes must never rewrite saved collapse state.
             node.PropertyChanged+=(_,e)=> { if(e.Property==TreeViewItem.IsExpandedProperty && !rebuildingTree && !searching && !HasBrowserFilter) { if(node.IsExpanded)collapsed.Remove(path); else collapsed.Add(path); } };
             if(path==selectedFolder)selection=node;
-            node.ContextMenu=DeferredBrowserMenu(()=>new[]{Menu("Nowe połączenie w folderze",()=>EditAsync(new ServerProfile { Folder=path })),Menu("Zmień ikonę folderu",()=>EditFolderIconAsync(path)),Menu("Zmień nazwę",async()=> { vm.SelectedFolder=path; await RenameFolderAsync(); },shortcut:"F2"),Menu("Usuń pusty folder",async()=> { vm.SelectedFolder=path; await DeleteFolderAsync(); },shortcut:"Delete")});
+            node.ContextMenu=DeferredBrowserMenu(()=>new[]{Menu("Nowe połączenie w folderze",()=>CreateProfileAsync(new ServerProfile { Folder=path })),Menu("Zmień ikonę folderu",()=>EditFolderIconAsync(path)),Menu("Zmień nazwę",async()=> { vm.SelectedFolder=path; await RenameFolderAsync(); },shortcut:"F2"),Menu("Usuń pusty folder",async()=> { vm.SelectedFolder=path; await DeleteFolderAsync(); },shortcut:"Delete")});
             ConfigureProfileDrop(node,path);
             folders[path]=node; if(slash<0)roots.Add(node); else Folder(path[..slash]).Items.Add(node); return node;
         }

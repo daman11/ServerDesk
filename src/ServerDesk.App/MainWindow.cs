@@ -111,10 +111,13 @@ public sealed partial class MainWindow : Window
         if(preferences.WorkspaceOnStartup!=WorkspaceStartup.Remember)SetWorkspaceMode((WorkspaceMode)((int)preferences.WorkspaceOnStartup-1));
         workspaceReady=true;
     }
-    private async Task EditAsync(ServerProfile? profile)
+    private Task EditAsync(ServerProfile? profile)=>EditProfileAsync(profile,profile??new ServerProfile { Folder=BrowserCreationFolder() });
+    private Task CreateProfileAsync(ServerProfile draft)=>EditProfileAsync(null,draft);
+    private async Task EditProfileAsync(ServerProfile? original,ServerProfile draft)
     {
-        var edited=await Dialogs.Edit(this,profile??new ServerProfile { Folder=BrowserCreationFolder() },vm.Folders,vm.AllServers.SelectMany(p=>ProfileTags.Parse(p.Tags)),vm.TagColors); if(edited==null)return;
-        await SaveEditedProfileAsync(profile,edited);
+        // A prefilled creation draft is not an existing database profile.
+        var edited=await Dialogs.Edit(this,draft,vm.Folders,vm.AllServers.SelectMany(p=>ProfileTags.Parse(p.Tags)),vm.TagColors); if(edited==null)return;
+        await SaveEditedProfileAsync(original,edited);
     }
     internal async Task SaveEditedProfileAsync(ServerProfile? original,ServerProfile edited)
     {
@@ -159,7 +162,7 @@ public sealed partial class MainWindow : Window
     private async Task QuickAsync()
     {
         var chosen=await Dialogs.QuickConnection(this); if(chosen==null)return;
-        if(chosen.EditProfile)await EditAsync(chosen.Profile); else await ConnectAsync(chosen.Profile);
+        if(chosen.EditProfile)await CreateProfileAsync(chosen.Profile); else await ConnectAsync(chosen.Profile);
     }
     private async Task ExportAsync()
     {

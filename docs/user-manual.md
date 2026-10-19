@@ -16,6 +16,8 @@ Natywny klient administracyjny C# / .NET 10 / Avalonia 12 dla Windows i Linux. W
 
 ## Uruchomienie
 
+**Menu panelu połączeń:** kliknij prawym przyciskiem pusty obszar listy lub nagłówek **Połączenia**, aby dodać połączenie w katalogu głównym, utworzyć folder, otworzyć szybkie połączenie, importować/eksportować konfigurację albo wyczyścić aktywne filtry. Prawy klik na serwerze lub folderze otwiera menu tego elementu; **Nowe połączenie w folderze** wypełnia wybrany folder. W polu wyszukiwania pozostaje menu edycji tekstu. Menu połączeń jest też dostępne w Ulubionych/Ostatnich, ale nie w Transferach ani Narzędziach sieciowych.
+
 **Usuwanie zapisanych połączeń:** usuwa wskazany profil z lokalnej bazy i jego zapisane poświadczenia. Brak pliku hasła lub katalogu `credentials` nie blokuje operacji. Błąd uprawnień/blokady pliku nie jest pomijany; niedostępny systemowy magazyn haseł nadal wymaga potwierdzenia usunięcia samego profilu. Historia pozostaje dostępna do wglądu, ale nie odtwarza usuniętego połączenia. Operacja nie kasuje zdalnych plików, kluczy prywatnych, eksportów konfiguracji ani pozostałych profili. [Przyczyna błędu 0.40.0 i testy poprawki](reports/profile-deletion-2026-10-18.md).
 
 **Informacje o programie:** **Menu → O aplikacji** pokazuje opis ServerDesk, wersję, oznaczenie publicznej bety oraz zakładki **Program**, **Licencja** i **Składniki**. Pełny oryginalny tekst MIT jest dostępny bez internetu; biblioteki i grafiki zachowują własne licencje. **Kopiuj informacje** kopiuje wersję z identyfikatorem buildu, system, architekturę oraz wersje .NET i Avalonia, bez danych połączeń. Te informacje można dołączyć do zgłoszenia błędu.

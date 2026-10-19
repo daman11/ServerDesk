@@ -2,6 +2,8 @@
 
 ## Unreleased
 
+- Add a right-click menu on the connection sidebar header and blank list area for creating profiles/folders, quick connection, import/export and clearing filters. Keep row-specific and text-editing menus; avoid replacing folder rows during selection. Correct saving profiles created from a folder or quick-connection draft.
+
 - Give Help sections distinct numbered cards, larger headings, tinted header bands and clear gaps between sections while keeping related paragraphs together. Preserve multiline shortcuts, searching and whole-topic copying.
 
 - Improve Polish/English Help readability: put each keyboard shortcut on its own line, group shortcuts by context, and split dense file-transfer, RDP and troubleshooting instructions into shorter sections.

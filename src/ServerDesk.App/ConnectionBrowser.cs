@@ -32,6 +32,19 @@ public sealed partial class MainWindow
         // Avalonia's programmatic Open() can bypass Opening.
         menu.Opened+=(_,_)=>Populate(); return menu;
     }
+    private void BuildBrowserContextMenu()
+    {
+        var clear=Menu("Wyczyść filtry",()=> { ClearBrowserFilters(); return Task.CompletedTask; });
+        var menu=new ContextMenu { Name="ConnectionAreaMenu",ItemsSource=new Control[]{
+            Menu("Nowe połączenie",()=>CreateProfileAsync(new ServerProfile())),
+            Menu("Szybkie połączenie",QuickAsync),Menu("Nowy folder",FolderAsync),new Separator(),
+            Menu("Import konfiguracji",ImportAsync),Menu("Eksport konfiguracji",ExportAsync),new Separator(),clear} };
+        bool Available()=>section is "connections" or "favorite" or "recent";
+        menu.Opening+=(_,e)=> { e.Cancel=!Available(); clear.IsEnabled=HasBrowserFilter; };
+        // Programmatic Open() can bypass Opening; keep state current there too.
+        menu.Opened+=(_,_)=> { if(!Available())menu.Close(); else clear.IsEnabled=HasBrowserFilter; };
+        sidebar.Name="ConnectionSidebar"; sidebar.ContextMenu=menu;
+    }
     private void BuildBrowserFilters()
     {
         var body=new StackPanel { Margin=new Thickness(10,0,10,8),Spacing=6 };

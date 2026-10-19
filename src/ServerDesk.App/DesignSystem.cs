@@ -6,6 +6,7 @@ using Avalonia.Styling;
 using Avalonia.Markup.Xaml.MarkupExtensions;
 using Avalonia.Controls.Shapes;
 using Avalonia.Automation;
+using Avalonia.Themes.Fluent;
 
 namespace ServerDesk.App;
 
@@ -90,6 +91,13 @@ internal static partial class DesignSystem
         resources["SystemControlForegroundBaseMediumBrush"]=resources["ForegroundSecondary"];
         resources["SystemAccentColor"]=Color.Parse(t.Accent);
         SetAccent(resources,t.Accent,light);
+        // Native Fluent controls use derived accent shades from their own
+        // palette, independently of ServerDesk's application resource tokens.
+        foreach(var fluent in app.Styles.OfType<FluentTheme>())
+        {
+            if(!fluent.Palettes.TryGetValue(variant,out var palette))fluent.Palettes[variant]=palette=new ColorPaletteResources();
+            palette.Accent=(Color)resources["SystemAccentColor"]!;
+        }
         app.Resources.ThemeDictionaries[variant]=resources;
     }
     internal static void Apply(string id)

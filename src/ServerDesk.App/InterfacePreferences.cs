@@ -36,10 +36,25 @@ internal static partial class DesignSystem
         var color=Color.Parse(Preferences.AccentColor.Length>0?Preferences.AccentColor:fallback);
         var brush=new SolidColorBrush(color);
         resources["AccentPrimary"]=brush; resources["AccentHover"]=brush; resources["SystemAccentColor"]=color;
+        resources["TextControlBorderBrushFocused"]=brush;
         resources["TabItemHeaderSelectedPipeFill"]=brush;
+        if(Preferences.AccentColor.Length>0)
+        {
+            var background=((ISolidColorBrush)resources["BackgroundSecondary"]!).Color; var amount=light ? .14 : .24;
+            byte Mix(byte surface,byte accent)=>(byte)Math.Round(surface+(accent-surface)*amount);
+            resources["SurfaceSelected"]=new SolidColorBrush(Color.FromRgb(Mix(background.R,color.R),Mix(background.G,color.G),Mix(background.B,color.B)));
+        }
         static double Linear(byte b) { var s=b/255d; return s<=.04045?s/12.92:Math.Pow((s+.055)/1.055,2.4); }
         var luminance=.2126*Linear(color.R)+.7152*Linear(color.G)+.0722*Linear(color.B);
         resources["AccentForeground"]=new SolidColorBrush(luminance>.179?Colors.Black:Colors.White);
+        resources["TextControlSelectionHighlightColor"]=brush;
+        resources["RadioButtonCheckGlyphFill"]=resources["AccentForeground"];
+        foreach(var suffix in new[]{"","PointerOver","Pressed"})
+        {
+            resources["ToggleSwitchFillOn"+suffix]=brush;
+            resources["ToggleSwitchKnobFillOn"+suffix]=resources["AccentForeground"];
+            resources["RadioButtonOuterEllipseCheckedFill"+suffix]=brush;
+        }
         foreach(var state in new[]{"Checked","Indeterminate"})foreach(var suffix in new[]{"","PointerOver","Pressed"})
         {
             resources["CheckBoxCheckBackgroundFill"+state+suffix]=brush;

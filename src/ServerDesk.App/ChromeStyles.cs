@@ -21,11 +21,12 @@ internal static partial class DesignSystem
         // not obscure the connection state or turn every icon into a boxed button.
         var template=new FuncControlTemplate<Button>((button,scope)=>
         {
-            var content=new ContentPresenter { Name="PART_ContentPresenter",Background=Brushes.Transparent,HorizontalAlignment=HorizontalAlignment.Stretch,VerticalAlignment=VerticalAlignment.Center };
+            var content=new ContentPresenter { Name="PART_ContentPresenter",Background=Brushes.Transparent,HorizontalAlignment=HorizontalAlignment.Stretch,VerticalAlignment=VerticalAlignment.Stretch };
             scope.Register("PART_ContentPresenter",content);
             content.Bind(ContentPresenter.ContentProperty,new Binding(nameof(Button.Content)) { Source=button });
             content.Bind(ContentPresenter.ContentTemplateProperty,new Binding(nameof(Button.ContentTemplate)) { Source=button });
             content.Bind(ContentPresenter.HorizontalContentAlignmentProperty,new Binding(nameof(Button.HorizontalContentAlignment)) { Source=button });
+            content.Bind(ContentPresenter.VerticalContentAlignmentProperty,new Binding(nameof(Button.VerticalContentAlignment)) { Source=button });
             content.Bind(ContentPresenter.ForegroundProperty,new Binding(nameof(Button.Foreground)) { Source=button });
             var border=new Border { Child=content };
             border.Bind(Border.BackgroundProperty,new Binding(nameof(Button.Background)) { Source=button });

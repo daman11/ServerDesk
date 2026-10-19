@@ -26,11 +26,12 @@ public sealed partial class MainWindow
         Button Entry(string icon,string title,string subtitle,string? shortcut,Func<Task> action)
         {
             title=L.T(title); subtitle=L.T(subtitle);
-            var row=new Grid { ColumnDefinitions=new("24,*"),ColumnSpacing=10 }; row.Children.Add(DeskIcons.Create(icon,18,"ForegroundSecondary"));
+            var row=new Grid { Name="WelcomeActionContent",ColumnDefinitions=new("24,*"),ColumnSpacing=10,HorizontalAlignment=HorizontalAlignment.Stretch,VerticalAlignment=VerticalAlignment.Top };
+            var glyph=DeskIcons.Create(icon,18,"AccentPrimary"); glyph.Name="WelcomeActionIcon"; glyph.VerticalAlignment=VerticalAlignment.Top; glyph.Margin=new Thickness(0,2,0,0); row.Children.Add(glyph);
             var text=new StackPanel { Spacing=4 }; var heading=DesignSystem.Label(title); heading.FontWeight=FontWeight.SemiBold; heading.TextWrapping=TextWrapping.Wrap; text.Children.Add(heading);
             var hint=DesignSystem.Label(subtitle,true,DesignTokens.Caption); hint.TextWrapping=TextWrapping.Wrap; text.Children.Add(hint); Grid.SetColumn(text,1); row.Children.Add(text);
             if(shortcut!=null) { var key=DesignSystem.Label(shortcut,true,DesignTokens.Micro); key.Margin=new Thickness(0,6,0,0); text.Children.Add(key); shortcuts.Add(key); }
-            var button=Action(title,action); button.Content=row; button.IsDefault=false; button.VerticalAlignment=VerticalAlignment.Stretch; button.Classes.Add("welcome-action"); button.Classes.Add("welcome-calm"); AutomationProperties.SetName(button,title+(shortcut==null?"":" · "+shortcut)); return button;
+            var button=Action(title,action); button.Content=row; button.IsDefault=false; button.VerticalAlignment=VerticalAlignment.Stretch; button.HorizontalContentAlignment=HorizontalAlignment.Stretch; button.VerticalContentAlignment=VerticalAlignment.Top; button.Classes.Add("welcome-action"); button.Classes.Add("welcome-calm"); AutomationProperties.SetName(button,title+(shortcut==null?"":" · "+shortcut)); return button;
         }
         actions.Children.Add(Entry("plus","Nowe połączenie","Dodaj SSH, RDP, VNC lub Serial","Ctrl+Shift+N",()=>EditAsync(null)));
         actions.Children.Add(Entry("connect","Szybkie połączenie","Adres ssh://, rdp://, vnc:// lub serial://",null,QuickAsync));

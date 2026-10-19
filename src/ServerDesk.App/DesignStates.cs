@@ -1,5 +1,6 @@
 using Avalonia;
 using Avalonia.Controls;
+using Avalonia.Controls.Presenters;
 using Avalonia.Controls.Primitives;
 using Avalonia.Markup.Xaml.MarkupExtensions;
 using Avalonia.Styling;
@@ -23,6 +24,11 @@ internal static partial class DesignSystem
         Add(s=>s.OfType<Button>().Class(":pressed"),Background("SurfaceSelected"));
         Add(s=>s.OfType<Button>().Class("primary").Class(":pointerover"),Background("AccentHover"));
         Add(s=>s.OfType<Button>().Class("primary").Class(":pressed"),Background("AccentHover"));
+        // Fluent paints hover/pressed on its presenter, bypassing Button.Background.
+        foreach(var state in new[]{":pointerover",":pressed"})
+            Add(s=>s.OfType<Button>().Class("primary").Class(state).Template().OfType<ContentPresenter>().Name("PART_ContentPresenter"),
+                new Setter(ContentPresenter.BackgroundProperty,new DynamicResourceExtension("AccentHover")),
+                new Setter(ContentPresenter.ForegroundProperty,new DynamicResourceExtension("AccentForeground")));
         foreach(var type in new[]{typeof(TextBox),typeof(ComboBox),typeof(NumericUpDown),typeof(CheckBox),typeof(ToggleSwitch),typeof(MenuItem)})
         {
             Add(s=>s.OfType(type),new Setter(TemplatedControl.ForegroundProperty,new DynamicResourceExtension("ForegroundPrimary")));
@@ -38,6 +44,8 @@ internal static partial class DesignSystem
         }
         Add(s=>s.OfType<MenuItem>().Class(":pointerover"),Background("SurfaceHover"));
         Add(s=>s.OfType<MenuItem>().Class(":selected"),Background("SurfaceSelected"));
+        Add(s=>s.OfType<TextBox>(),new Setter(TextBox.SelectionForegroundBrushProperty,new DynamicResourceExtension("AccentForeground")));
+        Add(s=>s.OfType<SelectableTextBlock>(),new Setter(SelectableTextBlock.SelectionBrushProperty,new DynamicResourceExtension("AccentPrimary")),new Setter(SelectableTextBlock.SelectionForegroundBrushProperty,new DynamicResourceExtension("AccentForeground")));
         foreach(var type in new[]{typeof(CheckBox),typeof(ToggleSwitch)})
         {
             Add(s=>s.OfType(type),new Setter(TemplatedControl.MinHeightProperty,new DynamicResourceExtension("ControlHeight")));

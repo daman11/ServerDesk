@@ -2,6 +2,9 @@
 
 ## Unreleased
 
+- Align welcome action icons with their headings and keep equal column indents across wrapped descriptions, shortcuts, languages and narrow layouts.
+- Synchronize application and Fluent accent palettes, including custom selection surfaces, focused inputs and native controls. Preserve primary button colors during hover/press and use contrasting text/check marks for light and dark accents; restore preset colors on preview cancellation or clearing the override.
+
 - Improve SFTP transfer ergonomics: open full read-only details and copy them from either queue, keep sidebar cards compact, and choose between clearing successful jobs or all finished history while preserving active work.
 - Restore SFTP keyboard focus after directory navigation without taking focus back from a control selected while loading, so Enter followed by Alt+Up remains usable.
 

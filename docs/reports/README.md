@@ -1,5 +1,7 @@
 # Verification and historical reviews
 
+Welcome and accents: [Action alignment, shared Fluent palette and live settings preview, 2026-10-19](welcome-accent-2026-10-19.md).
+
 Transfer ergonomics: [Full details, explicit copy and selective history clearing, 2026-10-19](transfer-ux-2026-10-19.md).
 
 Security/privacy: [Local penetration tests, credential canaries and data-flow review, 2026-10-19](security-pentest-2026-10-19.md).

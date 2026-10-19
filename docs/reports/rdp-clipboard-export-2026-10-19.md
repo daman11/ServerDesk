@@ -17,6 +17,7 @@ The native enumerator uses an explicit pointer to one ULONG for `pceltFetched`, 
 - **117/117** focused xUnit cases: existing RDP configuration/probe/file-selection coverage plus the new descriptor validation cases. This count does not imply execution on Linux or a real RDP server.
 - Native source checks: Unicode nested text and 1 MiB binary, byte/SHA-256 equality, virtual-only formats, Copy preference, suppressed remote feedback, disconnected/cancelled source, bounded/read-only/short/growing streams, seek and COM copy-all.
 - Native format-enumerator counter guard; retained HWND on detach/reattach and repeated disposal; existing OLE incoming-drop regressions.
+- Follow-up native `IDataObject` vtable checks verify descriptor HGLOBAL, indexed binary IStream bytes and rejection of CF_HDROP through the COM callable wrapper, rather than only managed method calls. The local native runner passes; this is not an Explorer drag or a live remote-source test.
 - PL/EN export-dialog layout at 360/640 px, existing incoming-drop layout at 240/520/1100 px, plus focused pane/GUI/controller/help/localization checks.
 
 Artifacts: `artifacts/rdp-reverse/tests/rdp-reverse.trx`, `final-v2-native-rdp/received/`, `final-v2-rdp-export/` and other `final-v2-*` scenario folders. Selected results are retained in `artifacts/reports/rdp-clipboard-export-2026-10-19/`.
@@ -33,4 +34,8 @@ The initial native-counter test exposed COM interface visibility requirements; t
 
 The VMs were not started or modified. Real remote-to-local Explorer copying, conflicts/cancellation, several sessions, source changes and network interruption remain open. Physical AltGr and Japanese Microsoft IME must be tested inside ServerDesk, not the VMware console. Remaining image/rich clipboard formats, Linux mouse/clipboard, account variants and mixed DPI retain their previous unverified status. See the [RDP matrix](../rdp-test-matrix.md) and [integration guide](../rdp-integration.md).
 
+A continuous gesture beginning in remote Explorer also needs a cooperating remote component: the documented ActiveX clipboard controller synchronizes clipboards and does not expose a remote OLE drag source. The maintainer has been asked whether a manually launched, non-administrator helper in the remote Windows session is acceptable. No helper has been deployed, and no heuristic edge-triggered Ctrl+C is implemented.
+
 Primary references: [Shell file formats](https://learn.microsoft.com/en-us/windows/win32/shell/clipboard), [OLE data transfer](https://learn.microsoft.com/en-us/windows/win32/shell/dataobject), [DoDragDrop](https://learn.microsoft.com/en-us/windows/win32/api/ole2/nf-ole2-dodragdrop). This local implementation is not a substitute for the remaining live acceptance.
+
+Remote integration references: [IMsRdpClipboard](https://learn.microsoft.com/en-us/windows/win32/termserv/imsrdpclipboard), [MS-RDPECLIP copy/paste sequence](https://learn.microsoft.com/en-us/openspecs/windows_protocols/ms-rdpeclip/9a784d09-bf53-4362-995d-a20d0eb5f074), [CreateVirtualChannels](https://learn.microsoft.com/en-us/windows/win32/termserv/imstscax-createvirtualchannels), [OnChannelReceivedData](https://learn.microsoft.com/en-us/windows/win32/termserv/imstscaxevents-onchannelreceiveddata).

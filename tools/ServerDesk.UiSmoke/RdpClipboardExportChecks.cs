@@ -38,6 +38,7 @@ internal static class RdpClipboardExportChecks
         finally {Marshal.FreeHGlobal(count);}
         if(list.Any(f=>f.cfFormat==15))throw new Exception("Export exposed local paths or lost virtual formats");
         NativeEnumeration(formats,list[0].cfFormat);
+        NativeDataObject(data,list);
         var output=Path.Combine(root,"received");Directory.CreateDirectory(output);
         for(var i=1;i<3;i++)
         {
@@ -84,6 +85,42 @@ internal static class RdpClipboardExportChecks
         finally {Marshal.FreeHGlobal(entries);Marshal.FreeHGlobal(counter);Marshal.Release(instance);}
     }
     [UnmanagedFunctionPointer(CallingConvention.StdCall)] private delegate int EnumNext(nint self,int count,nint entries,nint fetched);
+    private static void NativeDataObject(IClipboardDataObject data,FORMATETC[] formats)
+    {
+        if(!OperatingSystem.IsWindows())throw new PlatformNotSupportedException();
+        // Exercise the CCW vtable used by an external OLE drop target rather
+        // than relying exclusively on calls to the managed implementation.
+        var instance=Marshal.GetComInterfaceForObject(data,typeof(IClipboardDataObject));
+        try
+        {
+            var table=Marshal.ReadIntPtr(instance);
+            var query=Marshal.GetDelegateForFunctionPointer<DataQuery>(Marshal.ReadIntPtr(table,5*IntPtr.Size));
+            var get=Marshal.GetDelegateForFunctionPointer<DataGet>(Marshal.ReadIntPtr(table,3*IntPtr.Size));
+            var descriptor=formats[0];Marshal.ThrowExceptionForHR(query(instance,ref descriptor));
+            Marshal.ThrowExceptionForHR(get(instance,ref descriptor,out var metadata));
+            try
+            {
+                if(metadata.tymed!=TYMED.TYMED_HGLOBAL)throw new Exception("Native file descriptor medium differs");
+                var pointer=GlobalLock(metadata.unionmember);
+                try {if(Marshal.ReadInt32(pointer)!=3)throw new Exception("Native file descriptor count differs");}
+                finally {GlobalUnlock(metadata.unionmember);}
+            }
+            finally {ReleaseStgMedium(ref metadata);}
+            var file=formats[1];file.lindex=2;Marshal.ThrowExceptionForHR(query(instance,ref file));
+            Marshal.ThrowExceptionForHR(get(instance,ref file,out var contents));
+            try
+            {
+                if(contents.tymed!=TYMED.TYMED_ISTREAM)throw new Exception("Native contents medium differs");
+                var stream=(IStream)Marshal.GetObjectForIUnknown(contents.unionmember);
+                if(!Read(stream,VirtualFiles.Binary.Length).AsSpan().SequenceEqual(VirtualFiles.Binary))throw new Exception("Native file contents differ");
+            }
+            finally {ReleaseStgMedium(ref contents);}
+            file.cfFormat=15;if(query(instance,ref file)==0)throw new Exception("Native export exposed local paths");
+        }
+        finally {Marshal.Release(instance);}
+    }
+    [UnmanagedFunctionPointer(CallingConvention.StdCall)] private delegate int DataQuery(nint self,ref FORMATETC format);
+    [UnmanagedFunctionPointer(CallingConvention.StdCall)] private delegate int DataGet(nint self,ref FORMATETC format,out STGMEDIUM medium);
     private static byte[] Read(IStream stream,long size)
     {
         using var output=new MemoryStream();var buffer=new byte[32768];var count=Marshal.AllocHGlobal(4);

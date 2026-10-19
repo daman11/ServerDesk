@@ -1,5 +1,7 @@
 # Droga do ServerDesk 1.0
 
+Akceptacja VMware z 2026-10-19 obejmuje udostępnione Windows 11 Test i Ubuntu 26 Test. Rzeczywiste środowiska, wyniki, przerwania i otwarte próby opisuje [raport MVP w VM](reports/vm-mvp-2026-10-19.md). Jest to etap roboczy po 0.43.0, bez nowego RC; nie zastępuje sprzętu, pełnej macierzy RDP ani czterogodzinnej próby.
+
 0.43.0 domyka kolejną partię etapów B/C: błędy zapisu a hasła profili, równoległe magazyny pluginów, migracja do schematu 4 i odzyskiwanie po cichej utracie SSH/SFTP. [Zakres i granice](reports/release-verification-0.43.0.md). Pozostałe odmiany serwerów, WAN, sprzęt i rzeczywiste suspend/resume wymagają dalszej akceptacji; nie otwieramy ponownie zakończonych kontrolowanych prób.
 
 Punkt wyjścia: 0.43.0 Public Beta. Funkcje rdzenia i dodatków istnieją; stan implementacji oraz granice wcześniejszych testów opisuje [MVP](mvp-status.md). Poniższa lista jest bieżącym planem stabilizacji, a nie deklaracją gotowości 1.0.

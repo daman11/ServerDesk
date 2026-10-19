@@ -122,11 +122,16 @@ internal static class SftpNavigationChecks
             Wait(Task.WhenAll(stale,latest)); if(localHistory.Current!=local || localHistory.Count!=prior+1)throw new Exception("Obsolete queued navigation committed");
             Click(pane,"RemoteHome"); if(remoteHistory.Current!=Field<string>(pane,"remoteHome"))throw new Exception("Remote home differs from login directory");
             Wait(Call(pane,"NavigateFileHomeAsync",false)); if(localHistory.Current!=Path.TrimEndingDirectorySeparator(Environment.GetFolderPath(Environment.SpecialFolder.UserProfile)))throw new Exception("Local home failed");
-            Wait(pane.ConnectAsync("serverdesk-test-passphrase",default)); if(localHistory.Count!=0 || remoteHistory.Count!=0)throw new Exception("Reconnect retained navigation from old transport");
+            var savedLocalCount=localHistory.Count; var savedRemoteCount=remoteHistory.Count;
+            var savedLocalPath=localHistory.Current; var savedRemotePath=remoteHistory.Current;
+            Wait(pane.ConnectAsync("serverdesk-test-passphrase",default));
+            if(localHistory.Count!=savedLocalCount || remoteHistory.Count!=savedRemoteCount || localHistory.Current!=savedLocalPath || remoteHistory.Current!=savedRemotePath)throw new Exception("Reconnect discarded confirmed navigation context");
+            if(NavigationButton(pane,"RemoteBack").IsEnabled || NavigationButton(pane,"LocalBack").IsEnabled)throw new Exception("Cached navigation enabled before a fresh SFTP connection");
             Console.WriteLine("INFO navigation reconnected");
-            Wait(pane.ShowAsync(1)); if(localHistory.Count!=1 || remoteHistory.Count!=1)throw new Exception("Fresh SFTP histories not initialized");
+            Wait(pane.ShowAsync(1));
+            if(localHistory.Count!=savedLocalCount || remoteHistory.Count!=savedRemoteCount || localHistory.Current!=savedLocalPath || remoteHistory.Current!=savedRemotePath)throw new Exception("Fresh SFTP refresh changed confirmed navigation context");
             window.CaptureRenderedFrame()!.Save(Path.Combine(root,"navigation-network.png"));
-            Console.WriteLine("PASS real OpenSSH/SFTP navigation: back/forward and Alt+Right, refresh/branch preservation, local/remote independence, failed-path rollback, parent/home, rejected unconfirmed upload, UTF8 roundtrip, queued stale suppression and reconnect reset");
+            Console.WriteLine("PASS real OpenSSH/SFTP navigation: back/forward and Alt+Right, refresh/branch preservation, local/remote independence, failed-path rollback, parent/home, rejected unconfirmed upload, UTF8 roundtrip, queued stale suppression and confirmed context retained across reconnect with actions gated until SFTP opens");
         }
         finally
         {

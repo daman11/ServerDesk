@@ -42,7 +42,7 @@ openssl req -x509 -newkey rsa:2048 -nodes -subj '/CN=serverdesk-rdp-fixture.inva
 "$tools/usr/bin/winpr-hash" -u rdp_fixture -p serverdesk-disposable-rdp -d LAB -f sam >"$lab/SAM"
 chmod 600 "$lab/SAM" "$XDG_CONFIG_HOME/freerdp/shadow/shadow.key"
 port="$(python3 -c 'import socket; s=socket.socket(); s.bind(("127.0.0.1",0)); print(s.getsockname()[1]); s.close()')"
-DISPLAY="$SERVERDESK_RDP_LAB_SERVER_DISPLAY" "$tools/usr/bin/freerdp-shadow-cli" /port:"$port" /bind-address:127.0.0.1 /sec:nla /sam-file:"$lab/SAM" -auth >"$lab/shadow.log" 2>&1 & pids+=("$!")
+DISPLAY="$SERVERDESK_RDP_LAB_SERVER_DISPLAY" "$tools/usr/bin/freerdp-shadow-cli" /port:"$port" /bind-address:127.0.0.1 /sec:nla /sam-file:"$lab/SAM" +may-view +may-interact >"$lab/shadow.log" 2>&1 & pids+=("$!")
 sleep 1
 kill -0 "${pids[2]}" || { cat "$lab/shadow.log"; exit 1; }
 export SERVERDESK_RDP_LAB_SHA256="$(openssl x509 -in "$XDG_CONFIG_HOME/freerdp/shadow/shadow.crt" -noout -fingerprint -sha256 | cut -d= -f2)"

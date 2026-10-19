@@ -5,7 +5,7 @@ Punkt 6 [planu 1.0](stable-release-plan.md) jest nadal otwarty. Ta lista służy
 ## Identyfikacja kandydata
 
 - Wersja / commit / docelowe systemy: do ustalenia dla konkretnego RC.
-- Bieżący krok przygotowawczy: [0.43.0 Public Beta](reports/release-verification-0.43.0.md). Testy VMware/sprzętu odłożone przez maintenera; nie zaliczają macierzy 1.0 ani poniższych prób czystych maszyn.
+- Bieżące wydanie: [0.43.0 Public Beta](reports/release-verification-0.43.0.md). Udostępnione VM Windows 11/Ubuntu 26 otrzymały [osobną macierz roboczą](reports/vm-mvp-2026-10-19.md); jej przerwania i ograniczenia pozostają jawne. Nie zalicza to całej macierzy 1.0 ani nowego końcowego RC.
 - [ ] Czysty końcowy commit, nowy numer wersji i zgodne przewodniki, notatki oraz raport.
 - [ ] Paczki pochodzą z tego commita; EXE ma właściwy ProductVersion; źródła i SHA-256 odpowiadają paczkom.
 - [ ] Jawne granice wsparcia i znane ograniczenia; testy WSL/headless nie zastępują natywnej akceptacji.

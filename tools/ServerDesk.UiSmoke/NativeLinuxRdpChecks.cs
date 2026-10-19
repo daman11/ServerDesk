@@ -1,6 +1,7 @@
 using System.Diagnostics;
 using System.Reflection;
 using System.Runtime.InteropServices;
+using System.Text.Json;
 using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Interactivity;
@@ -28,6 +29,7 @@ internal static class NativeLinuxRdpChecks
     {
         if(!OperatingSystem.IsLinux() || Environment.GetEnvironmentVariable("SERVERDESK_DISPOSABLE_RDP_LAB")!="1")throw new InvalidOperationException("Requires the owned loopback RDP/Xvfb lab");
         var expected=RdpCertificateFingerprint.Normalize(Environment.GetEnvironmentVariable("SERVERDESK_RDP_LAB_SHA256")!);
+        var skipPointer=Environment.GetEnvironmentVariable("SERVERDESK_RDP_LAB_SKIP_SYNTHETIC_POINTER")=="1";
         var serverDisplay=Environment.GetEnvironmentVariable("SERVERDESK_RDP_LAB_SERVER_DISPLAY")??throw new Exception("No private server display");
         var paths=new AppPaths(Path.Combine(root,"data-"+Guid.NewGuid().ToString("N"))); var repo=new ProfileRepository(paths); Task.Run(()=>repo.InitializeAsync()).GetAwaiter().GetResult();
         using var surface=new Surface(serverDisplay); using var screen=new Screen();
@@ -47,10 +49,12 @@ internal static class NativeLinuxRdpChecks
                     await repo.SaveAsync(profile); var work=main.Safe(()=>main.ConnectAsync(profile));
                     await Until(()=>main.OwnedWindows.Count>0,"RDP GUI login did not open"); var login=main.OwnedWindows.Single();
                     var input=login.GetVisualDescendants().OfType<TextBox>().Single(); if(input.PasswordChar=='\0')throw new Exception("Native password is not masked"); input.Text=password;
+                    await Task.Delay(250); // Allow a real compositor to map/paint the dialog.
                     screen.Save(main.TryGetPlatformHandle()!.Handle,Path.Combine(root,"native-login.png")); Click(login,"Połącz");
                     await Until(()=>main.OwnedWindows.Count>0 || work.IsCompleted,"Certificate GUI did not open");
                     var certificate=main.OwnedWindows.Single(); if(certificate.Name!="RdpCertificateDialog")throw new Exception("Expected certificate GUI: "+certificate.Title+" "+string.Join(" | ",certificate.GetVisualDescendants().OfType<TextBlock>().Select(t=>t.Text)));
                     if(!certificate.GetVisualDescendants().OfType<SelectableTextBlock>().Any(t=>t.Text==RdpCertificateFingerprint.Display(expected)))throw new Exception("Lab certificate does not match owned fixture");
+                    await Task.Delay(250);
                     screen.Save(certificate.TryGetPlatformHandle()!.Handle,Path.Combine(root,"native-certificate.png"));
                     if(cancel)Click(certificate,"Anuluj"); else { certificate.GetVisualDescendants().OfType<CheckBox>().Single().IsChecked=true; Click(certificate,"Zaufaj w tej karcie"); }
                     await work; return main.OpenSessions.Last();
@@ -68,8 +72,9 @@ internal static class NativeLinuxRdpChecks
                 if(File.ReadAllText($"/proc/{pid}/cmdline").Contains(Password))throw new Exception("RDP password leaked into argv");
                 await Task.Delay(700); screen.Save(main.TryGetPlatformHandle()!.Handle,Path.Combine(root,"native-embedded-desktop.png"));
                 surface.Focus(); host.FocusDesktop(); var keys=surface.Keys; screen.Key("a"); await Until(()=>surface.Keys>keys,"RDP keyboard did not reach isolated server screen");
-                var buttons=surface.Buttons; screen.Click(desktop); await Until(()=>surface.Buttons>buttons,"RDP mouse did not reach isolated server screen");
-                Console.WriteLine("PASS actual FreeRDP/NLA desktop: child belongs to owned process and ServerDesk, no password in argv; keyboard and mouse reach separate private Xvfb server");
+                if(skipPointer)Console.WriteLine("SKIP synthesized global pointer injection; native mouse acceptance remains open for this desktop");
+                else { var buttons=surface.Buttons; screen.Click(desktop); await Until(()=>surface.Buttons>buttons,"RDP mouse did not reach isolated server screen"); }
+                Console.WriteLine("PASS actual FreeRDP/NLA desktop: child belongs to owned process and ServerDesk, no password in argv; keyboard reaches separate private Xvfb server"+(skipPointer?"":"; mouse reaches server"));
                 void Same()
                 { if(Host(pane).ProcessId!=pid || Host(pane).WindowHandle!=handle || Host(pane).DesktopHandle!=desktop || !pane.IsRdpLoggedIn)throw new Exception("Docking replaced the RDP session"); }
                 using var idle=new SessionPane(main,new() { Name="Idle workspace fixture",Protocol=Protocol.Serial },new SshConnectionFactory(repo),new ExternalRdpClient(),repo); main.RegisterPane(idle);
@@ -89,6 +94,7 @@ internal static class NativeLinuxRdpChecks
                 main.Close(); await Until(()=>main.OwnedWindows.Count>0,"Shutdown confirmation missing"); Click(main.OwnedWindows.Single(),"Potwierdź"); await Until(()=>!main.IsVisible,"App did not finish native RDP shutdown");
                 if(Directory.Exists($"/proc/{lastPid}"))throw new Exception("RDP child survived application shutdown");
                 Console.WriteLine("PASS reconnect reuses certificate consent in this tab, replaces owned child, and confirmed application shutdown drains native RDP process");
+                File.WriteAllText(Path.Combine(root,"native-rdp-result.json"),JsonSerializer.Serialize(new { Passed=!skipPointer,OtherChecksPassed=true,SyntheticPointerTested=!skipPointer,Session=Environment.GetEnvironmentVariable("XDG_SESSION_TYPE"),Server="owned loopback FreeRDP shadow on private Xvfb",WindowsServerTested=false },new JsonSerializerOptions { WriteIndented=true }));
             }
             catch(Exception ex) { failure=ex; }
             finally

@@ -35,7 +35,9 @@ $rdpExecutable=(Resolve-Path -LiteralPath $Executable).Path
 $rdpXmlNs=[System.Xml.XmlNamespaceManager]::new($rdpManifest.NameTable)
 $rdpXmlNs.AddNamespace('c','urn:schemas-microsoft-com:compatibility.v1')
 $rdpXmlNs.AddNamespace('t','urn:schemas-microsoft-com:asm.v3')
+$rdpXmlNs.AddNamespace('w','http://schemas.microsoft.com/SMI/2016/WindowsSettings')
 if(-not $rdpManifest.SelectSingleNode('//c:supportedOS[@Id="{8e0f7a12-bfb3-4fe8-b9a5-48fd50a15a9a}"]',$rdpXmlNs)){throw 'Published EXE manifest is missing Windows 10/11 compatibility required by embedded RDP'}
 $rdpPrivileges=$rdpManifest.SelectSingleNode('//t:requestedExecutionLevel',$rdpXmlNs)
 if($rdpPrivileges.level -ne 'asInvoker' -or $rdpPrivileges.uiAccess -ne 'false'){throw 'Published EXE should run asInvoker without UI access elevation'}
-'PASS embedded Windows 10/11 manifest, asInvoker, uiAccess=false: '+[System.IO.Path]::GetFileName($rdpExecutable)
+if($rdpManifest.SelectSingleNode('//w:longPathAware',$rdpXmlNs).InnerText -ne 'true'){throw 'Published EXE must opt into long Windows paths for native file/database operations'}
+'PASS embedded Windows 10/11 manifest, asInvoker, uiAccess=false, longPathAware=true: '+[System.IO.Path]::GetFileName($rdpExecutable)

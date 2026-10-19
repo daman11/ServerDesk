@@ -125,8 +125,11 @@ internal static class RestartNoticeChecks
         edit=Dialogs.Settings(main,repo,()=>Task.CompletedTask); RedesignChecks.Frames(); w=main.OwnedWindows.Single(); Named<ComboBox>(w,"ApplicationLanguage").SelectedIndex=targetIndex;
         Click(w,"Zapisz i uruchom ponownie"); RedesignChecks.Wait(edit); RedesignChecks.Frames();
         if(repo.PreferencesAsync().Result.Language!=target)throw new Exception("Restart button failed to save selected language");
-        Click(main.OwnedWindows.Single(),"Potwierdź"); RedesignChecks.Frames(30);
+        Click(main.OwnedWindows.Single(),"Potwierdź");
         RedesignChecks.Wait(pane.CloseAsync());
+        // Closing the transport precedes the remaining workspace/placement writes.
+        // A fixed number of frames raced those writes on slower native VM disks.
+        SshAcceptanceChecks.Until(()=>launches>0 && !main.IsVisible,"Restart did not finish root shutdown");
         if(launches!=1 || main.IsVisible || pane.IsConnected)throw new Exception("Restart did not use complete root shutdown or launched more than once");
         var snapshot=WorkspaceSnapshot.Parse(repo.SettingAsync("lastWorkspace").Result!);
         if(!snapshot.Sessions.Any(s=>s.ProfileId==profile.Id))throw new Exception("Restart shutdown lost the saved workspace tab");

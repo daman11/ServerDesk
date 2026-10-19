@@ -6,9 +6,10 @@ Ten dokument rozdziela cele zgodności od zakończonej akceptacji. Wydanie pozos
 
 | Środowisko x64 | Status i pozostałe próby |
 |---|---|
-| Windows 11, Win32 | Lokalny start i pozycja rzeczywistych okien; celowane testy interfejsu. Fizyczne mieszane DPI, czytnik ekranu i długie sesje wymagają szerszej akceptacji. |
+| Windows 11, Win32 | Lokalny start i pozycja rzeczywistych okien; celowane testy interfejsu. Akceptacja VM Windows 11 Pro, build 26300: [wyniki i przerwania](reports/vm-mvp-2026-10-19.md). Fizyczne mieszane DPI, czytnik ekranu i długie sesje wymagają szerszej akceptacji. |
 | Windows 10 22H2 | Historyczny cel zgodności. Brak oddzielnej akceptacji na tym systemie; nie zaliczamy go do zweryfikowanej macierzy 1.0. |
 | Ubuntu 24.04 x64 | Lokalne testy Linux w Ubuntu/WSL, w tym headless UX. WSLg nie zastępuje natywnego GNOME/X11 ani GNOME/Wayland. |
+| Ubuntu 26.04.1 LTS, GNOME 50.1, Wayland/XWayland | [VMware, 2026-10-19](reports/vm-mvp-2026-10-19.md): natywne okno/schowek/Secret Service z odczytem w drugim procesie, SSH/SFTP/monitoring i częściowe RDP. Syntetyczna mysz RDP niepotwierdzona; sprzęt, pełny Windows RDP i długie sesje nadal otwarte. |
 | **Kali Linux 2026.3, KDE Plasma 6.7.4, Wayland, 100%** | Konfiguracja podana przez maintenera; priorytet do ręcznej akceptacji. Brak bezpośredniego dostępu z obecnego środowiska. Wersje te nie zostały niezależnie odczytane na maszynie Kali. |
 | Kubuntu/KDE, Debian, Fedora | Pozostają celami pierwotnego zakresu. Dokładne wersje i sesje graficzne trzeba zapisać przy akceptacji; brak podstaw do zadeklarowania całej rodziny jako zweryfikowanej. |
 | ARM, macOS, 32-bit | Brak paczek tego projektu. |

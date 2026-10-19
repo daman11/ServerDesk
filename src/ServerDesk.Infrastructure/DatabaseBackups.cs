@@ -15,7 +15,9 @@ internal static class DatabaseBackups
         ct.ThrowIfCancellationRequested();
         var name=$"serverdesk-{DateTime.UtcNow:yyyyMMdd-HHmmssfff}-v{version}-{reason}-{Guid.NewGuid():N}.db";
         var path=System.IO.Path.Combine(directory,name);
-        var temporary=path+".part";
+        // SQLite appends journal/WAL suffixes while copying. Do not spend that
+        // native path budget on the longer timestamp/schema/reason filename.
+        var temporary=System.IO.Path.Combine(directory,$".{Guid.NewGuid():N}.part");
         try
         {
             Directory.CreateDirectory(directory);

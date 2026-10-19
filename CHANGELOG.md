@@ -2,6 +2,8 @@
 
 ## Unreleased
 
+- Fix verified database backups and factory reset in deep Windows data directories: use a shorter unique staging filename to reserve SQLite journal path space, opt into long paths in the application manifest, and validate the published PE. Add a backup/reset regression and record native Windows 11/Ubuntu VMware acceptance, including real clipboard/vault checks and explicit remaining RDP/hardware limits.
+
 - Add SFTP text clipboard actions for selected names, full paths and the current directory, including cached offline views and Ctrl+Shift+C. Add Ctrl+F filtering and Escape back to the list; preserve native text editing. Disable stale selection operations while filtering/loading and unavailable file actions after disconnect, with matching toolbar/context-menu states.
 
 - Harden application error handling: correlate operation failures with a copyable error ID, prevent simultaneous/late error dialogs, contain dialog-presentation failures, and retain safe outer/inner stacks for settings, history, backups and optional persistence. Record unobserved task/fatal failures, flush on exit, add startup build/runtime context and process IDs, and rotate logs daily or at 4 MiB with 14 retained files. Bound diagnostic formatting and tolerate broken stack formatters without recording exception messages/data.

@@ -130,6 +130,31 @@ public sealed class DatabaseBackupTests : IDisposable
         Assert.Equal("dark",await repo.SettingAsync("theme")); Assert.Equal((long)ProfileRepository.CurrentSchemaVersion,await Scalar("PRAGMA user_version"));
     }
 
+    [Fact] public async Task Backup_and_factory_reset_reserve_space_for_native_SQLite_journal_paths()
+    {
+        // The final snapshot fits MAX_PATH, while appending .part and a native
+        // SQLite journal suffix to that entire name can exceed it on Windows.
+        var data=Path.Combine(root,"żółć-"+new string('x',Math.Max(1,162-root.Length-6)));
+        var repo=new ProfileRepository(new AppPaths(data));
+        try
+        {
+            await repo.InitializeAsync();
+            var profile=new ServerProfile { Name="Keep in snapshot",Host="fixture.invalid",Username="fixture" };
+            await repo.SaveAsync(profile);
+            await repo.ScheduleFactorySettingsResetAsync();
+            Assert.True(await repo.ApplyPendingFactorySettingsResetAsync());
+            Assert.Empty(await repo.ListAsync());
+            var entries=(await DatabaseBackupCatalog.ReadAsync(repo.DatabaseBackupDirectory)).Entries;
+            var final=Assert.Single(entries,e=>e.BeforeReset);
+            Assert.Equal(ProfileRepository.CurrentSchemaVersion,await DatabaseBackupCatalog.VerifyAsync(final));
+            using var copy=Connect(final.Path); await copy.OpenAsync();
+            using var command=copy.CreateCommand(); command.CommandText="SELECT count(*) FROM profiles";
+            Assert.Equal(1L,await command.ExecuteScalarAsync());
+            Assert.Empty(Directory.EnumerateFiles(repo.DatabaseBackupDirectory,"*.part*"));
+        }
+        finally { DatabaseTestCleanup.Clear(data); }
+    }
+
     public void Dispose()
     { DatabaseTestCleanup.Clear(root); if(Directory.Exists(root))Directory.Delete(root,true); }
 }

@@ -13,6 +13,9 @@ using Iciclecreek.Terminal;
 using Avalonia.Controls;
 using System.Text;
 
+if(args.Length==3 && args[0]=="--native-credential-readback")
+{ await NativeDesktopChecks.ReadCredential(args[1],args[2]); return; }
+
 if(args.Length==5 && args[0]=="--profile-deletion-readback")
 {
     ProfileDeletionChecks.ReadBack(args[1],args[2],Guid.Parse(args[3]),Guid.Parse(args[4])); return;
@@ -30,6 +33,13 @@ var root=Path.GetFullPath(args.Length>0?args[0]:"artifacts/ui-smoke");
 Directory.CreateDirectory(root); Log.Logger=new LoggerConfiguration().WriteTo.File(Path.Combine(root,"ui-diagnostics.log")).CreateLogger();
 var dataRoot=Path.Combine(root,"data-"+Guid.NewGuid().ToString("N"));
 Environment.SetEnvironmentVariable("SERVERDESK_DATA_HOME",dataRoot);
+if(args.Contains("--native-desktop"))
+{
+    Exception? error=null;
+    var ui=new Thread(()=> { try { AppBuilder.Configure<App>().UsePlatformDetect().WithInterFont().SetupWithoutStarting(); NativeDesktopChecks.Run(root); } catch(Exception ex) { error=ex; } });
+    if(OperatingSystem.IsWindows())ui.SetApartmentState(ApartmentState.STA);
+    ui.Start(); ui.Join(); if(error!=null)throw error; return;
+}
 if(args.Contains("--native-rdp"))
 {
     if(!OperatingSystem.IsWindows())throw new PlatformNotSupportedException();

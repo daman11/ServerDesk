@@ -64,7 +64,18 @@ internal static class HelpChecks
                     list.SelectedItem=((HelpTopic[])list.ItemsSource!).Single(item=>item.Id==topic.Id); RedesignChecks.Frames(2);
                     var scroll=Named<ScrollViewer>(help,"HelpArticleScroll");
                     if(scroll.Extent.Width>scroll.Viewport.Width+1)throw new Exception("Help article scrolls horizontally: "+topic.Id);
-                    var body=Named<StackPanel>(help,"HelpArticle"); foreach(var text in body.Children.OfType<SelectableTextBlock>())if(text.Bounds.Width>scroll.Viewport.Width+1)throw new Exception("Help paragraph escapes viewport");
+                    var body=Named<StackPanel>(help,"HelpArticle");
+                    var cards=body.Children.OfType<Border>().Where(card=>card.Name=="HelpSection").ToArray();
+                    if(cards.Length!=topic.Sections.Length)throw new Exception("Help section grouping is incomplete");
+                    foreach(var card in cards)
+                    {
+                        var heading=Named<TextBlock>(card,"HelpSectionHeading"); var paragraphs=Named<StackPanel>(card,"HelpSectionParagraphs");
+                        var headerBottom=Named<Border>(card,"HelpSectionHeader").Bounds.Bottom; var paragraphTop=paragraphs.TranslatePoint(default,card)!.Value.Y;
+                        if(headerBottom>paragraphTop || heading.FontSize<=main.CurrentPreferences.InterfaceFontSize)throw new Exception("Help section heading blends into or overlaps its content");
+                        if(card.Bounds.Width>scroll.Viewport.Width+1)throw new Exception("Help section escapes viewport");
+                        foreach(var text in paragraphs.Children.OfType<SelectableTextBlock>())if(text.Bounds.Width>paragraphs.Bounds.Width+1)throw new Exception("Help paragraph escapes section");
+                    }
+                    for(var index=1;index<cards.Length;index++)if(cards[index].Bounds.Top-cards[index-1].Bounds.Bottom<20)throw new Exception("Help sections have no visible separation");
                     if(topic.Id=="shortcuts" || (topic.Id=="sftp" && theme=="graphite" && width==1320))main.CaptureRenderedFrame()!.Save(Path.Combine(root,$"help-{topic.Id}-{language}-{theme}-{width}.png"));
                 }
                 list.SelectedIndex=0; RedesignChecks.Frames(); main.CaptureRenderedFrame()!.Save(Path.Combine(root,$"help-{language}-{theme}-{width}.png"));

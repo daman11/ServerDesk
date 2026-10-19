@@ -2,6 +2,8 @@
 
 ## Unreleased
 
+- Give Help sections distinct numbered cards, larger headings, tinted header bands and clear gaps between sections while keeping related paragraphs together. Preserve multiline shortcuts, searching and whole-topic copying.
+
 - Improve Polish/English Help readability: put each keyboard shortcut on its own line, group shortcuts by context, and split dense file-transfer, RDP and troubleshooting instructions into shorter sections.
 
 - Add an offline Help workspace tab with 14 Polish/English documentation topics, full-content search, selectable/copyable articles and responsive topic navigation. Open it from the menu, application rail, action palette or F1 outside terminal/desktop input; reuse the existing tab and support docking without treating help as a saved connection.

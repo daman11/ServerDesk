@@ -16,7 +16,7 @@ internal sealed class HelpPane : WorkspacePane
     private readonly TextBox search=new() { Name="HelpSearch",MaxLength=200 };
     private readonly ListBox contents=new() { Name="HelpTopics",Classes={"help-topics"} };
     private readonly ComboBox compactContents=new() { Name="HelpCompactTopics",HorizontalAlignment=HorizontalAlignment.Stretch,IsVisible=false };
-    private readonly StackPanel article=new() { Name="HelpArticle",Spacing=16,MaxWidth=820,HorizontalAlignment=HorizontalAlignment.Stretch };
+    private readonly StackPanel article=new() { Name="HelpArticle",Spacing=24,MaxWidth=820,HorizontalAlignment=HorizontalAlignment.Stretch };
     private readonly ScrollViewer articleScroll=new() { Name="HelpArticleScroll",HorizontalScrollBarVisibility=ScrollBarVisibility.Disabled,VerticalScrollBarVisibility=ScrollBarVisibility.Auto };
     private readonly TextBlock count=DesignSystem.Hint("");
     private readonly TextBlock copyStatus=DesignSystem.Hint("");
@@ -99,16 +99,27 @@ internal sealed class HelpPane : WorkspacePane
         finally { updating=false; }
         if(ReferenceEquals(selected,topic))return;
         selected=topic; copy.IsEnabled=true; copyStatus.IsVisible=false; article.Children.Clear(); articleScroll.Offset=default;
-        var title=DesignSystem.Label(topic.Title,false,22); title.Name="HelpArticleTitle"; title.FontWeight=FontWeight.SemiBold; title.TextWrapping=TextWrapping.Wrap;
-        article.Children.Add(title); article.Children.Add(DesignSystem.Hint(topic.Summary));
-        foreach(var section in topic.Sections)
+        var title=DesignSystem.Label(topic.Title,false,24); title.Name="HelpArticleTitle"; title.FontWeight=FontWeight.SemiBold; title.TextWrapping=TextWrapping.Wrap;
+        article.Children.Add(new StackPanel { Name="HelpArticleIntro",Spacing=8,Children={title,DesignSystem.Hint(topic.Summary)} });
+        for(var index=0;index<topic.Sections.Length;index++)article.Children.Add(BuildSection(topic.Sections[index],index+1));
+    }
+    private static Border BuildSection(HelpSection section,int number)
+    {
+        var heading=DesignSystem.Label(section.Title,false,18); heading.Name="HelpSectionHeading"; heading.FontWeight=FontWeight.SemiBold; heading.TextWrapping=TextWrapping.Wrap;
+        var badge=DesignSystem.Badge(number.ToString()); badge.MinWidth=26; badge.VerticalAlignment=VerticalAlignment.Top;
+        ((TextBlock)badge.Child!).HorizontalAlignment=HorizontalAlignment.Center; DesignSystem.Resource(badge,Border.BackgroundProperty,"SurfaceSelected");
+        var headerRow=new Grid { ColumnDefinitions=new("Auto,*"),ColumnSpacing=10,Children={badge,heading} }; Grid.SetColumn(heading,1);
+        var header=new Border { Name="HelpSectionHeader",Child=headerRow,Padding=new Thickness(14,10),BorderThickness=new Thickness(0,0,0,1) };
+        DesignSystem.Resource(header,Border.BackgroundProperty,"BackgroundTertiary"); DesignSystem.Resource(header,Border.BorderBrushProperty,"BorderDefault");
+        var paragraphs=new StackPanel { Name="HelpSectionParagraphs",Spacing=12 };
+        foreach(var paragraph in section.Paragraphs)
         {
-            var heading=DesignSystem.Label(section.Title); heading.FontWeight=FontWeight.SemiBold; heading.TextWrapping=TextWrapping.Wrap; heading.Margin=new Thickness(0,8,0,0); article.Children.Add(heading);
-            foreach(var paragraph in section.Paragraphs)
-            {
-                var text=new SelectableTextBlock { Text=paragraph,TextWrapping=TextWrapping.Wrap }; DesignSystem.Resource(text,TextBlock.FontSizeProperty,"FontBody"); DesignSystem.Resource(text,TextBlock.ForegroundProperty,"ForegroundPrimary"); article.Children.Add(text);
-            }
+            var text=new SelectableTextBlock { Text=paragraph,TextWrapping=TextWrapping.Wrap }; DesignSystem.Resource(text,TextBlock.FontSizeProperty,"FontBody"); DesignSystem.Resource(text,TextBlock.ForegroundProperty,"ForegroundPrimary"); paragraphs.Children.Add(text);
         }
+        var content=new StackPanel { Children={header,new Border { Child=paragraphs,Padding=new Thickness(14) }} };
+        var card=new Border { Name="HelpSection",Child=content,BorderThickness=new Thickness(1),CornerRadius=new CornerRadius(8),ClipToBounds=true };
+        DesignSystem.Resource(card,Border.BackgroundProperty,"BackgroundPrimary"); DesignSystem.Resource(card,Border.BorderBrushProperty,"BorderDefault");
+        AutomationProperties.SetName(card,section.Title); return card;
     }
     private async Task CopyAsync()
     {

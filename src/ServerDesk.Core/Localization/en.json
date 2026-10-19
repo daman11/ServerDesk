@@ -1712,5 +1712,16 @@
   "Połączenie zostało zapisane z nowym powiązaniem hasła. Stare poświadczenie może pozostać w magazynie, ale nie zostanie użyte dla nowego celu.": "The connection was saved with a new credential binding. The old credential may remain in the store, but it will not be used for the new destination.",
   "Połączenie zostało trwale usunięte. Nie potwierdzono usunięcia poświadczenia; może pozostać w magazynie systemowym. Szczegóły zapisano w logach.": "The connection was permanently deleted. Removal of its credential was not confirmed; it may remain in the system store. Details were recorded in the logs.",
   "Zapisane dane zmieniły się w innym oknie. Wczytaj je ponownie przed zapisem. Dotychczasowa zawartość pozostaje zachowana.": "Saved data changed in another window. Reload it before saving. The existing contents have been preserved.",
-  "Transfer przerwany przez utratę połączenia SSH. Ukończone pliki pozostają na miejscu. Połącz sesję ponownie, a następnie wybierz Ponów. Plik zostanie przesłany od początku; nadpisanie wymaga potwierdzenia.": "The transfer was interrupted by the loss of the SSH connection. Completed files remain in place. Reconnect the session, then choose Retry. The file will be transferred from the beginning; overwriting requires confirmation."
+  "Transfer przerwany przez utratę połączenia SSH. Ukończone pliki pozostają na miejscu. Połącz sesję ponownie, a następnie wybierz Ponów. Plik zostanie przesłany od początku; nadpisanie wymaga potwierdzenia.": "The transfer was interrupted by the loss of the SSH connection. Completed files remain in place. Reconnect the session, then choose Retry. The file will be transferred from the beginning; overwriting requires confirmation.",
+  "Szczegóły transferu": "Transfer details",
+  "Stan z chwili otwarcia okna. Podgląd nie zmienia działania transferu.": "Snapshot taken when this window opened. Viewing details does not change the transfer.",
+  "Szczegóły zawierają adres serwera i ścieżki plików. Sprawdź je przed udostępnieniem.": "Details include the server address and file paths. Review them before sharing.",
+  "Kopiuj szczegóły": "Copy details",
+  "Szczegóły skopiowano do schowka.": "Details copied to the clipboard.",
+  "Nie udało się skopiować szczegółów. Zaznacz tekst i skopiuj go ręcznie.": "Could not copy details. Select the text and copy it manually.",
+  "Wyczyść historię transferów": "Clear transfer history",
+  "Usuń udane zadania": "Remove successful tasks",
+  "Zachowuje zadania błędne, anulowane, pominięte i z ostrzeżeniami.": "Keeps failed, cancelled, skipped tasks and tasks with warnings.",
+  "Usuń wszystkie zakończone zadania": "Remove all finished tasks",
+  "Usuwa tylko historię. Pliki i aktywne transfery pozostają bez zmian.": "Removes history only. Files and active transfers are unchanged."
 }

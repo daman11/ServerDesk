@@ -4,6 +4,8 @@ using Avalonia.Automation;
 using Avalonia.Controls;
 using Avalonia.Headless;
 using Avalonia.Interactivity;
+using Avalonia.Input;
+using Avalonia.Input.Platform;
 using Avalonia.Media;
 using Avalonia.VisualTree;
 using ServerDesk.App;
@@ -16,6 +18,13 @@ internal static class TransferOverviewChecks
     private static T Field<T>(object owner,string name)=>(T)owner.GetType().GetField(name,BindingFlags.Instance|BindingFlags.NonPublic)!.GetValue(owner)!;
     private static object? Call(object owner,string method,params object[] arguments)=>owner.GetType().GetMethod(method,BindingFlags.Instance|BindingFlags.NonPublic)!.Invoke(owner,arguments);
     private static void Click(Button button)=>button.RaiseEvent(new RoutedEventArgs(Button.ClickEvent));
+    internal static void ClearHistory(Button button,bool successfulOnly)
+    {
+        Click(button); RedesignChecks.Frames();
+        var item=button.ContextMenu!.Items.OfType<MenuItem>().Single(item=>item.Name==(successfulOnly?"ClearSuccessfulTransfers":"ClearAllFinishedTransfers"));
+        if(!item.IsEnabled)throw new Exception("Requested transfer history action is disabled");
+        item.RaiseEvent(new RoutedEventArgs(MenuItem.ClickEvent)); button.ContextMenu.Close(); RedesignChecks.Frames();
+    }
     private static void Until(Func<bool> ready)
     { var deadline=DateTime.UtcNow.AddSeconds(45); while(!ready() && DateTime.UtcNow<deadline)RedesignChecks.Frames(1); if(!ready())throw new TimeoutException("Transfer overview timed out"); }
     private static void Section(MainWindow main,string id) { RedesignChecks.Wait((Task)Call(main,"SelectSectionAsync",id)!); RedesignChecks.Frames(); }
@@ -35,6 +44,7 @@ internal static class TransferOverviewChecks
             foreach(var theme in new[]{"graphite","light"})
             {
                 DesignSystem.Apply(theme); main.CaptureRenderedFrame()!.Save(Path.Combine(root,$"transfers-empty-{language}-{theme}.png"));
+                Details(main,root,language,theme,preferences);
             }
             Field<TextBox>(main,"transferSearch").Text="transfer-only"; Field<ComboBox>(main,"transferFilter").SelectedIndex=1; Section(main,"connections");
             if(vm.Search!="saved filter" || vm.ProtocolFilter!=Protocol.RDP || vm.SortMode!=ProfileSort.Host || !Field<StackPanel>(main,"connectionTools").IsEffectivelyVisible)throw new Exception("Transfer filters overwrote the connection browser state");
@@ -110,6 +120,10 @@ internal static class TransferOverviewChecks
             Click(Button(Row("queued.txt"),"Ponów transfer:")); Until(()=>pane.ActiveTransfers==0); RedesignChecks.Frames();
             if(pane.TransferSnapshots.Single().State!=TransferState.Completed || VisibleJobs(main).Length!=0)throw new Exception("Sidebar retry did not complete or leave attention filter");
             RedesignChecks.Wait(Upload("missing.txt")); RedesignChecks.Frames(); if(VisibleJobs(main).Length!=1 || pane.TransferSnapshots.First().State!=TransferState.Failed)throw new Exception("Failed job not visible in attention filter");
+            Click(Button(Row("missing.txt"),"Szczegóły transferu")); RedesignChecks.Frames();
+            var details=main.OwnedWindows.Single(window=>window.Name=="TransferDetailsDialog");
+            if(!details.GetVisualDescendants().OfType<TextBox>().Single(box=>box.Name=="TransferDetailsText").Text!.Contains(pane.TransferSnapshots.First().Paths))throw new Exception("Sidebar details opened a different transfer");
+            details.Close(); RedesignChecks.Frames();
             Field<ComboBox>(main,"transferFilter").SelectedIndex=2; RedesignChecks.Frames(); if(VisibleJobs(main).Length!=2)throw new Exception("Finished filter lost a completed or failed job");
             var preferences=DesignSystem.Preferences;
             foreach(var theme in new[]{"graphite","light"})
@@ -124,7 +138,18 @@ internal static class TransferOverviewChecks
             Click(Button(Row("queued.txt"),"Pokaż kolejkę:")); if(main.Workspace.Focused!=pane.WorkspaceId || !Field<ScrollViewer>(pane,"queueScroll").IsVisible)throw new Exception("Show queue did not focus source session");
             var result=inspection.ListAsync(remote,CancellationToken.None); RedesignChecks.Wait(result); var file=result.Result.Single(); var download=Path.Combine(local,"check.txt"); RedesignChecks.Wait(inspection.DownloadAsync(file.FullPath,download,false,new Progress<TransferProgress>(),CancellationToken.None));
             if(System.IO.File.ReadAllText(download)!="Transfer overview żółć")throw new Exception("Retry uploaded incorrect payload");
-            Click(Field<Button>(main,"clearTransferHistory")); if(pane.TransferSnapshots.Count!=0 || VisibleJobs(main).Length!=0)throw new Exception("Sidebar clear did not update session queue");
+            RedesignChecks.Wait(MainWindow.TransferSlots.WaitAsync()); RedesignChecks.Wait(MainWindow.TransferSlots.WaitAsync());
+            try
+            {
+                var waiting=Upload("waiting.txt"); RedesignChecks.Frames(); var pending=pane.TransferSnapshots.Single(job=>job.IsActive);
+                ClearHistory(Field<Button>(main,"clearTransferHistory"),true);
+                if(pane.TransferSnapshots.Count!=2 || pane.TransferSnapshots.Count(job=>job.State==TransferState.Failed)!=1 || !pane.TransferSnapshots.Any(job=>job.Id==pending.Id && job.IsActive))throw new Exception("Successful-only clear lost failure or active work");
+                ClearHistory(Field<Button>(main,"clearTransferHistory"),false);
+                if(pane.TransferSnapshots.Count!=1 || !pane.TransferSnapshots.Single().IsActive)throw new Exception("Clear-all changed active work");
+                pane.CancelTransfer(pending.Id); RedesignChecks.Wait(waiting);
+                ClearHistory(Field<Button>(main,"clearTransferHistory"),false); if(pane.TransferSnapshots.Count!=0 || VisibleJobs(main).Length!=0)throw new Exception("Sidebar clear did not update session queue");
+            }
+            finally { MainWindow.TransferSlots.Release(2); }
             RedesignChecks.Wait(Upload("closed-tab.txt")); RedesignChecks.Frames(); Section(main,"connections"); main.RemovePane(pane);
             if(Field<System.Collections.IDictionary>(main,"transferViews").Count!=0 || Field<StackPanel>(main,"transferRows").Children.Count!=0)throw new Exception("Closed session retained transfer controls and their pane references");
             Console.WriteLine("PASS actual SSH/SFTP transfer overview: session without tasks excluded; queued progress; multiword search/status filters; stable controls/focus; sidebar cancellation and original-task retry; failed/completed tasks; narrow Graphite/Light font16; focus source queue; uploaded UTF-8 payload verified; shared clear history; closed-pane controls released even while overview hidden");
@@ -135,5 +160,28 @@ internal static class TransferOverviewChecks
             foreach(var entry in listing.Result) { if(entry.IsDirectory || entry.IsSymbolicLink || entry.FullPath!=remote+"/queued.txt")throw new Exception("Unexpected cleanup target"); RedesignChecks.Wait(inspection.DeleteAsync(entry,CancellationToken.None)); }
             RedesignChecks.Wait(inspection.DeleteAsync(new("fixture",remote,true,false,0,DateTime.Now,""),CancellationToken.None)); if(main.OpenSessions.Contains(pane))main.RemovePane(pane);
         }
+    }
+    private static void Details(MainWindow main,string root,string language,string theme,ApplicationPreferences preferences)
+    {
+        var text="Błąd żółć\n"+string.Join('\n',Enumerable.Repeat("Long diagnostic message with a partial-file warning and retry guidance.",30));
+        var snapshot=new SessionPane.TransferSnapshot(Guid.NewGuid(),"plik żółć.txt","/source/"+new string('x',600)+"\n/target/żółć.txt",L.T("Błąd"),text,TransferState.Failed,false,false,false,0,false,true);
+        RedesignChecks.Wait(main.Clipboard!.SetTextAsync("untouched-local-clipboard"));
+        var task=Dialogs.TransferDetails(main,"Server fixture","example.invalid:22",snapshot); RedesignChecks.Frames();
+        var dialog=main.OwnedWindows.Single(window=>window.Name=="TransferDetailsDialog");
+        try
+        {
+            DesignSystem.ApplyPreferences(preferences with { InterfaceFontSize=16 }); dialog.Width=440; dialog.Height=420; RedesignChecks.Frames();
+            var box=dialog.GetVisualDescendants().OfType<TextBox>().Single(view=>view.Name=="TransferDetailsText");
+            var clipboard=main.Clipboard!.TryGetTextAsync(); RedesignChecks.Wait(clipboard);
+            if(clipboard.Result!="untouched-local-clipboard" || !box.IsReadOnly || !box.Text!.Contains(text) || !box.Text.Contains(snapshot.Paths) || box.Bounds.Height<40)throw new Exception("Details truncated data, modified clipboard on open, or lost its readable viewport");
+            var copy=dialog.GetVisualDescendants().OfType<Button>().Single(button=>button.Name=="CopyTransferDetails");
+            var bounds=copy.TranslatePoint(default,dialog)!.Value;
+            if(bounds.Y<0 || bounds.Y+copy.Bounds.Height>dialog.ClientSize.Height+1)throw new Exception("Details actions escape the small dialog");
+            Click(copy); Until(()=> { var read=main.Clipboard!.TryGetTextAsync(); RedesignChecks.Wait(read); return read.Result==box.Text; });
+            dialog.CaptureRenderedFrame()!.Save(Path.Combine(root,$"transfer-details-{language}-{theme}.png"));
+            dialog.KeyPress(Key.Escape,RawInputModifiers.None,PhysicalKey.Escape,"\u001b"); RedesignChecks.Frames();
+            if(!task.IsCompleted)throw new Exception("Escape did not close transfer details");
+        }
+        finally { if(!task.IsCompleted)dialog.Close(); RedesignChecks.Wait(task); DesignSystem.ApplyPreferences(preferences); }
     }
 }

@@ -1,5 +1,7 @@
 # Verification and historical reviews
 
+Transfer ergonomics: [Full details, explicit copy and selective history clearing, 2026-10-19](transfer-ux-2026-10-19.md).
+
 Security/privacy: [Local penetration tests, credential canaries and data-flow review, 2026-10-19](security-pentest-2026-10-19.md).
 
 Data/session recovery: [0.43.0 profile/vault consistency, migration and silent-link recovery](release-verification-0.43.0.md).

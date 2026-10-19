@@ -68,10 +68,14 @@ internal static class SftpWorkflowChecks
             if(localList.Items.Cast<FileEntry>().First(e=>!e.IsDirectory).Name!="config.json")throw new Exception("Descending size sort failed");
             localList.Focus(); if(Field<ComboBox>(pane,"fileTarget").SelectedIndex!=0)throw new Exception("Focused file list did not set operation target");
             localList.SelectedItem=localList.Items.Cast<FileEntry>().Single(e=>e.Name=="documents");
-            window.KeyPress(Key.Enter,RawInputModifiers.None,PhysicalKey.Enter,"\r"); Until(()=>Field<TextBox>(pane,"localPath").Text==Path.Combine(local,"documents") && localList.Items.Cast<FileEntry>().Any(e=>e.Name=="notes.txt"));
-            window.KeyPress(Key.Up,RawInputModifiers.Alt,PhysicalKey.ArrowUp,""); Until(()=>Field<TextBox>(pane,"localPath").Text==local && localList.Items.Cast<FileEntry>().Any(e=>e.Name=="config.json"));
+            window.KeyPress(Key.Enter,RawInputModifiers.None,PhysicalKey.Enter,"\r"); Until(()=>Field<int>(pane,"fileRefreshes")==0 && Field<TextBox>(pane,"localPath").Text==Path.Combine(local,"documents") && localList.Items.Cast<FileEntry>().Any(e=>e.Name=="notes.txt"));
+            window.KeyPress(Key.Up,RawInputModifiers.Alt,PhysicalKey.ArrowUp,""); Until(()=>Field<int>(pane,"fileRefreshes")==0 && Field<TextBox>(pane,"localPath").Text==local && localList.Items.Cast<FileEntry>().Any(e=>e.Name=="config.json"));
+            localList.SelectedItem=localList.Items.Cast<FileEntry>().Single(e=>e.Name=="documents"); localList.Focus();
+            var navigation=Call(pane,"OpenDirectoryAsync",false); var filter=Field<TextBox>(pane,"localFilter"); filter.Focus(); Wait(navigation);
+            if(!filter.IsKeyboardFocusWithin)throw new Exception("Completed navigation stole focus from an edited filter");
+            Wait(Call(pane,"NavigateParentAsync",false));
             localList.Focus(); window.KeyPress(Key.L,RawInputModifiers.Control,PhysicalKey.L,"l"); if(!Field<TextBox>(pane,"localPath").IsKeyboardFocusWithin)throw new Exception("Ctrl+L did not focus active path");
-            System.IO.File.WriteAllText(Path.Combine(local,"new.txt"),"F5"); window.KeyPress(Key.F5,RawInputModifiers.None,PhysicalKey.F5,""); Until(()=>localList.Items.Cast<FileEntry>().Any(e=>e.Name=="new.txt"));
+            System.IO.File.WriteAllText(Path.Combine(local,"new.txt"),"F5"); window.KeyPress(Key.F5,RawInputModifiers.None,PhysicalKey.F5,""); Until(()=>Field<int>(pane,"fileRefreshes")==0 && localList.Items.Cast<FileEntry>().Any(e=>e.Name=="new.txt"));
             Wait(Call(pane,"UploadEntryAsync",File(source))); AssertState(LastJob(pane),TransferState.Completed);
             var downloaded=Path.Combine(local,"downloaded"); Directory.CreateDirectory(downloaded); Field<TextBox>(pane,"localPath").Text=downloaded; Wait(Call(pane,"RefreshAsync"));
             var remoteFile=remoteList.Items.Cast<FileEntry>().Single(e=>e.Name=="config.json"); Wait(Call(pane,"DownloadEntryAsync",remoteFile)); AssertState(LastJob(pane),TransferState.Completed);
@@ -98,10 +102,10 @@ internal static class SftpWorkflowChecks
             }
             finally { MainWindow.TransferSlots.Release(2); }
             var other=remote+"/other"; Wait(connection.CreateDirectoryAsync(other,CancellationToken.None)); Field<TextBox>(pane,"remotePath").Text=other; Wait(Call(pane,"RefreshAsync"));
-            Click(Property<Button>(cancelled,"Retry")); Until(()=>!Property<bool>(cancelled,"IsActive")); AssertState(cancelled,TransferState.Completed);
+            Click(Property<Button>(cancelled,"Retry")); Until(()=>!Property<bool>(cancelled,"IsActive") && Field<int>(pane,"fileRefreshes")==0); AssertState(cancelled,TransferState.Completed);
             var originalTarget=connection.ExistsAsync(remote+"/new.txt",CancellationToken.None); Until(()=>originalTarget.IsCompleted); if(!originalTarget.Result)throw new Exception("Retry used changed panel target instead of original destination");
             var missing=Path.Combine(local,"recover.txt"); Wait(Call(pane,"UploadEntryAsync",File(missing))); var failed=LastJob(pane); AssertState(failed,TransferState.Failed);
-            System.IO.File.WriteAllText(missing,"Recovered"); Click(Property<Button>(failed,"Retry")); Until(()=>!Property<bool>(failed,"IsActive")); AssertState(failed,TransferState.Completed);
+            System.IO.File.WriteAllText(missing,"Recovered"); Click(Property<Button>(failed,"Retry")); Until(()=>!Property<bool>(failed,"IsActive") && Field<int>(pane,"fileRefreshes")==0); AssertState(failed,TransferState.Completed);
             Field<TextBox>(pane,"localPath").Text=local; Field<TextBox>(pane,"remotePath").Text=remote; Wait(Call(pane,"RefreshAsync"));
             foreach(var width in new[]{1200,650})foreach(var font in new[]{13,16})
             {
@@ -112,10 +116,10 @@ internal static class SftpWorkflowChecks
             }
             window.Width=1200; Field<ComboBox>(pane,"fileTarget").SelectedIndex=1; DesignSystem.ApplyPreferences(original); RedesignChecks.Frames(); window.CaptureRenderedFrame()!.Save(Path.Combine(root,"sftp-workflow.png"));
             Click(Field<Button>(pane,"queueToggle")); RedesignChecks.Frames(); if(Field<ScrollViewer>(pane,"queueScroll").IsVisible)throw new Exception("Queue cannot collapse"); pane.ExpandTransferQueue(); RedesignChecks.Frames(); if(!Field<ScrollViewer>(pane,"queueScroll").IsVisible)throw new Exception("Queue does not expand");
-            Click(Field<Button>(pane,"queueClear")); if(Field<IEnumerable>(pane,"transferJobs").Cast<object>().Any() || pane.ActiveTransfers!=0)throw new Exception("Finished queue could not be cleared");
+            TransferOverviewChecks.ClearHistory(Field<Button>(pane,"queueClear"),false); if(Field<IEnumerable>(pane,"transferJobs").Cast<object>().Any() || pane.ActiveTransfers!=0)throw new Exception("Finished queue could not be cleared");
             for(var i=0;i<52;i++)Wait(Call(pane,"UploadEntryAsync",File(Path.Combine(local,"missing-history-"+i+".txt"))));
             if(Field<IEnumerable>(pane,"transferJobs").Cast<object>().Count()!=50)throw new Exception("Finished history is not bounded");
-            Click(Field<Button>(pane,"queueClear"));
+            TransferOverviewChecks.ClearHistory(Field<Button>(pane,"queueClear"),false);
             if(MainWindow.TransferSlots.CurrentCount!=2)throw new Exception("Transfer slot leaked");
             Console.WriteLine("PASS real SFTP independent filters/sorts/selection, scoped navigation shortcuts, 1 MiB checksum round trip, declined overwrite/skipped folder, queued/active cancellation including pending overwrite dialog, original-target retry, failed-job recovery, collapsed/cleared queue, 50-job history limit, 650/1200px font13/16 layout");
         }

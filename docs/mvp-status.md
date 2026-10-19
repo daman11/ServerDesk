@@ -1,5 +1,7 @@
 # Pierwotne MVP — wydanie 0.43.0
 
+Krok roboczy po 0.43.0 poprawia ergonomię SFTP: pełne szczegóły zadania z kopiowaniem, krótsze karty boczne i wybór czyszczenia udanych zadań albo całej zakończonej historii. Aktywne zadania i pliki nie są usuwane. [Zakres sprawdzenia](reports/transfer-ux-2026-10-19.md).
+
 0.43.0 rozwija ochronę danych i odzyskiwanie SSH/SFTP: atomowe powiązanie hasła przy edycji celu, bezpieczną kolejność usuwania profilu, kontrolę równoległego zapisu pluginów, schemat 4 z kopią przed migracją, limity cichego łącza i zachowanie kontekstu SFTP po reconnect. Transfer nie jest samoczynnie ponawiany. [Dowody i granice](reports/release-verification-0.43.0.md). Nie zalicza fizycznego suspend/resume ani odłożonych VM, sprzętu i długiej pracy.
 
 0.42.0 dodaje kolorowe tagi i filtrowanie, motywy, wybór edytora SFTP, ergonomię nawigacji i komend oraz informacje o aplikacji i logi w ustawieniach. Naprawia usuwanie zapisanych profili przy braku katalogu poświadczeń oraz eksport logów przez alias katalogu. [Bieżąca weryfikacja](reports/release-verification-0.42.0.md). Pozostaje Public Beta; testy maszyn i sprzętu odłożono na prośbę maintenera.

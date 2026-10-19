@@ -32,7 +32,7 @@ public sealed partial class MainWindow
         transferSearch.KeyDown+=(_,e)=> { if(e.Key==Key.Escape && !string.IsNullOrEmpty(transferSearch.Text)) { transferSearch.Text=""; e.Handled=true; } };
         header.Children.Add(transferSearch); header.Children.Add(transferFilter); AutomationProperties.SetName(transferFilter,L.T("Status transferów")); transferFilter.SelectionChanged+=(_,_)=>UpdateTransferOverview();
         var summary=new Grid { ColumnDefinitions=new ColumnDefinitions("*,Auto"),ColumnSpacing=4 }; transferCount.Name="TransferResultCount"; transferCount.TextWrapping=TextWrapping.Wrap; summary.Children.Add(transferCount);
-        clearTransferHistory=DeskIcons.Button("trash","Wyczyść zakończone zadania (także błędy i anulowane)",()=> { foreach(var pane in sessions.Where(p=>p.Profile.Protocol==Protocol.SSH).ToArray())pane.ClearFinishedTransfers(); UpdateTransferOverview(); },26);
+        clearTransferHistory=TransferHistoryActions.Create(()=>sessions.Where(p=>p.Profile.Protocol==Protocol.SSH).SelectMany(p=>p.TransferSnapshots).ToArray(),successfulOnly=> { foreach(var pane in sessions.Where(p=>p.Profile.Protocol==Protocol.SSH).ToArray())pane.ClearFinishedTransfers(successfulOnly); UpdateTransferOverview(); });
         Grid.SetColumn(clearTransferHistory,1); summary.Children.Add(clearTransferHistory); header.Children.Add(summary); transferOverview.Children.Add(header);
         transferEmptyTitle.TextWrapping=transferEmptyHint.TextWrapping=TextWrapping.Wrap;
         transferEmpty.Children.Add(DeskIcons.Create("transfers",28,"ForegroundSecondary")); transferEmpty.Children.Add(transferEmptyTitle); transferEmpty.Children.Add(transferEmptyHint);
@@ -47,16 +47,17 @@ public sealed partial class MainWindow
         var title=DesignSystem.Label(job.Label); title.TextTrimming=TextTrimming.CharacterEllipsis; title.FontWeight=FontWeight.SemiBold;
         var server=DesignSystem.Label("",true,12); server.TextTrimming=TextTrimming.CharacterEllipsis;
         var status=DesignSystem.Label("",false,12); status.TextWrapping=TextWrapping.Wrap;
-        var detail=DesignSystem.Label("",true,12); detail.TextWrapping=TextWrapping.Wrap;
+        var detail=DesignSystem.Label("",true,12); detail.TextWrapping=TextWrapping.Wrap; detail.MaxLines=3; detail.TextTrimming=TextTrimming.CharacterEllipsis;
         var progress=new ProgressBar { Maximum=100,Height=3 };
         var cancel=DeskIcons.Button("x",L.F($"Anuluj transfer: {job.Label}"),()=>pane.CancelTransfer(job.Id),26);
         var retry=DeskIcons.Button("refresh",L.F($"Ponów transfer: {job.Label}"),()=>_=Safe(()=>pane.RetryTransferAsync(job.Id)),26);
+        var details=DeskIcons.Button("info","Szczegóły transferu",()=>_=Safe(()=>pane.ShowTransferDetailsAsync(job.Id,this)),26);
         var open=DeskIcons.Button("external-link",L.F($"Pokaż kolejkę: {pane.Profile.Name}"),()=>
         {
             FocusSession(pane); pane.ExpandTransferQueue();
             if(floatingDocks.TryGetValue(pane.WorkspaceId,out var dock))dock.Window.Activate();
         },26);
-        var actions=new StackPanel { Orientation=Orientation.Horizontal,HorizontalAlignment=HorizontalAlignment.Right,Children={cancel,retry,open} };
+        var actions=new WrapPanel { Orientation=Orientation.Horizontal,HorizontalAlignment=HorizontalAlignment.Right,Children={details,cancel,retry,open} };
         var body=new StackPanel { Spacing=6,Children={title,server,status,detail,progress,actions} };
         var card=DesignSystem.Card(body,new Thickness(10)); card.Name="TransferOverviewJob"; AutomationProperties.SetName(card,L.T("Transfer: ")+job.Label);
         return new(card,server,status,detail,progress,cancel,retry);

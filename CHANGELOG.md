@@ -2,6 +2,9 @@
 
 ## Unreleased
 
+- Improve SFTP transfer ergonomics: open full read-only details and copy them from either queue, keep sidebar cards compact, and choose between clearing successful jobs or all finished history while preserving active work.
+- Restore SFTP keyboard focus after directory navigation without taking focus back from a control selected while loading, so Enter followed by Alt+Up remains usable.
+
 - Security review: mask reflected HTTP Basic Auth and form credentials, including short secrets and escaped JSON values; preserve sensitive JSON field detection and use one-pass literal masking with a fail-closed time limit. Add local privacy/pentest regression cases and SSH host-key rejection probes; document data collection and OS-vault limits.
 
 ## 0.43.0 — Public Beta — 2026-10-19

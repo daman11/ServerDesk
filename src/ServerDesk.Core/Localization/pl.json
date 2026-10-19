@@ -1712,5 +1712,16 @@
   "Połączenie zostało zapisane z nowym powiązaniem hasła. Stare poświadczenie może pozostać w magazynie, ale nie zostanie użyte dla nowego celu.": "Połączenie zostało zapisane z nowym powiązaniem hasła. Stare poświadczenie może pozostać w magazynie, ale nie zostanie użyte dla nowego celu.",
   "Połączenie zostało trwale usunięte. Nie potwierdzono usunięcia poświadczenia; może pozostać w magazynie systemowym. Szczegóły zapisano w logach.": "Połączenie zostało trwale usunięte. Nie potwierdzono usunięcia poświadczenia; może pozostać w magazynie systemowym. Szczegóły zapisano w logach.",
   "Zapisane dane zmieniły się w innym oknie. Wczytaj je ponownie przed zapisem. Dotychczasowa zawartość pozostaje zachowana.": "Zapisane dane zmieniły się w innym oknie. Wczytaj je ponownie przed zapisem. Dotychczasowa zawartość pozostaje zachowana.",
-  "Transfer przerwany przez utratę połączenia SSH. Ukończone pliki pozostają na miejscu. Połącz sesję ponownie, a następnie wybierz Ponów. Plik zostanie przesłany od początku; nadpisanie wymaga potwierdzenia.": "Transfer przerwany przez utratę połączenia SSH. Ukończone pliki pozostają na miejscu. Połącz sesję ponownie, a następnie wybierz Ponów. Plik zostanie przesłany od początku; nadpisanie wymaga potwierdzenia."
+  "Transfer przerwany przez utratę połączenia SSH. Ukończone pliki pozostają na miejscu. Połącz sesję ponownie, a następnie wybierz Ponów. Plik zostanie przesłany od początku; nadpisanie wymaga potwierdzenia.": "Transfer przerwany przez utratę połączenia SSH. Ukończone pliki pozostają na miejscu. Połącz sesję ponownie, a następnie wybierz Ponów. Plik zostanie przesłany od początku; nadpisanie wymaga potwierdzenia.",
+  "Szczegóły transferu": "Szczegóły transferu",
+  "Stan z chwili otwarcia okna. Podgląd nie zmienia działania transferu.": "Stan z chwili otwarcia okna. Podgląd nie zmienia działania transferu.",
+  "Szczegóły zawierają adres serwera i ścieżki plików. Sprawdź je przed udostępnieniem.": "Szczegóły zawierają adres serwera i ścieżki plików. Sprawdź je przed udostępnieniem.",
+  "Kopiuj szczegóły": "Kopiuj szczegóły",
+  "Szczegóły skopiowano do schowka.": "Szczegóły skopiowano do schowka.",
+  "Nie udało się skopiować szczegółów. Zaznacz tekst i skopiuj go ręcznie.": "Nie udało się skopiować szczegółów. Zaznacz tekst i skopiuj go ręcznie.",
+  "Wyczyść historię transferów": "Wyczyść historię transferów",
+  "Usuń udane zadania": "Usuń udane zadania",
+  "Zachowuje zadania błędne, anulowane, pominięte i z ostrzeżeniami.": "Zachowuje zadania błędne, anulowane, pominięte i z ostrzeżeniami.",
+  "Usuń wszystkie zakończone zadania": "Usuń wszystkie zakończone zadania",
+  "Usuwa tylko historię. Pliki i aktywne transfery pozostają bez zmian.": "Usuwa tylko historię. Pliki i aktywne transfery pozostają bez zmian."
 }

@@ -40,8 +40,7 @@ internal sealed partial class SessionPane
         queueScroll.Content=jobList;
         queueToggle=DeskIcons.Button("chevron-right","Rozwiń / zwiń kolejkę transferów",()=> { queueExpanded=!queueExpanded; UpdateTransferQueue(); });
         queueCancel=DeskIcons.Button("circle-x","Anuluj wszystkie aktywne transfery",()=>_=CancelTransfersAsync());
-        queueClear=DeskIcons.Button("trash","Wyczyść zakończone zadania (także błędy i anulowane)",()=>
-            ClearFinishedTransfers());
+        queueClear=TransferHistoryActions.Create(()=>TransferSnapshots,successfulOnly=>ClearFinishedTransfers(successfulOnly));
         transfer.TextTrimming=TextTrimming.CharacterEllipsis; transfer.VerticalAlignment=VerticalAlignment.Center;
         var header=new Grid { ColumnDefinitions=new ColumnDefinitions("Auto,*,Auto,Auto"),ColumnSpacing=6,ClipToBounds=true };
         header.Children.Add(queueToggle); Grid.SetColumn(transfer,1); header.Children.Add(transfer); Grid.SetColumn(queueCancel,2); header.Children.Add(queueCancel); Grid.SetColumn(queueClear,3); header.Children.Add(queueClear);
@@ -68,7 +67,8 @@ internal sealed partial class SessionPane
             return RunTransferAsync(job);
         })); job.Retry.IsVisible=false;
         var text=new StackPanel { Spacing=2,Children={title,job.Status,job.Detail},ClipToBounds=true };
-        var actions=new StackPanel { Orientation=Orientation.Horizontal,Children={job.Cancel,job.Retry} };
+        var details=DeskIcons.Button("info","Szczegóły transferu",()=>_=owner.Safe(()=>ShowTransferDetailsAsync(job.Id)));
+        var actions=new StackPanel { Orientation=Orientation.Horizontal,Children={details,job.Cancel,job.Retry} };
         var row=new Grid { ColumnDefinitions=new ColumnDefinitions("*,Auto"),ColumnSpacing=6,ClipToBounds=true }; row.Children.Add(text); Grid.SetColumn(actions,1); row.Children.Add(actions);
         job.View=new Border { Padding=new Thickness(8,6),CornerRadius=new CornerRadius(4),ClipToBounds=true,Child=new StackPanel { Spacing=5,Children={row,job.Bar} } };
         DesignSystem.Resource(job.View,Border.BackgroundProperty,"BackgroundSecondary"); ToolTip.SetTip(job.View,job.Paths); AutomationProperties.SetName(job.View,L.T("Transfer: ")+job.Label);
@@ -187,9 +187,14 @@ internal sealed partial class SessionPane
         if(!IsConnected || disposed!=0)throw new InvalidOperationException(L.T("Połącz sesję, aby ponowić transfer."));
         return RunTransferAsync(job);
     }
-    internal void ClearFinishedTransfers()
+    internal Task ShowTransferDetailsAsync(Guid id,Window? dialogOwner=null)
     {
-        foreach(var job in transferJobs.Where(j=>!j.IsActive).ToArray()) { transferJobs.Remove(job); jobList.Children.Remove(job.View); }
+        var job=TransferSnapshots.FirstOrDefault(job=>job.Id==id);
+        return job==null?Task.CompletedTask:Dialogs.TransferDetails(dialogOwner??TopLevel.GetTopLevel(this) as Window??owner,PresentationProfile.Name,Profile.Endpoint,job);
+    }
+    internal void ClearFinishedTransfers(bool successfulOnly=false)
+    {
+        foreach(var job in transferJobs.Where(j=>!j.IsActive && (!successfulOnly || TransferHistoryActions.Successful(j.State,j.CleanupWarnings.Count>0))).ToArray()) { transferJobs.Remove(job); jobList.Children.Remove(job.View); }
         UpdateTransferQueue();
     }
 }

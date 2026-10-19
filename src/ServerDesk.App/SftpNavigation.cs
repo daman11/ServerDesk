@@ -40,10 +40,18 @@ internal sealed partial class SessionPane
         var row=new Grid { ColumnDefinitions=new("Auto,*"),ColumnSpacing=6,Children={buttons,breadcrumbs},ClipToBounds=true }; Grid.SetColumn(breadcrumbs,1);
         UpdateFileNavigation(); return row;
     }
-    private Task NavigateFilesAsync(bool remote,string path,DirectoryNavigationTarget? target=null)
+    private async Task NavigateFilesAsync(bool remote,string path,DirectoryNavigationTarget? target=null)
     {
+        var list=remote?remoteList:localList; var input=remote?remotePath:localPath;
+        var restoreFocus=list.IsKeyboardFocusWithin || input.IsKeyboardFocusWithin;
+        var root=TopLevel.GetTopLevel(this);
         if(remote)remoteNavigationTarget=target; else localNavigationTarget=target;
-        (remote?remotePath:localPath).Text=path; return RefreshFilesAsync();
+        input.Text=path; var refresh=RefreshFilesAsync();
+        // Changing paths temporarily disables the list and clears its focus.
+        // Restore keyboard navigation only if the user has not focused elsewhere.
+        var focus=root?.FocusManager?.GetFocusedElement();
+        await refresh;
+        if(restoreFocus && disposed==0 && root is Window { IsActive:true } && ReferenceEquals(root,TopLevel.GetTopLevel(this)) && list.IsEffectivelyVisible && list.IsEnabled && ReferenceEquals(root.FocusManager?.GetFocusedElement(),focus))list.Focus();
     }
     private Task NavigateFileHistoryAsync(bool remote,bool forward)
     {

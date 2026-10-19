@@ -75,7 +75,7 @@ internal sealed class DatabaseBackupBrowser:StackPanel,IDisposable
             catch(OperationCanceledException) when(disposed) { }
             catch(Exception ex)
             {
-                if(disposed)return; Serilog.Log.Warning("Backup listing failed: {Type}",ex.GetType().Name); folderExists=false; list.ItemsSource=null; list.IsVisible=false;
+                if(disposed)return; ApplicationDiagnostics.Report("Backups.List",ex,Serilog.Events.LogEventLevel.Warning); folderExists=false; list.ItemsSource=null; list.IsVisible=false;
                 status.Text=L.T("Nie udało się odczytać listy kopii. Sprawdź folder i uprawnienia, a następnie odśwież listę.");
             }
             finally { busy=false; if(!disposed) { refresh.IsEnabled=true; UpdateSelection(); } }
@@ -106,7 +106,7 @@ internal sealed class DatabaseBackupBrowser:StackPanel,IDisposable
         catch(OperationCanceledException) when(disposed) { }
         catch(Exception ex)
         {
-            if(disposed)return; Serilog.Log.Warning("Backup verification failed: {Type}",ex.GetType().Name);
+            if(disposed)return; ApplicationDiagnostics.Report("Backups.Verify",ex,Serilog.Events.LogEventLevel.Warning);
             verification.Text=ex is InvalidDataException?ex.Message:L.T("Nie udało się sprawdzić kopii. Plik mógł zostać usunięty, zablokowany lub jest niedostępny. Odśwież listę i spróbuj ponownie."); DesignSystem.Resource(verification,TextBlock.ForegroundProperty,"Warning");
         }
         finally { checking=false; if(!disposed) { refresh.IsEnabled=true; UpdateSelection(); } }

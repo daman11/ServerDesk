@@ -12,6 +12,7 @@ using ServerDesk.Core;
 using ServerDesk.Infrastructure;
 using Serilog;
 using System.Diagnostics;
+using System.Runtime.CompilerServices;
 
 namespace ServerDesk.App;
 
@@ -31,6 +32,7 @@ public sealed partial class MainWindow : Window
     private readonly Grid layout=new() { ColumnDefinitions=new ColumnDefinitions($"{DesignTokens.ActivityWidth},272,{DesignTokens.Small},*"),RowDefinitions=new RowDefinitions($"Auto,*,{DesignTokens.StatusHeight}") };
     private bool closing,closePending,readyToClose;
     private Task? initialization;
+    private Task? operationErrorDialog;
     internal static readonly SemaphoreSlim TransferSlots=new(2);
     private static readonly DataFormat<ServerProfile> ServerDrag=DataFormat.CreateInProcessFormat<ServerProfile>("ServerDesk.Server");
     private static readonly DataFormat<WorkspacePane> TabDrag=DataFormat.CreateInProcessFormat<WorkspacePane>("ServerDesk.Session");
@@ -67,13 +69,13 @@ public sealed partial class MainWindow : Window
                     try { StartReplacement(); }
                     catch(Exception ex)
                     {
-                        Log.Error("Nie udało się ponownie uruchomić aplikacji: {Type}",ex.GetType().Name);
+                        ApplicationDiagnostics.Report("RestartApplication",ex);
                         await Dialogs.Message(this,L.T("ServerDesk — błąd",language),L.T("Nie udało się uruchomić nowej instancji. Aplikacja pozostaje otwarta. Możesz zamknąć ją i uruchomić ręcznie.",language)); return;
                     }
                 }
                 await profileSortSave; CancelPendingSnapshot(); if(workspaceReady)await Safe(SaveSessionSnapshotAsync);
                 commandPanel?.Dispose(); await Safe(()=>commandPanel?.Shutdown??Task.CompletedTask); closing=true; helpPane?.Dispose(); statusTimer.Stop(); lifetime.Cancel(); foreach(var session in sessions)session.StatusChanged-=PaneStatusChanged;
-                var closingTools=networkPanes.ToArray(); foreach(var tool in closingTools)tool.Dispose(); await Task.WhenAll(closingTools.Select(tool=>tool.Shutdown)); networkPanes.Clear();
+                var closingTools=networkPanes.ToArray(); foreach(var tool in closingTools)tool.Dispose(); await Safe(()=>Task.WhenAll(closingTools.Select(tool=>tool.Shutdown))); networkPanes.Clear();
                 await Safe(()=>Task.WhenAll(sessions.Select(session=>session.CloseAsync()).Concat(closingSessions)));
                 foreach(var floating in floatingDocks.Values.ToArray())floating.Window.Close(); floatingDocks.Clear();
                 await Safe(async()=> { await SaveWorkspaceAsync(); await repository.SaveMainWindowPlacementAsync(CaptureMainPlacement()); await repository.SetSettingAsync("sidebar",sidebarWidth.ToString(System.Globalization.CultureInfo.InvariantCulture)); await repository.SetSettingAsync("collapsedFolders",System.Text.Json.JsonSerializer.Serialize(collapsed)); await repository.SetSettingAsync("sidebarHidden",(!sidebar.IsVisible).ToString()); }); readyToClose=true; Close();
@@ -81,17 +83,27 @@ public sealed partial class MainWindow : Window
             finally { closePending=false; if(!closing)restartLanguage=null; }
         };
     }
-    private Button Action(string label,Func<Task> action) => Dialogs.Button(label,()=>_ = Safe(action));
-    private MenuItem Menu(string label,Func<Task> action,string? glyph=null,string? shortcut=null) { var menu=DeskIcons.ActionMenu(label,glyph,shortcut); menu.Click+=(_,_)=>_ = Safe(action); return menu; }
-    internal async Task Safe(Func<Task> action)
+    private Button Action(string label,Func<Task> action) => Dialogs.Button(label,()=>_ = Safe(action,"Action."+label));
+    private MenuItem Menu(string label,Func<Task> action,string? glyph=null,string? shortcut=null) { var menu=DeskIcons.ActionMenu(label,glyph,shortcut); menu.Click+=(_,_)=>_ = Safe(action,"Menu."+label); return menu; }
+    internal async Task Safe(Func<Task> action,[CallerMemberName] string operation="")
     {
+        if(!action.Method.Name.Contains('<'))operation=action.Method.Name;
         try { await action(); }
         catch(OperationCanceledException) { vm.Status=L.T("Operacja anulowana"); }
-        catch(RdpHostUnavailableException ex) { Log.Error("RDP host failure: {ExceptionDetails}",ExceptionDiagnostics.Describe(ex)); vm.Status=ex.Message; }
-        catch(Exception ex) { Log.Error("Operation {Operation} failed: {ExceptionDetails}",action.Method.Name,ExceptionDiagnostics.Describe(ex)); vm.Status=OperationErrorMessages.Describe(ex); await Dialogs.Message(this,L.T("ServerDesk — błąd"),vm.Status); }
+        catch(RdpHostUnavailableException ex) { ApplicationDiagnostics.Report(operation,ex); vm.Status=ex.Message; }
+        catch(Exception ex)
+        {
+            var id=ApplicationDiagnostics.Report(operation,ex); vm.Status=OperationErrorMessages.Describe(ex);
+            // Every failure is logged, but simultaneous callbacks must not create
+            // a chain of modal dialogs or show one after the owner has closed.
+            if(closing || lifetime.IsCancellationRequested || !IsVisible || operationErrorDialog is { IsCompleted:false })return;
+            try { operationErrorDialog=Dialogs.Message(this,L.T("ServerDesk — błąd"),vm.Status+"\n\n"+L.F($"Identyfikator błędu: {id}")); await operationErrorDialog; }
+            catch(Exception dialogError) { ApplicationDiagnostics.Report("ShowOperationError",dialogError); }
+            finally { operationErrorDialog=null; }
+        }
     }
     private void PaneStatusChanged() { if(!closing) { UpdateStatus(); UpdateResumeNotice(); } }
-    internal void ReportBackgroundError(string message,Exception ex) { Log.Error("Background operation failed: {ExceptionDetails}",ExceptionDiagnostics.Describe(ex)); vm.Status=message; }
+    internal void ReportBackgroundError(string message,Exception ex,[CallerMemberName] string operation="") { ApplicationDiagnostics.Report(operation,ex); vm.Status=message; }
     private async Task InitializeAsync()
     {
         if(!await InitializeDatabaseForStartupAsync())return;

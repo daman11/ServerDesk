@@ -142,14 +142,14 @@ internal sealed partial class CommandPanel : Border,IDisposable
         if(working||lifetime.IsCancellationRequested)return; working=true; SetButtons(false);
         try { await action(); }
         catch(OperationCanceledException) { }
-        catch(Exception ex) { notice.Text=ex is ArgumentException or InvalidDataException or InvalidOperationException?ex.Message:L.T("Operacja komend nie powiodła się. Sprawdź magazyn systemowy i dostęp do pliku."); }
+        catch(Exception ex) { ApplicationDiagnostics.Report("Commands.Action",ex,Serilog.Events.LogEventLevel.Warning); notice.Text=ex is ArgumentException or InvalidDataException or InvalidOperationException?ex.Message:L.T("Operacja komend nie powiodła się. Sprawdź magazyn systemowy i dostęp do pliku."); }
         finally { working=false; if(!lifetime.IsCancellationRequested)UpdatePreview(); }
     }
     internal async Task InitializeAsync()
     {
         var invalidState=false;
         try { state=await store.ReadStateAsync(lifetime.Token); }
-        catch(InvalidDataException) { invalidState=true; }
+        catch(InvalidDataException ex) { ApplicationDiagnostics.Report("Commands.ReadState",ex,Serilog.Events.LogEventLevel.Warning); invalidState=true; }
         await ReloadLibraryAsync(); lifetime.Token.ThrowIfCancellationRequested(); updating=true;
         if(invalidState)notice.Text=L.T("Niepoprawny stan panelu komend. Biblioteka pozostaje zachowana.");
         ApplyPreferences(state.Preferences); updating=false; ready=true; RefreshTarget(true); RefreshList();
@@ -157,7 +157,7 @@ internal sealed partial class CommandPanel : Border,IDisposable
     private async Task ReloadLibraryAsync()
     {
         try { library=await store.ReadLibraryAsync(lifetime.Token); libraryLocked=false; notice.Text=""; }
-        catch(Exception ex) when(ex is not OperationCanceledException) { libraryLocked=true; notice.Text=L.T("Własna biblioteka jest zablokowana lub uszkodzona. Wbudowana ściągawka pozostaje dostępna."); }
+        catch(Exception ex) when(ex is not OperationCanceledException) { ApplicationDiagnostics.Report("Commands.ReadLibrary",ex,Serilog.Events.LogEventLevel.Warning); libraryLocked=true; notice.Text=L.T("Własna biblioteka jest zablokowana lub uszkodzona. Wbudowana ściągawka pozostaje dostępna."); }
         if(ready)RefreshList();
     }
     private void ApplyPreferences(CommandPanelPreferences p)
@@ -179,7 +179,7 @@ internal sealed partial class CommandPanel : Border,IDisposable
         {
             try { await PersistStateAsync(); }
             catch(OperationCanceledException) { }
-            catch { if(!lifetime.IsCancellationRequested)notice.Text=L.T("Nie udało się zapisać ustawień panelu komend."); }
+            catch(Exception ex) { if(!lifetime.IsCancellationRequested) { ApplicationDiagnostics.Report("Commands.SavePreferences",ex,Serilog.Events.LogEventLevel.Warning); notice.Text=L.T("Nie udało się zapisać ustawień panelu komend."); } }
         }
     }
     private Task PersistStateAsync()

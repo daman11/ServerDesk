@@ -68,7 +68,7 @@ internal static partial class Dialogs
                 more.IsEnabled=page.Count==pageSize; message.Text=entries.Count==0?L.T("Brak połączeń pasujących do filtrów."):L.F($"Wyświetlono {entries.Count} wpisów. Dwuklik łączy ponownie z profilem.");
             }
             catch(OperationCanceledException) when(ct.IsCancellationRequested) { }
-            catch(Exception ex) { if(current!=revision || lifetime.IsCancellationRequested)return; Serilog.Log.Error("Błąd odczytu historii typu {Type}",ex.GetType().Name); message.Text=L.T("Nie udało się wczytać historii. Wybierz Pokaż starsze, aby ponowić."); more.IsEnabled=true; }
+            catch(Exception ex) { if(current!=revision || lifetime.IsCancellationRequested)return; ApplicationDiagnostics.Report("History.Load",ex); message.Text=L.T("Nie udało się wczytać historii. Wybierz Pokaż starsze, aby ponowić."); more.IsEnabled=true; }
         }
         void Connect() { if(list.SelectedItem is ConnectionHistoryEntry { CanReconnect:true,Profile:{} profile })dialog.Close(profile); }
         list.SelectionChanged+=(_,_)=>Select(); connect.Click+=(_,_)=>Connect(); list.DoubleTapped+=(_,_)=>Connect();

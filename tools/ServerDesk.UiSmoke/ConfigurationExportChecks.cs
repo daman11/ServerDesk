@@ -34,7 +34,7 @@ internal static class ConfigurationExportChecks
             void CloseMessage(Task action,string expected,string screenshot)
             {
                 Until(()=>main.OwnedWindows.Count==1); var message=main.OwnedWindows.Single();
-                if(vm.Status!=expected || !message.GetVisualDescendants().OfType<TextBlock>().Any(t=>t.Text==expected))throw new Exception("Configuration export failure is not localized");
+                if(vm.Status!=expected || !message.GetVisualDescendants().OfType<TextBlock>().Any(t=>t.Text?.StartsWith(expected+"\n\n",StringComparison.Ordinal)==true))throw new Exception("Configuration export failure is not localized");
                 message.CaptureRenderedFrame()!.Save(Path.Combine(root,screenshot+"-"+language+".png"));
                 message.GetVisualDescendants().OfType<Button>().Single(b=>b.Tag as string=="Zamknij").RaiseEvent(new RoutedEventArgs(Button.ClickEvent)); RedesignChecks.Wait(action);
             }

@@ -108,7 +108,7 @@ internal static partial class Dialogs
             }
             catch(Exception ex)
             {
-                Serilog.Log.Error("Database backup failed: {Type}",ex.GetType().Name);
+                ApplicationDiagnostics.Report("Settings.CreateDatabaseBackup",ex);
                 backupStatus.Text=L.T("Nie udało się utworzyć kopii. Sprawdź wolne miejsce i uprawnienia katalogu danych. Istniejące kopie pozostają zachowane.");
             }
             finally { createBackup.IsEnabled=true; }
@@ -180,7 +180,7 @@ internal static partial class Dialogs
                 var selected=await settingsOwner.StorageProvider.OpenFolderPickerAsync(new() { Title=L.T("Wybierz katalog startowy SFTP"),AllowMultiple=false });
                 if(selected.FirstOrDefault()?.TryGetLocalPath() is {} path)localDirectory.Text=path;
             }
-            catch(Exception ex) { Serilog.Log.Warning("Wybór katalogu ustawień typu {Type}",ex.GetType().Name); error.Text=L.T("Nie udało się otworzyć wyboru katalogu. Wpisz pełną ścieżkę ręcznie."); }
+            catch(Exception ex) { ApplicationDiagnostics.Report("Settings.SelectDirectory",ex,Serilog.Events.LogEventLevel.Warning); error.Text=L.T("Nie udało się otworzyć wyboru katalogu. Wpisz pełną ścieżkę ręcznie."); }
         },28);
         browse.Name="BrowseSftpLocalDirectory"; localDirectory.InnerRightContent=browse;
         Label(fileSettings,"Lokalny katalog startowy",localDirectory);
@@ -207,7 +207,7 @@ internal static partial class Dialogs
                 var selected=await settingsOwner.StorageProvider.OpenFilePickerAsync(new() { Title=L.T("Wybierz program edytora"),AllowMultiple=false });
                 if(selected.FirstOrDefault()?.TryGetLocalPath() is {} path)editorPath.Text=path;
             }
-            catch(Exception ex) { Serilog.Log.Warning("Wybór edytora typu {Type}",ex.GetType().Name); error.Text=L.T("Nie udało się otworzyć wyboru pliku. Wpisz pełną ścieżkę ręcznie."); }
+            catch(Exception ex) { ApplicationDiagnostics.Report("Settings.SelectEditor",ex,Serilog.Events.LogEventLevel.Warning); error.Text=L.T("Nie udało się otworzyć wyboru pliku. Wpisz pełną ścieżkę ręcznie."); }
         },28);
         Label(editing,"Ścieżka własnego edytora",editorPath);
         editing.Children.Add(DesignSystem.Hint(L.T("Automatycznie: Notatnik w Windows lub pierwszy dostępny Kate, GNOME Text Editor, gedit, Mousepad, Xed lub KWrite w Linux. Pozostałe programy muszą być zainstalowane osobno. Wybór edytora obowiązuje po zapisaniu ustawień.")));
@@ -380,7 +380,7 @@ internal static partial class Dialogs
                 };
                 categories.SelectedIndex=index; field.BringIntoView(); field.Focus();
             }
-            catch(Exception ex) { Serilog.Log.Error("Błąd ustawień typu {Type}",ex.GetType().Name); error.Text=L.T("Nie udało się zapisać lub zastosować ustawień. Spróbuj ponownie."); }
+            catch(Exception ex) { ApplicationDiagnostics.Report("Settings.Save",ex); error.Text=L.T("Nie udało się zapisać lub zastosować ustawień. Spróbuj ponownie."); }
             finally { saving=false; categories.IsEnabled=true; actions.IsEnabled=true; search.IsEnabled=true; saveRestart.IsEnabled=true; }
         }
         saveRestart.Click+=async (_,_)=>await SaveAsync(true);

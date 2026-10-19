@@ -389,6 +389,7 @@
   "Opcje sesji RDP": "RDP session options",
   "Opcjonalnie": "Optional",
   "Operacja anulowana": "Operation cancelled",
+  "Identyfikator błędu: {0}": "Error ID: {0}",
   "Operacja nie powiodła się ({0}). Sprawdź adres, uprawnienia i połączenie.": "Operation failed ({0}). Check the address, permissions and connection.",
   "Operacje": "Actions",
   "Opis": "Description",

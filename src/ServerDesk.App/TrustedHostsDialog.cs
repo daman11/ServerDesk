@@ -74,7 +74,7 @@ internal static partial class Dialogs
             catch(OperationCanceledException) when(ct.IsCancellationRequested) { }
             catch(Exception ex)
             {
-                Serilog.Log.Error("Błąd zarządzania zaufaniem SSH typu {Type}",ex.GetType().Name);
+                ApplicationDiagnostics.Report("TrustedHosts.Manage",ex);
                 if(!closed)notice.Text=L.T("Nie udało się wykonać operacji. Odśwież listę i spróbuj ponownie.");
             }
             finally { busy=false; if(!closed) { query.IsEnabled=list.IsEnabled=refresh.IsEnabled=true; Select(); } }

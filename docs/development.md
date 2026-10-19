@@ -1,5 +1,7 @@
 # Rozwój i testy
 
+Diagnostyka po 0.43.0: UiSmoke `ROOT --error-logging` sprawdza w PL/EN równoczesne błędy, zgodność ID okna i logu, ponowienie, anulowanie, zadanie kończące się po zamknięciu właściciela oraz bezpieczne stosy. Własne pliki z małym limitem wymuszają rotację, retencję i zapis przez dwa logger-y. Scenariusz jest w przyszłym CI Windows/Linux; nie używa osobistych baz, portfela ani serwerów. `ExceptionDiagnosticsTests` sprawdza też wadliwy getter stosu i nadmiarowe dane. [Zakres i wyniki](reports/error-logging-2026-10-19.md).
+
 0.42.0 rozszerza listę UI CI o `--command-profile`, `--about`, `--profile-deletion`, `--application-logs`, `--connection-tags`, `--ergonomics`, `--session-workflow`, `--workspace-details` i `--session-chrome`. `ApplicationLogEdgeCaseTests` sprawdza rzeczywiste Windows Junction/Unix symlinks, rotację, ścisłe nazwy plików i równoległe eksporty. [Weryfikacja](reports/release-verification-0.42.0.md).
 
 Motywy i edytor (wersja rozwojowa po 0.41.0): UiSmoke `ROOT --themes-editor` sprawdza 11 motywów i Systemowy, kontrast tekstu, podgląd/zapis/anulowanie oraz wybór edytora SFTP, walidację, domyślne ustawienia i mały układ PL/EN. Własny proces edytora fixture odbiera literalną ścieżkę lokalnego pliku z menu; nie otwiera serwera ani osobistego edytora. Scenariusz jest w CI. [Zakres sprawdzeń](reports/themes-editor-2026-10-17.md).

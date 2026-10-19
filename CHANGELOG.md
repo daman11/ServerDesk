@@ -2,6 +2,8 @@
 
 ## Unreleased
 
+- Harden application error handling: correlate operation failures with a copyable error ID, prevent simultaneous/late error dialogs, contain dialog-presentation failures, and retain safe outer/inner stacks for settings, history, backups and optional persistence. Record unobserved task/fatal failures, flush on exit, add startup build/runtime context and process IDs, and rotate logs daily or at 4 MiB with 14 retained files. Bound diagnostic formatting and tolerate broken stack formatters without recording exception messages/data.
+
 - Add a right-click menu on the connection sidebar header and blank list area for creating profiles/folders, quick connection, import/export and clearing filters. Keep row-specific and text-editing menus; avoid replacing folder rows during selection. Correct saving profiles created from a folder or quick-connection draft.
 
 - Give Help sections distinct numbered cards, larger headings, tinted header bands and clear gaps between sections while keeping related paragraphs together. Preserve multiline shortcuts, searching and whole-topic copying.

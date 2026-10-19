@@ -1,5 +1,7 @@
 # Verification and historical reviews
 
+Error handling: [Concurrent/late UI failures, safe IDs/stacks and bounded log rotation, 2026-10-19](error-logging-2026-10-19.md).
+
 Connection sidebar: [Blank-area/header context menu, row targeting and draft saves, 2026-10-19](browser-context-menu-2026-10-19.md).
 
 Offline documentation: [Help tab, 14 PL/EN topics, search and workspace integration, 2026-10-19](help-2026-10-19.md).

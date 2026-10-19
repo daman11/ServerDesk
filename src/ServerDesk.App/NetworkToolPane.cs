@@ -195,7 +195,7 @@ internal sealed partial class NetworkToolPane : WorkspacePane
             {
                 try { await action(); }
                 catch(OperationCanceledException) when(cancellation.IsCancellationRequested || lifetime.IsCancellationRequested) { throw; }
-                catch(Exception ex) { persistenceIssue=true; Serilog.Log.Warning("Network tool optional persistence failed: {Type}",ex.GetType().Name); }
+                catch(Exception ex) { persistenceIssue=true; ApplicationDiagnostics.Report("NetworkTools.OptionalPersistence",ex,Serilog.Events.LogEventLevel.Warning); }
             }
             var reporter=new UiProgress(this);
             var result=await Task.Run(async()=> { if(history)await OptionalPersistence(()=>store.AddHistoryAsync(request,cancellation.Token)).ConfigureAwait(false); return await service.RunAsync(request,secrets,reporter,cancellation.Token).ConfigureAwait(false); },cancellation.Token);

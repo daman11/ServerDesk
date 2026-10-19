@@ -65,6 +65,7 @@ internal static class HelpChecks
                     var scroll=Named<ScrollViewer>(help,"HelpArticleScroll");
                     if(scroll.Extent.Width>scroll.Viewport.Width+1)throw new Exception("Help article scrolls horizontally: "+topic.Id);
                     var body=Named<StackPanel>(help,"HelpArticle"); foreach(var text in body.Children.OfType<SelectableTextBlock>())if(text.Bounds.Width>scroll.Viewport.Width+1)throw new Exception("Help paragraph escapes viewport");
+                    if(topic.Id=="shortcuts" || (topic.Id=="sftp" && theme=="graphite" && width==1320))main.CaptureRenderedFrame()!.Save(Path.Combine(root,$"help-{topic.Id}-{language}-{theme}-{width}.png"));
                 }
                 list.SelectedIndex=0; RedesignChecks.Frames(); main.CaptureRenderedFrame()!.Save(Path.Combine(root,$"help-{language}-{theme}-{width}.png"));
             }

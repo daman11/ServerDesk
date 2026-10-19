@@ -34,6 +34,8 @@ Etapy A–F wyznaczają kolejność wykonania. Punkty 1–6 poniżej pozostają 
 
 ### C. Zamknąć scenariusze codziennej pracy i awarii sesji
 
+Przyrost ergonomii SFTP po 0.43.0: kopiowanie tekstowych nazw/ścieżek również z zachowanego widoku offline, filtrowanie z klawiatury oraz spójna blokada nieaktualnych operacji. [Weryfikacja](reports/sftp-clipboard-2026-10-19.md). Próby rzeczywistych łączy i pozostałe warunki tego etapu pozostają otwarte.
+
 - SSH: fizyczne AltGr/układy/IME, mysz, aplikacje terminalowe, uśpienie/wznowienie oraz ponowne połączenie. Sprawdzić kilka sesji i trzy/cztery panele bez mieszania celu wejścia.
 - SFTP: upload/download i katalogi, nadpisanie, anulowanie, brak miejsca/quota oraz utrata sieci w różnych fazach; ochrona oryginału i porównanie SHA-256 po ponowieniu. Uwzględnić serwer inny niż OpenSSH i pozostawione `.part`.
 - RDP: uzupełnić [macierz](rdp-test-matrix.md) dla deklarowanych Windows/Linux: hasło/certyfikat, schowek w obie strony i obsługiwane pliki, klawiatura/fokus, rozmiar panelu/dokowanie oraz utrata sieci. Konta AD/Microsoft wymagają własnego stanowiska, jeśli mają wejść do potwierdzonego zakresu.

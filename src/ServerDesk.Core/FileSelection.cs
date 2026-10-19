@@ -4,10 +4,26 @@ public sealed record FileTransferItem(FileEntry Entry,string Target);
 
 public static class FileSelection
 {
+    public const int ClipboardCharacters=1024*1024;
     private static StringComparer Comparer(bool local)=>local && OperatingSystem.IsWindows()?StringComparer.OrdinalIgnoreCase:StringComparer.Ordinal;
 
     public static IReadOnlyList<FileEntry> Capture(IEnumerable<FileEntry> entries,bool local)
         =>entries.Where(e=>e.Name!="..").DistinctBy(e=>e.FullPath,Comparer(local)).ToArray();
+
+    // Plain text only: keep remote POSIX paths verbatim even on Windows, and do
+    // not resolve links or turn copied names into shell commands/file transfers.
+    public static string ClipboardText(IEnumerable<FileEntry> entries,bool local,bool fullPaths)
+    {
+        var text=new System.Text.StringBuilder();
+        foreach(var entry in Capture(entries,local))
+        {
+            var value=fullPaths?entry.FullPath:entry.Name;
+            var separator=text.Length==0?"":Environment.NewLine;
+            if((long)text.Length+separator.Length+value.Length>ClipboardCharacters)throw new InvalidOperationException(L.T("Zaznaczenie jest zbyt duże do skopiowania. Wybierz mniej elementów."));
+            text.Append(separator).Append(value);
+        }
+        return text.ToString();
+    }
 
     public static IReadOnlyList<FileEntry> Retain(IEnumerable<FileEntry> visible,IEnumerable<FileEntry> selected,bool local)
     {

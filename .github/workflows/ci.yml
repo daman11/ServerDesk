@@ -83,6 +83,10 @@ jobs:
         run: |
           dotnet artifacts/ci-harness/ServerDesk.UiSmoke.dll artifacts/ci-error-logging --error-logging
           if ($LASTEXITCODE -ne 0) { throw 'Error logging acceptance failed' }
+      - name: SFTP clipboard and keyboard ergonomics
+        run: |
+          dotnet artifacts/ci-harness/ServerDesk.UiSmoke.dll artifacts/ci-sftp-clipboard --sftp-clipboard
+          if ($LASTEXITCODE -ne 0) { throw 'SFTP clipboard acceptance failed' }
       - name: Upload test reports and rendered UI
         if: always()
         uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2

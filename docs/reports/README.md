@@ -1,5 +1,7 @@
 # Verification and historical reviews
 
+SFTP daily work: [Text clipboard, keyboard filtering and action readiness, 2026-10-19](sftp-clipboard-2026-10-19.md).
+
 Error handling: [Concurrent/late UI failures, safe IDs/stacks and bounded log rotation, 2026-10-19](error-logging-2026-10-19.md).
 
 Connection sidebar: [Blank-area/header context menu, row targeting and draft saves, 2026-10-19](browser-context-menu-2026-10-19.md).

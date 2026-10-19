@@ -98,6 +98,7 @@ if(args.Contains("--sorting")) { SortingChecks.Run(root); return; }
 if(args.Contains("--connection-browser")) { ConnectionBrowserChecks.Run(root); return; }
 if(args.Contains("--browser-context-menu")) { BrowserContextMenuChecks.Run(root); return; }
 if(args.Contains("--error-logging")) { ErrorLoggingChecks.Run(root); return; }
+if(args.Contains("--sftp-clipboard")) { SftpClipboardChecks.Run(root); return; }
 if(args.Contains("--connection-tags")) { ConnectionTagChecks.Run(root); return; }
 if(args.Contains("--ergonomics")) { ErgonomicsChecks.Run(root); return; }
 if(args.Contains("--browser-workflow")) { BrowserWorkflowChecks.Run(root); return; }

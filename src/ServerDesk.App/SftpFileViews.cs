@@ -38,13 +38,13 @@ internal sealed partial class SessionPane
         var remote=new FileViewRequest(remoteEntries,remoteFilter.Text,showHidden,(FileSort)Math.Max(0,remoteSort.SelectedIndex),remoteDescending);
         var cancel=CancellationTokenSource.CreateLinkedTokenSource(lifetime.Token); fileViewCancellation=cancel;
         var work=BuildFileViewsAsync(local,remote,localPath.Text,remotePath.Text,fileViewVersion,cancel);
-        fileViewTasks.Add(work); return fileViewUpdate=ObserveFileViewAsync(work);
+        fileViewTasks.Add(work); UpdateFileSelection(); return fileViewUpdate=ObserveFileViewAsync(work);
     }
 
     private async Task ObserveFileViewAsync(Task work)
     {
         try { await work; }
-        finally { fileViewTasks.Remove(work); }
+        finally { fileViewTasks.Remove(work); if(disposed==0)UpdateFileSelection(); }
     }
 
     private async Task BuildFileViewsAsync(FileViewRequest local,FileViewRequest remote,string? localDirectory,string? remoteDirectory,long version,CancellationTokenSource cancel)

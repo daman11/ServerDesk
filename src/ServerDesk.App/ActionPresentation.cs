@@ -101,7 +101,7 @@ internal static partial class DeskIcons
         "Sprawdź kopię"=>"shield",
         "Przejdź"=>"arrow-right",
         "Lista komend"=>"arrow-left",
-        "Kopiuj ścieżkę"=>"copy",
+        "Kopiuj ścieżkę" or "Kopiuj do schowka" or "Kopiuj nazwy" or "Kopiuj pełne ścieżki" or "Kopiuj ścieżkę katalogu"=>"copy",
         "Otwórz logi"=>"file",
         "Zapisz kopię logu"=>"download",
         "Otwórz folder logów"=>"folder-open",

@@ -1,5 +1,7 @@
 # Pierwotne MVP — wydanie 0.43.0
 
+Krok roboczy po 0.43.0 rozwija codzienną pracę w SFTP: kopiowanie nazw/pełnych ścieżek/katalogu jako tekst, także z zachowanego widoku po utracie łącza; Ctrl+Shift+C, Ctrl+F i powrót Escape do listy. Dostępność menu odpowiada paskowi narzędzi, a operacje na zaznaczeniu czekają na zakończenie filtrowania. Celowane testy PL/EN i regresja 50 000 wpisów nie zastępują prób WAN ani innych serwerów. [Zakres](reports/sftp-clipboard-2026-10-19.md).
+
 Krok roboczy po 0.43.0 poprawia ergonomię SFTP: pełne szczegóły zadania z kopiowaniem, krótsze karty boczne i wybór czyszczenia udanych zadań albo całej zakończonej historii. Aktywne zadania i pliki nie są usuwane. [Zakres sprawdzenia](reports/transfer-ux-2026-10-19.md).
 
 0.43.0 rozwija ochronę danych i odzyskiwanie SSH/SFTP: atomowe powiązanie hasła przy edycji celu, bezpieczną kolejność usuwania profilu, kontrolę równoległego zapisu pluginów, schemat 4 z kopią przed migracją, limity cichego łącza i zachowanie kontekstu SFTP po reconnect. Transfer nie jest samoczynnie ponawiany. [Dowody i granice](reports/release-verification-0.43.0.md). Nie zalicza fizycznego suspend/resume ani odłożonych VM, sprzętu i długiej pracy.

@@ -46,13 +46,21 @@ internal sealed partial class SessionPane
                 if(e.GetCurrentPoint(list).Properties.IsRightButtonPressed && e.Source is Control { DataContext:FileEntry entry })
                 { if(list.SelectedItems?.Contains(entry)!=true)list.SelectedItem=entry; e.Handled=true; }
             },RoutingStrategies.Tunnel);
-            var menuItems=new List<MenuItem> { OperationMenu(remote?"Pobierz":"Wyślij",remote?DownloadAsync:UploadAsync),LinkFileMenu(remote),OperationMenu("Nowy katalog",MkdirAsync),SingleFileMenu(remote,"Zmień nazwę",RenameAsync),SingleFileMenu(remote,"Przenieś do katalogu",MoveFileAsync),SingleFileMenu(remote,"Szczegóły",FileDetailsAsync),DeleteSelectionMenu(remote),TextEditingMenu(remote) };
+            var menuItems=new List<MenuItem> { FileActionMenu(remote,remote?"Pobierz":"Wyślij",remote?DownloadAsync:UploadAsync,true),LinkFileMenu(remote),FileActionMenu(remote,"Nowy katalog",MkdirAsync),SingleFileMenu(remote,"Zmień nazwę",RenameAsync),SingleFileMenu(remote,"Przenieś do katalogu",MoveFileAsync),SingleFileMenu(remote,"Szczegóły",FileDetailsAsync),DeleteSelectionMenu(remote),TextEditingMenu(remote),FileClipboardMenu(remote) };
             if(remote)menuItems.Insert(2,SingleFileMenu(true,"Utwórz zdalne dowiązanie…",CreateRemoteLinkAsync));
             list.ContextMenu=new ContextMenu { ItemsSource=menuItems };
+            list.ContextMenu.Opening+=(_,_)=>UpdateFileSelection();
+            list.ContextMenu.Opened+=(_,_)=>UpdateFileSelection();
         }
         files.AddHandler(KeyDownEvent,(_,e)=>
         {
             if(!files.IsVisible)return;
+            if(e.Key==Key.F && e.KeyModifiers==KeyModifiers.Control)
+            { var filter=RemoteSelected?remoteFilter:localFilter; filter.Focus(); filter.SelectAll(); e.Handled=true; return; }
+            if(e.Key==Key.Escape && e.KeyModifiers==KeyModifiers.None && (localFilter.IsKeyboardFocusWithin || remoteFilter.IsKeyboardFocusWithin))
+            { var remote=remoteFilter.IsKeyboardFocusWithin; (remote?remoteFilter:localFilter).Text=""; (remote?remoteList:localList).Focus(); e.Handled=true; return; }
+            if(e.Key==Key.C && e.KeyModifiers==(KeyModifiers.Control|KeyModifiers.Shift) && (localList.IsKeyboardFocusWithin || remoteList.IsKeyboardFocusWithin))
+            { var remote=remoteList.IsKeyboardFocusWithin; e.Handled=true; _=owner.Safe(()=>CopyFileTextAsync(remote,FileCopyKind.Paths)); return; }
             if(fileRefreshes>0 && e.KeyModifiers==KeyModifiers.Alt && e.Key is Key.Left or Key.Right or Key.Up or Key.Home) { e.Handled=true; return; }
             if(e.Key==Key.F5) { e.Handled=true; _=owner.Safe(RefreshFilesAsync); }
             else if(e.Key==Key.F4 && e.KeyModifiers==KeyModifiers.None && (localList.IsKeyboardFocusWithin || remoteList.IsKeyboardFocusWithin))
@@ -133,7 +141,7 @@ internal sealed partial class SessionPane
             var retained=FileSelection.Retain(result,selected,list==localList);
             list.ItemsSource=result; list.SelectedItems!.Clear(); foreach(var entry in retained)list.SelectedItems.Add(entry);
             empty.Text=string.IsNullOrWhiteSpace(filter.Text)?L.T("Brak plików. Włącz „Ukryte”, aby sprawdzić wszystkie wpisy."):L.T("Brak wyników. Zmień lub wyczyść filtr.");
-            ToolTip.SetTip(filter,L.F($"Widoczne wpisy: {result.Count(e=>e.Name!="..")}. Filtr dotyczy nazw w bieżącym katalogu."));
+            ToolTip.SetTip(filter,L.F($"Widoczne wpisy: {result.Count(e=>e.Name!="..")}. Filtr dotyczy nazw w bieżącym katalogu.")+"\n"+L.T("Ctrl+F: filtruj aktywny panel · Escape: wyczyść filtr i wróć do listy."));
         }
         changingFileSelection=true;
         try { Apply(localList,local,localFilter,localEmpty); Apply(remoteList,remote,remoteFilter,remoteEmpty); }

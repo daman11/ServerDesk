@@ -11,9 +11,10 @@ internal sealed partial class SessionPane
     private readonly TextBlock localSelection=DesignSystem.Label("",true,12),remoteSelection=DesignSystem.Label("",true,12);
     private Button uploadSelection=null!,downloadSelection=null!;
     private readonly List<(MenuItem Menu,bool? Remote)> singleFileMenus=[];
+    private readonly List<(MenuItem Menu,bool? Remote,bool Transfer)> fileActionMenus=[];
     private bool changingFileSelection;
 
-    private IReadOnlyList<FileEntry> SelectedFiles(bool remote)=>fileRefreshes>0 || (remote?loadedRemotePath:loadedLocalPath).Length>0 && !FilePathConfirmed(remote)?[]:FileSelection.Capture((remote?remoteList:localList).SelectedItems?.OfType<FileEntry>()??[],!remote);
+    private IReadOnlyList<FileEntry> SelectedFiles(bool remote)=>disposed!=0 || fileRefreshes>0 || fileViewTasks.Count>0 || (remote?loadedRemotePath:loadedLocalPath).Length>0 && !FilePathConfirmed(remote)?[]:FileSelection.Capture((remote?remoteList:localList).SelectedItems?.OfType<FileEntry>()??[],!remote);
     private FileEntry? SingleFile(bool remote)
     {
         var selected=SelectedFiles(remote);
@@ -24,6 +25,8 @@ internal sealed partial class SessionPane
     {
         var item=OperationMenu(title,action); singleFileMenus.Add((item,remote)); return item;
     }
+    private MenuItem FileActionMenu(bool? remote,string title,Func<Task> action,bool transfer=false)
+    { var item=OperationMenu(title,action); fileActionMenus.Add((item,remote,transfer)); return item; }
     private FileDrag? CaptureFileDrag(bool remote)
     {
         var selected=SelectedFiles(remote);
@@ -48,18 +51,22 @@ internal sealed partial class SessionPane
     private void UpdateFileSelection()
     {
         var local=SelectedFiles(false); var remote=SelectedFiles(true);
+        var viewReady=disposed==0 && fileRefreshes==0 && fileViewTasks.Count==0;
+        var canOperate=viewReady && IsConnected && sftp?.IsConnected==true;
         localSelection.Text=L.F($"Zaznaczone: {local.Count} / {localList.Items.OfType<FileEntry>().Count(e=>e.Name!="..")}");
         remoteSelection.Text=L.F($"Zaznaczone: {remote.Count} / {remoteList.Items.OfType<FileEntry>().Count(e=>e.Name!="..")}");
-        if(uploadSelection!=null) { uploadSelection.IsEnabled=IsConnected && sftp!=null && FilePathConfirmed(true) && local.Count>0; ToolTip.SetTip(uploadSelection,L.F($"Wyślij zaznaczone elementy: {local.Count}")); }
-        if(downloadSelection!=null) { downloadSelection.IsEnabled=IsConnected && sftp!=null && FilePathConfirmed(false) && remote.Count>0; ToolTip.SetTip(downloadSelection,L.F($"Pobierz zaznaczone elementy: {remote.Count}")); }
-        foreach(var (menu,isRemote) in singleFileMenus)menu.IsEnabled=IsConnected && sftp!=null && SelectedFiles(isRemote??RemoteSelected).Count==1;
+        if(uploadSelection!=null) { uploadSelection.IsEnabled=canOperate && FilePathConfirmed(true) && local.Count>0; ToolTip.SetTip(uploadSelection,L.F($"Wyślij zaznaczone elementy: {local.Count}")); }
+        if(downloadSelection!=null) { downloadSelection.IsEnabled=canOperate && FilePathConfirmed(false) && remote.Count>0; ToolTip.SetTip(downloadSelection,L.F($"Pobierz zaznaczone elementy: {remote.Count}")); }
+        foreach(var (menu,isRemote) in singleFileMenus)menu.IsEnabled=canOperate && SelectedFiles(isRemote??RemoteSelected).Count==1;
+        foreach(var (menu,isRemote,transfer) in fileActionMenus) { var side=isRemote??RemoteSelected; menu.IsEnabled=transfer?(side?downloadSelection:uploadSelection)?.IsEnabled==true:canOperate && FilePathConfirmed(side); }
         foreach(var (menu,isRemote) in textEditingMenus)
         {
             var remoteSide=isRemote??RemoteSelected; var selected=SelectedFiles(remoteSide);
-            menu.IsEnabled=disposed==0 && selected is { Count:1 } && !selected[0].IsDirectory && !selected[0].IsSymbolicLink && (!remoteSide || IsConnected && sftp!=null && FilePathConfirmed(false));
+            menu.IsEnabled=viewReady && selected is { Count:1 } && !selected[0].IsDirectory && !selected[0].IsSymbolicLink && (!remoteSide || canOperate && FilePathConfirmed(false));
         }
-        foreach(var (menu,isRemote) in linkFileMenus)menu.IsEnabled=IsConnected && sftp!=null && SelectedFiles(isRemote??RemoteSelected) is { Count:1 } selected && selected[0].IsSymbolicLink;
-        foreach(var (menu,isRemote) in deleteFileMenus)menu.IsEnabled=!fileDeletionOpen && sftp!=null && IsConnected && SelectedFiles(isRemote??RemoteSelected).Count>0;
+        foreach(var (menu,isRemote) in linkFileMenus)menu.IsEnabled=canOperate && SelectedFiles(isRemote??RemoteSelected) is { Count:1 } selected && selected[0].IsSymbolicLink;
+        foreach(var (menu,isRemote) in deleteFileMenus)menu.IsEnabled=!fileDeletionOpen && canOperate && SelectedFiles(isRemote??RemoteSelected).Count>0;
+        foreach(var (item,isRemote,kind) in fileCopyMenus) { var side=isRemote??RemoteSelected; item.IsEnabled=CanCopyFileText(side,kind,side?remote.Count:local.Count); }
     }
     private Task UploadFilesAsync(IReadOnlyList<FileEntry> entries)
     {

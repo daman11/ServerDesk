@@ -2,6 +2,8 @@
 
 ## Unreleased
 
+- Security review: mask reflected HTTP Basic Auth and form credentials, including short secrets and escaped JSON values; preserve sensitive JSON field detection and use one-pass literal masking with a fail-closed time limit. Add local privacy/pentest regression cases and SSH host-key rejection probes; document data collection and OS-vault limits.
+
 ## 0.43.0 — Public Beta — 2026-10-19
 
 - Save profile identity changes with a new local credential binding in the same database transaction, then retire old secrets. Failed writes preserve the original profile/password; unavailable cleanup cannot expose an old password to a new destination. Clear bindings on duplicate/import/export and reject stale editor saves.

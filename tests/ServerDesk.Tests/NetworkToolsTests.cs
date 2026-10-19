@@ -39,6 +39,20 @@ public sealed class NetworkToolsTests : IDisposable
     { var request=new NetworkRequest { Tool=NetworkToolKind.Http,Target="https://example.test/secret-path?token=private-token",Headers="Authorization: Bearer private-token",Body="private-password",Query="password=private-password",Authentication="Bearer",Username="private-user" }; var json=JsonSerializer.Serialize(NetworkToolsStore.SafeHistory(request)); Assert.DoesNotContain("private",json); Assert.DoesNotContain("secret-path",json); Assert.Contains("https://example.test",json); }
     [Fact] public void Redaction_masks_known_secrets_json_tokens_and_passwords()
     { var text=NetworkToolsService.Redact("{\"access_token\":\"unknown\",\"nested\":{\"password\":\"hidden\"},\"echo\":\"known-password\",\"data\":123}",new(Password:"known-password")); Assert.DoesNotContain("unknown",text); Assert.DoesNotContain("hidden",text); Assert.DoesNotContain("known-password",text); Assert.Contains("123",text); }
+    [Theory][InlineData("Z")][InlineData("xy")][InlineData("Q7R")]
+    public void Even_short_known_secrets_are_masked(string secret)
+    { Assert.Equal("echo=[redacted]",NetworkToolsService.Redact("echo="+secret,new(Password:secret))); }
+    [Fact] public void Redaction_preserves_sensitive_field_detection_and_handles_json_escapes()
+    {
+        var input="{\"password\":\"unknown-canary\",\"echo\":\"pass\",\"escaped\":\"line\\nsecret\"}";
+        var result=NetworkToolsService.Redact(input,new(Password:"pass",Token:"line\nsecret"));
+        using var json=JsonDocument.Parse(result);
+        Assert.Equal("[redacted]",json.RootElement.GetProperty("password").GetString());
+        Assert.Equal("[redacted]",json.RootElement.GetProperty("echo").GetString());
+        Assert.Equal("[redacted]",json.RootElement.GetProperty("escaped").GetString());
+    }
+    [Fact] public void Redaction_does_not_redact_its_own_replacement_markers()
+    { Assert.Equal("[redacted] [redacted]",NetworkToolsService.Redact("red sentinel",new(Password:"sentinel",Token:"red"))); }
     [Fact] public async Task History_and_collections_have_separate_safe_storage_and_deletion()
     {
         var repo=new ProfileRepository(new AppPaths(root)); await repo.InitializeAsync(); var credentials=new MemoryCredentials(); var store=new NetworkToolsStore(repo,credentials);

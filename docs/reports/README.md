@@ -1,5 +1,7 @@
 # Verification and historical reviews
 
+Security/privacy: [Local penetration tests, credential canaries and data-flow review, 2026-10-19](security-pentest-2026-10-19.md).
+
 Data/session recovery: [0.43.0 profile/vault consistency, migration and silent-link recovery](release-verification-0.43.0.md).
 
 SSH diagnostics: [Connection failure reasons and safe protocol/network details, 2026-10-18](ssh-errors-2026-10-18.md).
@@ -12,7 +14,7 @@ Current command module: [System profile layout, 2026-10-17](command-profile-layo
 
 Workspace panels: [Three/four panels and preferences, 2026-10-16](four-panel-workspace-2026-10-16.md).
 
-Current release: [0.42.0 verification](release-verification-0.42.0.md). Imported Git baseline: [0.31.1 verification](release-verification-0.31.1.md).
+Current release: [0.43.0 verification](release-verification-0.43.0.md). Imported Git baseline: [0.31.1 verification](release-verification-0.31.1.md).
 Application information: [About dialog, offline MIT license and build details, 2026-10-17](about-dialog-2026-10-17.md).
 Saved connection deletion: [0.40.0 missing credential directory, durable deletion and failure diagnostics, 2026-10-18](profile-deletion-2026-10-18.md).
 Local diagnostics: [Settings log preview, search and full-copy export, 2026-10-18](application-logs-2026-10-18.md).

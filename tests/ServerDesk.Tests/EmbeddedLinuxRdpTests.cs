@@ -52,13 +52,14 @@ public sealed class EmbeddedLinuxRdpTests
         if(OperatingSystem.IsWindows())
         {
             executable=Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.System),"WindowsPowerShell","v1.0","powershell.exe");
-            var script="[Console]::InputEncoding=[Text.UTF8Encoding]::new($false); $value=[Console]::ReadLine(); $hash=[BitConverter]::ToString([Security.Cryptography.SHA256]::Create().ComputeHash([Text.Encoding]::UTF8.GetBytes($value))).Replace('-','').ToLowerInvariant(); [IO.File]::WriteAllLines('"+result.Replace("'","''")+"',@($hash,$env:XDG_CONFIG_HOME)); "+(stop?"Start-Sleep -Seconds 30":"[Console]::Out.Write(('x'*3145728)); [Console]::Error.Write(('y'*3145728)); exit 7");
+            var literal=result.Replace("'","''");
+            var script="[Console]::InputEncoding=[Text.UTF8Encoding]::new($false); $value=[Console]::ReadLine(); $hash=[BitConverter]::ToString([Security.Cryptography.SHA256]::Create().ComputeHash([Text.Encoding]::UTF8.GetBytes($value))).Replace('-','').ToLowerInvariant(); [IO.File]::WriteAllLines('"+literal+".tmp',@($hash,$env:XDG_CONFIG_HOME)); [IO.File]::Move('"+literal+".tmp','"+literal+"'); "+(stop?"Start-Sleep -Seconds 30":"[Console]::Out.Write(('x'*3145728)); [Console]::Error.Write(('y'*3145728)); exit 7");
             args=["-NoProfile","-NonInteractive","-EncodedCommand",Convert.ToBase64String(Encoding.Unicode.GetBytes(script))];
         }
         else
         {
             executable="/bin/bash";
-            args=["-c","IFS= read -r value; printf '%s' \"$value\" | sha256sum | cut -d' ' -f1 > \"$1\"; printf '%s\\n' \"$XDG_CONFIG_HOME\" >> \"$1\"; "+(stop?"sleep 30":"head -c 3145728 /dev/zero; head -c 3145728 /dev/zero >&2; exit 7"),"fixture",result];
+            args=["-c","IFS= read -r value; printf '%s' \"$value\" | sha256sum | cut -d' ' -f1 > \"$1.tmp\"; printf '%s\\n' \"$XDG_CONFIG_HOME\" >> \"$1.tmp\"; mv -- \"$1.tmp\" \"$1\"; "+(stop?"sleep 30":"head -c 3145728 /dev/zero; head -c 3145728 /dev/zero >&2; exit 7"),"fixture",result];
         }
         try
         {

@@ -9,31 +9,53 @@ using System.Security.Cryptography.X509Certificates;
 using System.Text;
 using System.Text.Json;
 using System.Text.Json.Nodes;
+using System.Text.RegularExpressions;
 using ServerDesk.Core;
 
 namespace ServerDesk.Infrastructure;
 public sealed partial class NetworkToolsService
 {
-    public static string Redact(string text,NetworkSecrets secrets)
+    public static string Redact(string text,NetworkSecrets secrets)=>RedactKnown(text,KnownSecrets(secrets));
+    private static IEnumerable<string> KnownSecrets(NetworkSecrets secrets)=>new[]{secrets.Password,secrets.Token,secrets.AuthPassword,secrets.PrivacyPassword,secrets.Community=="public"?"":secrets.Community};
+    private static string RedactKnown(string text,IEnumerable<string> secrets)
     {
-        foreach(var value in new[]{secrets.Password,secrets.Token,secrets.AuthPassword,secrets.PrivacyPassword,secrets.Community=="public"?"":secrets.Community}.Where(value=>value.Length>=4))text=text.Replace(value,"[redacted]",StringComparison.Ordinal);
+        var values=secrets.Where(value=>!string.IsNullOrEmpty(value)).Distinct(StringComparer.Ordinal).OrderByDescending(value=>value.Length).ToArray();
+        var pattern=values.Length==0?null:string.Join("|",values.Select(Regex.Escape));
+        // Instance-only: the static Regex cache must not retain passwords.
+        var matcher=pattern==null?null:new Regex(pattern,RegexOptions.CultureInvariant,TimeSpan.FromMilliseconds(250));
+        string Mask(string value)
+        {
+            if(matcher==null)return value;
+            // One replacement pass: a short secret must not rematch the marker
+            // inserted for another secret. Expensive input fails closed.
+            try { return matcher.Replace(value,_=>"[redacted]"); }
+            catch(RegexMatchTimeoutException) { return "[redacted]"; }
+        }
         try
         {
             var node=JsonNode.Parse(text,new JsonNodeOptions(),new JsonDocumentOptions { MaxDepth=64 });
-            void Visit(JsonNode? item)
+            JsonNode? Visit(JsonNode? item)
             {
-                if(item is JsonObject obj)foreach(var key in obj.Select(p=>p.Key).ToArray()) { if(Sensitive(key))obj[key]="[redacted]"; else Visit(obj[key]); }
-                else if(item is JsonArray array)foreach(var child in array)Visit(child);
+                if(item is JsonObject obj)foreach(var key in obj.Select(p=>p.Key).ToArray())obj[key]=Sensitive(key)?JsonValue.Create("[redacted]"):Visit(obj[key]);
+                else if(item is JsonArray array)for(var i=0;i<array.Count;i++)array[i]=Visit(array[i]);
+                else if(item is JsonValue value)
+                {
+                    if(value.TryGetValue<string>(out var content))return JsonValue.Create(Mask(content));
+                    var raw=value.ToJsonString(); var masked=Mask(raw); if(masked!=raw)return JsonValue.Create(masked);
+                }
+                return item;
             }
-            Visit(node); return node?.ToJsonString(new JsonSerializerOptions { WriteIndented=true,Encoder=System.Text.Encodings.Web.JavaScriptEncoder.UnsafeRelaxedJsonEscaping })??text;
+            return Visit(node)?.ToJsonString(new JsonSerializerOptions { WriteIndented=true,Encoder=System.Text.Encodings.Web.JavaScriptEncoder.UnsafeRelaxedJsonEscaping })??Mask(text);
         }
-        catch(JsonException) { return text; }
+        catch(JsonException) { return Mask(text); }
     }
     private static bool Sensitive(string name)
     { name=name.Replace("_","").Replace("-",""); return name.Contains("token",StringComparison.OrdinalIgnoreCase) || name.Contains("password",StringComparison.OrdinalIgnoreCase) || name.Contains("secret",StringComparison.OrdinalIgnoreCase) || name.Contains("apikey",StringComparison.OrdinalIgnoreCase) || name.Equals("Authorization",StringComparison.OrdinalIgnoreCase) || name.Contains("cookie",StringComparison.OrdinalIgnoreCase) || name.Equals("key",StringComparison.OrdinalIgnoreCase) || name.Equals("sig",StringComparison.OrdinalIgnoreCase); }
     private static string RedactHttp(string text,NetworkRequest request,NetworkSecrets secrets)
     {
         var values=Pairs(request.Headers,':').Where(pair=>Sensitive(pair.Key)).SelectMany(pair=>new[]{pair.Value,pair.Key.Equals("Authorization",StringComparison.OrdinalIgnoreCase)?pair.Value.Split(' ').Last():""}).Concat(Pairs(request.Query,'=').Where(pair=>Sensitive(pair.Key)).Select(pair=>pair.Value)).ToList();
+        if(request.Authentication=="Basic")values.Add(Convert.ToBase64String(Encoding.UTF8.GetBytes(request.Username+":"+secrets.Password)));
+        if(request.ContentType=="application/x-www-form-urlencoded")values.AddRange(Pairs(request.Body,'=').Where(pair=>Sensitive(pair.Key)).Select(pair=>pair.Value));
         var query=new Uri(request.Target).Query.TrimStart('?');
         foreach(var item in query.Split('&',StringSplitOptions.RemoveEmptyEntries)) { var pair=item.Split('=',2); if(pair.Length==2 && Sensitive(Uri.UnescapeDataString(pair[0])))values.Add(Uri.UnescapeDataString(pair[1])); }
         try
@@ -44,9 +66,7 @@ public sealed partial class NetworkToolsService
             Visit(body.RootElement);
         }
         catch(JsonException) { }
-        text=Redact(text,secrets);
-        foreach(var value in values.Where(value=>value.Length>=4).Distinct().Take(64).OrderByDescending(value=>value.Length))text=text.Replace(value,"[redacted]",StringComparison.Ordinal);
-        return text;
+        return RedactKnown(text,KnownSecrets(secrets).Concat(values));
     }
     private static async Task<NetworkResult> HttpAsync(NetworkRequest r,NetworkSecrets secrets,IProgress<NetworkUpdate> output,CancellationToken ct)
     {
@@ -95,7 +115,7 @@ public sealed partial class NetworkToolsService
             if(!string.IsNullOrWhiteSpace(charset)) { try { encoding=Encoding.GetEncoding(charset); } catch(ArgumentException) { } }
             var content=RedactHttp(encoding.GetString(buffer.ToArray()),r,secrets); headers=RedactHttp(headers,r,secrets);
             var summary=L.F($"HTTP {status} · {Number(watch.Elapsed.TotalMilliseconds)} ms · {buffer.Length} B")+(truncated?L.T(" · odpowiedź skrócona do 2 MiB"):"");
-            output.Report(new(new("http",new[]{status.ToString(),Number(watch.Elapsed.TotalMilliseconds),buffer.Length.ToString(),response.Content.Headers.ContentType?.ToString()??"",truncated?L.T("Skrócona"):""},status>=400),1,1,summary));
+            output.Report(new(new("http",new[]{status.ToString(),Number(watch.Elapsed.TotalMilliseconds),buffer.Length.ToString(),RedactHttp(response.Content.Headers.ContentType?.ToString()??"",r,secrets),truncated?L.T("Skrócona"):""},status>=400),1,1,summary));
             return new(summary,content,headers);
         }
         throw new InvalidDataException(L.T("Przekroczono limit przekierowań HTTP."));

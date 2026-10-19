@@ -85,6 +85,22 @@ public sealed class NetworkServicesTests
         await using var server=new HttpFixture(_=>new("{\"message\":\"żółć\"}",Charset:"utf-16"));
         var result=await new NetworkToolsService().RunAsync(new() { Tool=NetworkToolKind.Http,Target=server.Url,TimeoutMs=5000 },new(),new Capture(),CancellationToken.None); Assert.Contains("żółć",result.Body);
     }
+    [Fact] public async Task Http_reflected_basic_authorization_is_masked_in_body_and_headers()
+    {
+        const string password="pentest-basic-password";
+        var encoded=Convert.ToBase64String(Encoding.UTF8.GetBytes("fixture:"+password));
+        await using var server=new HttpFixture(input=>new("echo="+input.Headers["Authorization"],Headers:"X-Diagnostic: "+input.Headers["Authorization"]+"\r\n"));
+        var result=await new NetworkToolsService().RunAsync(new() { Tool=NetworkToolKind.Http,Target=server.Url,Authentication="Basic",Username="fixture",TimeoutMs=5000 },new(Password:password),new Capture(),CancellationToken.None);
+        Assert.DoesNotContain(encoded,result.Body); Assert.DoesNotContain(encoded,result.Headers);
+        Assert.Contains("[redacted]",result.Body);
+    }
+    [Fact] public async Task Http_reflected_form_password_is_masked()
+    {
+        const string secret="pentest-form-password";
+        await using var server=new HttpFixture(_=>new("echo="+secret));
+        var result=await new NetworkToolsService().RunAsync(new() { Tool=NetworkToolKind.Http,Target=server.Url,Method="POST",ContentType="application/x-www-form-urlencoded",Body="password="+secret,TimeoutMs=5000 },new(),new Capture(),CancellationToken.None);
+        Assert.DoesNotContain(secret,result.Body); Assert.Contains("[redacted]",result.Body);
+    }
     [Fact] public async Task Http_limits_response_and_timeout_is_cancellable()
     {
         await using var server=new HttpFixture(_=>new(new string('x',2*1024*1024+100)));

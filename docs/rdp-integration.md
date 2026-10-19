@@ -32,6 +32,16 @@ Natywny cel OLE należy wyłącznie do HWND tej kontrolki. Po skanowaniu plików
 
 Wcześniejsze rzeczywiste testy Windows obejmowały lokalne konto, pulpit, split, dokowanie, resize, reconnect, zamknięcie, tekst/obraz/pliki schowka i przerwanie transportu. Nie oznacza to pełnej akceptacji AD/Microsoft ani wszystkich urządzeń: [wykonane i pozostałe próby](rdp-test-matrix.md). Komponent Windows pochodzi z systemu i nie jest redystrybuowany.
 
+### Pliki z RDP na komputer lokalny — krok roboczy
+
+W osadzonym RDP Windows włącz schowek, zaznacz pliki lub foldery w zdalnym Eksploratorze i naciśnij **Ctrl+C**. Następnie wybierz **Pliki z RDP**, sprawdź nazwy na liście i przeciągnij dolny uchwyt do lokalnego Eksploratora albo na pulpit. Alternatywnie zwykłe **Ctrl+V** w lokalnym Eksploratorze korzysta z tego samego schowka. To mostek „skopiuj, potem przeciągnij”; nie przechwytuje jednym ciągłym gestem przeciągania rozpoczętego wewnątrz zdalnego Eksploratora.
+
+Okno pokazuje aktualny **wspólny schowek Windows**, który może pochodzić z innej karty lub aplikacji; nazwy trzeba sprawdzić przed zrzutem. Zmiana schowka lub rozłączenie sesji unieważnia uchwyt — skopiuj pliki ponownie i wybierz **Odśwież**. Eksport jest Copy-only, nie wysyła serwerowi informacji o przeniesieniu/usunięciu i nie zapisuje plików w ukrytym katalogu tymczasowym ServerDesk. Docelowy program obsługuje zapis, konflikty i postęp. Komunikat o przekazaniu zrzutu nie potwierdza zakończenia kopiowania.
+
+Przekazywane są wyłącznie wirtualne pliki `FileGroupDescriptorW`/`FileContents`, ze znanym rozmiarem. Odrzucane są ścieżki absolutne, `..`, ADS, zastrzeżone nazwy Windows, kolizje nazw i dowiązania. Limit: 256 nazw głównych, 10 000 wpisów, 64 poziomy, łącznie poniżej 2 GiB. Strumienie są tylko do odczytu, ograniczone rozmiarem, z wykrywaniem przerwania/zmiany długości. Polityka serwera może blokować pliki w schowku; nie obchodzimy jej. Funkcja nie jest zaimplementowana dla Linux FreeRDP.
+
+[Bieżące testy lokalne i otwarta akceptacja](reports/rdp-clipboard-export-2026-10-19.md) nie zastępują rzeczywistego RDP, myszy/AltGr/IME ani prób utraty sieci. Na prośbę maintenera VM pozostają w tym etapie wyłączone.
+
 ## Źródła i dalszy zakres
 
 [Avalonia NativeControlHost](https://docs.avaloniaui.net/docs/app-development/native-interop), [FreeRDP X11 parent window](https://github.com/FreeRDP/FreeRDP/blob/3.16.0/client/X11/xf_window.c), [FreeRDP argumenty](https://github.com/FreeRDP/FreeRDP/blob/3.16.0/client/common/cmdline.c), [FreeRDP certyfikaty](https://github.com/FreeRDP/FreeRDP/blob/3.16.0/libfreerdp/crypto/tls.c), [AuthenticationLevel Windows](https://learn.microsoft.com/en-us/windows/win32/termserv/imsrdpclientadvancedsettings4-authenticationlevel).

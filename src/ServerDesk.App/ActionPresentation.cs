@@ -74,7 +74,7 @@ internal static partial class DeskIcons
         "Monitoring" or "Server Info"=>"chart-no-axes-combined",
         "Opcje" or "Menu" or "Operacje"=>"more",
         "Wyślij" or "Eksport konfiguracji" or "Eksport komend JSON" or "Eksportuj wyniki"=>"upload",
-        "Pobierz" or "Import konfiguracji" or "Import komend JSON"=>"download",
+        "Pobierz" or "Import konfiguracji" or "Import komend JSON" or "Pliki z RDP"=>"download",
         "Anuluj" or "Zamknij" or "Anuluj transfery" or "Anuluj łączenie" or "Zamknij sesję"=>"close",
         "Zapisz" or "Zapisz kolekcję" or "Zapisz OID" or "Zapisz urządzenie WoL"=>"save",
         "Potwierdź" or "OK" or "Zastosuj"=>"check",

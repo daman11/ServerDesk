@@ -39,7 +39,8 @@ internal sealed partial class WindowsRdpHost : NativeControlHost, IDisposable
     }
     private void ScalingChanged(object? sender,EventArgs e) { TryUpdateNativeControlPosition(); ViewportChanged?.Invoke(); }
     internal bool IsRunning { get; private set; }
-    internal bool IsLoggedIn { get; private set; }
+    private volatile bool isLoggedIn;
+    internal bool IsLoggedIn { get=>isLoggedIn; private set=>isLoggedIn=value; }
     internal bool IsReconnecting { get; private set; }
     internal (int Width,int Height) RemoteDesktopSize { get; private set; }
     internal nint WindowHandle=>window;

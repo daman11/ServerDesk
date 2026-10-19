@@ -2,6 +2,8 @@
 
 ## Uzupełnienie 19 października 2026 — krok roboczy po 0.43.0
 
+Kolejny etap dodaje Windows **Pliki z RDP**: Ctrl+C w zdalnym Eksploratorze → podgląd wspólnego schowka → przeciągnięcie uchwytu do lokalnego folderu. To mostek przez schowek, nie ciągły gest wychodzący ze zdalnego Eksploratora. [Raport lokalny](reports/rdp-clipboard-export-2026-10-19.md). Maintener ograniczył ten etap do implementacji i testów lokalnych; C08, pełne C06/C12, fizyczne AltGr/IME, Linux/mysz oraz sieć pozostają do wykonania z działającymi VM. Nie oznaczać ich jako LIVE na podstawie lokalnego COM ani wyniku konsoli VMware.
+
 Nowe RDP domyślnie otwiera się w ServerDesk. Windows obsługuje bezpośredni zrzut lokalnych plików na osadzony pulpit przez schowek i pojedyncze zdalne wklejenie. [Bieżący raport](reports/rdp-desktop-drop-2026-10-19.md) rozróżnia gest użytkownika, odbiór prawdziwych strumieni RDP i testy lokalne.
 
 - LIVE: Windows 11, lokalne konto, 100%; osiem kolejnych zrzutów pliku i folderu do własnego odbiornika RDP, porównanie bajtów i SHA-256. USER + LIVE: użytkownik przyjął gest pliku na zdalnym polu; odbiornik potwierdził plik.

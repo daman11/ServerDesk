@@ -67,6 +67,7 @@ internal sealed partial class SessionPane
         fullscreen.IsEnabled=clipboard.IsEnabled=!active && !connecting && !stoppingRdp;
         fullscreen.IsVisible=!UseEmbeddedRdp;
         if(rdpFileDrop!=null) { rdpFileDrop.IsVisible=UseEmbeddedRdp; rdpFileDrop.IsEnabled=CanPrepareRdpFiles; }
+        if(rdpReceive!=null) {rdpReceive.IsVisible=UseEmbeddedRdp;rdpReceive.IsEnabled=CanPrepareRdpFiles;}
         if(rdpExternal!=null) { rdpExternal.IsVisible=UseEmbeddedRdp && !UseLinuxEmbeddedRdp && rdpHostUnavailable; rdpExternal.IsEnabled=!active && !connecting && !IsBusy && !stoppingRdp; }
         if(rdpShow!=null)
         {

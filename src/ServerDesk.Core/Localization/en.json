@@ -1747,5 +1747,21 @@
   "Brak tematów pomocy": "No help topics found",
   "Skróć zapytanie lub wyczyść wyszukiwanie, aby zobaczyć wszystkie tematy.": "Shorten your query or clear search to see all topics.",
   "Skopiowano temat pomocy.": "Help topic copied.",
-  "Nie udało się skopiować tematu. Zaznacz tekst i skopiuj go ręcznie.": "Could not copy the topic. Select the text and copy it manually."
+  "Nie udało się skopiować tematu. Zaznacz tekst i skopiuj go ręcznie.": "Could not copy the topic. Select the text and copy it manually.",
+  "Schowek nie zawiera bezpiecznej listy plików RDP. Skopiuj mniejszy zestaw zwykłych plików i spróbuj ponownie.": "The clipboard does not contain a safe RDP file list. Copy a smaller selection of regular files and try again.",
+  "Skopiuj pliki w zdalnym Eksploratorze przez Ctrl+C, a następnie wybierz Odśwież.": "Copy files in remote Explorer with Ctrl+C, then choose Refresh.",
+  "Schowek lub sesja zmieniły się. Skopiuj pliki ponownie i odśwież listę.": "The clipboard or session changed. Copy the files again and refresh the list.",
+  "Przesyłanie pliku RDP zostało przerwane lub plik zmienił rozmiar. Skopiuj go ponownie.": "The RDP file transfer was interrupted or the file changed size. Copy it again.",
+  "Pliki z RDP na ten komputer": "Files from RDP to this computer",
+  "Pliki z RDP": "Files from RDP",
+  "Przeciągnij pliki do lokalnego folderu": "Drag files to a local folder",
+  "1. Zaznacz pliki lub foldery w zdalnym Eksploratorze i naciśnij Ctrl+C.\n2. Otwórz to okno i sprawdź listę.\n3. Przeciągnij poniższy uchwyt do folderu lub na pulpit tego komputera.": "1. Select files or folders in remote Explorer and press Ctrl+C.\n2. Open this window and check the list.\n3. Drag the handle below to a folder or the desktop on this computer.",
+  "Lista pochodzi ze wspólnego schowka Windows. Sprawdź nazwy, zwłaszcza przy kilku sesjach RDP. Kopiowanie nie usuwa plików z serwera.": "This list comes from the shared Windows clipboard. Check the names, especially with multiple RDP sessions. Copying leaves the files on the server.",
+  "{0} elementów · {1} B · gotowe do przeciągnięcia": "{0} entries · {1} B · ready to drag",
+  "Nie można odczytać plików ze schowka. Skopiuj je ponownie w RDP i wybierz Odśwież.": "Cannot read clipboard files. Copy them again in RDP and choose Refresh.",
+  "Przekazano zrzut do systemu. Sprawdź postęp i wynik kopiowania w lokalnym Eksploratorze.": "The drop was submitted to Windows. Check the copy progress and result in local Explorer.",
+  "Przeciąganie anulowane. Pliki na serwerze pozostają bez zmian.": "Drag cancelled. The files on the server remain unchanged.",
+  "Nie udało się przekazać plików. Sprawdź sesję, skopiuj pliki ponownie i odśwież listę.": "Could not pass the files to the destination. Check the session, copy the files again and refresh the list.",
+  "Przeciągnij lewym przyciskiem myszy. Możesz też wkleić pliki w lokalnym Eksploratorze przez Ctrl+V.": "Drag with the left mouse button. You can also paste the files in local Explorer with Ctrl+V.",
+  "Skopiuj pliki w RDP przez Ctrl+C. Otwórz listę i przeciągnij je do lokalnego folderu.": "Copy files in RDP with Ctrl+C. Open the list and drag them to a local folder."
 }

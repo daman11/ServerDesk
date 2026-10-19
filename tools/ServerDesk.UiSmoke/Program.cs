@@ -47,6 +47,13 @@ if(args.Contains("--native-rdp"))
     var ui=new Thread(()=> { try { AppBuilder.Configure<App>().UsePlatformDetect().WithInterFont().SetupWithoutStarting(); NativeRdpChecks.Run(root,args); } catch(Exception ex) { error=ex; } });
     ui.SetApartmentState(ApartmentState.STA); ui.Start(); ui.Join(); if(error!=null)throw error; return;
 }
+if(args.Contains("--native-rdp-export-demo"))
+{
+    if(!OperatingSystem.IsWindows())throw new PlatformNotSupportedException();
+    Exception? error=null;
+    var ui=new Thread(()=> {try {AppBuilder.Configure<App>().UsePlatformDetect().WithInterFont().SetupWithoutStarting();RdpClipboardExportChecks.Interactive(root);}catch(Exception ex){error=ex;}});
+    ui.SetApartmentState(ApartmentState.STA);ui.Start();ui.Join();if(error!=null)throw error;return;
+}
 if(args.Contains("--published-startup")) { PublishedStartupChecks.Run(root,args[Array.IndexOf(args,"--published-startup")+1]).GetAwaiter().GetResult(); return; }
 if(args.Contains("--published-settings-reset")) { PublishedSettingsResetChecks.Run(root,args[Array.IndexOf(args,"--published-settings-reset")+1]).GetAwaiter().GetResult(); return; }
 if(args.Contains("--published-restart")) { RestartProcessChecks.Run(root,args[Array.IndexOf(args,"--published-restart")+1]).GetAwaiter().GetResult(); return; }
@@ -149,6 +156,7 @@ if(args.Contains("--file-deletion-network")) { var index=Array.IndexOf(args,"--f
 if(args.Contains("--sftp-batch-network")) { var index=Array.IndexOf(args,"--sftp-batch-network"); SftpBatchChecks.Network(window,repository,root,args[index+1],args[index+2]); window.Close(); RedesignChecks.Frames(); return; }
 if(args.Contains("--transfer-overview-network")) { var index=Array.IndexOf(args,"--transfer-overview-network"); TransferOverviewChecks.Network(window,repository,root,args[index+1],args[index+2]); window.Close(); RedesignChecks.Frames(); return; }
 if(args.Contains("--rdp-drop")) { RdpPaneChecks.FileDrop(window,repository,root); window.Close(); RedesignChecks.Frames(); return; }
+if(args.Contains("--rdp-export")) { RdpClipboardExportChecks.Layout(window,root); window.Close(); RedesignChecks.Frames(); return; }
 if(args.Contains("--rdp-pane")) { RdpPaneChecks.Run(window,repository,root); if(args.Length>2)RdpPaneChecks.Endpoint(window,repository,root,args[1]); window.Close(); RedesignChecks.Frames(); return; }
 if(args.Contains("--serial-pane")) { SerialPaneChecks.Run(window,repository,root,args[Array.IndexOf(args,"--serial-pane")+1]); return; }
 if(args.Contains("--protocols")) { ProtocolChecks.Run(window,repository,root); return; }

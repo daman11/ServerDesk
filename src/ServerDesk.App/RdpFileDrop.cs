@@ -13,6 +13,7 @@ namespace ServerDesk.App;
 internal sealed partial class SessionPane
 {
     private Border? rdpFileDrop;
+    private Button? rdpReceive;
     private bool preparingRdpFiles;
     private readonly TextBlock rdpFilesStatus=DesignSystem.Label(L.T("Pliki → schowek RDP"),true,12);
     private void ResetRdpFileStatus() { rdpFilesStatus.Text=L.T("Pliki → schowek RDP"); ToolTip.SetTip(rdpFilesStatus,null); }
@@ -48,6 +49,17 @@ internal sealed partial class SessionPane
             catch(Exception ex) { _=owner.Safe(()=>Task.FromException(ex)); }
         });
         actions.Children.Add(rdpFileDrop);
+        rdpReceive=Button("Pliki z RDP",ReceiveRdpFilesAsync);rdpReceive.Content=DeskIcons.Labelled("download",L.T("Pliki z RDP"));
+        ToolTip.SetTip(rdpReceive,L.T("Skopiuj pliki w RDP przez Ctrl+C. Otwórz listę i przeciągnij je do lokalnego folderu."));actions.Children.Add(rdpReceive);
+    }
+    private async Task ReceiveRdpFilesAsync()
+    {
+        if(!CanPrepareRdpFiles || embeddedRdp==null)return;
+        var host=embeddedRdp;var root=TopLevel.GetTopLevel(this) as Window??owner;
+        var token=connectionLifetime.Token;
+        // Shell may read IStream on a COM worker. This guard must not access
+        // Avalonia controls/properties from that apartment.
+        await RdpClipboardExportDialog.ShowAsync(root,()=>ReferenceEquals(embeddedRdp,host) && host.IsLoggedIn && !token.IsCancellationRequested,token);
     }
     private bool CanPrepareRdpFiles=>UseEmbeddedRdp && IsRdpLoggedIn && clipboard.IsChecked==true && !IsBusy && !preparingRdpFiles && !stoppingRdp;
     internal async Task DropFilesOnRdpAsync(WindowsRdpHost host,string[] paths,PixelPoint point)

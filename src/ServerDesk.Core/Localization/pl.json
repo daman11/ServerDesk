@@ -1747,5 +1747,21 @@
   "Brak tematów pomocy": "Brak tematów pomocy",
   "Skróć zapytanie lub wyczyść wyszukiwanie, aby zobaczyć wszystkie tematy.": "Skróć zapytanie lub wyczyść wyszukiwanie, aby zobaczyć wszystkie tematy.",
   "Skopiowano temat pomocy.": "Skopiowano temat pomocy.",
-  "Nie udało się skopiować tematu. Zaznacz tekst i skopiuj go ręcznie.": "Nie udało się skopiować tematu. Zaznacz tekst i skopiuj go ręcznie."
+  "Nie udało się skopiować tematu. Zaznacz tekst i skopiuj go ręcznie.": "Nie udało się skopiować tematu. Zaznacz tekst i skopiuj go ręcznie.",
+  "Schowek nie zawiera bezpiecznej listy plików RDP. Skopiuj mniejszy zestaw zwykłych plików i spróbuj ponownie.": "Schowek nie zawiera bezpiecznej listy plików RDP. Skopiuj mniejszy zestaw zwykłych plików i spróbuj ponownie.",
+  "Skopiuj pliki w zdalnym Eksploratorze przez Ctrl+C, a następnie wybierz Odśwież.": "Skopiuj pliki w zdalnym Eksploratorze przez Ctrl+C, a następnie wybierz Odśwież.",
+  "Schowek lub sesja zmieniły się. Skopiuj pliki ponownie i odśwież listę.": "Schowek lub sesja zmieniły się. Skopiuj pliki ponownie i odśwież listę.",
+  "Przesyłanie pliku RDP zostało przerwane lub plik zmienił rozmiar. Skopiuj go ponownie.": "Przesyłanie pliku RDP zostało przerwane lub plik zmienił rozmiar. Skopiuj go ponownie.",
+  "Pliki z RDP na ten komputer": "Pliki z RDP na ten komputer",
+  "Pliki z RDP": "Pliki z RDP",
+  "Przeciągnij pliki do lokalnego folderu": "Przeciągnij pliki do lokalnego folderu",
+  "1. Zaznacz pliki lub foldery w zdalnym Eksploratorze i naciśnij Ctrl+C.\n2. Otwórz to okno i sprawdź listę.\n3. Przeciągnij poniższy uchwyt do folderu lub na pulpit tego komputera.": "1. Zaznacz pliki lub foldery w zdalnym Eksploratorze i naciśnij Ctrl+C.\n2. Otwórz to okno i sprawdź listę.\n3. Przeciągnij poniższy uchwyt do folderu lub na pulpit tego komputera.",
+  "Lista pochodzi ze wspólnego schowka Windows. Sprawdź nazwy, zwłaszcza przy kilku sesjach RDP. Kopiowanie nie usuwa plików z serwera.": "Lista pochodzi ze wspólnego schowka Windows. Sprawdź nazwy, zwłaszcza przy kilku sesjach RDP. Kopiowanie nie usuwa plików z serwera.",
+  "{0} elementów · {1} B · gotowe do przeciągnięcia": "{0} elementów · {1} B · gotowe do przeciągnięcia",
+  "Nie można odczytać plików ze schowka. Skopiuj je ponownie w RDP i wybierz Odśwież.": "Nie można odczytać plików ze schowka. Skopiuj je ponownie w RDP i wybierz Odśwież.",
+  "Przekazano zrzut do systemu. Sprawdź postęp i wynik kopiowania w lokalnym Eksploratorze.": "Przekazano zrzut do systemu. Sprawdź postęp i wynik kopiowania w lokalnym Eksploratorze.",
+  "Przeciąganie anulowane. Pliki na serwerze pozostają bez zmian.": "Przeciąganie anulowane. Pliki na serwerze pozostają bez zmian.",
+  "Nie udało się przekazać plików. Sprawdź sesję, skopiuj pliki ponownie i odśwież listę.": "Nie udało się przekazać plików. Sprawdź sesję, skopiuj pliki ponownie i odśwież listę.",
+  "Przeciągnij lewym przyciskiem myszy. Możesz też wkleić pliki w lokalnym Eksploratorze przez Ctrl+V.": "Przeciągnij lewym przyciskiem myszy. Możesz też wkleić pliki w lokalnym Eksploratorze przez Ctrl+V.",
+  "Skopiuj pliki w RDP przez Ctrl+C. Otwórz listę i przeciągnij je do lokalnego folderu.": "Skopiuj pliki w RDP przez Ctrl+C. Otwórz listę i przeciągnij je do lokalnego folderu."
 }

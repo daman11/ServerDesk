@@ -35,6 +35,7 @@ internal static class NativeRdpChecks
                     host.Ready.GetAwaiter().GetResult(); handle=host.WindowHandle;
                     if(!host.FileDropRegistered)throw new Exception("Native RDP file drop registration failed");
                     NativeRdpDropChecks.Run(handle);
+                    RdpClipboardExportChecks.Native(root);
                     Console.WriteLine("PASS native RDP control and OLE file drop created; version="+host.Version); window.Content=null;
                 }
                 else if(step==1)window.Content=host;

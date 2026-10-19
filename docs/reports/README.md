@@ -1,5 +1,7 @@
 # Verification and historical reviews
 
+RDP clipboard export: [Windows copy-then-drag bridge, local validation and deferred live acceptance, 2026-10-19](rdp-clipboard-export-2026-10-19.md).
+
 Windows RDP: [Default embedding, native desktop file drops, clipboard regression and remaining input limits, 2026-10-19](rdp-desktop-drop-2026-10-19.md).
 
 VMware acceptance: [Windows 11 / Ubuntu 26 MVP, native clipboard/vault and bounded protocol tests, 2026-10-19](vm-mvp-2026-10-19.md).

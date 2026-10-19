@@ -3,7 +3,7 @@ public enum RdpDisplayMode { External, Embedded }
 public enum RdpKeyboardMode { Local, Remote, Fullscreen }
 public sealed record RdpOptions
 {
-    public RdpDisplayMode DisplayMode { get; init; }
+    public RdpDisplayMode DisplayMode { get; init; }=RdpDisplayMode.Embedded;
     public int Width { get; init; }=1600;
     public int Height { get; init; }=900;
     public bool Fullscreen { get; init; }

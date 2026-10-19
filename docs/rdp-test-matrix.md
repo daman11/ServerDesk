@@ -1,4 +1,15 @@
-# Macierz RDP, klawiatury, schowka, D&D i DPI — 0.16.0
+# Macierz RDP, klawiatury, schowka, D&D i DPI
+
+## Uzupełnienie 19 października 2026 — krok roboczy po 0.43.0
+
+Nowe RDP domyślnie otwiera się w ServerDesk. Windows obsługuje bezpośredni zrzut lokalnych plików na osadzony pulpit przez schowek i pojedyncze zdalne wklejenie. [Bieżący raport](reports/rdp-desktop-drop-2026-10-19.md) rozróżnia gest użytkownika, odbiór prawdziwych strumieni RDP i testy lokalne.
+
+- LIVE: Windows 11, lokalne konto, 100%; osiem kolejnych zrzutów pliku i folderu do własnego odbiornika RDP, porównanie bajtów i SHA-256. USER + LIVE: użytkownik przyjął gest pliku na zdalnym polu; odbiornik potwierdził plik.
+- LIVE: dokładne porównanie tekstu Unicode oraz pikseli PNG w obu kierunkach przed i po serii zrzutów; przed każdą próbą odmienna zawartość docelowa.
+- AUTO/native: rejestracja/zwalnianie OLE, Unicode, Copy-only, anulowanie, niedostępna sesja, replay, błędne dane i wyjątki callbacków. AUTO/headless: strefa plików i marginesy przy 240/520/1100 px.
+- DO TESTU: pełne scenariusze Eksploratora (m.in. konflikty, anulowanie, duże pliki i utrata sieci), wszystkie formaty schowka, fizyczne AltGr i japoński IME **wewnątrz ServerDesk** oraz mieszane DPI. Wcześniejsze potwierdzenie AltGr/IME z 19 października dotyczyło konsoli VMware, więc nie zalicza RDP.
+
+## Historyczne wykonanie 0.16.0
 
 Stan: 14 października 2026. Testy rzeczywiste dotyczą osadzonego komponentu Microsoft RDP na Windows 11 i lokalnego konta na udostępnionym serwerze Windows. Dostępny ekran: 1920×1080, 100%. To nie jest potwierdzenie wszystkich systemów ani wszystkich kombinacji sprzętu.
 
@@ -51,7 +62,7 @@ K02/K03 potwierdził użytkownik po próbach wejścia syntetycznego. Narzędzie 
 |---|---|---|
 | D01 | Plik przeciągnięty gestem do strefy RDP → schowek z plikiem | LIVE: gest z systemowym formatem pliku zakończony prawidłowym komunikatem |
 | D02 | Folder przeciągnięty do strefy i potem Ctrl+V na serwerze | Transfer folderu LIVE przez tę samą procedurę przygotowania; sam gest folderu DO TESTU |
-| D03 | Plik upuszczony bezpośrednio na natywny pulpit | Niedostępne: użyć widocznej strefy „Pliki → schowek RDP” nad pulpitem |
+| D03 | Plik upuszczony bezpośrednio na natywny pulpit | Windows: wdrożone i sprawdzone we własnym odbiorniku 19.10.2026; szczegóły powyżej. Linux: niedostępne |
 | D04 | Drag przy schowku OFF, przed logowaniem i podczas reconnect | LIVE/AUTO: strefa wyłączona; brak przygotowania plików |
 | D05 | Zakładka między panelami; ta sama sesja/HWND, właściwa kolejność | Model i natywne dokowanie pokryte; pełny gest DO TESTU po przerwaniu Computer Use |
 | D06 | Klik krzyżyka karty, przycisku, pola tekstu lub separatora nie zaczyna drag | Poprawiona implementacja; gesty graniczne DO TESTU |

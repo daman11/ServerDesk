@@ -10,7 +10,7 @@ namespace ServerDesk.App;
 
 // The control and its event subscriptions belong to the session, not to a tab's
 // current visual parent. A hidden parking window keeps them alive between tabs.
-internal sealed class WindowsRdpHost : NativeControlHost, IDisposable
+internal sealed partial class WindowsRdpHost : NativeControlHost, IDisposable
 {
     private static readonly Guid EventsId=new("336D5562-EFA8-482E-8CB3-C5C0FC7A7DB6");
     private readonly TaskCompletionSource ready=new(TaskCreationOptions.RunContinuationsAsynchronously);
@@ -66,7 +66,7 @@ internal sealed class WindowsRdpHost : NativeControlHost, IDisposable
             Subscribe(23,(Action<int>)(_=>FocusReleased?.Invoke()));
             Subscribe(17,(ReconnectHandler)((int reason,int attempt,ref int continuation)=> { IsLoggedIn=false; IsReconnecting=true; continuation=0; Reconnecting?.Invoke(attempt); }));
             Subscribe(33,(Action)(()=> { IsLoggedIn=true; IsReconnecting=false; LastDisplaySettings=null; Reconnected?.Invoke(); }));
-            ready.TrySetResult();
+            RegisterFileDrop();ready.TrySetResult();
             return new PlatformHandle(window,"HWND");
         }
         catch(Exception ex) { ready.TrySetException(ex); Release(); return base.CreateNativeControlCore(parent); }
@@ -131,6 +131,7 @@ internal sealed class WindowsRdpHost : NativeControlHost, IDisposable
     private void Release()
     {
         if(!OperatingSystem.IsWindows())return;
+        fileDrop?.Dispose();fileDrop=null;
         if(control!=null)
         {
             foreach(var item in handlers) { try { ComEventsHelper.Remove(control,EventsId,item.Id,item.Handler); } catch(COMException) { } }

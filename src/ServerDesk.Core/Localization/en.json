@@ -1,4 +1,7 @@
 {
+  "Cel zrzutu lub schowek zmienił się. Upuść pliki ponownie.": "The drop target or clipboard changed. Drop the files again.",
+  "Wysłano wklejenie plików do RDP · sprawdź okno kopiowania na serwerze": "File paste sent to RDP · check the copy window on the server",
+  "Upuszczaj na widoczny pulpit lub otwarty folder zdalnego Eksploratora. Zakończenie i konflikty kopiowania obsługuje Windows na serwerze.": "Drop onto the visible desktop or an open folder in remote Explorer. Windows on the server handles copy completion and conflicts.",
   "Zmień wysokość paneli": "Resize panel heights",
   "Przeciągnij separator lub użyj klawiszy ↑ i ↓. Home wyrównuje wysokość paneli.": "Drag the separator or use the Up and Down keys. Home equalizes panel heights.",
   "Niepoprawne ustawienia paneli obszaru pracy.": "Invalid workspace panel settings.",

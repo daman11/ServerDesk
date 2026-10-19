@@ -23,8 +23,9 @@ if(args.Length==4)
 }
 var pipeName="serverdesk-release-"+Guid.NewGuid().ToString("N");
 using var pipe=new NamedPipeServerStream(pipeName,PipeDirection.Out,1,PipeTransmissionMode.Byte,PipeOptions.Asynchronous|PipeOptions.CurrentUserOnly);
-using var timeout=new CancellationTokenSource(interaction?TimeSpan.FromMinutes(22):TimeSpan.FromSeconds(115));
-var start=new ProcessStartInfo(exe) { UseShellExecute=false,WorkingDirectory=Path.GetDirectoryName(exe)!,CreateNoWindow=true,WindowStyle=ProcessWindowStyle.Hidden };
+var matrixMinutes=int.TryParse(Environment.GetEnvironmentVariable("SERVERDESK_RDP_MATRIX_MINUTES"),out var configuredMinutes)?Math.Clamp(configuredMinutes,1,120):20;
+using var timeout=new CancellationTokenSource(interaction?TimeSpan.FromMinutes(matrixMinutes+2):TimeSpan.FromSeconds(115));
+var start=new ProcessStartInfo(exe) { UseShellExecute=false,WorkingDirectory=Path.GetDirectoryName(exe)!,CreateNoWindow=true,WindowStyle=interaction?ProcessWindowStyle.Normal:ProcessWindowStyle.Hidden };
 start.ArgumentList.Add(interaction?"--check-rdp-input":"--check-rdp-host"); start.ArgumentList.Add(report);
 if(args.Length==4) { start.ArgumentList.Add(args[2]); start.ArgumentList.Add(args[3]); start.ArgumentList.Add(pipeName); }
 if(network)start.ArgumentList.Add("--proxy");

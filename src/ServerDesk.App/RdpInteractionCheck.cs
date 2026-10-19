@@ -25,18 +25,21 @@ internal static class RdpInteractionCheck
     {
         if(!OperatingSystem.IsWindows() || args.Length is not (5 or 6))return 2;
         var report=Path.GetFullPath(args[1]); var root=Path.GetDirectoryName(report)!; Directory.CreateDirectory(root);
+        var controlDirectory=Path.Combine(root,"matrix-control-"+Guid.NewGuid().ToString("N"));Directory.CreateDirectory(controlDirectory);
         Environment.SetEnvironmentVariable("SERVERDESK_DATA_HOME",Path.Combine(root,"interaction-data-"+Guid.NewGuid().ToString("N")));
         var checks=new List<MatrixResult>(); Exception? error=null;
         Program.BuildAvaloniaApp().SetupWithoutStarting();
+        SynchronizationContext.SetSynchronizationContext(new AvaloniaSynchronizationContext(Dispatcher.UIThread,DispatcherPriority.Normal));
         var paths=new AppPaths(); var repo=new ProfileRepository(paths); repo.InitializeAsync().GetAwaiter().GetResult();
-        var main=new MainWindow(new MainViewModel(repo),repo,new CredentialStore(paths),new SshConnectionFactory(repo),new ExternalRdpClient()) { Title="ServerDesk — RDP matrix test" };
+        var main=new MainWindow(new MainViewModel(repo),repo,new CredentialStore(paths),new SshConnectionFactory(repo),new ExternalRdpClient()) { Title="ServerDesk — RDP matrix test",WindowState=WindowState.Maximized };
         using var proxy=args.Length==6 && args[5]=="--proxy"?new RdpFaultProxy(args[2]):null;
         var profile=new ServerProfile { Name="RDP matrix test",Protocol=Protocol.RDP,Host=proxy==null?args[2]:"127.0.0.1",Port=proxy?.Port??3389,Username=args[3],Rdp=new() { DisplayMode=RdpDisplayMode.Embedded,Clipboard=true,KeyboardMode=RdpKeyboardMode.Remote,AutoReconnect=true } };
         var pane=new SessionPane(main,profile,new SshConnectionFactory(repo),new ExternalRdpClient(),repo);
-        using var done=new CancellationTokenSource(); using var limit=new CancellationTokenSource(TimeSpan.FromMinutes(20));
+        var matrixMinutes=int.TryParse(Environment.GetEnvironmentVariable("SERVERDESK_RDP_MATRIX_MINUTES"),out var configuredMinutes)?Math.Clamp(configuredMinutes,1,120):20;
+        using var done=new CancellationTokenSource(); using var limit=new CancellationTokenSource(TimeSpan.FromMinutes(matrixMinutes));
         var clipboard=main.Clipboard!;
         var panel=new WrapPanel { Orientation=Orientation.Horizontal,Margin=new Thickness(8),Name="RdpMatrixControls" };
-        var note=DesignSystem.Label("Macierz RDP: dane syntetyczne; żadne treści schowka nie są zapisywane.",true,12);
+        var note=DesignSystem.Label("TEST RDP W SERVERDESK · używaj tego okna, nie konsoli VMware. Wyłącznie dane syntetyczne; raport nie zawiera treści schowka.",true,12);
         var frame=new Grid { RowDefinitions=new RowDefinitions("Auto,Auto,*") }; frame.Children.Add(panel); Grid.SetRow(note,1); frame.Children.Add(note);
         var normal=(Control)main.Content!; main.Content=null; Grid.SetRow(normal,2); frame.Children.Add(normal); main.Content=frame;
         var imageFixtures=new List<Bitmap>();
@@ -48,7 +51,7 @@ internal static class RdpInteractionCheck
         void Save()
         {
             if(finished)return; var host=pane.RdpHost;
-            File.WriteAllText(report,JsonSerializer.Serialize(new { Version=typeof(App).Assembly.GetName().Version?.ToString(),Authenticated=pane.IsRdpLoggedIn,Checks=checks,Screens=main.Screens.All.Select(s=>new { s.Scaling,Bounds=s.Bounds.ToString() }),CurrentScaling=TopLevel.GetTopLevel(pane)?.RenderScaling,RequestedDisplay=host?.LastDisplaySettings,DisplayError=host?.LastDisplayError,Viewport=host?.Bounds.ToString(),RemoteSize=host?.RemoteDesktopSize.ToString(),Error=error?.GetType().Name },new JsonSerializerOptions { WriteIndented=true }));
+            File.WriteAllText(report+".part",JsonSerializer.Serialize(new { Version=typeof(App).Assembly.GetName().Version?.ToString(),Authenticated=pane.IsRdpLoggedIn,ControlDirectory=Path.GetFileName(controlDirectory),ConnectionStatus=pane.ConnectionStatus,VisualState=pane.VisualState.ToString(),Checks=checks,Screens=main.Screens.All.Select(s=>new { s.Scaling,Bounds=s.Bounds.ToString() }),CurrentScaling=TopLevel.GetTopLevel(pane)?.RenderScaling,RequestedDisplay=host?.LastDisplaySettings,DisplayError=host?.LastDisplayError,Viewport=host?.Bounds.ToString(),RemoteSize=host?.RemoteDesktopSize.ToString(),Error=error?.GetType().Name },new JsonSerializerOptions { WriteIndented=true }));File.Move(report+".part",report,true);
         }
         void Button(string label,Func<Task> action)=>panel.Children.Add(Dialogs.Button(label,()=>_ = main.Safe(action)));
         Button("Tekst → schowek",async()=> { expected=Sample; await clipboard.SetTextAsync(expected); note.Text="Wklej próbkę w nowym dokumencie zdalnego Notatnika."; });
@@ -105,9 +108,32 @@ internal static class RdpInteractionCheck
             }
             catch(Exception ex) { error=ex; Save(); pane.Dispose(); done.Cancel(); }
         };
-        var timer=new DispatcherTimer { Interval=TimeSpan.FromSeconds(2) };
-        timer.Tick+=(_,_)=> { if(started)Save(); if(limit.IsCancellationRequested || !main.IsVisible) { timer.Stop(); done.Cancel(); } };
-        try { main.Show(); timer.Start(); Dispatcher.UIThread.MainLoop(done.Token); }
+        var control=new RdpMatrixControl(controlDirectory,async operation=>
+        {
+            switch(operation)
+            {
+                case "snapshot":Save();break;
+                case "files":await pane.PrepareRdpFilesAsync([textFile,folder]);break;
+                case "files-drop":
+                    var dropHost=pane.RdpHost??throw new InvalidOperationException();
+                    await pane.DropFilesOnRdpAsync(dropHost,[textFile,folder],dropHost.PointToScreen(new Point(dropHost.Bounds.Width/2,dropHost.Bounds.Height/2)));break;
+                case "clipboard-off":case "clipboard-on":
+                    pane.GetVisualDescendants().OfType<CheckBox>().Single(c=>c.Content as string=="Schowek RDP").IsChecked=operation=="clipboard-on";
+                    await pane.ReconnectAsync();ObserveHost();break;
+                case "reconnect":await pane.ReconnectAsync();ObserveHost();break;
+                case "focus":main.Activate();main.FocusSession(pane);pane.RdpHost?.FocusDesktop();break;
+                case "split":main.SetWorkspaceMode(WorkspaceMode.Columns);break;
+                case "single":main.SetWorkspaceMode(WorkspaceMode.Single);break;
+                case "float":main.DockSession(pane,SessionDock.Floating);break;
+                case "redock":main.DockSession(pane,SessionDock.Primary);break;
+                case "close":Save();finished=true;main.RemovePane(pane);main.Close();done.Cancel();break;
+                default:throw new ArgumentException("Unknown isolated matrix operation");
+            }
+            return new { Authenticated=pane.IsRdpLoggedIn,WindowActive=main.IsActive,PaneActive=pane.IsActive,ConnectionStatus=pane.ConnectionStatus,VisualState=pane.VisualState.ToString(),Handle=pane.RdpHost?.WindowHandle.ToInt64(),RequestedDisplay=pane.RdpHost?.LastDisplaySettings };
+        });
+        var timer=new DispatcherTimer { Interval=TimeSpan.FromSeconds(1) };
+        timer.Tick+=async (_,_)=> { if(started) { Save();await control.PollAsync(); } if(limit.IsCancellationRequested || !main.IsVisible) { timer.Stop(); done.Cancel(); } };
+        try { main.Show(); main.Activate(); timer.Start(); Dispatcher.UIThread.MainLoop(done.Token); }
         finally { timer.Stop(); Save(); if(main.OpenSessions.Contains(pane))main.RemovePane(pane); main.Close(); foreach(var image in imageFixtures)image.Dispose(); }
         return error==null && checks.All(c=>c.Pass)?0:1;
     }

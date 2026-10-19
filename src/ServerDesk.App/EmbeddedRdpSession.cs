@@ -56,7 +56,12 @@ internal sealed partial class SessionPane
         if(Profile.Rdp.RedirectLocalFolder)throw new NotSupportedException(L.T("Przekazanie folderu jest dostępne w kliencie FreeRDP na Linux. Wyłącz je dla osadzonego RDP Windows."));
         try
         {
-        var host=new WindowsRdpHost(); embeddedRdp=host; Grid.SetRow(host,2); Children.Add(host);
+        var host=new WindowsRdpHost();
+        host.CanDropFiles=()=>ReferenceEquals(embeddedRdp,host) && CanPrepareRdpFiles;
+        host.CanPasteFiles=()=>ReferenceEquals(embeddedRdp,host) && CanPrepareRdpFiles && IsActive && owner.Workspace.Focused==WorkspaceId && TopLevel.GetTopLevel(this) is Window { IsActive:true };
+        host.FilesDropped=(paths,point)=>_ = owner.Safe(()=>DropFilesOnRdpAsync(host,paths,point));
+        host.FileDropFailed=error=>_ = owner.Safe(()=>Task.FromException(error));
+        embeddedRdp=host; Grid.SetRow(host,2); Children.Add(host);
         host.LoginComplete+=()=>
         {
             if(disposed!=0 || !ReferenceEquals(embeddedRdp,host))return;

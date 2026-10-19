@@ -31,6 +31,13 @@ public sealed class RdpTests
     public void InvalidResolutionsAreRejected(int width,int height)=>Assert.Throws<ArgumentException>(()=>new RdpOptions { Width=width,Height=height }.Validate());
     [Fact] public void OldProfilesGetSafeRdpDefaults()
     { var profile=JsonSerializer.Deserialize<ServerProfile>("{\"Name\":\"old\",\"Host\":\"localhost\",\"Protocol\":1,\"Port\":3389}")!; profile.Validate(); Assert.Equal(new RdpOptions(),profile.Rdp); }
+    [Fact] public void NewAndUnspecifiedRdpProfilesUseTabsWhileExplicitExternalChoiceSurvives()
+    {
+        Assert.Equal(RdpDisplayMode.Embedded,new RdpOptions().DisplayMode);
+        Assert.Equal(RdpDisplayMode.Embedded,JsonSerializer.Deserialize<RdpOptions>("{}")!.DisplayMode);
+        foreach(var mode in new[]{RdpDisplayMode.External,RdpDisplayMode.Embedded})
+            Assert.Equal(mode,JsonSerializer.Deserialize<RdpOptions>(JsonSerializer.Serialize(new RdpOptions { DisplayMode=mode }))!.DisplayMode);
+    }
     [Fact] public void EmbeddedModeSurvivesProfileExportWithoutCredentials()
     {
         var profile=Profile() with { Rdp=new() { DisplayMode=RdpDisplayMode.Embedded,DynamicResolution=false,Clipboard=false } };

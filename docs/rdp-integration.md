@@ -20,7 +20,15 @@ Stan zalogowania wymaga utworzenia pulpitu przez uwierzytelniony klient X11; sam
 
 ## Windows
 
-WindowsRdpHost osadza systemowy ActiveX przez AtlAxWin. Ukryty HWND utrzymuje kontrolkę podczas odłączenia od drzewa wizualnego. Profil pozwala wybrać kartę albo mstsc; dawne profile zachowują tryb zewnętrzny. Hasło trafia w pamięci do write-only ClearTextPassword. `AuthenticationLevel=2` zachowuje systemowe ostrzeżenie certyfikatu; nie zastępujemy go dialogiem Linux ani nie wyłączamy weryfikacji. Połączenie potwierdza OnLoginComplete.
+WindowsRdpHost osadza systemowy ActiveX przez AtlAxWin. Ukryty HWND utrzymuje kontrolkę podczas odłączenia od drzewa wizualnego. Nowe profile oraz dane bez zapisanego trybu domyślnie wybierają **W zakładce ServerDesk**. Jawnie zapisany tryb zewnętrzny pozostaje zachowany; można go zmienić w edytorze profilu. Hasło trafia w pamięci do write-only ClearTextPassword. `AuthenticationLevel=2` zachowuje systemowe ostrzeżenie certyfikatu; nie zastępujemy go dialogiem Linux ani nie wyłączamy weryfikacji. Połączenie potwierdza OnLoginComplete.
+
+Przy włączonym schowku można upuścić lokalne pliki lub foldery bezpośrednio na **widoczny zdalny pulpit albo obszar plików otwartego Eksploratora**. ServerDesk przygotowuje schowek i wysyła jedno Ctrl+V do tej sesji po wskazaniu celu. Nie upuszczaj na pasek zadań, ikonę aplikacji ani pole tekstowe: to zdalny Windows określa znaczenie wklejenia. Konflikty nazw, postęp i koniec kopiowania obsługuje zdalny Windows. Komunikat ServerDesk potwierdza wysłanie wklejenia, nie ukończenie transferu.
+
+Strefa **Pliki → schowek RDP** nad pulpitem pozostaje alternatywą: po jej użyciu wybierz folder na serwerze i wklej ręcznie Ctrl+V. Strefa przyjmuje też upuszczenie w odstępach i na obramowaniu. Limit obu metod: 1–256 pozycji, do 10 000 elementów z zawartością folderów, łącznie poniżej 2 GiB; dowiązania są odrzucane. Zrzut kopiuje, nie usuwa źródła i nie udostępnia wszystkich dysków.
+
+Natywny cel OLE należy wyłącznie do HWND tej kontrolki. Po skanowaniu plików oraz po krótkim oczekiwaniu na kolejkę zdarzeń ponownie sprawdzane są sesja, aktywny panel/okno, położenie widoku, przesłonięcie przez inne okno i numer sekwencji schowka. Zmiana celu, rozłączenie lub nowa zawartość schowka przerywa automatyczne wklejenie. Skrót trafia przez interfejs kontrolki RDP, bez globalnego wstrzykiwania klawiszy. Nie przełączamy trybu automatycznej synchronizacji schowka. Nie ma ślepego ponawiania Ctrl+V, które mogłoby utworzyć dodatkowe kopie.
+
+[Próba z 2026-10-19](reports/rdp-desktop-drop-2026-10-19.md) obejmuje fizyczny gest pliku do własnego odbiornika w RDP, sumy pliku i zagnieżdżonej zawartości folderu oraz tekst/obraz w obu kierunkach. Nie zamyka pełnej macierzy zdalnego Eksploratora, wszystkich formatów ani fizycznych AltGr/IME. Bezpośredni zrzut na Linux RDP pozostaje niedostępny.
 
 Wcześniejsze rzeczywiste testy Windows obejmowały lokalne konto, pulpit, split, dokowanie, resize, reconnect, zamknięcie, tekst/obraz/pliki schowka i przerwanie transportu. Nie oznacza to pełnej akceptacji AD/Microsoft ani wszystkich urządzeń: [wykonane i pozostałe próby](rdp-test-matrix.md). Komponent Windows pochodzi z systemu i nie jest redystrybuowany.
 

@@ -60,6 +60,7 @@ if(args.Contains("--ssh-acceptance")) { SshAcceptanceChecks.Run(root,args[1]); r
 if(args.Contains("--large-browser")) { LargeBrowserChecks.Run(root,args.Contains("--measure-only")); return; }
 if(args.Contains("--profile-artwork")) { ProfileArtworkChecks.Run(root); return; }
 if(args.Contains("--platform-ux")) { PlatformUxChecks.Run(root); return; }
+if(args.Contains("--rdp-matrix-control")) { RdpMatrixControlChecks.Run(root); return; }
 if(args.Contains("--plugins")) { PluginChecks.Run(root); return; }
 if(args.Contains("--plugins-network")) { PluginChecks.Network(root,args[1],args[2]); return; }
 if(args.Contains("--rdp-gui")) { RdpGuiChecks.Run(root); return; }
@@ -147,6 +148,7 @@ if(args.Contains("--file-deletion")) { FileDeletionChecks.Run(window,repository,
 if(args.Contains("--file-deletion-network")) { var index=Array.IndexOf(args,"--file-deletion-network"); FileDeletionChecks.Network(window,repository,root,args[index+1],args[index+2]); window.Close(); RedesignChecks.Frames(); return; }
 if(args.Contains("--sftp-batch-network")) { var index=Array.IndexOf(args,"--sftp-batch-network"); SftpBatchChecks.Network(window,repository,root,args[index+1],args[index+2]); window.Close(); RedesignChecks.Frames(); return; }
 if(args.Contains("--transfer-overview-network")) { var index=Array.IndexOf(args,"--transfer-overview-network"); TransferOverviewChecks.Network(window,repository,root,args[index+1],args[index+2]); window.Close(); RedesignChecks.Frames(); return; }
+if(args.Contains("--rdp-drop")) { RdpPaneChecks.FileDrop(window,repository,root); window.Close(); RedesignChecks.Frames(); return; }
 if(args.Contains("--rdp-pane")) { RdpPaneChecks.Run(window,repository,root); if(args.Length>2)RdpPaneChecks.Endpoint(window,repository,root,args[1]); window.Close(); RedesignChecks.Frames(); return; }
 if(args.Contains("--serial-pane")) { SerialPaneChecks.Run(window,repository,root,args[Array.IndexOf(args,"--serial-pane")+1]); return; }
 if(args.Contains("--protocols")) { ProtocolChecks.Run(window,repository,root); return; }

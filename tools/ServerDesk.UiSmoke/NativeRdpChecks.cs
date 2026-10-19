@@ -32,7 +32,10 @@ internal static class NativeRdpChecks
             {
                 if(step==0)
                 {
-                    host.Ready.GetAwaiter().GetResult(); handle=host.WindowHandle; Console.WriteLine("PASS native RDP control created; version="+host.Version); window.Content=null;
+                    host.Ready.GetAwaiter().GetResult(); handle=host.WindowHandle;
+                    if(!host.FileDropRegistered)throw new Exception("Native RDP file drop registration failed");
+                    NativeRdpDropChecks.Run(handle);
+                    Console.WriteLine("PASS native RDP control and OLE file drop created; version="+host.Version); window.Content=null;
                 }
                 else if(step==1)window.Content=host;
                 else

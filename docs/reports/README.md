@@ -1,5 +1,7 @@
 # Verification and historical reviews
 
+Windows RDP: [Default embedding, native desktop file drops, clipboard regression and remaining input limits, 2026-10-19](rdp-desktop-drop-2026-10-19.md).
+
 VMware acceptance: [Windows 11 / Ubuntu 26 MVP, native clipboard/vault and bounded protocol tests, 2026-10-19](vm-mvp-2026-10-19.md).
 
 SFTP daily work: [Text clipboard, keyboard filtering and action readiness, 2026-10-19](sftp-clipboard-2026-10-19.md).

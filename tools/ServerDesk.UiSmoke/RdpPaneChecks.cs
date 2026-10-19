@@ -3,6 +3,7 @@ using Avalonia.Automation;
 using Avalonia.Controls;
 using Avalonia.Headless;
 using Avalonia.Interactivity;
+using Avalonia.Input;
 using Avalonia.VisualTree;
 using ServerDesk.App;
 using ServerDesk.Core;
@@ -14,7 +15,7 @@ internal static class RdpPaneChecks
     private static void Click(Button button)=>button.RaiseEvent(new RoutedEventArgs(Avalonia.Controls.Button.ClickEvent));
     internal static void Run(MainWindow main,ProfileRepository repo,string root)
     {
-        var profile=new ServerProfile { Name="Windows administration",Protocol=Protocol.RDP,Host="rdp-fixture.invalid",Port=3389,Username="LAB\\Administrator" };
+        var profile=new ServerProfile { Name="Windows administration",Protocol=Protocol.RDP,Host="rdp-fixture.invalid",Port=3389,Username="LAB\\Administrator",Rdp=new() { DisplayMode=RdpDisplayMode.External } };
         var adapter=new OwnedProcessAdapter(); using var pane=new SessionPane(main,profile,new SshConnectionFactory(repo),adapter,repo);
         var window=new Window { Width=1100,Height=760,Content=pane }; window.Show(); RedesignChecks.Frames();
         if(window.GetVisualDescendants().OfType<Button>().Any(b=>b.Tag as string=="Uruchom RDP"))throw new Exception("RDP has duplicate launch control");
@@ -57,7 +58,7 @@ internal static class RdpPaneChecks
         PolishChecks.Page(editor,3); var display=editor.GetVisualDescendants().OfType<ComboBox>().Single(c=>c.Name=="RdpDisplayMode"); display.SelectedIndex=1; display.BringIntoView(); RedesignChecks.Frames();
         var keyboard=editor.GetVisualDescendants().OfType<ComboBox>().Single(c=>c.Name=="RdpKeyboardMode"); keyboard.SelectedIndex=(int)RdpKeyboardMode.Remote;
         var reconnect=editor.GetVisualDescendants().OfType<CheckBox>().Single(c=>c.Content as string=="Ponawiaj po utracie sieci (do 5 prób, Windows)"); reconnect.IsChecked=true;
-        var full=editor.GetVisualDescendants().OfType<CheckBox>().Single(c=>c.Content as string=="Pełny ekran");
+        var full=editor.GetVisualDescendants().OfType<CheckBox>().Single(c=>c.Content as string=="Pełny ekran klienta w osobnym oknie");
         if(OperatingSystem.IsWindows() && full.IsEnabled)throw new Exception("External fullscreen option remains enabled for embedded desktop");
         editor.CaptureRenderedFrame()!.Save(Path.Combine(root,"rdp-embedded-settings.png")); Click(Button(editor,"Zapisz")); RedesignChecks.Frames();
         var edited=edit.GetAwaiter().GetResult(); if(edited?.Rdp.DisplayMode!=RdpDisplayMode.Embedded)throw new Exception("Profile editor lost embedded RDP selection");
@@ -67,11 +68,16 @@ internal static class RdpPaneChecks
         Console.WriteLine("PASS embedded RDP selection in profile editor, fullscreen availability and persistence");
         if(OperatingSystem.IsWindows())EmbeddedFailure(main,repo,root,profile);
     }
-    private static void EmbeddedFailure(MainWindow main,ProfileRepository repo,string root,ServerProfile profile)
+    internal static void FileDrop(MainWindow main,ProfileRepository repo,string root)
     {
-        var adapter=new OwnedProcessAdapter();
-        using var pane=new SessionPane(main,profile with { Rdp=profile.Rdp with { DisplayMode=RdpDisplayMode.Embedded } },new SshConnectionFactory(repo),adapter,repo);
-        var window=new Window { Width=1000,Height=760,Content=pane }; window.Show(); RedesignChecks.Frames();
+        var profile=new ServerProfile { Name="RDP drop fixture",Protocol=Protocol.RDP,Host="rdp-fixture.invalid",Rdp=new() { DisplayMode=RdpDisplayMode.Embedded } };
+        using var pane=new SessionPane(main,profile,new SshConnectionFactory(repo),new ExternalRdpClient(),repo);
+        var window=new Window { Width=1000,Height=760,Content=pane };window.Show();RedesignChecks.Frames();
+        DropSurface(window,root);window.Close();
+        Console.WriteLine("PASS RDP drop surface: all padding receives events at 240/520/1100px; unsupported/unavailable drops return None");
+    }
+    private static void DropSurface(Window window,string root)
+    {
         foreach(var width in new[]{240,520,1100})
         {
             window.Width=width; RedesignChecks.Frames();
@@ -79,8 +85,30 @@ internal static class RdpPaneChecks
             if(zone.IsEnabled)throw new Exception("RDP file drop enabled before authenticated connection");
             var point=zone.TranslatePoint(default,window)!.Value;
             if(point.X<0 || point.X+zone.Bounds.Width>window.ClientSize.Width+1)throw new Exception("RDP file drop escapes narrow viewport");
+            zone.IsEnabled=true;RedesignChecks.Frames();window.CaptureRenderedFrame();
+            foreach(var position in new[]{new Point(3,3),new Point(zone.Bounds.Width-3,zone.Bounds.Height-3)})
+            {
+                var hit=window.InputHitTest(zone.TranslatePoint(position,window)!.Value) as Visual;
+                if(hit!=zone && hit?.GetVisualAncestors().Contains(zone)!=true)
+                {
+                    window.CaptureRenderedFrame()!.Save(Path.Combine(root,$"rdp-drop-failure-{width}.png"));
+                    throw new Exception($"RDP file drop padding does not receive pointer/drop events: {width}px, {zone.Bounds}, {position}, hit={hit?.GetType().Name}/{(hit as Control)?.Name}, ancestors={string.Join(',',hit?.GetVisualAncestors().OfType<Control>().Select(c=>c.Name??c.GetType().Name)??[])}, effective={zone.IsEffectivelyVisible}/{zone.IsEffectivelyEnabled}");
+                }
+            }
+            var data=new DataTransfer(); data.Add(DataTransferItem.CreateText("not a file"));
+            var drop=new DragEventArgs(DragDrop.DropEvent,data,zone,new Point(3,3),KeyModifiers.None) { DragEffects=DragDropEffects.Copy };
+            zone.RaiseEvent(drop);
+            if(drop.DragEffects!=DragDropEffects.None)throw new Exception("RDP file drop accepted an unsupported payload or unavailable session");
+            zone.IsEnabled=false;
             window.CaptureRenderedFrame()!.Save(Path.Combine(root,$"rdp-drop-{width}.png"));
         }
+    }
+    private static void EmbeddedFailure(MainWindow main,ProfileRepository repo,string root,ServerProfile profile)
+    {
+        var adapter=new OwnedProcessAdapter();
+        using var pane=new SessionPane(main,profile with { Rdp=profile.Rdp with { DisplayMode=RdpDisplayMode.Embedded } },new SshConnectionFactory(repo),adapter,repo);
+        var window=new Window { Width=1000,Height=760,Content=pane }; window.Show(); RedesignChecks.Frames();
+        DropSurface(window,root);
         window.Width=1000; RedesignChecks.Frames();
         // Headless has no native host: exercise the actual unavailable-host path.
         RedesignChecks.Wait(main.Safe(()=>pane.ConnectAsync("",CancellationToken.None))); RedesignChecks.Frames();

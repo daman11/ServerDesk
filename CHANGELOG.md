@@ -2,6 +2,8 @@
 
 ## Unreleased
 
+- Open new RDP profiles in ServerDesk by default, retaining explicitly saved external-client choices. Accept local file/folder drops on the embedded Windows desktop through an owned native OLE target, prepare the bounded clipboard selection and send a scoped remote paste at the drop point. Preserve automatic text/image clipboard redirection; reject stale, obscured or disconnected targets. Fix hit testing across the clipboard drop zone's padding and keep its width stable during preparation. Add native/headless regression checks and disposable Windows RDP receiver evidence, including a physical file gesture and eight consecutive verified drops.
+
 - Fix verified database backups and factory reset in deep Windows data directories: use a shorter unique staging filename to reserve SQLite journal path space, opt into long paths in the application manifest, and validate the published PE. Add a backup/reset regression and record native Windows 11/Ubuntu VMware acceptance, including real clipboard/vault checks and explicit remaining RDP/hardware limits.
 
 - Add SFTP text clipboard actions for selected names, full paths and the current directory, including cached offline views and Ctrl+Shift+C. Add Ctrl+F filtering and Escape back to the list; preserve native text editing. Disable stale selection operations while filtering/loading and unavailable file actions after disconnect, with matching toolbar/context-menu states.

@@ -1,5 +1,7 @@
 # Pierwotne MVP — wydanie 0.43.0
 
+Krok roboczy po 0.43.0: nowe RDP domyślnie w karcie; bezpośredni zrzut plików na Windows RDP, fizyczny gest do odbiornika i osiem kolejnych transferów z porównaniem sum. Tekst i obraz sprawdzone przed i po zrzutach. Pełna akceptacja Eksploratora, AltGr/IME w RDP i mieszanego DPI pozostaje otwarta. [Zakres i ograniczenia](reports/rdp-desktop-drop-2026-10-19.md).
+
 Akceptacja w udostępnionych VM Windows 11 Pro i Ubuntu 26.04.1/GNOME/Wayland: [wyniki z 2026-10-19](reports/vm-mvp-2026-10-19.md). Obejmuje natywne okno, schowek, magazyn haseł i rzeczywiste SSH/SFTP; zakres Windows, przerwania i częściowe RDP opisano oddzielnie. Nie jest to deklaracja pełnej gotowości 1.0.
 
 Krok roboczy po 0.43.0 rozwija codzienną pracę w SFTP: kopiowanie nazw/pełnych ścieżek/katalogu jako tekst, także z zachowanego widoku po utracie łącza; Ctrl+Shift+C, Ctrl+F i powrót Escape do listy. Dostępność menu odpowiada paskowi narzędzi, a operacje na zaznaczeniu czekają na zakończenie filtrowania. Celowane testy PL/EN i regresja 50 000 wpisów nie zastępują prób WAN ani innych serwerów. [Zakres](reports/sftp-clipboard-2026-10-19.md).

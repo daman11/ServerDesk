@@ -2,6 +2,8 @@
 
 ## Unreleased
 
+## 0.44.0 — Public Beta — 2026-10-19
+
 - Add a Windows RDP clipboard export dialog: copy remote files, inspect their names and drag a Copy-only virtual-file source to a local folder. Validate descriptor names/counts/sizes and expose read-only bounded streams without hidden file staging or remote delete feedback; invalidate stale/disconnected selections. Keep automatic clipboard redirection and existing credentials/session behavior. Live RDP/input/network acceptance is deferred at the maintainer's request; local tests and remaining Shell/gesture limits are recorded separately.
 
 - Open new RDP profiles in ServerDesk by default, retaining explicitly saved external-client choices. Accept local file/folder drops on the embedded Windows desktop through an owned native OLE target, prepare the bounded clipboard selection and send a scoped remote paste at the drop point. Preserve automatic text/image clipboard redirection; reject stale, obscured or disconnected targets. Fix hit testing across the clipboard drop zone's padding and keep its width stable during preparation. Add native/headless regression checks and disposable Windows RDP receiver evidence, including a physical file gesture and eight consecutive verified drops.
@@ -15,6 +17,7 @@
 - Add a right-click menu on the connection sidebar header and blank list area for creating profiles/folders, quick connection, import/export and clearing filters. Keep row-specific and text-editing menus; avoid replacing folder rows during selection. Correct saving profiles created from a folder or quick-connection draft.
 
 - Give Help sections distinct numbered cards, larger headings, tinted header bands and clear gaps between sections while keeping related paragraphs together. Preserve multiline shortcuts, searching and whole-topic copying.
+- Complete the shared icon metadata for Help's clear-search action, caught by the release presentation audit on Windows/Linux.
 
 - Improve Polish/English Help readability: put each keyboard shortcut on its own line, group shortcuts by context, and split dense file-transfer, RDP and troubleshooting instructions into shorter sections.
 

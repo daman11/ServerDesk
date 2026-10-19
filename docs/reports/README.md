@@ -1,5 +1,7 @@
 # Verification and historical reviews
 
+Release 0.44.0: [Help, SFTP ergonomics, diagnostics and Windows RDP file integration](release-verification-0.44.0.md).
+
 RDP clipboard export: [Windows copy-then-drag bridge, local validation and deferred live acceptance, 2026-10-19](rdp-clipboard-export-2026-10-19.md).
 
 Windows RDP: [Default embedding, native desktop file drops, clipboard regression and remaining input limits, 2026-10-19](rdp-desktop-drop-2026-10-19.md).
@@ -32,7 +34,7 @@ Current command module: [System profile layout, 2026-10-17](command-profile-layo
 
 Workspace panels: [Three/four panels and preferences, 2026-10-16](four-panel-workspace-2026-10-16.md).
 
-Current release: [0.43.0 verification](release-verification-0.43.0.md). Imported Git baseline: [0.31.1 verification](release-verification-0.31.1.md).
+Current release: [0.44.0 verification](release-verification-0.44.0.md). Imported Git baseline: [0.31.1 verification](release-verification-0.31.1.md).
 Application information: [About dialog, offline MIT license and build details, 2026-10-17](about-dialog-2026-10-17.md).
 Saved connection deletion: [0.40.0 missing credential directory, durable deletion and failure diagnostics, 2026-10-18](profile-deletion-2026-10-18.md).
 Local diagnostics: [Settings log preview, search and full-copy export, 2026-10-18](application-logs-2026-10-18.md).

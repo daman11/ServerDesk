@@ -1,4 +1,6 @@
-# Pierwotne MVP — wydanie 0.43.0
+# Pierwotne MVP — wydanie 0.44.0
+
+0.44.0 zbiera opisane poniżej kroki po 0.43.0 oraz Pomoc offline i diagnostykę. Eksport RDP przez schowek jest eksperymentalny; bezpośredni gest ze zdalnego Eksploratora do systemu lokalnego nie jest wdrożony. Nie zamyka to akceptacji 1.0. [Wydanie i weryfikacja](reports/release-verification-0.44.0.md).
 
 Krok roboczy po 0.43.0: nowe RDP domyślnie w karcie; bezpośredni zrzut plików na Windows RDP, fizyczny gest do odbiornika i osiem kolejnych transferów z porównaniem sum. Tekst i obraz sprawdzone przed i po zrzutach. Pełna akceptacja Eksploratora, AltGr/IME w RDP i mieszanego DPI pozostaje otwarta. [Zakres i ograniczenia](reports/rdp-desktop-drop-2026-10-19.md).
 

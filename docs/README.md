@@ -1,6 +1,6 @@
 # Dokumentacja / Documentation
 
-Bieżące wydanie: [0.43.0 Public Beta](releases/release-0.43.0.md) — spójność profili i haseł, równoległy zapis pluginów, schemat 4 z kopią przed migracją i odzyskiwanie SSH/SFTP po ciszy na łączu. Obejmuje też reset fabryczny i dokładniejsze błędy SSH. [Weryfikacja i ograniczenia](reports/release-verification-0.43.0.md).
+Bieżące wydanie: [0.44.0 Public Beta](releases/release-0.44.0.md) — Pomoc offline, ergonomia SFTP, menu połączeń, akcenty i diagnostyka oraz osadzone RDP z lokalnym zrzutem plików. Odwrotny mostek schowka jest eksperymentalny; ciągły gest ze zdalnego Eksploratora pozostaje niewdrożony. [Weryfikacja i ograniczenia](reports/release-verification-0.44.0.md).
 
 | Temat / Topic | Dokument |
 |---|---|

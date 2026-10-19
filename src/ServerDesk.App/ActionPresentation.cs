@@ -78,7 +78,7 @@ internal static partial class DeskIcons
         "Anuluj" or "Zamknij" or "Anuluj transfery" or "Anuluj łączenie" or "Zamknij sesję"=>"close",
         "Zapisz" or "Zapisz kolekcję" or "Zapisz OID" or "Zapisz urządzenie WoL"=>"save",
         "Potwierdź" or "OK" or "Zastosuj"=>"check",
-        "Wyczyść wybór"=>"close",
+        "Wyczyść wybór" or "Wyczyść wyszukiwanie"=>"close",
         "Nowe połączenie" or "Nowy serwer" or "Nowy serwer w folderze" or "Nowe połączenie w folderze" or "Nowa komenda" or "Dodaj parametr"=>"plus",
         "Edytuj" or "Edytuj plik" or "Pobierz i edytuj" or "Zmień nazwę" or "Zmień nazwę folderu" or "Zmień nazwę / przenieś"=>"edit",
         "Duplikuj" or "Kopiuj" or "Kopiuj wyniki" or "Kopiuj odcisk" or "Kopiuj zawartość dowiązania…" or "Kopiuj zaznaczenie" or "Kopiuj informacje" or "Kopiuj szczegóły"=>"copy",

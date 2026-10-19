@@ -1,4 +1,6 @@
-# ServerDesk 0.43.0 — getting started
+# ServerDesk 0.44.0 — getting started
+
+**New in 0.44.0:** offline Help (F1 outside session input), a Connections context menu, SFTP clipboard/transfer ergonomics, accent and diagnostic fixes. New RDP profiles default to embedding; Windows accepts local file drops onto the remote desktop. Reverse clipboard dragging is experimental; continuous dragging from remote Explorer is not implemented. Schema 4 is unchanged. [Changes and limits](releases/release-0.44.0.md).
 
 **New in 0.43.0:** consistent profile/password saves, concurrent plugin storage and quiet-link SSH/SFTP recovery. Reconnect preserves SFTP directories; retrying transfers remains explicit. First startup creates a verified backup and migrates to schema 4, which older clients reject. [Changes](releases/release-0.43.0.md), [database recovery](database-backups.md).
 

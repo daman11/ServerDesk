@@ -6,7 +6,7 @@ Akceptacja VMware z 2026-10-19 obejmuje udostępnione Windows 11 Test i Ubuntu 2
 
 0.43.0 domyka kolejną partię etapów B/C: błędy zapisu a hasła profili, równoległe magazyny pluginów, migracja do schematu 4 i odzyskiwanie po cichej utracie SSH/SFTP. [Zakres i granice](reports/release-verification-0.43.0.md). Pozostałe odmiany serwerów, WAN, sprzęt i rzeczywiste suspend/resume wymagają dalszej akceptacji; nie otwieramy ponownie zakończonych kontrolowanych prób.
 
-Punkt wyjścia: 0.43.0 Public Beta. Funkcje rdzenia i dodatków istnieją; stan implementacji oraz granice wcześniejszych testów opisuje [MVP](mvp-status.md). Poniższa lista jest bieżącym planem stabilizacji, a nie deklaracją gotowości 1.0.
+Punkt wyjścia: 0.44.0 Public Beta, zbierające Pomoc, ergonomię SFTP, diagnostykę i integrację RDP. Eksport RDP przez schowek jest eksperymentalny; ciągły gest ze zdalnego Eksploratora pozostaje niewdrożony. [Bieżąca weryfikacja](reports/release-verification-0.44.0.md). Funkcje rdzenia i dodatków istnieją; stan implementacji oraz granice wcześniejszych testów opisuje [MVP](mvp-status.md). Poniższa lista jest bieżącym planem stabilizacji, a nie deklaracją gotowości 1.0.
 
 0.42.0 zbiera usprawnienia tagów, motywów, edytora SFTP i komend, dodaje informacje o aplikacji oraz logi w ustawieniach. Obejmuje naprawę usuwania profili i próby rotacji logów, aliasów katalogów, równoległych eksportów i dużych plików. [Zakres bieżącej weryfikacji](reports/release-verification-0.42.0.md). Testy VMware, sprzętu i pilotaż pozostają otwarte.
 

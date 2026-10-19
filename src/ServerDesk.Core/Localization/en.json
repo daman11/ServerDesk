@@ -1753,6 +1753,7 @@
   "Schowek lub sesja zmieniły się. Skopiuj pliki ponownie i odśwież listę.": "The clipboard or session changed. Copy the files again and refresh the list.",
   "Przesyłanie pliku RDP zostało przerwane lub plik zmienił rozmiar. Skopiuj go ponownie.": "The RDP file transfer was interrupted or the file changed size. Copy it again.",
   "Pliki z RDP na ten komputer": "Files from RDP to this computer",
+  "Funkcja eksperymentalna. Zrzut do rzeczywistego Eksploratora wymaga dalszych testów. Alternatywnie użyj Ctrl+V w lokalnym folderze.": "Experimental feature. Dropping into actual Explorer needs further testing. Alternatively, use Ctrl+V in a local folder.",
   "Pliki z RDP": "Files from RDP",
   "Przeciągnij pliki do lokalnego folderu": "Drag files to a local folder",
   "1. Zaznacz pliki lub foldery w zdalnym Eksploratorze i naciśnij Ctrl+C.\n2. Otwórz to okno i sprawdź listę.\n3. Przeciągnij poniższy uchwyt do folderu lub na pulpit tego komputera.": "1. Select files or folders in remote Explorer and press Ctrl+C.\n2. Open this window and check the list.\n3. Drag the handle below to a folder or the desktop on this computer.",

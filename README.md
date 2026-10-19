@@ -1,4 +1,4 @@
-# ServerDesk — 0.43.0 Public Beta
+# ServerDesk — 0.44.0 Public Beta
 
 Native Windows/Linux workspace for SSH, SFTP, RDP, VNC and serial connections. Built with C#, .NET 10 and Avalonia 12. Free and open source under the [MIT license](LICENSE).
 
@@ -6,15 +6,15 @@ Native Windows/Linux workspace for SSH, SFTP, RDP, VNC and serial connections. B
 
 ## Downloads and installation
 
-0.43.0 strengthens profile/password consistency, concurrent plugin saves and recovery from silent SSH/SFTP outages. It preserves SFTP context across reconnect and includes the new factory reset and detailed SSH errors. Schema 4 requires a pre-migration backup and is rejected by older clients. Native VM/hardware acceptance remains deferred. [Release notes](docs/releases/release-0.43.0.md).
+0.44.0 adds searchable offline Help, improves SFTP clipboard/transfer ergonomics, connection menus, accent colors and safe error diagnostics. New RDP profiles default to embedding and Windows supports local file drops into the remote desktop. The reverse clipboard-to-drag bridge is experimental; continuous remote Explorer-to-local dragging is not implemented. Schema 4 is unchanged from 0.43.0. [Release notes](docs/releases/release-0.44.0.md), [verification and limits](docs/reports/release-verification-0.44.0.md).
 
 | System | Package | Start |
 |---|---|---|
-| Windows x64 | `ServerDesk-0.43.0-win-x64-Setup.exe` | Run Setup; current-user installation and Start menu shortcut |
-| Windows x64 portable | `ServerDesk-0.43.0-win-x64.zip` | Extract everything; run `ServerDesk.App.exe` |
-| Linux x64 DEB | `serverdesk_0.43.0_amd64.deb` | `sudo apt install ./serverdesk_0.43.0_amd64.deb` |
-| Linux x64 archive | `ServerDesk-0.43.0-linux-x64.tar.gz` | Extract into a new directory; run `./ServerDesk.App` |
-| Source | `ServerDesk-0.43.0-source.zip` | .NET 10 SDK required |
+| Windows x64 | `ServerDesk-0.44.0-win-x64-Setup.exe` | Run Setup; current-user installation and Start menu shortcut |
+| Windows x64 portable | `ServerDesk-0.44.0-win-x64.zip` | Extract everything; run `ServerDesk.App.exe` |
+| Linux x64 DEB | `serverdesk_0.44.0_amd64.deb` | `sudo apt install ./serverdesk_0.44.0_amd64.deb` |
+| Linux x64 archive | `ServerDesk-0.44.0-linux-x64.tar.gz` | Extract into a new directory; run `./ServerDesk.App` |
+| Source | `ServerDesk-0.44.0-source.zip` | .NET 10 SDK required |
 
 The binary packages include .NET. Linux additionally needs its system X11/fontconfig libraries, Secret Service for remembered passwords and an installed X11 FreeRDP client (`xfreerdp3` or `xfreerdp`) for in-tab RDP. Linux verification used Ubuntu/WSLg; other desktop/distribution combinations are experimental. ARM/macOS packages are not provided.
 
@@ -36,6 +36,7 @@ This beta is unsigned. Obtain it from a trusted release source and compare its S
 - One, two, three or four workspace panels, detachable tabs and recovery without automatic connections; configurable startup layout, new-tab placement, separators and tab-strip height.
 - Server/folder icons, colors, custom artwork, five themes and configurable interface/terminal.
 - Polish and English UI, destination-language reminders and Save and restart in Settings.
+- Searchable offline Help in Polish/English, available from F1 outside remote input and from the menu.
 - Responsive welcome dashboard with recent connections, searchable settings (Ctrl+F) and clear active local/remote SFTP panel headings.
 - Verified SSH host keys, optional local password storage, JSON profile import/export without secrets.
 

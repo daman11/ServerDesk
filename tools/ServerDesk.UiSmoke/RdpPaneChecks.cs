@@ -137,7 +137,13 @@ internal static class RdpPaneChecks
     {
         public int Starts;
         public Task<RdpEndpointInfo?> CheckAsync(ServerProfile profile,CancellationToken ct)=>Task.FromResult<RdpEndpointInfo?>(new(TimeSpan.FromMilliseconds(15),true,"NLA / CredSSP (fixture)"));
-        public RdpLaunch Prepare(ServerProfile profile,RdpOptions options) { Starts++; return new(Environment.GetEnvironmentVariable("ComSpec")!,["/d","/c","ping -n 30 127.0.0.1 >nul"],false); }
+        public RdpLaunch Prepare(ServerProfile profile,RdpOptions options)
+        {
+            Starts++;
+            return OperatingSystem.IsWindows()
+                ?new(Environment.GetEnvironmentVariable("ComSpec")??"cmd.exe",["/d","/c","ping -n 30 127.0.0.1 >nul"],false)
+                :new("/bin/sleep",["30"],false);
+        }
     }
     private sealed class FailingEndpointAdapter : IRdpClient
     {

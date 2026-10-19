@@ -1,6 +1,7 @@
 using System.Diagnostics;
 using System.Reflection;
 using System.Text.Json;
+using System.Text.RegularExpressions;
 using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Headless;
@@ -120,7 +121,11 @@ internal static class ConnectionBrowserChecks
                 prompt.GetVisualDescendants().OfType<Button>().Single(b=>b.Tag as string=="OK").RaiseEvent(new RoutedEventArgs(Button.ClickEvent));
                 Until(()=>main.OwnedWindows.Any(w=>w.Title==AppText.T("ServerDesk — błąd"))); var error=main.OwnedWindows.Single();
                 var expected=AppText.T("Serwer już nie istnieje. Odśwież listę połączeń i spróbuj ponownie.");
-                if(vm.Status!=expected || !error.GetVisualDescendants().OfType<TextBlock>().Any(t=>t.Text==expected))throw new Exception("Stale move feedback is not localized");
+                // The error dialog now appends a localized correlation ID;
+                // retain the exact actionable message and validate that ID.
+                var errorIdPattern=Regex.Escape(AppText.T("Identyfikator błędu: {0}")).Replace(Regex.Escape("{0}"),"[0-9a-f]{32}");
+                var errorPattern="\\A"+Regex.Escape(expected+"\n\n")+errorIdPattern+"\\z";
+                if(vm.Status!=expected || !error.GetVisualDescendants().OfType<TextBlock>().Any(t=>Regex.IsMatch(t.Text??"",errorPattern)))throw new Exception("Stale move feedback or its correlation ID is not localized");
                 error.CaptureRenderedFrame()!.Save(Path.Combine(root,$"stale-move-{language}.png"));
                 error.GetVisualDescendants().OfType<Button>().Single(b=>b.Tag as string=="Zamknij").RaiseEvent(new RoutedEventArgs(Button.ClickEvent)); RedesignChecks.Wait(moving);
                 if(repo.FoldersAsync().GetAwaiter().GetResult().Any(f=>f=="Ghost" || f.StartsWith("Ghost/",StringComparison.Ordinal)))throw new Exception("Stale UI move created phantom folders");

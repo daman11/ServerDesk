@@ -1,0 +1,101 @@
+[
+  {
+    "Id": "start", "Icon": "help", "Title": "Getting started", "Summary": "Add a server, open a session and find the main features.", "Keywords": "start installation help pierwsze kroki pomoc quick connect szybkie",
+    "Sections": [
+      { "Title": "Your first connection", "Paragraphs": ["1. Choose + or New connection. Enter a name, protocol, address and username. For Serial, choose a device instead of a network address. Save the profile.", "2. Double-click the profile in the connection tree. Enter the required credentials. Before trusting an SSH host key or RDP certificate, compare its fingerprint with information obtained independently from the administrator.", "3. The session opens in a tab. Tabs restored at startup wait for Connect; restoring a tab does not automatically sign in to the server."] },
+      { "Title": "Finding your way around", "Paragraphs": ["The left rail opens connections, favorites, recent sessions, transfers, network tools and enabled plugins. Help and Settings are at the bottom. The Menu in the top-right corner contains additional actions.", "Ctrl+Shift+P opens the action palette. Help works offline, searches article contents and lets you copy a topic. Opening Help again returns to the same tab."] },
+      { "Title": "Quick connection", "Paragraphs": ["Menu → Quick connection accepts addresses such as ssh://login@host:22, rdp://host:3389, vnc://host:5900 or serial://COM3?baud=9600. A Linux serial device can use serial:///dev/ttyUSB0?baud=115200.", "Check the destination preview before Connect. Edit as profile opens the editor to save the configuration. Do not put a password in the address: enter it in the credentials dialog."] }
+    ]
+  },
+  {
+    "Id": "profiles", "Icon": "connections", "Title": "Connections, folders and tags", "Summary": "Organize profiles, apply filters and change the list order.", "Keywords": "profiles connections folders tags sorting icons colors polaczenia tagi foldery sortowanie",
+    "Sections": [
+      { "Title": "Organization and search", "Paragraphs": ["A connection can belong to a folder and have its own color, icon or imported image. A folder's context menu lets you change its icon. Use the star to add a server to Favorites.", "Search includes the name, address, username, folder, description and tags. The protocol filter works together with search. Choose sorting by name, address, protocol or last connection, then select the sort direction."] },
+      { "Title": "Tags and deleting a profile", "Paragraphs": ["In the connection editor, under Organization → Tags, add labels with Enter or +. You can paste multiple names separated by commas or semicolons. Tags in the connection sidebar opens shared colors and Any, All or Untagged filtering. Apply confirms the changes; Cancel discards them.", "Deleting a saved connection removes the selected profile, then cleans up its saved credentials. It does not delete remote files, private keys or other profiles. History entries may remain available for reference; they do not recreate the deleted connection."] }
+    ]
+  },
+  {
+    "Id": "ssh", "Icon": "ssh", "Title": "SSH and the terminal", "Summary": "Sign-in, host keys, clipboard and reconnecting.", "Keywords": "terminal ssh password key host fingerprint authentication haslo klucz polaczenie",
+    "Sections": [
+      { "Title": "Connecting securely", "Paragraphs": ["Set the SSH address, port, username and authentication method in the profile. Check the host-key fingerprint on the first connection. A changed key blocks the connection; do not remove trust until you understand why it changed.", "Remembering a password is optional. If the system vault is unavailable, you can use a password for the current session only. Terminal contents are not instructions to ServerDesk: commands you enter run in the remote shell."] },
+      { "Title": "Working and recovering from a lost connection", "Paragraphs": ["Ctrl+Shift+C and Ctrl+Shift+V copy and paste in the terminal. Plain Ctrl+C remains a shell shortcut. Set the terminal appearance, font, cursor and scrollback under Settings → Terminal.", "After a connection is lost, use Reconnect in the same tab. Read the error reason: TCP refusal, DNS failure, timeout and authentication rejection describe different problems. An authentication rejection alone does not prove that the password is wrong."] }
+    ]
+  },
+  {
+    "Id": "sftp", "Icon": "folder", "Title": "SFTP and file transfers", "Summary": "Two file panels, the transfer queue, editing and safe retries.", "Keywords": "sftp files upload download transfers editor pliki transfery edytor",
+    "Sections": [
+      { "Title": "Browsing and editing", "Paragraphs": ["Choose SFTP in an SSH tab. Clicking a panel selects the local or remote side. Enter or double-click opens a directory, Alt+↑ goes up, Ctrl+L selects the path and F5 refreshes the active panel. Ctrl/Shift+click and Ctrl+A select multiple entries.", "Upload, Download or dragging files creates transfer jobs. Choose the default text editor under Settings → SFTP. Editing a remote file downloads a local copy; upload it explicitly after saving changes. Saving in the editor does not update the remote file automatically."] },
+      { "Title": "The queue and file operations", "Paragraphs": ["The Transfers sidebar collects SFTP jobs from open SSH tabs, not RDP clipboard operations. Transfer details shows the full state and paths as they were when opened. You can cancel a job, retry a failure or clear finished history. History disappears when the session tab closes.", "Retry starts a file from the beginning and requires fresh overwrite consent. If SSH was lost, reconnect the session first. Deleting files or directories is permanent and needs separate confirmation. Normal directory transfers skip symbolic links; copying a link's contents is a separate action."] }
+    ]
+  },
+  {
+    "Id": "rdp", "Icon": "rdp", "Title": "RDP remote desktop", "Summary": "Embedded mode, certificates, keyboard and file clipboard.", "Keywords": "rdp remote desktop freerdp xwayland clipboard certificate dpi pulpit schowek certyfikat",
+    "Sections": [
+      { "Title": "Windows and Linux", "Paragraphs": ["Set the address, port, username and desktop options in the RDP profile. Windows supports an embedded ServerDesk tab or an external client. Linux embeds an installed X11 FreeRDP client; Wayland sessions also require XWayland.", "Enter the password in a masked ServerDesk dialog. NLA and certificate verification remain enabled. On Windows, the system may handle certificate warnings. On Linux, compare SHA-256 before choosing Trust in this tab. That consent does not create a permanent system trust entry."] },
+      { "Title": "Keyboard, clipboard and connection state", "Paragraphs": ["Ctrl+Alt+← or Ctrl+Alt+→ returns keyboard focus to ServerDesk. Ctrl+Alt+End opens the remote Windows security screen. Clipboard redirection and Windows shortcut handling depend on profile settings and remote system policies.", "For embedded RDP on Windows, drop files onto Files → RDP clipboard, then use Ctrl+V in a folder in remote Explorer. Clipboard must be enabled; the set must be smaller than 2 GiB. This is neither SFTP nor a direct drop onto the remote desktop.", "Check server reads availability and TLS information without signing in. A reachable port does not confirm valid credentials or a successful session. Linux uses manual reconnection; Windows retry options are in the profile."] }
+    ]
+  },
+  {
+    "Id": "vnc-serial", "Icon": "monitor", "Title": "VNC and serial ports", "Summary": "A VNC desktop or a terminal for a COM or /dev/tty… device.", "Keywords": "vnc serial com tty baud port szeregowy",
+    "Sections": [
+      { "Title": "VNC", "Paragraphs": ["Select VNC, the address and port (5900 by default), and either a VNC password or explicit no-authentication mode. The desktop opens in a tab with mouse, keyboard, scaling and Ctrl+Alt+Del support. Ctrl+Alt+← / → returns focus to the application.", "Standard VNC does not encrypt traffic. Use a trusted network, VPN or an already established tunnel. TLS/VeNCrypt, system-account authentication, VNC clipboard and VNC file transfers are not currently supported."] },
+      { "Title": "Serial", "Paragraphs": ["Choose the port, such as COM3 or /dev/ttyUSB0, baud rate, data/stop bits, parity and flow control to match your device. You can detect a port or enter it manually. DTR and RTS are off by default.", "Connect opens the device terminal; Disconnect releases the port. On Linux your account needs access to that device. If it is busy, check other terminal programs; do not change permissions across the whole system merely to bypass an error."] }
+    ]
+  },
+  {
+    "Id": "workspace", "Icon": "layers", "Title": "Tabs, panels and docking", "Summary": "Up to four panels, floating windows and restoring the layout.", "Keywords": "workspace tabs split dock layout panele okna podzial dpi",
+    "Sections": [
+      { "Title": "Arranging your workspace", "Paragraphs": ["Layout offers one panel, two side by side or stacked, three panels (1 + 2), and four panels (2 × 2). Drag the separators to change proportions, or choose Equalize panel sizes.", "Drag a tab to another panel or use its context menu. Detach to a separate window moves the tab; closing the floating window docks it back. Help uses the same mechanism so you can read instructions beside a terminal."] },
+      { "Title": "Switching and startup", "Paragraphs": ["Ctrl+Tab and Ctrl+Shift+Tab switch tabs in the active panel. Ctrl+Shift+L lists open tabs with search. Settings → Workspace contains options for tabs, panels, the sidebar and the startup layout.", "The saved layout does not contain passwords or terminal contents. Restored sessions wait for Connect. Help itself is not a saved server session; open it again from the menu when needed."] }
+    ]
+  },
+  {
+    "Id": "settings", "Icon": "settings", "Title": "Appearance, language and settings", "Summary": "Themes, custom accent, density and module preferences.", "Keywords": "settings appearance themes language accent font ustawienia jezyk kolory motywy",
+    "Sections": [
+      { "Title": "Personalizing the interface", "Paragraphs": ["Settings has a search field and Appearance, Terminal, SFTP, Workspace, Monitoring, Security and Plugins categories. Search also accepts text without Polish diacritics.", "Appearance offers themes, accent color, font and text size, spacing and corners. Theme and accent changes have live previews. An empty accent value restores the theme color; Cancel rolls back the preview. The terminal palette is configured separately."] },
+      { "Title": "Saving and language", "Paragraphs": ["Save applies your preferences. Changing the language requires restarting; the notice uses the selected language and lets you restart the application. Restart disconnects sessions and stops running operations after confirmation.", "Some preferences apply to the next session or startup: read the description beneath the field. Default settings fills the dialog with defaults; Save applies them and Cancel discards them. Saved connections remain intact."] }
+    ]
+  },
+  {
+    "Id": "plugins", "Icon": "plugins", "Title": "Plugins: monitoring and commands", "Summary": "Enable extras and use command templates with care.", "Keywords": "plugins commands cheatsheet linux monitoring komendy sciagnawka",
+    "Sections": [
+      { "Title": "Enabling plugins", "Paragraphs": ["Settings → Plugins independently enables Linux monitoring and Commands. Changes apply after Save, without restarting. Disabling a plugin preserves its preferences and custom commands and does not disconnect the terminal or SFTP.", "Monitoring reads real data over a separate SSH channel without an agent or sudo. The first CPU value requires another sample. Some details depend on commands available on the remote Linux system; polling is reduced in inactive panels."] },
+      { "Title": "Commands", "Paragraphs": ["Open Commands from the rail or Ctrl+Shift+K. Choose a system profile, search a description or command, and use category and risk filters. Clicking a card opens details, parameters, the preview and guidance. You can store your own templates.", "Before inserting or running a command, check the active server and full preview. Action availability depends on the session and context. Execution is a separate explicit action: viewing a list or details does not run commands. Do not put secrets in template names or descriptions."] }
+    ]
+  },
+  {
+    "Id": "network", "Icon": "network", "Title": "Network tools", "Summary": "Diagnose a target without creating a server profile.", "Keywords": "network ping mtr trace dns tcp ports wake wol http tls subnet snmp diagnostyka siec",
+    "Sections": [
+      { "Title": "Choosing a tool", "Paragraphs": ["Network tools on the left rail offers Ping, Network trace / MTR, DNS queries, TCP port scanner, Wake-on-LAN, HTTP client, TLS inspector, Subnet calculator and SNMP browser.", "Enter the target and options in a tab, then choose Start. Stop cancels running work. History and result export are available. A server's menu can pass its address to a tool; opening a tab does not start diagnostics."] },
+      { "Title": "Interpreting results and protecting data", "Paragraphs": ["A missing Ping reply or trace hop may mean ICMP filtering rather than a server failure. An open port confirms TCP service, not a successful login. Run diagnostics only against targets you are authorized to check.", "URLs, HTTP headers, responses and results may contain private data. Dedicated secret fields are protected, but always review contents before copying or exporting. The subnet calculator works locally; network tools contact the selected target only after you start them."] }
+    ]
+  },
+  {
+    "Id": "security", "Icon": "shield", "Title": "Passwords, trust and privacy", "Summary": "Where data is stored and what trust prompts mean.", "Keywords": "security privacy credentials password dpapi secret service kwallet bezpieczenstwo hasla dane",
+    "Sections": [
+      { "Title": "Data and credentials", "Paragraphs": ["On Windows, application data defaults to %APPDATA%\\ServerDesk; saved credentials use DPAPI protection for the current Windows account. On Linux, data is in $XDG_DATA_HOME/serverdesk (normally ~/.local/share/serverdesk) and configuration in $XDG_CONFIG_HOME/serverdesk.", "Linux uses secret-tool and an unlocked Secret Service. Having secret-tool installed does not by itself mean a working vault. KWallet needs to expose the Secret Service interface. If saving is unavailable, use the password without saving or unlock the system vault."] },
+      { "Title": "Trust and sharing information", "Paragraphs": ["SSH host keys and RDP certificates identify the server. Compare fingerprints through an independent channel; do not accept an unexpected change just to connect more quickly. Local password encryption does not replace protecting your operating-system account.", "ServerDesk sends no telemetry and does not check for updates automatically. Logs do not record terminal contents, but may contain paths and infrastructure details. JSON configuration exports exclude passwords but include profile names, addresses and other metadata: review them before sharing."] }
+    ]
+  },
+  {
+    "Id": "backups", "Icon": "archive", "Title": "Backups, import and reset", "Summary": "Protect configuration and distinguish the two kinds of reset.", "Keywords": "backup restore import export reset defaults kopia kopie przywracanie fabryczne",
+    "Sections": [
+      { "Title": "Backups and moving connections", "Paragraphs": ["Settings → Security → Database backups lets you create a backup, inspect saved files and choose Verify backup. Verification checks database structure; it does not restore it or confirm access to secrets. Database snapshots are not separate backups of the operating-system credential vault.", "Menu → Export configuration creates JSON profiles and folders without secrets. Import creates new IDs and does not attach existing local passwords to the new profiles. Check the imported configuration before connecting. For manual database recovery, close the application and preserve your current data first."] },
+      { "Title": "Default settings and factory reset", "Paragraphs": ["Default settings only changes the preference draft in the dialog. It does not delete profiles. Choose Save to apply those values or Cancel to keep the previous preferences.", "Factory reset is a separate confirmed operation. At the next startup it creates a verified database backup, then clears connections, folders, history, SSH trust and plugin data. Earlier backups, logs and external files are retained. Protected vault entries may remain for local recovery; reset is not a secure erasure of all system secrets."] }
+    ]
+  },
+  {
+    "Id": "troubleshooting", "Icon": "warning", "Title": "Troubleshooting and logs", "Summary": "Read the error reason and prepare a useful issue report.", "Keywords": "troubleshooting logs timeout tls nla error blad logi odrzucono odmowa",
+    "Sections": [
+      { "Title": "Common causes", "Paragraphs": ["TCP connection refused: check the address, port, service and firewall. Timeout: check routing, VPN and host availability. DNS error: check the hostname and resolver. SSH/RDP authentication rejected: check the full username, domain or local account, authentication method and server policy.", "RDP TLS/NLA or certificate failure: check the client message and server fingerprint; do not disable verification. FreeRDP on Linux needs an X11 client, plus XWayland under Wayland. Filesystem errors, missing directories and access denial are different from a rejected login."] },
+      { "Title": "Viewing and sharing logs", "Paragraphs": ["Under Settings → Security → Logs and diagnostics, choose Open logs. Select a file, use Ctrl+F to search, Enter for the next match and F5 to refresh. Large files preview their last 128 KiB; Save log copy exports the full file to your chosen location.", "Record the time, protocol, reproduction steps and error message. About → Copy information adds version, build and environment details. Review the log before sending it; do not include passwords, private keys or the entire data folder. The current version is a public beta: limitations also depend on the operating system and server."] }
+    ]
+  },
+  {
+    "Id": "shortcuts", "Icon": "square-terminal", "Title": "Keyboard shortcuts", "Summary": "Key shortcuts for the application and active panel.", "Keywords": "shortcuts keyboard keys skroty klawiatura f1 ctrl",
+    "Sections": [
+      { "Title": "Application navigation", "Paragraphs": ["Ctrl+Shift+N — new connection. Ctrl+Shift+O — find a saved connection. Ctrl+Shift+P — action palette. Ctrl+Shift+L — open tabs. Ctrl+Shift+K — Commands, when the plugin is enabled.", "Ctrl+Tab / Ctrl+Shift+Tab — next / previous tab in the panel. Ctrl+B — show or hide the connection sidebar outside the terminal; Ctrl+Shift+B also works from the terminal. Ctrl+W closes the active tab outside the terminal; Ctrl+Shift+W is the application shortcut inside the terminal too.", "F1 — Help when the application interface owns the keyboard. Terminals and remote desktops retain their own F1. In Help, Ctrl+F selects search, Escape clears the query, and Enter / ↓ moves to topic selection."] },
+      { "Title": "Terminal, files and desktops", "Paragraphs": ["SSH/Serial: Ctrl+Shift+C / Ctrl+Shift+V — copy / paste. Ctrl+C remains a shell shortcut. SFTP: Enter — open directory, Alt+↑ — up, Ctrl+L — path, F5 — refresh, Ctrl+A — select visible entries, Escape — clear selection.", "RDP/VNC: Ctrl+Alt+← or Ctrl+Alt+→ — return focus to ServerDesk. RDP: Ctrl+Alt+End — remote Windows security screen. Desktop shortcuts also depend on the operating system and session settings."] }
+    ]
+  }
+]

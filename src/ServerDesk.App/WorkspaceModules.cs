@@ -26,7 +26,7 @@ public sealed partial class MainWindow
             var group=new Border { Name=name,Child=buttons,Margin=new Thickness(2,2,2,10),Background=Brushes.Transparent };
             AutomationProperties.SetName(group,L.T(caption)); ToolTip.SetTip(group,L.T(caption)); return group;
         }
-        var settings=Group("ActivityApplication","Ustawienia aplikacji",("settings","Ustawienia")); DockPanel.SetDock(settings,Dock.Bottom); rail.Children.Add(settings);
+        var settings=Group("ActivityApplication","Ustawienia aplikacji",("help","Pomoc"),("settings","Ustawienia")); DockPanel.SetDock(settings,Dock.Bottom); rail.Children.Add(settings);
         activityPluginGroup=Group("ActivityPlugins","Pluginy",("commands","Komendy"));
         var groups=new StackPanel { Margin=new Thickness(0,3,0,0),Children={
             Group("ActivitySessions","Połączenia",("connections","Połączenia"),("favorite","Ulubione"),("recent","Ostatnie")),

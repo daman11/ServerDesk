@@ -72,7 +72,7 @@ public sealed partial class MainWindow : Window
                     }
                 }
                 await profileSortSave; CancelPendingSnapshot(); if(workspaceReady)await Safe(SaveSessionSnapshotAsync);
-                commandPanel?.Dispose(); await Safe(()=>commandPanel?.Shutdown??Task.CompletedTask); closing=true; statusTimer.Stop(); lifetime.Cancel(); foreach(var session in sessions)session.StatusChanged-=PaneStatusChanged;
+                commandPanel?.Dispose(); await Safe(()=>commandPanel?.Shutdown??Task.CompletedTask); closing=true; helpPane?.Dispose(); statusTimer.Stop(); lifetime.Cancel(); foreach(var session in sessions)session.StatusChanged-=PaneStatusChanged;
                 var closingTools=networkPanes.ToArray(); foreach(var tool in closingTools)tool.Dispose(); await Task.WhenAll(closingTools.Select(tool=>tool.Shutdown)); networkPanes.Clear();
                 await Safe(()=>Task.WhenAll(sessions.Select(session=>session.CloseAsync()).Concat(closingSessions)));
                 foreach(var floating in floatingDocks.Values.ToArray())floating.Window.Close(); floatingDocks.Clear();

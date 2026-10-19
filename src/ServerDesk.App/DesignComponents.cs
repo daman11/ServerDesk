@@ -67,7 +67,7 @@ internal static partial class DesignSystem
         Add(s=>s.OfType<TabItem>().Class("settings-category"),new Setter(TabItem.WidthProperty,184d),new Setter(TabItem.MinHeightProperty,44d),new Setter(TabItem.MarginProperty,new Thickness(8,4)),new Setter(TabItem.HorizontalContentAlignmentProperty,HorizontalAlignment.Stretch));
         Add(s=>s.OfType<ListBoxItem>(),new Setter(ListBoxItem.CornerRadiusProperty,new CornerRadius(5)));
         Add(s=>s.OfType<TextBox>().Class("code-preview"),R(TextBox.BackgroundProperty,"BackgroundPrimary"),R(TextBox.FontSizeProperty,"FontCaption"),new Setter(TextBox.PaddingProperty,new Thickness(10)),new Setter(TextBox.FontWeightProperty,FontWeight.Normal));
-        foreach(var listClass in new[]{"command-list","sftp-list","network-results"})
+        foreach(var listClass in new[]{"command-list","sftp-list","network-results","help-topics"})
         {
             Add(s=>s.OfType<ListBox>().Class(listClass).Descendant().OfType<ListBoxItem>(),new Setter(ListBoxItem.MarginProperty,new Thickness(0,2)),R(ListBoxItem.ForegroundProperty,"ForegroundPrimary"));
             Add(s=>s.OfType<ListBox>().Class(listClass).Descendant().OfType<ListBoxItem>().Class(":selected").Template().OfType<ContentPresenter>().Name("PART_ContentPresenter"),R(ContentPresenter.BackgroundProperty,"SurfaceSelected"),R(ContentPresenter.ForegroundProperty,"ForegroundPrimary"));

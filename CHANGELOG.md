@@ -2,6 +2,8 @@
 
 ## Unreleased
 
+- Add an offline Help workspace tab with 14 Polish/English documentation topics, full-content search, selectable/copyable articles and responsive topic navigation. Open it from the menu, application rail, action palette or F1 outside terminal/desktop input; reuse the existing tab and support docking without treating help as a saved connection.
+
 - Align welcome action icons with their headings and keep equal column indents across wrapped descriptions, shortcuts, languages and narrow layouts.
 - Synchronize application and Fluent accent palettes, including custom selection surfaces, focused inputs and native controls. Preserve primary button colors during hover/press and use contrasting text/check marks for light and dark accents; restore preset colors on preview cancellation or clearing the override.
 

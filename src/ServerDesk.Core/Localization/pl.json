@@ -1723,5 +1723,17 @@
   "Usuń udane zadania": "Usuń udane zadania",
   "Zachowuje zadania błędne, anulowane, pominięte i z ostrzeżeniami.": "Zachowuje zadania błędne, anulowane, pominięte i z ostrzeżeniami.",
   "Usuń wszystkie zakończone zadania": "Usuń wszystkie zakończone zadania",
-  "Usuwa tylko historię. Pliki i aktywne transfery pozostają bez zmian.": "Usuwa tylko historię. Pliki i aktywne transfery pozostają bez zmian."
+  "Usuwa tylko historię. Pliki i aktywne transfery pozostają bez zmian.": "Usuwa tylko historię. Pliki i aktywne transfery pozostają bez zmian.",
+  "Pomoc": "Pomoc",
+  "Dokumentacja offline": "Dokumentacja offline",
+  "Dokumentacja ServerDesk — dostępna bez internetu.": "Dokumentacja ServerDesk — dostępna bez internetu.",
+  "Szukaj w dokumentacji…": "Szukaj w dokumentacji…",
+  "Szukaj w dokumentacji": "Szukaj w dokumentacji",
+  "Tematy pomocy": "Tematy pomocy",
+  "Kopiuj temat": "Kopiuj temat",
+  "Tematy: {0} / {1}": "Tematy: {0} / {1}",
+  "Brak tematów pomocy": "Brak tematów pomocy",
+  "Skróć zapytanie lub wyczyść wyszukiwanie, aby zobaczyć wszystkie tematy.": "Skróć zapytanie lub wyczyść wyszukiwanie, aby zobaczyć wszystkie tematy.",
+  "Skopiowano temat pomocy.": "Skopiowano temat pomocy.",
+  "Nie udało się skopiować tematu. Zaznacz tekst i skopiuj go ręcznie.": "Nie udało się skopiować tematu. Zaznacz tekst i skopiuj go ręcznie."
 }

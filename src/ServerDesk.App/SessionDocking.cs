@@ -187,7 +187,7 @@ public sealed partial class MainWindow
         if(Panes.Contains(pane))throw new InvalidOperationException(L.T("Sesja jest już w obszarze pracy."));
         var target=requested??(preferences.NewTabTarget switch { NewTabPlacement.FirstPanel=>SessionDock.Primary,NewTabPlacement.LeastPopulated=>dockState.VisibleDocks.MinBy(d=>dockState.Items(d).Count),_=>dockState.VisibleDocks.Contains(focusedDock)?focusedDock:SessionDock.Primary });
         dockState.Add(pane.WorkspaceId,target); focusedDock=target;
-        if(pane is SessionPane session) { session.StatusChanged+=PaneStatusChanged; sessions.Add(session); } else networkPanes.Add((NetworkToolPane)pane); sessionHost.Children.Add(pane);
+        if(pane is SessionPane session) { session.StatusChanged+=PaneStatusChanged; sessions.Add(session); } else if(pane is HelpPane help)helpPane=help; else networkPanes.Add((NetworkToolPane)pane); sessionHost.Children.Add(pane);
         pane.AddHandler(PointerPressedEvent,(_,_)=>FocusSession(pane),RoutingStrategies.Tunnel); pane.GotFocus+=(_,_)=>FocusSession(pane);
         RefreshTabs(); LayoutDockWorkspace(); QueueWorkspaceSave();
     }
@@ -231,7 +231,7 @@ public sealed partial class MainWindow
             var location=dockState.Location(pane.WorkspaceId); var visible=location==SessionDock.Floating || dockState.VisibleDocks.Contains(location) && dockState.Selected(location)==pane.WorkspaceId;
             pane.IsVisible=visible; pane.IsActive=visible && (location!=SessionDock.Floating || floatingDocks.TryGetValue(pane.WorkspaceId,out var floating) && floating.Window.WindowState!=WindowState.Minimized);
         }
-        UpdateStatus(); QueueTree();
+        UpdateActivity(); UpdateStatus(); QueueTree();
     }
     internal void DockSession(WorkspacePane pane,SessionDock target,Guid? before=null)
     {
@@ -277,7 +277,7 @@ public sealed partial class MainWindow
         if(pane is SessionPane closingSession)_=TrackSessionCloseAsync(closingSession);
         if(floatingDocks.Remove(pane.WorkspaceId,out var floating)) { floating.Returning=true; floating.Host.Children.Remove(pane); floating.Window.Close(); }
         else sessionHost.Children.Remove(pane);
-        dockState.Remove(pane.WorkspaceId); if(pane is SessionPane removed)sessions.Remove(removed); else networkPanes.Remove((NetworkToolPane)pane); focusedDock=ActivePane is {} active?dockState.Location(active.WorkspaceId):SessionDock.Primary; RefreshTabs(); LayoutDockWorkspace(); QueueWorkspaceSave();
+        dockState.Remove(pane.WorkspaceId); if(pane is SessionPane removed)sessions.Remove(removed); else if(pane is HelpPane)helpPane=null; else networkPanes.Remove((NetworkToolPane)pane); focusedDock=ActivePane is {} active?dockState.Location(active.WorkspaceId):SessionDock.Primary; RefreshTabs(); LayoutDockWorkspace(); QueueWorkspaceSave();
         if(transferViews.Count>0)UpdateTransferOverview();
         UpdateResumeNotice();
     }

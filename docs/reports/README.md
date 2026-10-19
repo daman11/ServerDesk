@@ -1,5 +1,7 @@
 # Verification and historical reviews
 
+Offline documentation: [Help tab, 14 PL/EN topics, search and workspace integration, 2026-10-19](help-2026-10-19.md).
+
 Welcome and accents: [Action alignment, shared Fluent palette and live settings preview, 2026-10-19](welcome-accent-2026-10-19.md).
 
 Transfer ergonomics: [Full details, explicit copy and selective history clearing, 2026-10-19](transfer-ux-2026-10-19.md).

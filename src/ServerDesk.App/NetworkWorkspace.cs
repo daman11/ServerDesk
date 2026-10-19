@@ -22,7 +22,7 @@ internal static class NetworkToolCatalog
 public sealed partial class MainWindow
 {
     private readonly List<NetworkToolPane> networkPanes=[];
-    private IEnumerable<WorkspacePane> Panes=>sessions.Cast<WorkspacePane>().Concat(networkPanes);
+    private IEnumerable<WorkspacePane> Panes=>sessions.Cast<WorkspacePane>().Concat(networkPanes).Concat(helpPane is {} help?new WorkspacePane[]{help}:[]);
     private WorkspacePane? ActivePane=>Panes.FirstOrDefault(p=>p.WorkspaceId==dockState.Focused);
     private NetworkToolsStore? networkStore;
     private readonly StackPanel networkBrowser=new() { IsVisible=false,Margin=new Thickness(10,0,10,10),Spacing=6 };
@@ -45,6 +45,7 @@ public sealed partial class MainWindow
     private Control WorkspaceTabHeader(WorkspacePane pane)
     {
         if(pane is SessionPane session)return TabHeader(session);
+        if(pane is HelpPane help)return HelpTabHeader(help);
         var tool=(NetworkToolPane)pane; var title=DesignSystem.Label(tool.DisplayName); DesignSystem.Resource(title,TextBlock.MaxWidthProperty,"SessionTabMaxWidth"); title.TextTrimming=Avalonia.Media.TextTrimming.CharacterEllipsis; title.Bind(TextBlock.TextProperty,new Binding(nameof(NetworkToolPane.Caption)) { Source=tool });
         var state=new BusyIndicator { Width=14,Height=14,Classes={"busy"} }; state.Bind(Visual.IsVisibleProperty,new Binding(nameof(NetworkToolPane.IsRunning)) { Source=tool }); state.Glyph="circle-dashed";
         var close=DeskIcons.Button("close",L.T("Zamknij ")+tool.DisplayName,()=>_=Safe(()=>CloseWorkspacePaneAsync(pane)),24);
@@ -58,6 +59,6 @@ public sealed partial class MainWindow
     private async Task CloseWorkspacePaneAsync(WorkspacePane pane)
     {
         if(pane is SessionPane session) { await CloseSessionAsync(session); return; }
-        if(!Panes.Contains(pane))return; RemovePane(pane); await ((NetworkToolPane)pane).Shutdown;
+        if(!Panes.Contains(pane))return; RemovePane(pane); if(pane is NetworkToolPane tool)await tool.Shutdown;
     }
 }

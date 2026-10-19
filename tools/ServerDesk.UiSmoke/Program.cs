@@ -65,6 +65,7 @@ if(args.Contains("--sftp-navigation")) { SftpNavigationChecks.Run(root); return;
 if(args.Contains("--extended-settings")) { ExtendedSettingsChecks.Run(root); return; }
 if(args.Contains("--themes-editor")) { ThemeEditorChecks.Run(root); return; }
 if(args.Contains("--welcome-accent")) { WelcomeAccentChecks.Run(root); return; }
+if(args.Contains("--help")) { HelpChecks.Run(root); return; }
 if(args.Contains("--four-panels")) { FourPanelChecks.Run(root); return; }
 if(args.Contains("--commands")) { CommandPanelChecks.Run(root); return; }
 if(args.Contains("--command-profile")) { CommandPanelChecks.ProfileLayout(root); return; }

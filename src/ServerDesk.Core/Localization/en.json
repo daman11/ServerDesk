@@ -1723,5 +1723,17 @@
   "Usuń udane zadania": "Remove successful tasks",
   "Zachowuje zadania błędne, anulowane, pominięte i z ostrzeżeniami.": "Keeps failed, cancelled, skipped tasks and tasks with warnings.",
   "Usuń wszystkie zakończone zadania": "Remove all finished tasks",
-  "Usuwa tylko historię. Pliki i aktywne transfery pozostają bez zmian.": "Removes history only. Files and active transfers are unchanged."
+  "Usuwa tylko historię. Pliki i aktywne transfery pozostają bez zmian.": "Removes history only. Files and active transfers are unchanged.",
+  "Pomoc": "Help",
+  "Dokumentacja offline": "Offline documentation",
+  "Dokumentacja ServerDesk — dostępna bez internetu.": "ServerDesk documentation — available offline.",
+  "Szukaj w dokumentacji…": "Search documentation…",
+  "Szukaj w dokumentacji": "Search documentation",
+  "Tematy pomocy": "Help topics",
+  "Kopiuj temat": "Copy topic",
+  "Tematy: {0} / {1}": "Topics: {0} / {1}",
+  "Brak tematów pomocy": "No help topics found",
+  "Skróć zapytanie lub wyczyść wyszukiwanie, aby zobaczyć wszystkie tematy.": "Shorten your query or clear search to see all topics.",
+  "Skopiowano temat pomocy.": "Help topic copied.",
+  "Nie udało się skopiować tematu. Zaznacz tekst i skopiuj go ręcznie.": "Could not copy the topic. Select the text and copy it manually."
 }

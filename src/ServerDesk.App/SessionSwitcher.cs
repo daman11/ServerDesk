@@ -37,11 +37,12 @@ internal static partial class Dialogs
         {
             if(choice==null)return new TextBlock();
             var row=new Grid { ColumnDefinitions=new ColumnDefinitions("24,*"),ColumnSpacing=DesignTokens.Medium,Margin=new Thickness(4) };
-            row.Children.Add(choice.Pane is SessionPane profilePane ? new ProfileVisual(profilePane.PresentationProfile,20) : DeskIcons.Create("network",20));
+            row.Children.Add(choice.Pane is SessionPane profilePane ? new ProfileVisual(profilePane.PresentationProfile,20) : DeskIcons.Create(choice.Pane is HelpPane?"help":"network",20));
             var name=DesignSystem.Label(choice.Entry.Name); name.TextTrimming=TextTrimming.CharacterEllipsis; name.TextWrapping=TextWrapping.NoWrap; name.FontWeight=FontWeight.SemiBold;
-            var detail=DesignSystem.Label($"{choice.Entry.Protocol} · {(choice.Entry.User.Length>0?choice.Entry.User+"@":"")}{choice.Entry.Host}",true,12); detail.TextTrimming=TextTrimming.CharacterEllipsis; detail.TextWrapping=TextWrapping.NoWrap;
-            var text=new StackPanel { Spacing=DesignTokens.Small,Children={name,detail} }; ToolTip.SetTip(text,$"{choice.Entry.Name}\n{choice.Entry.Protocol} · {choice.Entry.User}@{choice.Entry.Host} · {choice.Entry.Location}"); Grid.SetColumn(text,1); row.Children.Add(text);
-            var state=new StackPanel { Orientation=Orientation.Horizontal,Spacing=DesignTokens.Small,VerticalAlignment=VerticalAlignment.Center }; var icon=new SessionStatusIcon(); if(choice.Pane is SessionPane)icon.Bind(SessionStatusIcon.StateProperty,new Binding(nameof(SessionPane.VisualState)) { Source=choice.Pane }); state.Children.Add(icon);
+            var endpoint=(choice.Entry.User.Length>0?choice.Entry.User+"@":"")+choice.Entry.Host;
+            var detail=DesignSystem.Label(choice.Entry.Protocol+(endpoint.Length>0?" · "+endpoint:""),true,12); detail.TextTrimming=TextTrimming.CharacterEllipsis; detail.TextWrapping=TextWrapping.NoWrap;
+            var text=new StackPanel { Spacing=DesignTokens.Small,Children={name,detail} }; ToolTip.SetTip(text,$"{choice.Entry.Name}\n{detail.Text} · {choice.Entry.Location}"); Grid.SetColumn(text,1); row.Children.Add(text);
+            var state=new StackPanel { Orientation=Orientation.Horizontal,Spacing=DesignTokens.Small,VerticalAlignment=VerticalAlignment.Center }; var icon=new SessionStatusIcon { IsVisible=choice.Pane is not HelpPane }; if(choice.Pane is SessionPane)icon.Bind(SessionStatusIcon.StateProperty,new Binding(nameof(SessionPane.VisualState)) { Source=choice.Pane }); state.Children.Add(icon);
             var label=DesignSystem.Label(choice.Entry.State,true,11); if(choice.Pane is SessionPane)label.Bind(TextBlock.TextProperty,new Binding(nameof(SessionPane.VisualState)) { Source=choice.Pane,Converter=new FuncValueConverter<SessionVisualState,string>(SessionStateName) }); state.Children.Add(label);
             var location=DesignSystem.Badge(choice.Entry.Location);
             var meta=new WrapPanel { ItemSpacing=8,LineSpacing=4,Children={location,state} }; if(choice.Pane.WorkspaceId==active)meta.Children.Add(DesignSystem.Badge(L.T("Aktywna"))); text.Children.Add(meta);
@@ -82,7 +83,7 @@ public sealed partial class MainWindow
 {
     internal async Task SwitchSessionAsync(Window? caller=null)
     {
-        IReadOnlyList<SessionChoice> Choices()=>dockState.All.Select(id=>Panes.Single(p=>p.WorkspaceId==id)).Select(p=>new SessionChoice(p,new SessionSearchEntry(p.WorkspaceId,p.DisplayName,p is SessionPane session?session.Profile.Protocol==Protocol.Serial?session.Profile.Serial.PortName:session.Profile.Host:"",p is SessionPane user?user.Profile.Username:"",p is SessionPane protocol?protocol.Profile.Protocol.ToString():L.T("Narzędzia sieciowe"),DockName(dockState.Location(p.WorkspaceId)),p is SessionPane state?Dialogs.SessionStateName(state.VisualState):L.T("Narzędzie sieciowe")))).ToArray();
+        IReadOnlyList<SessionChoice> Choices()=>dockState.All.Select(id=>Panes.Single(p=>p.WorkspaceId==id)).Select(p=>new SessionChoice(p,new SessionSearchEntry(p.WorkspaceId,p.DisplayName,p is SessionPane session?session.Profile.Protocol==Protocol.Serial?session.Profile.Serial.PortName:session.Profile.Host:"",p is SessionPane user?user.Profile.Username:"",p is SessionPane protocol?protocol.Profile.Protocol.ToString():L.T(p is HelpPane?"Pomoc":"Narzędzia sieciowe"),DockName(dockState.Location(p.WorkspaceId)),p is SessionPane state?Dialogs.SessionStateName(state.VisualState):L.T(p is HelpPane?"Dokumentacja offline":"Narzędzie sieciowe")))).ToArray();
         var chosen=await Dialogs.Sessions(caller??this,Choices,dockState.Focused); if(chosen==null || Panes.FirstOrDefault(p=>p.WorkspaceId==chosen) is not {} pane)return;
         FocusSession(pane); if(floatingDocks.TryGetValue(pane.WorkspaceId,out var floating))floating.Window.Activate(); else Activate(); pane.FocusContent();
     }

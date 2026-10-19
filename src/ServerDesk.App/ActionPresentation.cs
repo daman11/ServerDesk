@@ -9,6 +9,7 @@ internal static partial class DeskIcons
     // Application-owned geometry; the pinned upstream SVG files stay unchanged.
     internal static readonly IReadOnlyDictionary<string,string> ApplicationPaths=new Dictionary<string,string>
     {
+        ["help"]="M12,3 A9,9 0 1 0 12,21 A9,9 0 1 0 12,3 M9,9 C9,5.5 15,5.5 15,9 C15,11 12,11 12,14 M12,17 L12,17.1",
         ["os-windows"]="M3,4 H10 V10 H3 Z M14,4 H21 V10 H14 Z M3,14 H10 V20 H3 Z M14,14 H21 V20 H14 Z",
         ["plugins"]="M3,3 H10 V10 H3 Z M14,3 H21 V10 H14 Z M3,14 H10 V21 H3 Z M14,17.5 H21 M17.5,14 V21",
         ["layout-single"]="M3,4 H21 V20 H3 Z",
@@ -89,6 +90,8 @@ internal static partial class DeskIcons
         "Nowy katalog" or "Nowy folder" or "Dodaj folder" or "Dodaj kategorię"=>"folder-plus",
         "Uprawnienia chmod (zdalny)"=>"lock-keyhole",
         "Szczegóły" or "O aplikacji"=>"info",
+        "Pomoc"=>"help",
+        "Kopiuj temat"=>"copy",
         "Historia połączeń" or "Historia tego serwera" or "Historia komend: włącz / wyłącz"=>"history",
         "Ustawienia" or "Ustawienia wyglądu" or "Ustawienia pulpitu RDP" or "Domyślne ustawienia"=>"settings",
         "Uruchom RDP" or "Pokaż okno"=>"monitor",

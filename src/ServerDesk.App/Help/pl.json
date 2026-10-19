@@ -1,0 +1,101 @@
+[
+  {
+    "Id": "start", "Icon": "help", "Title": "Pierwsze kroki", "Summary": "Dodaj serwer, otwórz sesję i odnajdź najważniejsze funkcje.", "Keywords": "start getting started instalacja pomoc quick connect szybkie",
+    "Sections": [
+      { "Title": "Pierwsze połączenie", "Paragraphs": ["1. Wybierz + lub Nowe połączenie. Podaj nazwę, protokół, adres i login. Dla Serial wybierz urządzenie zamiast adresu sieciowego. Zapisz profil.", "2. Otwórz profil dwuklikiem w drzewie połączeń. Podaj wymagane poświadczenia. Przed zaakceptowaniem klucza SSH lub certyfikatu RDP porównaj odcisk z informacją otrzymaną niezależnie od administratora.", "3. Sesja otworzy się w karcie. Odtworzone po uruchomieniu karty czekają na Połącz — ich przywrócenie nie loguje automatycznie do serwerów."] },
+      { "Title": "Orientacja w programie", "Paragraphs": ["Lewy pasek prowadzi do połączeń, ulubionych, ostatnich sesji, transferów, narzędzi sieciowych i włączonych pluginów. Pomoc i ustawienia są na dole tego paska. Menu w prawym górnym rogu zawiera pozostałe akcje.", "Ctrl+Shift+P otwiera paletę akcji. Pomoc działa bez internetu, obsługuje wyszukiwanie treści i kopiowanie tematu. Ponowne wybranie Pomocy pokazuje tę samą kartę."] },
+      { "Title": "Szybkie połączenie", "Paragraphs": ["Menu → Szybkie połączenie przyjmuje adresy, np. ssh://login@host:22, rdp://host:3389, vnc://host:5900 lub serial://COM3?baud=9600. Na Linux port szeregowy może mieć postać serial:///dev/ttyUSB0?baud=115200.", "Sprawdź podgląd celu przed Połącz. Edytuj jako profil otwiera edytor do zapisania konfiguracji. Nie umieszczaj hasła w adresie — podaj je w oknie poświadczeń."] }
+    ]
+  },
+  {
+    "Id": "profiles", "Icon": "connections", "Title": "Połączenia, foldery i tagi", "Summary": "Uporządkuj profile, używaj filtrów i zmieniaj kolejność listy.", "Keywords": "profiles connections folders tags sorting ikony kolory sortowanie adres",
+    "Sections": [
+      { "Title": "Organizacja i wyszukiwanie", "Paragraphs": ["Nowe połączenie może należeć do folderu i mieć własny kolor oraz ikonę lub zaimportowaną grafikę. Menu kontekstowe folderu pozwala zmienić jego ikonę. Gwiazdka dodaje serwer do Ulubionych.", "Pole wyszukiwania uwzględnia m.in. nazwę, adres, login, folder, opis i tagi. Filtr protokołu działa razem z wyszukiwaniem. Wybierz sortowanie po nazwie, adresie, protokole lub ostatnim połączeniu i kierunek sortowania."] },
+      { "Title": "Tagi i usuwanie profilu", "Paragraphs": ["W edytorze połączenia, w Organizacja → Tagi, dodawaj etykiety przez Enter lub +. Można wkleić kilka nazw rozdzielonych przecinkiem albo średnikiem. Przycisk Tagi w panelu połączeń ustawia wspólne kolory i filtr: dowolny, wszystkie wybrane lub bez tagów. Zastosuj zatwierdza zmiany; Anuluj je odrzuca.", "Usunięcie zapisanego połączenia usuwa wskazany profil, a następnie sprząta jego zapisane poświadczenia. Nie usuwa zdalnych plików, kluczy prywatnych ani innych profili. Wpisy historii mogą pozostać do wglądu i nie odtwarzają usuniętego połączenia."] }
+    ]
+  },
+  {
+    "Id": "ssh", "Icon": "ssh", "Title": "SSH i terminal", "Summary": "Logowanie, klucze hosta, schowek i ponowne łączenie.", "Keywords": "terminal ssh password key host fingerprint authentication haslo klucz polaczenie",
+    "Sections": [
+      { "Title": "Bezpieczne połączenie", "Paragraphs": ["W profilu SSH ustaw adres, port i login oraz wymagany sposób uwierzytelniania. Przy pierwszym połączeniu sprawdź odcisk klucza hosta. Zmieniony klucz blokuje połączenie; nie usuwaj zaufania bez ustalenia przyczyny zmiany.", "Zapamiętanie hasła jest opcjonalne. Przy niedostępnym magazynie systemowym można użyć hasła tylko w bieżącej sesji. Treść terminala nie jest instrukcją dla ServerDesk — wpisane polecenia wykonuje zdalna powłoka."] },
+      { "Title": "Praca i utrata sieci", "Paragraphs": ["Ctrl+Shift+C i Ctrl+Shift+V służą do kopiowania i wklejania w terminalu. Zwykłe Ctrl+C pozostaje skrótem powłoki. Wygląd, czcionkę, kursor i historię terminala ustawisz w Ustawienia → Terminal.", "Po utracie połączenia użyj Połącz ponownie w tej samej karcie. Sprawdź opis błędu: odrzucenie TCP, DNS, timeout i błąd uwierzytelniania oznaczają różne problemy. Samo odrzucenie uwierzytelniania nie dowodzi, że hasło jest błędne."] }
+    ]
+  },
+  {
+    "Id": "sftp", "Icon": "folder", "Title": "SFTP i transfery plików", "Summary": "Dwa panele plików, kolejka, edycja i bezpieczne ponawianie.", "Keywords": "sftp files upload download transfers editor pliki transfery edytor",
+    "Sections": [
+      { "Title": "Przeglądanie i edytowanie", "Paragraphs": ["W karcie SSH wybierz SFTP. Kliknięcie panelu wskazuje stronę lokalną lub zdalną. Enter lub dwuklik otwiera katalog, Alt+↑ przechodzi wyżej, Ctrl+L wybiera ścieżkę, a F5 odświeża aktywny panel. Ctrl/Shift+klik i Ctrl+A zaznaczają wiele pozycji.", "Wyślij, Pobierz lub przeciąganie plików tworzą zadania transferu. W Ustawienia → SFTP wybierzesz domyślny edytor tekstu. Edycja zdalnego pliku pobiera kopię lokalną; po zapisaniu zmian wyślij ją jawnie na serwer. Sam zapis w edytorze nie aktualizuje zdalnego pliku."] },
+      { "Title": "Kolejka i operacje na plikach", "Paragraphs": ["Panel Transfery zbiera zadania SFTP z otwartych kart SSH, a nie schowek RDP. Szczegóły transferu pokazują pełny stan i ścieżki z chwili otwarcia. Możesz anulować zadanie, ponowić błąd lub wyczyścić historię zakończonych zadań. Historia znika po zamknięciu karty.", "Ponowienie rozpoczyna plik od początku i ponownie wymaga zgody na nadpisanie. Po utracie SSH najpierw połącz sesję ponownie. Usuwanie plików i katalogów jest trwałe i wymaga osobnego potwierdzenia. Zwykły transfer pomija dowiązania w katalogach; kopiowanie ich zawartości jest oddzielną akcją."] }
+    ]
+  },
+  {
+    "Id": "rdp", "Icon": "rdp", "Title": "Pulpit zdalny RDP", "Summary": "Tryb osadzony, certyfikaty, klawiatura i przesyłanie plików.", "Keywords": "rdp remote desktop freerdp xwayland clipboard certificate dpi pulpit schowek certyfikat",
+    "Sections": [
+      { "Title": "Windows i Linux", "Paragraphs": ["W profilu RDP ustaw adres, port, login i opcje pulpitu. Windows obsługuje pulpit w karcie ServerDesk albo klienta zewnętrznego. Linux osadza zainstalowany klient X11 FreeRDP w karcie; w sesji Wayland wymagany jest XWayland.", "Hasło podaje się w maskowanym oknie ServerDesk. NLA i weryfikacja certyfikatu pozostają włączone. Na Windows ostrzeżenie o certyfikacie może obsługiwać system. Na Linux porównaj SHA-256 i dopiero wtedy wybierz Zaufaj w tej karcie. Ta zgoda nie jest trwałym wpisem systemowego zaufania."] },
+      { "Title": "Klawiatura, schowek i połączenie", "Paragraphs": ["Ctrl+Alt+← lub Ctrl+Alt+→ oddaje klawiaturę do ServerDesk. Ctrl+Alt+End otwiera ekran zabezpieczeń zdalnego Windows. Przekierowanie schowka i miejsce obsługi skrótów Windows zależą od opcji profilu oraz polityk zdalnego systemu.", "W osadzonym RDP Windows upuść pliki na strefę Pliki → schowek RDP, następnie wklej je przez Ctrl+V w folderze zdalnego Eksploratora. Schowek musi być włączony; zestaw musi mieć mniej niż 2 GiB. Nie jest to transfer SFTP ani bezpośredni zrzut na zdalny pulpit.", "Sprawdź serwer odczytuje dostępność i informacje TLS bez logowania. Dostępny port nie potwierdza poprawnego loginu ani udanej sesji. Linux używa ręcznego ponownego połączenia; opcje ponawiania Windows ustawisz w profilu."] }
+    ]
+  },
+  {
+    "Id": "vnc-serial", "Icon": "monitor", "Title": "VNC i porty szeregowe", "Summary": "Pulpit VNC oraz terminal urządzenia COM lub /dev/tty….", "Keywords": "vnc serial com tty baud port szeregowy",
+    "Sections": [
+      { "Title": "VNC", "Paragraphs": ["Wybierz protokół VNC, adres i port (domyślnie 5900) oraz hasło VNC albo jawny tryb bez uwierzytelniania. Pulpit otwiera się w karcie i obsługuje mysz, klawiaturę, dopasowanie obrazu i Ctrl+Alt+Del. Ctrl+Alt+← / → oddaje fokus aplikacji.", "Standardowy VNC nie szyfruje transmisji. Używaj zaufanej sieci, VPN lub już zestawionego tunelu. TLS/VeNCrypt, logowanie kontem systemowym, schowek i transfery VNC nie są obecnie obsługiwane."] },
+      { "Title": "Serial", "Paragraphs": ["Wybierz port, np. COM3 lub /dev/ttyUSB0, prędkość, bity danych i stopu, parzystość oraz sterowanie przepływem zgodnie z urządzeniem. Port można wykryć lub wpisać ręcznie. DTR i RTS są domyślnie wyłączone.", "Połącz otwiera terminal urządzenia, a Rozłącz zwalnia port. Na Linux konto musi mieć uprawnienia do urządzenia. Jeśli port jest zajęty, sprawdź inne programy terminalowe; nie zmieniaj praw całego systemu tylko po to, by ominąć błąd."] }
+    ]
+  },
+  {
+    "Id": "workspace", "Icon": "layers", "Title": "Karty, panele i dokowanie", "Summary": "Do czterech paneli, osobne okna i przywracanie układu.", "Keywords": "workspace tabs split dock layout panele okna podzial dpi",
+    "Sections": [
+      { "Title": "Układ pracy", "Paragraphs": ["Menu Układ oferuje jeden panel, dwa obok siebie lub jeden nad drugim, trzy panele (1 + 2) i cztery panele (2 × 2). Przeciągaj separatory, aby zmieniać proporcje, lub wybierz Wyrównaj wielkość paneli.", "Przeciągnij kartę do innego panelu albo użyj jej menu kontekstowego. Odłącz do osobnego okna przenosi kartę; zamknięcie odpiętego okna dokuje ją z powrotem. Pomoc korzysta z tego samego mechanizmu, więc można czytać ją obok terminala."] },
+      { "Title": "Przełączanie i start", "Paragraphs": ["Ctrl+Tab i Ctrl+Shift+Tab przełączają karty aktywnego panelu. Ctrl+Shift+L pokazuje otwarte karty z wyszukiwaniem. Ustawienia → Obszar pracy zawierają opcje kart, paneli, paska bocznego i układu startowego.", "Zapamiętany układ nie zawiera haseł ani treści terminala. Odtworzone sesje czekają na Połącz. Sama karta Pomocy nie jest zapisywaną sesją serwera i można ją ponownie otworzyć z menu."] }
+    ]
+  },
+  {
+    "Id": "settings", "Icon": "settings", "Title": "Wygląd, język i ustawienia", "Summary": "Motywy, własny akcent, gęstość i ustawienia poszczególnych modułów.", "Keywords": "settings appearance themes language accent font ustawienia jezyk kolory motywy",
+    "Sections": [
+      { "Title": "Personalizacja", "Paragraphs": ["Ustawienia mają wyszukiwarkę oraz kategorie Wygląd, Terminal, SFTP, Obszar pracy, Monitoring, Bezpieczeństwo i Pluginy. Wyszukiwarka pomaga znaleźć opcję także bez polskich znaków.", "W Wygląd wybierzesz motyw, kolor akcentu, czcionkę i rozmiar tekstu, odstępy i zaokrąglenia. Motyw i akcent mają podgląd na żywo. Pusty kolor akcentu przywraca kolor motywu; Anuluj cofa podgląd. Paleta terminala jest ustawiana osobno."] },
+      { "Title": "Zapisywanie i język", "Paragraphs": ["Zapisz zatwierdza ustawienia. Zmiana języka wymaga ponownego uruchomienia; komunikat pojawia się w wybranym języku i pozwala uruchomić aplikację ponownie. Restart rozłącza sesje i zatrzymuje działające operacje po potwierdzeniu.", "Niektóre ustawienia dotyczą kolejnej sesji lub następnego startu — sprawdź opis pod polem. Domyślne ustawienia wypełnia dialog wartościami domyślnymi; Zapisz zatwierdza je, a Anuluj odrzuca. Zapisane połączenia pozostają zachowane."] }
+    ]
+  },
+  {
+    "Id": "plugins", "Icon": "plugins", "Title": "Pluginy: monitoring i komendy", "Summary": "Włączaj dodatki i korzystaj z komend świadomie.", "Keywords": "plugins commands cheatsheet linux monitoring komendy sciagnawka",
+    "Sections": [
+      { "Title": "Włączanie dodatków", "Paragraphs": ["W Ustawienia → Pluginy niezależnie włączasz Monitoring Linux i Komendy. Zmiany działają po Zapisz, bez restartu. Wyłączenie nie usuwa ustawień ani własnych komend i nie rozłącza terminala lub SFTP.", "Monitoring pobiera rzeczywiste dane przez oddzielny kanał SSH, bez agenta i sudo. Pierwsza wartość CPU wymaga kolejnej próbki. Część danych zależy od poleceń dostępnych na zdalnym Linuxie; odświeżanie jest ograniczane w nieaktywnym panelu."] },
+      { "Title": "Komendy", "Paragraphs": ["Otwórz Komendy z paska lub przez Ctrl+Shift+K. Wybierz profil systemu, wyszukaj opis albo polecenie i użyj filtrów kategorii oraz ryzyka. Kliknięcie karty pokazuje szczegóły, parametry, podgląd i wskazówki. Możesz przechowywać własne szablony.", "Przed wstawieniem lub wykonaniem sprawdź aktywny serwer i pełny podgląd. Dostępność akcji zależy od sesji i kontekstu. Wykonanie komendy jest osobną, jawną akcją; sama lista lub otwarcie szczegółów nie uruchamia poleceń. Nie wpisuj sekretów do nazw i opisów szablonów."] }
+    ]
+  },
+  {
+    "Id": "network", "Icon": "network", "Title": "Narzędzia sieciowe", "Summary": "Diagnostyka bez tworzenia profilu serwera.", "Keywords": "network ping mtr trace dns tcp ports wake wol http tls subnet snmp diagnostyka siec",
+    "Sections": [
+      { "Title": "Wybór narzędzia", "Paragraphs": ["Narzędzia sieciowe na lewym pasku udostępniają Ping, Trasę sieciową / MTR, Zapytania DNS, Skaner portów TCP, Wake-on-LAN, Klienta HTTP, Inspektora TLS, Kalkulator podsieci i Przeglądarkę SNMP.", "Podaj cel i opcje w karcie, następnie wybierz Start. Stop przerywa działanie. Dostępne są historia i eksport wyników. Menu serwera może przekazać jego adres do narzędzia; samo otwarcie karty nie rozpoczyna diagnostyki."] },
+      { "Title": "Interpretacja i prywatność", "Paragraphs": ["Brak odpowiedzi Ping lub hopu trasy może oznaczać filtrowanie ICMP, a nie awarię serwera. Otwarty port potwierdza usługę TCP, nie udane logowanie. Korzystaj z diagnostyki tylko wobec celów, które możesz sprawdzać.", "Adresy URL, nagłówki HTTP, odpowiedzi i wyniki mogą zawierać poufne dane. Pola przeznaczone na sekrety są chronione, ale przed kopiowaniem lub eksportem zawsze sprawdź treść. Kalkulator podsieci działa lokalnie; narzędzia sieciowe komunikują się z wybranym celem dopiero po uruchomieniu."] }
+    ]
+  },
+  {
+    "Id": "security", "Icon": "shield", "Title": "Hasła, zaufanie i prywatność", "Summary": "Gdzie trafiają dane i co oznaczają prośby o zaufanie.", "Keywords": "security privacy credentials password dpapi secret service kwallet bezpieczenstwo hasla dane",
+    "Sections": [
+      { "Title": "Dane i poświadczenia", "Paragraphs": ["Na Windows dane aplikacji są domyślnie w %APPDATA%\\ServerDesk, a zapisane poświadczenia są chronione DPAPI bieżącego konta Windows. Na Linux dane są w $XDG_DATA_HOME/serverdesk (domyślnie ~/.local/share/serverdesk), a konfiguracja w $XDG_CONFIG_HOME/serverdesk.", "Linux używa secret-tool i odblokowanego Secret Service. Sama obecność secret-tool nie oznacza działającego magazynu. KWallet musi udostępniać interfejs Secret Service. Gdy zapis jest niedostępny, użyj hasła bez zapisywania albo odblokuj magazyn systemowy."] },
+      { "Title": "Zaufanie i udostępnianie danych", "Paragraphs": ["Klucz hosta SSH i certyfikat RDP identyfikują serwer. Odcisk porównuj niezależnym kanałem; nie akceptuj nieoczekiwanej zmiany tylko po to, aby połączyć się szybciej. Szyfrowanie lokalnych haseł nie zastępuje ochrony konta systemowego.", "ServerDesk nie wysyła telemetrii i nie sprawdza automatycznie aktualizacji. Logi nie zapisują treści terminala; nadal mogą zawierać ścieżki i dane infrastruktury. Eksport konfiguracji JSON nie zawiera haseł, lecz zawiera nazwy, adresy i inne dane profili — sprawdź go przed udostępnieniem."] }
+    ]
+  },
+  {
+    "Id": "backups", "Icon": "archive", "Title": "Kopie, import i reset", "Summary": "Zabezpiecz konfigurację i odróżnij dwa rodzaje resetu.", "Keywords": "backup restore import export reset defaults kopia kopie przywracanie fabryczne",
+    "Sections": [
+      { "Title": "Kopie i przenoszenie połączeń", "Paragraphs": ["Ustawienia → Bezpieczeństwo → Kopie bazy danych pozwala utworzyć kopię, obejrzeć zapisane pliki i wybrać Sprawdź kopię. Sprawdzenie kontroluje strukturę bazy; nie przywraca jej i nie potwierdza dostępności sekretów. Lista kopii nie jest osobną kopią systemowego magazynu haseł.", "Menu → Eksport konfiguracji tworzy JSON z profilami i folderami bez sekretów. Import tworzy nowe identyfikatory i nie podłącza dotychczasowych lokalnych haseł do nowych profili. Weryfikuj wynik importu przed łączeniem. Ręczne odtwarzanie bazy wykonuj po zamknięciu aplikacji, zachowując najpierw obecne dane."] },
+      { "Title": "Ustawienia domyślne i fabryczne", "Paragraphs": ["Domyślne ustawienia zmienia tylko szkic preferencji w dialogu. Nie usuwa profili. Wybierz Zapisz, aby przyjąć wartości, albo Anuluj, aby wrócić do poprzednich.", "Reset fabryczny jest osobną, potwierdzaną operacją. Przy następnym uruchomieniu tworzy zweryfikowaną kopię bazy, a następnie czyści połączenia, foldery, historię, zaufanie SSH i dane pluginów. Zachowuje wcześniejsze kopie, logi i pliki zewnętrzne. Chronione wpisy magazynu mogą zostać zachowane do lokalnego odzyskania; reset nie jest bezpiecznym wymazaniem wszystkich sekretów systemowych."] }
+    ]
+  },
+  {
+    "Id": "troubleshooting", "Icon": "warning", "Title": "Problemy i logi", "Summary": "Odczytaj powód błędu i przygotuj informacje do zgłoszenia.", "Keywords": "troubleshooting logs timeout tls nla error blad logi odrzucono odmowa",
+    "Sections": [
+      { "Title": "Typowe przyczyny", "Paragraphs": ["Odrzucone połączenie TCP: sprawdź adres, port, usługę i zaporę. Timeout: sprawdź trasę, VPN i dostępność hosta. Błąd DNS: sprawdź nazwę i resolver. Odrzucone logowanie SSH/RDP: sprawdź pełny login, domenę lub konto lokalne, metodę logowania i politykę serwera.", "RDP TLS/NLA lub certyfikat: sprawdź komunikat klienta oraz odcisk serwera; nie wyłączaj weryfikacji. FreeRDP na Linux wymaga klienta X11, a na Wayland także XWayland. Błędy plików, brak katalogu i odmowa uprawnień nie są tym samym co odrzucenie logowania."] },
+      { "Title": "Podgląd i przekazanie logów", "Paragraphs": ["W Ustawienia → Bezpieczeństwo → Logi i diagnostyka wybierz Otwórz logi. Wybierz plik, wyszukuj przez Ctrl+F, przechodź do kolejnego wyniku Enterem i odświeżaj przez F5. Duże pliki mają podgląd ostatnich 128 KiB; Zapisz kopię logu eksportuje pełny plik do wybranego miejsca.", "Zapisz godzinę, protokół, kroki odtworzenia i komunikat błędu. O aplikacji → Kopiuj informacje dodaje wersję, build i środowisko. Przejrzyj log przed wysłaniem; nie dołączaj haseł, kluczy prywatnych ani całego katalogu danych. Obecne wydanie jest publiczną betą — ograniczenia zależą także od systemu i serwera."] }
+    ]
+  },
+  {
+    "Id": "shortcuts", "Icon": "square-terminal", "Title": "Skróty klawiaturowe", "Summary": "Najważniejsze skróty aplikacji i aktywnego panelu.", "Keywords": "shortcuts keyboard keys skroty klawiatura f1 ctrl",
+    "Sections": [
+      { "Title": "Nawigacja aplikacji", "Paragraphs": ["Ctrl+Shift+N — nowe połączenie. Ctrl+Shift+O — znajdź zapisane połączenie. Ctrl+Shift+P — paleta akcji. Ctrl+Shift+L — otwarte karty. Ctrl+Shift+K — Komendy, jeśli plugin jest włączony.", "Ctrl+Tab / Ctrl+Shift+Tab — następna / poprzednia karta panelu. Ctrl+B — pokaż lub ukryj panel połączeń, jeśli fokus nie jest w terminalu; Ctrl+Shift+B działa także z terminala. Ctrl+W zamyka aktywną kartę poza terminalem; Ctrl+Shift+W jest skrótem aplikacji także w terminalu.", "F1 — Pomoc, gdy klawiatura należy do interfejsu aplikacji. Terminal i zdalny pulpit zachowują własne F1. W Pomocy Ctrl+F wybiera wyszukiwanie, Escape czyści zapytanie, a Enter / ↓ przechodzi do wyboru tematu."] },
+      { "Title": "Terminal, pliki i pulpity", "Paragraphs": ["SSH/Serial: Ctrl+Shift+C / Ctrl+Shift+V — kopiuj / wklej. Ctrl+C pozostaje dla powłoki. SFTP: Enter — otwórz katalog, Alt+↑ — wyżej, Ctrl+L — ścieżka, F5 — odśwież, Ctrl+A — zaznacz widoczne, Escape — wyczyść zaznaczenie.", "RDP/VNC: Ctrl+Alt+← lub Ctrl+Alt+→ — oddaj fokus ServerDesk. RDP: Ctrl+Alt+End — ekran zabezpieczeń zdalnego Windows. Dostępność skrótów w pulpicie zależy też od systemu i ustawień sesji."] }
+    ]
+  }
+]

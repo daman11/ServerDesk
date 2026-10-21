@@ -72,11 +72,54 @@ internal static class ApplicationUpdateChecks
         {
             var settings=Dialogs.Settings(main,repo,()=>Task.CompletedTask); RedesignChecks.Frames(6); var settingsWindow=main.OwnedWindows.Single();
             Named<TabControl>(settingsWindow,"SettingsCategories").SelectedIndex=5; RedesignChecks.Frames(4);
-            Named<CheckBox>(settingsWindow,"CheckUpdatesOnStartup").IsChecked=true;
+            Named<CheckBox>(settingsWindow,"CheckUpdatesOnStartup").IsChecked=false;
             Click(settingsWindow.GetVisualDescendants().OfType<Button>().Single(b=>Equals(b.Tag,save?"Zapisz":"Anuluj"))); RedesignChecks.Wait(settings);
             var preferences=repo.PreferencesAsync(); RedesignChecks.Wait(preferences);
-            if(preferences.Result.CheckUpdatesOnStartup!=save)throw new Exception("Startup update opt-in ignored Save/Cancel");
+            if(preferences.Result.CheckUpdatesOnStartup==save)throw new Exception("Startup update opt-out ignored Save/Cancel");
         }
+        var startupRequests=0;
+        main.StartupUpdateClientFactory=()=>new GitHubUpdateClient(new Handler(_=> { startupRequests++; return new(HttpStatusCode.OK) { Content=new StringContent("[]") }; }));
+        RedesignChecks.Wait(main.CheckUpdatesAtStartupAsync());
+        if(startupRequests!=0)throw new Exception("Explicit startup opt-out contacted GitHub");
+        main.PreviewPreferences(new() { CheckUpdatesOnStartup=true });
+        RedesignChecks.Wait(main.CheckUpdatesAtStartupAsync()); RedesignChecks.Wait(main.CheckUpdatesAtStartupAsync());
+        if(startupRequests!=1)throw new Exception("Startup must perform exactly one non-blocking check");
+        foreach(var language in new[]{"pl","en"})
+        {
+            AppText.SetLanguage(language);
+            if(language=="en")
+            {
+                main.Close(); RedesignChecks.Frames(5);
+                main=new MainWindow(new MainViewModel(repo),repo,new CredentialStore(new AppPaths()),new SshConnectionFactory(repo),new ExternalRdpClient());
+                main.Show(); RedesignChecks.Frames(10);
+                RedesignChecks.Wait((Task)typeof(MainWindow).GetField("initialization",System.Reflection.BindingFlags.Instance|System.Reflection.BindingFlags.NonPublic)!.GetValue(main)!);
+            }
+            main.PreviewPreferences(new() { InterfaceFontSize=16 });
+            RedesignChecks.Wait(main.PresentAvailableUpdateAsync(package)); RedesignChecks.Frames(4);
+            if(!Named<Border>(main,"UpdateAvailableBanner").IsVisible)throw new Exception("New version did not show a reminder");
+            Click(Named<Button>(main,"RemindAvailableUpdate"));
+            if(Named<Border>(main,"UpdateAvailableBanner").IsVisible)throw new Exception("Remind action did not hide notification");
+            var skipped=repo.SettingAsync("skippedUpdateVersion"); RedesignChecks.Wait(skipped);
+            if(skipped.Result==package.Version)throw new Exception("Remind action persisted a skipped version");
+            RedesignChecks.Wait(main.PresentAvailableUpdateAsync(package)); RedesignChecks.Frames(3);
+            main.Width=900; main.Height=650; RedesignChecks.Frames(3);
+            main.CaptureRenderedFrame()!.Save(Path.Combine(root,$"update-reminder-{language}.png"));
+            foreach(var button in new[]{"OpenAvailableUpdate","SkipAvailableUpdate","RemindAvailableUpdate"}.Select(name=>Named<Button>(main,name)))
+            {
+                var point=button.TranslatePoint(default,main)!.Value;
+                if(point.X<0 || point.X+button.Bounds.Width>main.ClientSize.Width+.5)throw new Exception("Update reminder action clipped");
+            }
+            Click(Named<Button>(main,"SkipAvailableUpdate"));
+            RedesignChecks.Wait(main.PresentAvailableUpdateAsync(package)); RedesignChecks.Frames(3);
+            if(Named<Border>(main,"UpdateAvailableBanner").IsVisible)throw new Exception("Skipped version returned");
+            var reopened=new ProfileRepository(new AppPaths()); var remembered=reopened.SettingAsync("skippedUpdateVersion"); RedesignChecks.Wait(remembered);
+            if(remembered.Result!=package.Version)throw new Exception("Skipped version was not persisted");
+            var newer=package with { Version="0.99.1",DownloadUrl=package.DownloadUrl.Replace("0.99.0","0.99.1") };
+            RedesignChecks.Wait(main.PresentAvailableUpdateAsync(newer)); RedesignChecks.Frames(3);
+            if(!Named<Border>(main,"UpdateAvailableBanner").IsVisible)throw new Exception("Skipping an old version hid a newer release");
+            RedesignChecks.Wait(repo.SetSettingAsync("skippedUpdateVersion",""));
+        }
+        AppText.SetLanguage("pl");
         main.StartUpdateHelper=_=>started++;
         var synthetic=new PreparedApplicationUpdate(Path.GetFullPath(root),package);
         main.RequestUpdateInstall(synthetic); RedesignChecks.Frames(5);
@@ -87,6 +130,6 @@ internal static class ApplicationUpdateChecks
         Click(confirm.GetVisualDescendants().OfType<Button>().Single(b=>Equals(b.Tag,"Potwierdź")));
         var closeDeadline=DateTime.UtcNow.AddSeconds(15); while(main.IsVisible && DateTime.UtcNow<closeDeadline)RedesignChecks.Frames(2);
         if(main.IsVisible || started!=1)throw new Exception("Confirmed update did not hand off exactly once and close cleanly");
-        Console.WriteLine("PASS updates: PL/EN dark/light font16 650/430 px, GitHub metadata, empty repository, Windows verified download and backup/handoff preparation; Linux manual fallback; synthetic HTTP only, no installer executed or production data");
+        Console.WriteLine("PASS updates: PL/EN font16 compact reminder, once-per-start check/opt-out, remind without persistence, durable exact-version skip and newer release; dialog metadata/download/backup/handoff, cancellation; Linux manual fallback; synthetic HTTP only, no installer executed or production data");
     }
 }

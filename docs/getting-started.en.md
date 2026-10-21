@@ -1,4 +1,6 @@
-# ServerDesk 0.45.0 — getting started
+# ServerDesk 0.45.1 — getting started
+
+**New in 0.45.1:** optional desktop shortcut and Update / Skip this version / Remind me at next startup. Startup checks default on; saved opt-outs remain effective. [Testing from 0.45.0](updates.md).
 
 **New in 0.45.0:** GitHub update checks and in-app installation for Windows Setup copies, stronger backup checks, RDP repaint recovery and command navigation. ZIP/Linux installation remains manual. Schema 4 is unchanged. [Updates](updates.md), [changes and limits](releases/release-0.45.0.md).
 
@@ -32,17 +34,17 @@ Since 0.37.0, ServerDesk shows transfer failure guidance in the queue. Hover ove
 
 ## Windows x64
 
-Run `ServerDesk-0.43.0-win-x64-Setup.exe`. Setup installs for the current user, creates a Start menu shortcut and registers an uninstaller. No separate .NET installation is needed. Alternatively, extract the **entire** portable ZIP into its own directory and run `ServerDesk.App.exe`.
+Run `ServerDesk-0.45.1-win-x64-Setup.exe`. Setup installs for the current user, creates a Start menu shortcut and registers an uninstaller. No separate .NET installation is needed. Alternatively, extract the **entire** portable ZIP into its own directory and run `ServerDesk.App.exe`.
 
-This beta is not signed with a trusted publisher certificate. Use a trusted release source and do not disable Windows protection. Compare `Get-FileHash .\ServerDesk-0.43.0-win-x64-Setup.exe -Algorithm SHA256` with `SHA256SUMS.txt`. A checksum alongside a download detects corruption; it does not independently authenticate the publisher.
+This beta is not signed with a trusted publisher certificate. Use a trusted release source and do not disable Windows protection. Compare `Get-FileHash .\ServerDesk-0.45.1-win-x64-Setup.exe -Algorithm SHA256` with `SHA256SUMS.txt`. A checksum alongside a download detects corruption; it does not independently authenticate the publisher.
 
 If a partial Windows installation leaves missing files, prevents startup or loses its uninstaller, close ServerDesk and rerun a trusted Setup for the same version into the existing directory. Setup restores its own files without requiring database or saved-credential removal. First resolve any disk-space or permission failure that interrupted installation. Do not mix individual DLLs from different versions. [Tested repair scope](reports/rc-preparation-2026-10-17.md).
 
 ## Linux x64
 
-Ubuntu/Debian: `sudo apt install ./serverdesk_0.43.0_amd64.deb`, then launch ServerDesk from the menu or run `serverdesk`. Remembered passwords need `libsecret-tools` and an unlocked Secret Service such as GNOME Keyring. Install your distribution's FreeRDP client for RDP connections.
+Ubuntu/Debian: `sudo apt install ./serverdesk_0.45.1_amd64.deb`, then launch ServerDesk from the menu or run `serverdesk`. Remembered passwords need `libsecret-tools` and an unlocked Secret Service such as GNOME Keyring. Install your distribution's FreeRDP client for RDP connections.
 
-For TAR.GZ: `mkdir serverdesk-0.43.0`, then `tar -xzf ServerDesk-0.43.0-linux-x64.tar.gz -C serverdesk-0.43.0` and `./serverdesk-0.43.0/ServerDesk.App`. Native library requirements are listed in the DEB and [development.md](development.md). Linux testing used WSLg; other desktops need further verification.
+For TAR.GZ: `mkdir serverdesk-0.43.0`, then `tar -xzf ServerDesk-0.45.1-linux-x64.tar.gz -C serverdesk-0.43.0` and `./serverdesk-0.43.0/ServerDesk.App`. Native library requirements are listed in the DEB and [development.md](development.md). Linux testing used WSLg; other desktops need further verification.
 
 ## Connect
 

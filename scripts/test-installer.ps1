@@ -113,6 +113,14 @@ try {
     $steps.Add('Upgrade/reinstall preserves the entire isolated database/settings/log directory and extra install files')
     Assert-Payload
     $steps.Add('Every installed payload byte matches the published package')
+    if((Invoke-Setup $Installer "/S /NOREGISTER /DESKTOPSHORTCUT=1 /D=$target") -ne 0){throw 'Shortcut opt-in installation failed'}
+    if(-not ([IO.File]::ReadAllText((Join-Path $target 'install-state.ini')) -match '(?m)^DesktopShortcut=1\r?$')){throw 'Shortcut preference was not saved'}
+    if((Invoke-Setup $Installer "/S /NOREGISTER /D=$target") -ne 0){throw 'Shortcut-preserving reinstall failed'}
+    if(-not ([IO.File]::ReadAllText((Join-Path $target 'install-state.ini')) -match '(?m)^DesktopShortcut=1\r?$')){throw 'Silent update lost the desktop shortcut preference'}
+    if((Invoke-Setup $Installer "/S /NOREGISTER /DESKTOPSHORTCUT=0 /D=$target") -ne 0){throw 'Shortcut opt-out installation failed'}
+    if(-not ([IO.File]::ReadAllText((Join-Path $target 'install-state.ini')) -match '(?m)^DesktopShortcut=0\r?$')){throw 'Shortcut preference could not be disabled'}
+    Assert-Payload; Assert-Preserved
+    $steps.Add('Desktop shortcut opt-in, silent-upgrade preference preservation and opt-out with registration disabled')
     foreach($name in @('ServerDesk.App.dll','ServerDesk.App.runtimeconfig.json')){Remove-Item -LiteralPath (Owned-File $name)}
     if((Invoke-Setup $Installer "/S /NOREGISTER /D=$target") -ne 0){throw 'Repair of missing files failed'}
     Assert-Payload; Assert-Preserved
@@ -138,13 +146,16 @@ try {
     $steps.Add('Uninstall removes owned application binaries and preserves user data plus unknown files')
     $registry='HKCU:\Software\Microsoft\Windows\CurrentVersion\Uninstall\ServerDesk'
     $shortcut=Join-Path ([Environment]::GetFolderPath('Programs')) 'ServerDesk.lnk'
-    if(-not $SkipRegistration -and -not (Test-Path -LiteralPath $registry) -and -not (Test-Path -LiteralPath $shortcut)) {
-        if((Invoke-Setup $Installer "/S /D=$target") -ne 0){throw 'Registered install failed'}
+    $desktopShortcut=Join-Path ([Environment]::GetFolderPath('DesktopDirectory')) 'ServerDesk.lnk'
+    if(-not $SkipRegistration -and -not (Test-Path -LiteralPath $registry) -and -not (Test-Path -LiteralPath $shortcut) -and -not (Test-Path -LiteralPath $desktopShortcut)) {
+        if((Invoke-Setup $Installer "/S /DESKTOPSHORTCUT=1 /D=$target") -ne 0){throw 'Registered install failed'}
         $registered=Get-ItemProperty -LiteralPath $registry
         $link=(New-Object -ComObject WScript.Shell).CreateShortcut($shortcut)
         if($registered.InstallLocation -ne $target -or $registered.DisplayVersion -ne $version -or $link.TargetPath -ne (Join-Path $target 'ServerDesk.App.exe')){throw 'Incorrect Apps registration or Start menu shortcut'}
+        $desktopLink=(New-Object -ComObject WScript.Shell).CreateShortcut($desktopShortcut)
+        if($desktopLink.TargetPath -ne (Join-Path $target 'ServerDesk.App.exe')){throw 'Incorrect desktop shortcut'}
         if((Invoke-Setup (Join-Path $target 'Uninstall.exe') "/S _?=$target") -ne 0){throw 'Registered uninstall failed'}
-        if((Test-Path -LiteralPath $registry) -or (Test-Path -LiteralPath $shortcut)){throw 'Owned registration or shortcut remains after uninstall'}
+        if((Test-Path -LiteralPath $registry) -or (Test-Path -LiteralPath $shortcut) -or (Test-Path -LiteralPath $desktopShortcut)){throw 'Owned registration or shortcut remains after uninstall'}
         $steps.Add('Default per-user Apps registration and Start menu shortcut are created and removed correctly')
     } else {$steps.Add('SKIP default registration test: explicitly skipped or pre-existing user registration/shortcut preserved')}
     if(-not $Report){$Report=Join-Path $testRoot 'result.json'}

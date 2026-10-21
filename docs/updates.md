@@ -1,6 +1,14 @@
 # Aktualizacje z GitHub Releases
 
-Od **0.45.0** w Ustawienia → Bezpieczeństwo → Aktualizacje programu oraz w „O programie” jest przycisk **Sprawdź aktualizacje**. Automatyczne sprawdzanie przy starcie jest domyślnie wyłączone. Zapisanie tej opcji zaczyna działać przy następnym uruchomieniu; anulowanie ustawień jej nie włącza. Dostępna wersja wyświetla dyskretny pasek w głównym oknie. Pobieranie i instalacja wymagają decyzji użytkownika.
+Od **0.45.0** w Ustawienia → Bezpieczeństwo → Aktualizacje programu oraz w „O programie” jest przycisk **Sprawdź aktualizacje**. Od **0.45.1** sprawdzanie przy starcie jest domyślnie włączone; wcześniej zapisane wyłączenie pozostaje respektowane. Zmiana tej opcji zaczyna działać po zapisaniu, od następnego uruchomienia. Pobieranie i instalacja wymagają decyzji użytkownika.
+
+Gdy jest dostępna nowa wersja, pasek w głównym oknie oferuje:
+
+- **Aktualizuj** — otwiera okno pobierania, weryfikacji i instalacji.
+- **Pomiń tę wersję** — zapamiętuje dokładny numer wydania i nie przypomina o nim przy kolejnych startach. Następna nowsza wersja znów wywoła powiadomienie. Ręczne sprawdzanie w ustawieniach nadal pozwala pobrać pominiętą wersję.
+- **Przypomnij przy następnym uruchomieniu** — ukrywa pasek w bieżącym oknie, bez trwałego pomijania wersji.
+
+W **0.45.0** sprawdzanie przy starcie było domyślnie wyłączone. Aby przetestować przejście **0.45.0 → 0.45.1**, włącz tę opcję, zapisz i uruchom program ponownie albo użyj ręcznego sprawdzenia. Rozbudowany pasek z trzema decyzjami jest częścią 0.45.1 i zadziała dla późniejszych wydań. Nie zmieniamy już opublikowanej 0.45.0.
 
 Źródło jest wbudowane: [daman11/ServerDesk](https://github.com/daman11/ServerDesk/releases). Aplikacja odczytuje do 100 ostatnich wydań z publicznego API bez tokenu/konta użytkownika. Wybiera najwyższą nowszą wersję `vMAJOR.MINOR.PATCH`, pomija szkice, nigdy nie proponuje obniżenia wersji. Beta 0.x uwzględnia prerelease; stabilna wersja 1.x pomija prerelease. Nowe wydanie musi zawierać dokładnie jeden `ServerDesk-VERSION-win-x64-Setup.exe` i SHA-256 w polu `digest` GitHuba. Niepełne metadane blokują aktualizację.
 

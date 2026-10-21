@@ -2,6 +2,11 @@
 
 ## Unreleased
 
+## 0.45.1 — Public Beta — 2026-10-21
+
+- Add an optional desktop shortcut page to Windows Setup, with Polish/English labels, remembered selection during silent updates and explicit `/DESKTOPSHORTCUT=0|1` overrides. Keep `/NOREGISTER` isolated from shell registration and remove the owned desktop shortcut on uninstall.
+- Enable startup update checks by default while respecting saved opt-outs. Add Update, Skip this version and Remind me at next startup actions; persist only an exact skipped version, continue notifying about later releases and leave manual checking available. Add durable-storage and Polish/English UI regressions with synthetic HTTP.
+
 - Fix first-publication tooling: preserve the prerelease argument as an array, verify drafts through the authenticated release list and publish by ID, and render documentation links for GitHub without modifying frozen assets. Pin the exact .NET SDK for locked restore and include hidden files in Linux repository checks. Publish 0.45.0 and update the current maintainer guides.
 
 ## 0.45.0 — Public Beta — 2026-10-21

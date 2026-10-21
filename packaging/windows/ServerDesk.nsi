@@ -6,6 +6,7 @@ SetCompressor /SOLID zlib
 !include "FileFunc.nsh"
 !include "x64.nsh"
 !include "WinVer.nsh"
+!include "nsDialogs.nsh"
 
 !ifndef VERSION
   !error "VERSION is required"
@@ -30,6 +31,11 @@ ShowInstDetails show
 ShowUninstDetails show
 AutoCloseWindow false
 Var NoRegister
+Var DesktopShortcut
+Var DesktopShortcutOverride
+Var DesktopShortcutControl
+Var ShortcutOptionsDirectory
+Var PreviousDesktopShortcut
 
 !define MUI_ABORTWARNING
 !define MUI_WELCOMEPAGE_TITLE "ServerDesk ${VERSION} Public Beta"
@@ -37,6 +43,7 @@ Var NoRegister
 !insertmacro MUI_PAGE_WELCOME
 !insertmacro MUI_PAGE_LICENSE "..\..\LICENSE"
 !insertmacro MUI_PAGE_DIRECTORY
+Page custom DesktopShortcutPage DesktopShortcutPageLeave
 !define MUI_PAGE_CUSTOMFUNCTION_PRE CheckNotRunning
 !insertmacro MUI_PAGE_INSTFILES
 !define MUI_FINISHPAGE_RUN "$INSTDIR\ServerDesk.App.exe"
@@ -53,6 +60,12 @@ LangString RunningText ${LANG_ENGLISH} "Close ServerDesk in the selected directo
 LangString RunningText ${LANG_POLISH} "Zakończ sesje i zamknij ServerDesk z wybranego katalogu, a następnie uruchom instalator ponownie. Pliki nie zostały zastąpione."
 LangString RequirementsText ${LANG_ENGLISH} "ServerDesk requires Windows 10 or newer on an x64 system."
 LangString RequirementsText ${LANG_POLISH} "ServerDesk wymaga Windows 10 lub nowszego na komputerze x64."
+LangString ShortcutTitle ${LANG_ENGLISH} "Shortcuts"
+LangString ShortcutTitle ${LANG_POLISH} "Skróty"
+LangString ShortcutDescription ${LANG_ENGLISH} "Choose how to open ServerDesk. The Start menu shortcut is created automatically."
+LangString ShortcutDescription ${LANG_POLISH} "Wybierz sposób uruchamiania ServerDesk. Skrót w menu Start powstaje automatycznie."
+LangString DesktopShortcutText ${LANG_ENGLISH} "Create a desktop shortcut"
+LangString DesktopShortcutText ${LANG_POLISH} "Utwórz skrót na pulpicie"
 
 Function .onInit
   ${IfNot} ${RunningX64}
@@ -69,6 +82,49 @@ Function .onInit
   ${IfNot} ${Errors}
     StrCpy $NoRegister 1
   ${EndIf}
+  StrCpy $DesktopShortcutOverride ""
+  ClearErrors
+  ${GetOptions} $0 "/DESKTOPSHORTCUT=" $DesktopShortcutOverride
+  ${IfNot} ${Errors}
+    ${If} $DesktopShortcutOverride != "0"
+    ${AndIf} $DesktopShortcutOverride != "1"
+      SetErrorLevel 2
+      Quit
+    ${EndIf}
+  ${EndIf}
+  Call LoadDesktopShortcutChoice
+FunctionEnd
+
+Function LoadDesktopShortcutChoice
+  ${If} $ShortcutOptionsDirectory != $INSTDIR
+    StrCpy $ShortcutOptionsDirectory $INSTDIR
+    ReadINIStr $PreviousDesktopShortcut "$INSTDIR\install-state.ini" "Setup" "DesktopShortcut"
+    StrCpy $DesktopShortcut 0
+    ${If} $PreviousDesktopShortcut == "1"
+      StrCpy $DesktopShortcut 1
+    ${EndIf}
+    ${If} $DesktopShortcutOverride != ""
+      StrCpy $DesktopShortcut $DesktopShortcutOverride
+    ${EndIf}
+  ${EndIf}
+FunctionEnd
+
+Function DesktopShortcutPage
+  Call LoadDesktopShortcutChoice
+  !insertmacro MUI_HEADER_TEXT "$(ShortcutTitle)" "$(ShortcutDescription)"
+  nsDialogs::Create 1018
+  Pop $0
+  ${If} $0 == error
+    Abort
+  ${EndIf}
+  ${NSD_CreateCheckbox} 0 12u 100% 24u "$(DesktopShortcutText)"
+  Pop $DesktopShortcutControl
+  ${NSD_SetState} $DesktopShortcutControl $DesktopShortcut
+  nsDialogs::Show
+FunctionEnd
+
+Function DesktopShortcutPageLeave
+  ${NSD_GetState} $DesktopShortcutControl $DesktopShortcut
 FunctionEnd
 
 !macro CHECK_IDLE Prefix
@@ -83,6 +139,7 @@ FunctionEnd
 
 Section "ServerDesk" Main
   Call CheckNotRunning
+  Call LoadDesktopShortcutChoice
   SetOutPath "$INSTDIR"
   SetOverwrite on
   !include "${CLEAN_INCLUDE}"
@@ -93,9 +150,18 @@ Section "ServerDesk" Main
     Abort
   ${EndIf}
   WriteINIStr "$INSTDIR\install-state.ini" "Setup" "NoRegister" "$NoRegister"
+  WriteINIStr "$INSTDIR\install-state.ini" "Setup" "DesktopShortcut" "$DesktopShortcut"
   WriteUninstaller "$INSTDIR\Uninstall.exe"
   ${If} $NoRegister == 0
     CreateShortcut "$SMPROGRAMS\ServerDesk.lnk" "$INSTDIR\ServerDesk.App.exe" "" "$INSTDIR\ServerDesk.App.exe"
+    ${If} $DesktopShortcut == 1
+      CreateShortcut "$DESKTOP\ServerDesk.lnk" "$INSTDIR\ServerDesk.App.exe" "" "$INSTDIR\ServerDesk.App.exe"
+    ${ElseIf} $PreviousDesktopShortcut == 1
+      ReadRegStr $0 HKCU "${PRODUCT_KEY}" "InstallLocation"
+      ${If} $0 == $INSTDIR
+        Delete "$DESKTOP\ServerDesk.lnk"
+      ${EndIf}
+    ${EndIf}
     WriteRegStr HKCU "${PRODUCT_KEY}" "DisplayName" "ServerDesk Public Beta"
     WriteRegStr HKCU "${PRODUCT_KEY}" "DisplayVersion" "${VERSION}"
     WriteRegStr HKCU "${PRODUCT_KEY}" "InstallLocation" "$INSTDIR"
@@ -115,6 +181,10 @@ Section "Uninstall"
   ReadRegStr $0 HKCU "${PRODUCT_KEY}" "InstallLocation"
   ${If} $0 == $INSTDIR
     Delete "$SMPROGRAMS\ServerDesk.lnk"
+    ReadINIStr $1 "$INSTDIR\install-state.ini" "Setup" "DesktopShortcut"
+    ${If} $1 == 1
+      Delete "$DESKTOP\ServerDesk.lnk"
+    ${EndIf}
     DeleteRegKey HKCU "${PRODUCT_KEY}"
   ${EndIf}
   ; Generated exact owned files. No recursive directory deletion and no AppData operations.

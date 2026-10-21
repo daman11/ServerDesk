@@ -131,5 +131,30 @@ public sealed class ApplicationUpdateTests
         finally { Directory.Delete(root,true); }
     }
     [Fact]
-    public void Startup_network_check_is_opt_in()=>Assert.False(new ApplicationPreferences().CheckUpdatesOnStartup);
+    public void Startup_network_check_defaults_on_but_an_explicit_opt_out_survives()
+    {
+        Assert.True(new ApplicationPreferences().CheckUpdatesOnStartup);
+        Assert.True(JsonSerializer.Deserialize<ApplicationPreferences>("{}")!.CheckUpdatesOnStartup);
+        Assert.False(JsonSerializer.Deserialize<ApplicationPreferences>("{\"CheckUpdatesOnStartup\":false}")!.CheckUpdatesOnStartup);
+    }
+
+    [Fact]
+    public async Task Skipped_update_survives_reopening_and_settings_save_without_changing_profiles()
+    {
+        var root=Temp();
+        try
+        {
+            var paths=new AppPaths(root); var repo=new ProfileRepository(paths); await repo.InitializeAsync();
+            var profile=new ServerProfile { Name="Update preservation",Host="fixture.invalid",Username="fixture" };
+            await repo.SaveAsync(profile);
+            await repo.SetSkippedApplicationUpdateAsync("0.99.0");
+            await repo.SaveApplicationSettingsAsync(ApplicationSettings.Defaults);
+            var reopened=new ProfileRepository(paths);
+            Assert.Equal("0.99.0",await reopened.SettingAsync("skippedUpdateVersion"));
+            Assert.Equal(profile.Id,Assert.Single(await reopened.ListAsync()).Id);
+            await Assert.ThrowsAsync<InvalidDataException>(()=>reopened.SetSkippedApplicationUpdateAsync("../invalid"));
+            Assert.Equal("0.99.0",await reopened.SettingAsync("skippedUpdateVersion"));
+        }
+        finally { DatabaseTestCleanup.Clear(root); if(Directory.Exists(root))Directory.Delete(root,true); }
+    }
 }

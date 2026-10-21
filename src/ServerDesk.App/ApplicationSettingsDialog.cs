@@ -87,7 +87,7 @@ internal static partial class Dialogs
         var trustSection=Section(securityPage,"key","Weryfikacja serwerów SSH");
         Window? settingsOwner=null;
         var updatesSection=Section(securityPage,"download","Aktualizacje programu");
-        Flag(updatesSection,"updates","Sprawdzaj aktualizacje przy uruchomieniu",p.CheckUpdatesOnStartup,false).Name="CheckUpdatesOnStartup";
+        Flag(updatesSection,"updates","Sprawdzaj aktualizacje przy uruchomieniu",p.CheckUpdatesOnStartup).Name="CheckUpdatesOnStartup";
         updatesSection.Children.Add(DesignSystem.Hint(L.T("Opcja działa po zapisaniu, od kolejnego uruchomienia. Sprawdzanie korzysta z GitHub Releases; nie wysyła profili ani haseł. Pobieranie i instalacja wymagają Twojej decyzji.")));
         var showUpdates=Button("Sprawdź aktualizacje",async()=>
         {

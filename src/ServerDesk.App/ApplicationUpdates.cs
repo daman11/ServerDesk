@@ -13,30 +13,54 @@ public sealed partial class MainWindow
     private ApplicationUpdate? availableUpdate;
     private PreparedApplicationUpdate? pendingUpdate;
     private bool updateDialogOpen;
+    private bool startupUpdateCheckStarted;
+    private readonly TextBlock updateNotificationText=DesignSystem.Hint("");
+    internal Func<GitHubUpdateClient>? StartupUpdateClientFactory { get; set; }
     internal ProfileRepository UpdateRepository=>repository;
     internal Action<PreparedApplicationUpdate> StartUpdateHelper { get; set; }=ApplicationUpdateInstaller.Start;
 
     private Control BuildUpdateBanner()
     {
-        var open=Dialogs.Button("Dostępna aktualizacja",()=>_ = Safe(OpenUpdatesAsync)); open.Name="OpenAvailableUpdate";
-        var dismiss=DeskIcons.Button("close","Zamknij",()=>updateBanner.IsVisible=false,28);
-        var row=new Grid { ColumnDefinitions=new("*,Auto"),Children={open,dismiss} }; Grid.SetColumn(dismiss,1);
+        var open=Dialogs.Button("Aktualizuj",()=>_ = Safe(OpenUpdatesAsync)); open.Name="OpenAvailableUpdate"; open.Classes.Add("primary");
+        var skip=Dialogs.Button("Pomiń tę wersję",()=>_ = Safe(SkipAvailableUpdateAsync)); skip.Name="SkipAvailableUpdate";
+        ToolTip.SetTip(skip,L.T("Nie przypominaj o tej wersji. Kolejne wydania będą nadal sprawdzane."));
+        var remind=Dialogs.Button("Przypomnij przy następnym uruchomieniu",()=>updateBanner.IsVisible=false); remind.Name="RemindAvailableUpdate";
+        var actions=new WrapPanel { Orientation=Orientation.Horizontal };
+        foreach(var button in new[]{open,skip,remind}) { button.Margin=new Thickness(0,4,8,0); actions.Children.Add(button); }
+        var row=new StackPanel { Spacing=4,Children={updateNotificationText,actions} };
         updateBanner.Child=row; DesignSystem.Resource(updateBanner,Border.BackgroundProperty,"SurfaceSelected");
         Avalonia.Controls.Chrome.WindowDecorationProperties.SetElementRole(updateBanner,Avalonia.Input.WindowDecorationsElementRole.User);
         return updateBanner;
     }
-    private async Task CheckUpdatesAtStartupAsync()
+    internal async Task CheckUpdatesAtStartupAsync()
     {
+        if(startupUpdateCheckStarted || !preferences.CheckUpdatesOnStartup || StartupUpdateClientFactory==null)return;
+        startupUpdateCheckStarted=true;
         try
         {
-            using var client=new GitHubUpdateClient();
+            using var client=StartupUpdateClientFactory();
             using var timeout=CancellationTokenSource.CreateLinkedTokenSource(lifetime.Token); timeout.CancelAfter(TimeSpan.FromSeconds(45));
             var update=await client.CheckAsync(typeof(App).Assembly.GetName().Version!,timeout.Token);
             if(lifetime.IsCancellationRequested || closing)return;
-            availableUpdate=update; updateBanner.IsVisible=update!=null;
+            await PresentAvailableUpdateAsync(update);
         }
         catch(OperationCanceledException) { }
         catch(Exception ex) { ApplicationDiagnostics.Report("CheckUpdatesAtStartup",ex); }
+    }
+    internal async Task PresentAvailableUpdateAsync(ApplicationUpdate? update)
+    {
+        update?.Validate();
+        var skipped=await repository.SettingAsync("skippedUpdateVersion",lifetime.Token);
+        if(closing || lifetime.IsCancellationRequested)return;
+        availableUpdate=update;
+        updateNotificationText.Text=update==null?"":L.F($"Dostępna wersja ServerDesk: {update.Version}");
+        updateBanner.IsVisible=update!=null && update.Version!=skipped;
+    }
+    private async Task SkipAvailableUpdateAsync()
+    {
+        if(availableUpdate is not {} update || closing)return;
+        await repository.SetSkippedApplicationUpdateAsync(update.Version,lifetime.Token);
+        if(availableUpdate==update)updateBanner.IsVisible=false;
     }
     internal async Task OpenUpdatesAsync()
     {

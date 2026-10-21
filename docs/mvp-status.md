@@ -1,4 +1,6 @@
-# Pierwotne MVP — wydanie 0.45.0
+# Pierwotne MVP — wydanie 0.45.1
+
+0.45.1 dodaje opcjonalny skrót na pulpicie i decyzje Aktualizuj / Pomiń tę wersję / Przypomnij przy następnym uruchomieniu. Sprawdzanie jest domyślnie włączone, przy zachowaniu zapisanego wyłączenia. [Zakres weryfikacji](reports/release-verification-0.45.1.md), [obsługa aktualizacji](updates.md).
 
 0.45.0 dodaje aktualizacje GitHub: ręczne sprawdzanie, opcjonalne sprawdzanie przy starcie, weryfikację pobrania i instalację Windows Setup po potwierdzeniu. ZIP/Linux pozostają ręczne; pierwsza instalacja aktualizatora też jest ręczna. Kod i [wydanie 0.45.0](https://github.com/daman11/ServerDesk/releases/tag/v0.45.0) są publiczne od 2026-10-21. [Model zaufania](updates.md), [bieżąca weryfikacja](reports/release-verification-0.45.0.md).
 

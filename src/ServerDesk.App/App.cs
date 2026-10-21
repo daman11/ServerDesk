@@ -38,7 +38,9 @@ public sealed class App : Application
             System.Runtime.InteropServices.RuntimeInformation.OSDescription,System.Runtime.InteropServices.RuntimeInformation.FrameworkDescription);
         if (ApplicationLifetime is IClassicDesktopStyleApplicationLifetime desktop)
         {
-            desktop.MainWindow=provider.GetRequiredService<MainWindow>();
+            var main=provider.GetRequiredService<MainWindow>();
+            main.StartupUpdateClientFactory=()=>new GitHubUpdateClient();
+            desktop.MainWindow=main;
             desktop.Exit+=(_,_)=>
             {
                 try { provider.Dispose(); }

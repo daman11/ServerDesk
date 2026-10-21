@@ -12,7 +12,7 @@ public sealed partial class ProfileRepository
     // Explicit allowlist: settings also contains plugin documents, command
     // favorites and connection tag colors, which are user data, not preferences.
     private static readonly string[] FactorySettingKeys=[
-        "theme","terminalPalette","terminalFont","monitorInterval","rememberWorkspace","applicationPreferences","sidebar",
+        "theme","terminalPalette","terminalFont","monitorInterval","rememberWorkspace","applicationPreferences","skippedUpdateVersion","sidebar",
         "lastWorkspace","mainWindowPlacement","x","y","width","height","sidebarHidden","collapsedFolders",
         "workspaceMode","splitRatio","rowSplitRatio","sftpLocalShare","serverSort","serverSortDescending"
     ];

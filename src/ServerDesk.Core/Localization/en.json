@@ -1,4 +1,9 @@
 {
+  "Aktualizuj": "Update",
+  "Pomiń tę wersję": "Skip this version",
+  "Przypomnij przy następnym uruchomieniu": "Remind me at next startup",
+  "Nie przypominaj o tej wersji. Kolejne wydania będą nadal sprawdzane.": "Do not remind me about this version. Future releases will still be checked.",
+  "Dostępna wersja ServerDesk: {0}": "ServerDesk version available: {0}",
   "Aktualizacje ServerDesk": "ServerDesk updates",
   "Zainstalowana wersja: {0}": "Installed version: {0}",
   "Źródło: github.com/daman11/ServerDesk. GitHub otrzyma adres IP i informacje wymagane do pobrania. Profile i hasła nie są wysyłane. Instalator jest sprawdzany za pomocą SHA-256 z API GitHuba; nie ma podpisu Authenticode.": "Source: github.com/daman11/ServerDesk. GitHub receives your IP address and download request information. Profiles and passwords are not sent. The installer is verified against SHA-256 from the GitHub API; it has no Authenticode signature.",

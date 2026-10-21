@@ -50,7 +50,7 @@ internal sealed class DatabaseBackupBrowser:StackPanel,IDisposable
         var heading=new Grid { ColumnDefinitions=new("*,Auto"),ColumnSpacing=8,Children={DesignSystem.SectionHeading("archive",L.T("Zapisane kopie bazy")),refresh} }; Grid.SetColumn(refresh,1);
         var actions=new WrapPanel { Orientation=Orientation.Horizontal,Children={verify,copy,open} }; foreach(var action in actions.Children)action.Margin=new Thickness(0,2,8,2);
         Children.Add(heading); Children.Add(status); Children.Add(list); Children.Add(selectionLabel); Children.Add(path); Children.Add(actions); Children.Add(verification);
-        Children.Add(DesignSystem.Hint(L.T("Lista pokazuje metadane. Sprawdź kopię wykonuje kontrolę SQLite, bez przywracania danych ani sprawdzania haseł i kolekcji w magazynie systemowym. Przed przywróceniem przetestuj kopię w osobnym katalogu danych.")));
+        Children.Add(DesignSystem.Hint(L.T("Lista pokazuje metadane. Sprawdź kopię kontroluje SQLite, wymagane tabele i zapisane profile. Nie przywraca danych ani nie sprawdza haseł i kolekcji w magazynie systemowym. Przed przywróceniem przetestuj kopię w osobnym katalogu danych.")));
         LaunchFolder=folder=>TopLevel.GetTopLevel(this)?.Launcher.LaunchDirectoryInfoAsync(folder)??Task.FromResult(false);
         Loaded+=(_,_)=>_=RefreshAsync(); UpdateSelection();
     }
@@ -101,7 +101,7 @@ internal sealed class DatabaseBackupBrowser:StackPanel,IDisposable
         try
         {
             var schema=await DatabaseBackupCatalog.VerifyAsync(entry,lifetime.Token); if(disposed)return;
-            verification.Text=L.F($"Kontrola SQLite poprawna · schemat {schema}. Przed przywróceniem sprawdź dane w osobnym katalogu."); DesignSystem.Resource(verification,TextBlock.ForegroundProperty,"Success");
+            verification.Text=L.F($"Kontrola SQLite i profili poprawna · schemat {schema}. Przed przywróceniem sprawdź dane w osobnym katalogu."); DesignSystem.Resource(verification,TextBlock.ForegroundProperty,"Success");
         }
         catch(OperationCanceledException) when(disposed) { }
         catch(Exception ex)

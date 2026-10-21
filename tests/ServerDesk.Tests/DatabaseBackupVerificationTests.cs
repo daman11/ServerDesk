@@ -13,7 +13,12 @@ public sealed class DatabaseBackupVerificationTests:IDisposable
     {
         Directory.CreateDirectory(root); var path=Path.Combine(root,$"serverdesk-20261017-120000000-v{named??actual}-manual-{Guid.NewGuid():N}.db");
         using(var db=new SqliteConnection(new SqliteConnectionStringBuilder { DataSource=path,Pooling=false }.ToString()))
-        { await db.OpenAsync(); using var command=db.CreateCommand(); command.CommandText=$"CREATE TABLE settings(key TEXT PRIMARY KEY,value TEXT); INSERT INTO settings VALUES('fixture','keep'); PRAGMA user_version={actual}"; await command.ExecuteNonQueryAsync(); }
+        {
+            await db.OpenAsync(); using var command=db.CreateCommand();
+            command.CommandText="CREATE TABLE profiles(id TEXT PRIMARY KEY,json TEXT NOT NULL); CREATE TABLE folders(path TEXT PRIMARY KEY); CREATE TABLE hostkeys(host TEXT NOT NULL,port INTEGER NOT NULL,fingerprint TEXT NOT NULL,PRIMARY KEY(host,port)); CREATE TABLE settings(key TEXT PRIMARY KEY,value TEXT NOT NULL); CREATE TABLE history(id INTEGER PRIMARY KEY,profile TEXT NOT NULL,time TEXT NOT NULL); INSERT INTO settings VALUES('fixture','keep');"+
+                (actual>=3?"CREATE TABLE folder_icons(path TEXT PRIMARY KEY,icon TEXT NOT NULL); ALTER TABLE history ADD COLUMN snapshot TEXT;":"")+$" PRAGMA user_version={actual}";
+            await command.ExecuteNonQueryAsync();
+        }
         return new(path,DateTimeOffset.UtcNow,new FileInfo(path).Length,named??actual,false);
     }
     [Theory] [InlineData(0)] [InlineData(1)] [InlineData(2)] [InlineData(3)] [InlineData(4)]

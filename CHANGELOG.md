@@ -2,6 +2,8 @@
 
 ## Unreleased
 
+- Strengthen Check backup with required ServerDesk table/column checks and offline validation of every saved profile, including matching identities, duplicate JSON fields and a bounded 32 MiB record budget. Keep historical defaults and platform-specific paths without migrating or rewriting snapshots. Add focused read-only/data-preservation regressions and Polish/English settings feedback.
+
 ## 0.44.0 — Public Beta — 2026-10-19
 
 - Add a Windows RDP clipboard export dialog: copy remote files, inspect their names and drag a Copy-only virtual-file source to a local folder. Validate descriptor names/counts/sizes and expose read-only bounded streams without hidden file staging or remote delete feedback; invalidate stale/disconnected selections. Keep automatic clipboard redirection and existing credentials/session behavior. Live RDP/input/network acceptance is deferred at the maintainer's request; local tests and remaining Shell/gesture limits are recorded separately.

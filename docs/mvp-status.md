@@ -1,5 +1,7 @@
 # Pierwotne MVP — wydanie 0.44.0
 
+Krok roboczy po 0.44.0: **Sprawdź kopię** kontroluje również wymagane tabele/kolumny i zapisane profile, bez migracji, zmian pliku, połączeń sieciowych i odczytu magazynu haseł. Weryfikuje tożsamości, JSON i model połączenia; zachowuje obsługę historycznych formatów. [Zakres i granice](reports/backup-content-2026-10-21.md). Jest to część ochrony danych; nie zastępuje pełnego odtworzenia sekretów ani akceptacji sprzętu i RDP.
+
 0.44.0 zbiera opisane poniżej kroki po 0.43.0 oraz Pomoc offline i diagnostykę. Eksport RDP przez schowek jest eksperymentalny; bezpośredni gest ze zdalnego Eksploratora do systemu lokalnego nie jest wdrożony. Nie zamyka to akceptacji 1.0. [Wydanie i weryfikacja](reports/release-verification-0.44.0.md).
 
 Krok roboczy po 0.43.0: nowe RDP domyślnie w karcie; bezpośredni zrzut plików na Windows RDP, fizyczny gest do odbiornika i osiem kolejnych transferów z porównaniem sum. Tekst i obraz sprawdzone przed i po zrzutach. Pełna akceptacja Eksploratora, AltGr/IME w RDP i mieszanego DPI pozostaje otwarta. [Zakres i ograniczenia](reports/rdp-desktop-drop-2026-10-19.md).

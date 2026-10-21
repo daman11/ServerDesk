@@ -95,6 +95,7 @@ Ten dokument ustala plan; nie zalicza tych przyszłych prób. Aktualizacja sameg
 
 ## 1. Dane i odzyskiwanie — w toku
 
+- [x] Krok roboczy po 0.44.0: kontrola kopii obejmuje wymagane tabele/kolumny i wszystkie zapisane profile, z walidacją tożsamości, JSON/modelu i budżetem 32 MiB na rekord. Kontrola pozostawia kopię bez zmian; nie odczytuje sekretów i nie zalicza pełnego odtworzenia pozostałych magazynów. [Zakres i granice](reports/backup-content-2026-10-21.md).
 - [x] 0.43.0: atomowa edycja tożsamości profilu z rotacją lokalnego powiązania hasła, zachowanie hasła przy odmowie zapisu/usunięcia w SQLite, ostrzeżenie po niepotwierdzonym sprzątaniu i kontrola nieaktualnego edytora. Eksport/import/duplikat nie przenoszą powiązania. Schemat 4 z kopią chroni przed starszym klientem ignorującym to pole.
 - [x] 0.43.0: kontrola równoległych zapisów Komend i transakcyjne indeksy/historia Network Tools między oknami; błąd/anulowanie po części chunków zachowuje poprzednią bibliotekę. Rzeczywista blokada pisarza SQLite, odmowa katalogu Unix i ponowienie na własnych danych. [Zakres](reports/release-verification-0.43.0.md).
 - [x] Spójna ręczna kopia SQLite, także z zatwierdzonymi danymi WAL; sekcja ustawień PL/EN.

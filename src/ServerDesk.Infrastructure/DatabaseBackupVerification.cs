@@ -31,6 +31,7 @@ public static partial class DatabaseBackupCatalog
             ct.ThrowIfCancellationRequested(); command.CommandText="PRAGMA user_version"; var version=Convert.ToInt32(command.ExecuteScalar());
             if(version is <0 or >ProfileRepository.CurrentSchemaVersion)throw new InvalidDataException(L.T("Kopia pochodzi z nowszej lub nieobsługiwanej wersji ServerDesk. Plik pozostawiono bez zmian."));
             if(version!=namedVersion)throw new InvalidDataException(L.T("Schemat zapisany w bazie różni się od nazwy kopii. Plik pozostawiono bez zmian."));
+            VerifyApplicationContent(db,version,ct);
             ct.ThrowIfCancellationRequested(); info.Refresh(); RejectJournals(path);
             if(!info.Exists || info.Length!=length || info.LastWriteTimeUtc!=modified)throw new InvalidDataException(L.T("Plik kopii zmienił się lub jest niepoprawny. Odśwież listę i spróbuj ponownie."));
             return version;

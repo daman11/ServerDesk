@@ -7,6 +7,7 @@ using Avalonia.VisualTree;
 using ServerDesk.App;
 using ServerDesk.Core;
 using ServerDesk.Infrastructure;
+using Microsoft.Data.Sqlite;
 
 internal static class DatabaseBackupChecks
 {
@@ -38,7 +39,22 @@ internal static class DatabaseBackupChecks
             if(!verify.IsEnabled || Avalonia.Automation.AutomationProperties.GetName(verify)!=AppText.T("Sprawdź kopię") || !verify.GetVisualDescendants().OfType<DeskIcon>().Any())throw new Exception("Backup verification action is missing, unlocalized or has no icon");
             verify.RaiseEvent(new RoutedEventArgs(Button.ClickEvent)); RedesignChecks.Wait(browser.Shutdown);
             var check=Named<TextBlock>(settings,"DatabaseBackupVerificationStatus");
-            if(!check.IsVisible || check.Text!=AppText.F($"Kontrola SQLite poprawna · schemat {ProfileRepository.CurrentSchemaVersion}. Przed przywróceniem sprawdź dane w osobnym katalogu.") || !original.SequenceEqual(File.ReadAllBytes(file)))throw new Exception("Read-only backup verification did not return localized success");
+            if(!check.IsVisible || check.Text!=AppText.F($"Kontrola SQLite i profili poprawna · schemat {ProfileRepository.CurrentSchemaVersion}. Przed przywróceniem sprawdź dane w osobnym katalogu.") || !original.SequenceEqual(File.ReadAllBytes(file)))throw new Exception("Read-only backup verification did not return localized success");
+            foreach(var invalidProfile in new[]{true,false})
+            {
+                using(var db=new SqliteConnection(new SqliteConnectionStringBuilder { DataSource=file,Pooling=false }.ToString()))
+                {
+                    db.Open(); using var change=db.CreateCommand();
+                    change.CommandText=invalidProfile?"INSERT INTO profiles VALUES('11111111-1111-1111-1111-111111111111','null')":"DROP TABLE profiles";
+                    change.ExecuteNonQuery();
+                }
+                var invalidBytes=File.ReadAllBytes(file); RedesignChecks.Wait(browser.RefreshAsync()); RedesignChecks.Wait(browser.VerifySelectedAsync());
+                var expected=invalidProfile?AppText.F($"Kopia zawiera niepoprawny profil połączenia (wiersz {1}). Plik pozostawiono bez zmian."):AppText.T("Kopia nie zawiera wymaganych tabel lub kolumn ServerDesk. Plik pozostawiono bez zmian.");
+                if(!check.IsVisible || check.Text!=expected || !invalidBytes.SequenceEqual(File.ReadAllBytes(file)))throw new Exception("Invalid application backup content was certified or changed");
+                check.BringIntoView(); RedesignChecks.Frames(3); settings.CaptureRenderedFrame()!.Save(Path.Combine(root,$"database-backup-content-{language}-{invalidProfile}.png"));
+                File.WriteAllBytes(file,original);
+            }
+            RedesignChecks.Wait(browser.RefreshAsync()); RedesignChecks.Wait(browser.VerifySelectedAsync());
             Named<Button>(settings,"DatabaseBackupCopyPath").RaiseEvent(new RoutedEventArgs(Button.ClickEvent));
             Until(()=>Named<TextBlock>(settings,"DatabaseBackupListStatus").Text==AppText.T("Skopiowano ścieżkę."));
             if(settings.Clipboard!.TryGetTextAsync().GetAwaiter().GetResult()!=file)throw new Exception("Wrong snapshot path copied");
@@ -73,6 +89,6 @@ internal static class DatabaseBackupChecks
             message.GetVisualDescendants().OfType<Button>().Single(b=>b.Tag as string=="Zamknij").RaiseEvent(new RoutedEventArgs(Button.ClickEvent));
             Until(()=>!failed.IsVisible);
         }
-        Console.WriteLine("PASS database backup settings/search/create/list/refresh/clipboard/launcher target, read-only verification/success/corrupt/missing/close feedback PL/EN and safe close after corrupt database startup; isolated data only");
+        Console.WriteLine("PASS database backup settings/search/create/list/refresh/clipboard/launcher target, read-only verification/success/schema/profile/corrupt/missing/close feedback PL/EN and safe close after corrupt database startup; isolated data only");
     }
 }

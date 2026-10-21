@@ -94,7 +94,7 @@ internal sealed partial class CommandPanel : Border,IDisposable
         Grid.SetRow(filterBody,1); grid.Children.Add(filterBody);
         var results=new Grid { Name="CommandBrowser",RowDefinitions=new("Auto,*"),RowSpacing=7,MinHeight=96,ClipToBounds=true }; resultsView=results;
         BuildCommandBrowser(results); Grid.SetRow(list,1); results.Children.Add(list);
-        list.Classes.Add("command-list"); list.ItemTemplate=new FuncDataTemplate<CommandMatch>((match,_)=>match==null?null:Row(match)); list.SelectionChanged+=(_,_)=>Select(list.SelectedItem as CommandMatch);
+        list.Classes.Add("command-list"); list.ItemTemplate=new FuncDataTemplate<CommandMatch>((match,_)=>match==null?null:Row(match)); list.SelectionChanged+=(_,_)=> { if(!updating)Select(list.SelectedItem as CommandMatch); };
         list.AddHandler(KeyDownEvent,(_,e)=> { if(e.Key==Key.Enter && selected!=null) { ShowCommandDetails(); e.Handled=true; } },Avalonia.Interactivity.RoutingStrategies.Tunnel);
         list.SizeChanged+=(_,_)=>Avalonia.Threading.Dispatcher.UIThread.Post(()=> { if(!lifetime.IsCancellationRequested && list.SelectedItem is {} item)list.ScrollIntoView(item); });
         var detailScroll=new ScrollViewer { Name="CommandDetails",Content=detail,HorizontalScrollBarVisibility=Avalonia.Controls.Primitives.ScrollBarVisibility.Disabled,MinHeight=85,ClipToBounds=true };
@@ -103,7 +103,7 @@ internal sealed partial class CommandPanel : Border,IDisposable
         detailContext.MaxLines=2; detailContext.TextTrimming=TextTrimming.CharacterEllipsis;
         detailContext.Bind(TextBlock.TextProperty,new Binding(nameof(TextBlock.Text)) { Source=context });
         detailContext.Bind(TextBlock.ForegroundProperty,new Binding(nameof(TextBlock.Foreground)) { Source=context });
-        var navigation=new Grid { ColumnDefinitions=new("Auto,*"),ColumnSpacing=12,Children={backToList,detailContext} }; Grid.SetColumn(detailContext,1);
+        var navigation=BuildDetailNavigation();
         var detailBody=new Grid { RowDefinitions=new("Auto,*"),RowSpacing=12,Children={navigation,detailScroll} }; Grid.SetRow(detailScroll,1);
         detailCard=DesignSystem.Card(detailBody,new Thickness(12)); detailCard.Name="CommandDetailCard";
         var content=new Grid { Children={results,detailCard} }; Grid.SetRow(content,2); grid.Children.Add(content);
@@ -247,7 +247,7 @@ internal sealed partial class CommandPanel : Border,IDisposable
         ToolTip.SetTip(row,L.T("Więcej informacji"));
         row.Tapped+=(_,e)=> { list.SelectedItem=match; ShowCommandDetails(); e.Handled=true; }; return row;
     }
-    internal void RefreshList()
+    internal void RefreshList(bool preserveDetails=false)
     {
         if(!ready)return; queryDebounce.Cancel(); var keep=selected?.Id; var oldCategory=category.SelectedItem as string; updating=true;
         try
@@ -260,7 +260,9 @@ internal sealed partial class CommandPanel : Border,IDisposable
             if(category.SelectedItem is string path&&path!=all)matches=matches.Where(m=>m.Command.Category==path||m.Command.Category.StartsWith(path+"/",StringComparison.Ordinal)).ToArray();
             if(riskFilter.SelectedIndex>0)matches=matches.Where(m=>m.Command.Risk==(CommandRisk)(riskFilter.SelectedIndex-1)).ToArray();
             matches=sort.SelectedIndex switch { 1=>matches.OrderBy(m=>m.Command.Title,StringComparer.CurrentCultureIgnoreCase).ToArray(),2=>matches.OrderByDescending(m=>m.Command.Title,StringComparer.CurrentCultureIgnoreCase).ToArray(),3=>matches.OrderBy(m=>m.Command.Risk).ThenBy(m=>m.Command.Title).ToArray(),_=>section.SelectedIndex==3?matches.OrderByDescending(m=>state.Recent.First(r=>r.CommandId==m.Command.Id).UsedAt).ToArray():matches };
-            list.ItemsSource=matches; count.Text=L.F($"Komendy: {matches.Count}"); list.SelectedItem=matches.FirstOrDefault(m=>m.Command.Id==keep); Select(list.SelectedItem as CommandMatch);
+            list.ItemsSource=matches; count.Text=L.F($"Komendy: {matches.Count}"); var retained=matches.FirstOrDefault(m=>m.Command.Id==keep); list.SelectedItem=retained;
+            if(!preserveDetails || selected==null || !ReferenceEquals(selected,retained?.Command))Select(retained);
+            else UpdatePreview();
             // TextChanged is deferred by TextBox. An immediate Enter/reset must
             // not schedule another rebuild that discards the new parameter draft.
             appliedSearch=search.Text??"";

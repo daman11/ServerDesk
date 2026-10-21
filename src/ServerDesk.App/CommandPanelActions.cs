@@ -16,6 +16,7 @@ internal sealed partial class CommandPanel
     private void SetButtons(bool enabled)
     {
         foreach(var b in new[]{copy,insert,execute,favorite,edit,duplicate})b.IsEnabled=enabled;
+        if(!enabled)previousCommand.IsEnabled=nextCommand.IsEnabled=false;
     }
     private void Select(CommandMatch? match)
     {
@@ -61,6 +62,7 @@ internal sealed partial class CommandPanel
     }
     private void UpdatePreview()
     {
+        UpdateCommandNavigation();
         if(selected==null) { SetButtons(false); return; }
         favorite.IsEnabled=!working; edit.IsEnabled=!working&&!libraryLocked&&selected.Origin==CommandOrigin.User; duplicate.IsEnabled=!working&&!libraryLocked;
         var isFavorite=state.Favorites.Contains(selected.Id);
@@ -113,8 +115,9 @@ internal sealed partial class CommandPanel
     }
     private async Task FavoriteAsync()
     {
-        if(selected==null)return; var id=selected.Id;
-        state=state with { Favorites=state.Favorites.Contains(id)?state.Favorites.Where(s=>s!=id).ToArray():state.Favorites.Append(id).ToArray() }; await PersistStateAsync(); RefreshList();
+        if(selected==null)return; var command=selected; var revision=contextRevision; var id=command.Id;
+        state=state with { Favorites=state.Favorites.Contains(id)?state.Favorites.Where(s=>s!=id).ToArray():state.Favorites.Append(id).ToArray() }; await PersistStateAsync();
+        RefreshList(preserveDetails:ReferenceEquals(selected,command)&&contextRevision==revision);
     }
     private async Task EditAsync(CommandDefinition? source)
     {

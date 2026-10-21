@@ -12,7 +12,7 @@ using ServerDesk.App;
 using ServerDesk.Core;
 using ServerDesk.Infrastructure;
 
-internal static class CommandPanelChecks
+internal static partial class CommandPanelChecks
 {
     private sealed class Vault : ICredentialStore
     {
@@ -193,6 +193,7 @@ internal static class CommandPanelChecks
             Close(main);
         }
         AppText.SetLanguage("pl"); Console.WriteLine("PASS command cards/template/category/risk, risk filtering and empty-state recovery/create/history opt-in, immediate search Enter/Ctrl+F/Escape, sticky search above profile, visible offline action guidance, pointer/details/back, copy/favourites, PL/EN compact font13/16, RDP/Serial isolation");
+        Navigation(Path.Combine(root,"navigation"));
     }
     internal static void Network(string root,string host,string key)
     {

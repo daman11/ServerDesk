@@ -2,6 +2,8 @@
 
 ## Unreleased
 
+- Add Previous/Next controls, a position counter and Alt+Left/Right to command details, following the filtered/sorted results without dispatching commands. Preserve the current parameter draft, preview and Code approval when toggling favorites in an unchanged context; clear details when the selected favorite disappears. Add focused Polish/English navigation, clipboard isolation and compact-layout checks.
+
 - Refresh the embedded Windows RDP HWND and its children after window activation/focus and every five seconds while the logged-in desktop is visible. Stop repaint work during reconnect, detach and shutdown; skip hidden/minimized views. Let Desktop explicitly repaint and resend the current dynamic display settings without recreating the session or probing the server. Add native no-server repaint and RDP pane regressions; live remote monitor-off acceptance remains open.
 
 - Strengthen Check backup with required ServerDesk table/column checks and offline validation of every saved profile, including matching identities, duplicate JSON fields and a bounded 32 MiB record budget. Keep historical defaults and platform-specific paths without migrating or rewriting snapshots. Add focused read-only/data-preservation regressions and Polish/English settings feedback.

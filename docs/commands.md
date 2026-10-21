@@ -1,5 +1,9 @@
 # Komendy / Commands
 
+Krok rozwojowy po 0.44.0: szczegóły mają **Poprzednia komenda / Następna komenda**, licznik pozycji oraz **Alt+← / Alt+→**. Nawigacja trzyma się bieżących wyników, filtrów i sortowania; nie kopiuje ani nie wykonuje polecenia. Gwiazdka zachowuje wpisane parametry, podgląd i zgodę Code, jeśli ta sama komenda i kontekst pozostają wybrane. Po usunięciu ostatniego wpisu z Ulubionych panel wraca do pustej listy. Przejście do innej komendy tworzy jej nowy formularz; wartości robocze nie są zapisywane ani przenoszone między komendami. [Testy i granice](reports/command-navigation-2026-10-21.md).
+
+EN: Command details include Previous/Next, a position counter and Alt+Left/Right, following the current filtered/sorted results without copying or execution. Toggling a favorite keeps the current form and Code approval only while the same command/context remain selected. Moving to another command starts its own form; draft parameter values are not persisted or shared between commands.
+
 Wersja rozwojowa po 0.41.0: wyszukiwarka, źródło, kategoria, sortowanie i filtr ryzyka są poza przewijanym profilem systemu. **Wyczyść filtry** przywraca zapytanie/kategorię/ryzyko/sortowanie bez zmiany źródła ani profilu. Puste Moje komendy pozwalają utworzyć szablon, Ulubione prowadzą do ściągawki, a wyłączona historia oferuje jej świadome włączenie. Historia nadal przechowuje tylko identyfikatory i czas użycia.
 
 W panelu **Ctrl+F** ustawia fokus na wyszukiwaniu, **↓** przechodzi z wyszukiwarki na listę, a **Enter** natychmiast otwiera szczegóły wybranej lub pierwszej pasującej komendy. Żaden z tych skrótów nie wykonuje komendy. **Escape** czyści zapytanie w wyszukiwarce lub wraca ze szczegółów. Karty pokazują kategorię, powłokę, ryzyko, opis i szablon; szczegóły mają osobne sekcje parametrów, podglądu i wskazówek. Stopka wyjaśnia, dlaczego Wstaw/Wykonaj jest niedostępne (np. offline, niezgodny profil albo brak parametrów).

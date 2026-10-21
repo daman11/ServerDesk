@@ -71,6 +71,7 @@ if(args.Contains("--rdp-matrix-control")) { RdpMatrixControlChecks.Run(root); re
 if(args.Contains("--plugins")) { PluginChecks.Run(root); return; }
 if(args.Contains("--plugins-network")) { PluginChecks.Network(root,args[1],args[2]); return; }
 if(args.Contains("--rdp-gui")) { RdpGuiChecks.Run(root); return; }
+if(args.Contains("--command-navigation")) { CommandPanelChecks.Navigation(root); return; }
 if(args.Contains("--linux-desktop")) { LinuxDesktopChecks.Run(root); return; }
 if(args.Contains("--linux-rdp-certificate")) { LinuxDesktopChecks.Certificate(root,args[Array.IndexOf(args,"--linux-rdp-certificate")+1]); return; }
 if(args.Contains("--credential-save")) { CredentialSaveChecks.Run(root); return; }

@@ -52,7 +52,7 @@ Ustawienia 0.34.0: UiSmoke `ROOT --extended-settings` sprawdza sześć kategorii
 
 ## Czysty checkout
 
-Zainstaluj Git, PowerShell 7 oraz SDK wskazane w `global.json`. Uruchom `pwsh -File scripts/check-repository.ps1`, `dotnet restore ServerDesk.sln --locked-mode`, `dotnet build ServerDesk.sln -c Release --no-restore -m:1` i `dotnet test tests/ServerDesk.Tests -c Release --no-build`. Lokalne SDK i pobrane biblioteki w `.tools` są opcjonalne; nie kopiuj ich do repozytorium. Pełną macierz CI definiuje [ci.yml](../.github/workflows/ci.yml), a strukturę dokumentacji [indeks](README.md).
+Zainstaluj Git, PowerShell 7 oraz dokładną wersję SDK wskazaną w `global.json` (10.0.401, bez roll-forward). Zmiana SDK wymaga świadomej aktualizacji i sprawdzenia lockfile, także niejawnych pakietów ILLink. Uruchom `pwsh -File scripts/check-repository.ps1`, `dotnet restore ServerDesk.sln --locked-mode`, `dotnet build ServerDesk.sln -c Release --no-restore -m:1` i `dotnet test tests/ServerDesk.Tests -c Release --no-build`. Lokalne SDK i pobrane biblioteki w `.tools` są opcjonalne; nie kopiuj ich do repozytorium. Pełną macierz CI definiuje [ci.yml](../.github/workflows/ci.yml), a strukturę dokumentacji [indeks](README.md).
 
 Narzędzia SSH domyślnie używają aliasu `serverdesk_fixture`, niezależnego od loginu systemowego. Dla innego serwera fixture ustaw `SERVERDESK_TEST_SSH_USER`. Skrypty NSS uruchamiane przez sudo wybierają zwykłego użytkownika z `SUDO_USER`; opcjonalny `SERVERDESK_TEST_OS_USER` wskazuje inne istniejące konto testowe. Nie modyfikują kont systemowych. Domyślnie SSH, test hasła i SNMP nasłuchują tylko na `127.0.0.1`; `SERVERDESK_TEST_LISTEN_ADDRESS` służy do jawnego wskazania adresu izolowanego laboratorium.
 
@@ -76,7 +76,7 @@ UiSmoke `ROOT --large-browser` importuje 5000 profili i 200 folderów do własne
 
 MVP SSH 0.28.0: `bash scripts/prepare-terminal-test-apps.sh` pobiera i rozpakowuje narzędzia wyłącznie do `.tools/terminal-test-apps` (bez instalacji systemowej). `sudo bash scripts/start-test-ssh-password.sh` uruchamia własny sshd na 22223 z tymczasowym aliasem NSS zwykłego użytkownika WSL; nie zmienia kont, PAM ani systemowej usługi. Fixture wymaga przygotowanego `.tools/linux-ssh` jak pozostałe scenariusze. UiSmoke `ROOT HOST --ssh-acceptance` sprawdza błędne/poprawne testowe hasło, VT/Kitty, 28 przypadków klawiatury/wklejania, kopiowanie, rozmiary PTY, vim/nano z porównaniem plików, top/htop/MC, bash/zsh/fish i EOF/reconnect. Korzysta wyłącznie z headless clipboard, własnej bazy i `/tmp/serverdesk-terminal-<GUID>`. Serwer zatrzymuje `sudo bash scripts/stop-test-ssh-password.sh`. Skrypty NSS są przeznaczone dla jednorazowego środowiska WSL Ubuntu, nie do wdrażania serwera produkcyjnego. Trzy `TerminalResizeQueueTests` obejmują wolny zapis, 10 000 oczekujących zmian, zamknięcie i błąd transportu.
 
-Uruchamianie ze źródeł: `dotnet run --project src/ServerDesk.App`. Na Windows skrypt build.ps1 wykrywa lokalne SDK; na Linux zainstaluj SDK 10 lub użyj samodzielnego wydania.
+Uruchamianie ze źródeł: `dotnet run --project src/ServerDesk.App`. Na Windows skrypt build.ps1 wykrywa lokalne SDK; na Linux zainstaluj SDK z `global.json` lub użyj samodzielnego wydania.
 
 Testy: `dotnet test tests/ServerDesk.Tests`. Windows test DPAPI działa wyłącznie na Windows. W środowisku Codex procesy MSBuild i test runner mogą wymagać wykonania poza sandboxem ze względu na named pipes, dlatego użyto -m:1 i wyłączono serwer kompilatora.
 

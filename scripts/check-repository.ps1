@@ -17,7 +17,7 @@ try {
         if($relative -match '(^|/)(\.tools|artifacts|bin|obj|TestResults|logs|credentials|\.ssh)(/|$)|\.(db(?:-.*)?|sqlite3?(?:-.*)?|log|trx|pem|key|pfx|p12|ppk|rdp|exe|dll|pdb|zip|deb|nupkg)$|(^|/)\.env(?:\.|$)|(^|/)(id_rsa|id_ed25519|integration_key)|^serverdesk\.json$'){
             if($relative -ne '.env.example'){$problems.Add("Private or generated file tracked: $relative")}
         }
-        if((Get-Item -LiteralPath $file).Length -gt 10MB){$problems.Add("Source file exceeds 10 MiB; review before tracking: $relative")}
+        if((Get-Item -LiteralPath $file -Force).Length -gt 10MB){$problems.Add("Source file exceeds 10 MiB; review before tracking: $relative")}
         if([IO.Path]::GetExtension($file) -in @('.png','.ico','.jpg','.jpeg')){continue}
         $text=[IO.File]::ReadAllText((Join-Path $repo $file))
         if($text -match '(?m)^-----BEGIN (?:RSA |EC |DSA |OPENSSH )?PRIVATE KEY-----\r?$' -or $text -match '(?:gh[pousr]_[A-Za-z0-9]{36,}|github_pat_[A-Za-z0-9_]{60,}|AKIA[A-Z0-9]{16})'){

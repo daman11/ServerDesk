@@ -1,6 +1,6 @@
 # Pierwotne MVP — wydanie 0.45.0
 
-0.45.0 dodaje aktualizacje GitHub: ręczne sprawdzanie, opcjonalne sprawdzanie przy starcie, weryfikację pobrania i instalację Windows Setup po potwierdzeniu. ZIP/Linux pozostają ręczne; pierwsza instalacja aktualizatora też jest ręczna. Repozytorium `daman11/ServerDesk` zostało utworzone, ale publikacja kodu/paczek wymaga decyzji maintenera. [Model zaufania](updates.md), [bieżąca weryfikacja](reports/release-verification-0.45.0.md).
+0.45.0 dodaje aktualizacje GitHub: ręczne sprawdzanie, opcjonalne sprawdzanie przy starcie, weryfikację pobrania i instalację Windows Setup po potwierdzeniu. ZIP/Linux pozostają ręczne; pierwsza instalacja aktualizatora też jest ręczna. Kod i [wydanie 0.45.0](https://github.com/daman11/ServerDesk/releases/tag/v0.45.0) są publiczne od 2026-10-21. [Model zaufania](updates.md), [bieżąca weryfikacja](reports/release-verification-0.45.0.md).
 
 Krok roboczy po 0.44.0: **Sprawdź kopię** kontroluje również wymagane tabele/kolumny i zapisane profile, bez migracji, zmian pliku, połączeń sieciowych i odczytu magazynu haseł. Weryfikuje tożsamości, JSON i model połączenia; zachowuje obsługę historycznych formatów. [Zakres i granice](reports/backup-content-2026-10-21.md). Jest to część ochrony danych; nie zastępuje pełnego odtworzenia sekretów ani akceptacji sprzętu i RDP.
 

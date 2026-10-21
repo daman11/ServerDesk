@@ -22,9 +22,9 @@ Zaufanie opiera się na HTTPS oraz kontroli repozytorium GitHub. SHA-256 wykrywa
 
 ## Publikowanie przez maintenera
 
-Repozytorium jest utworzone, a lokalny `origin` wskazuje `https://github.com/daman11/ServerDesk.git`. Nie oznacza to wysłania kodu lub paczek. Wykonaj najpierw [pełną procedurę wydania](releasing.md), przegląd historii/sekretów oraz sprawdzenie tagu. Nie dołączaj `.tools`, danych ani `artifacts` do historii Git.
+Kod i [wydanie 0.45.0 Public Beta](https://github.com/daman11/ServerDesk/releases/tag/v0.45.0) są publiczne od 2026-10-21. Lokalny `origin` wskazuje `https://github.com/daman11/ServerDesk.git`. Dla kolejnych wydań wykonaj najpierw [pełną procedurę wydania](releasing.md), przegląd historii/sekretów oraz sprawdzenie tagu. Nie dołączaj `.tools`, danych ani `artifacts` do historii Git.
 
-Zainstaluj [oficjalne GitHub CLI](https://cli.github.com), następnie zaloguj się przez `gh auth login` w swojej przeglądarce. Nie umieszczaj tokenu w czacie, kodzie, URL ani skrypcie.
+Zainstaluj [oficjalne GitHub CLI](https://cli.github.com). Możesz użyć fine-grained PAT ograniczonego do `daman11/ServerDesk`, z Contents i Workflows = Read and write oraz wymaganym Metadata = Read. Podaj go CLI przez `GH_TOKEN` tylko na czas procesu albo przez bezpieczny magazyn poświadczeń. Token publikacji nie jest potrzebny aplikacji. Alternatywny `gh auth login` w przeglądarce może prosić o szerszy dostęp — przejrzyj uprawnienia przed zgodą. Nie umieszczaj tokenu w czacie, kodzie, URL ani skrypcie.
 
 ```powershell
 # Tylko podgląd celu i plików; nic nie wysyła.

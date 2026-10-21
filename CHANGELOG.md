@@ -2,6 +2,8 @@
 
 ## Unreleased
 
+- Fix first-publication tooling: preserve the prerelease argument as an array, verify drafts through the authenticated release list and publish by ID, and render documentation links for GitHub without modifying frozen assets. Pin the exact .NET SDK for locked restore and include hidden files in Linux repository checks. Publish 0.45.0 and update the current maintainer guides.
+
 ## 0.45.0 — Public Beta — 2026-10-21
 
 - Add GitHub Releases updates pinned to daman11/ServerDesk: opt-in startup checks, PL/EN update dialog, bounded/cancellable downloads, trusted HTTPS redirect policy and mandatory API SHA-256/size validation. Windows Setup installations can prepare a database backup, confirm session shutdown and hand installation/restart to a standalone helper outside the installed payload. The helper waits for the original PID/start time, re-fetches metadata and verifies the held installer before execution. Portable/Linux installs remain manual; HTTPS/account trust is not Authenticode or an independent publisher signature. Add local regression coverage and a guarded maintainer publication script (preview by default).

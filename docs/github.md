@@ -18,7 +18,7 @@ Dodawaj tylko pliki należące do konkretnej zmiany. Dla poprawek używaj `fix:`
 
 ## Utworzenie zdalnego repozytorium
 
-Repozytorium **[daman11/ServerDesk](https://github.com/daman11/ServerDesk)** zostało utworzone 2026-10-21. Lokalny `origin` jest podłączony. Poniższe ogólne kroki zakładania nie wymagają powtarzania; kod i paczki pozostają lokalne, dopóki maintainer nie zleci publikacji. Dostępny jest [podgląd/skrypt publikacji wydań](updates.md).
+Repozytorium **[daman11/ServerDesk](https://github.com/daman11/ServerDesk)** i [wydanie 0.45.0 Public Beta](https://github.com/daman11/ServerDesk/releases/tag/v0.45.0) zostały opublikowane 2026-10-21 na polecenie maintenera. `origin` jest podłączony, a `main` i tag `v0.45.0` są na GitHub. Poniższe ogólne kroki zakładania nie wymagają powtarzania. Dostępny jest [podgląd/skrypt kolejnych publikacji](updates.md).
 
 1. Utwórz puste repozytorium na swoim koncie GitHub. Nie dodawaj na stronie nowego README, licencji ani `.gitignore`, ponieważ istnieją już lokalnie.
 2. Skopiuj adres HTTPS albo SSH tego repozytorium i wykonaj poniższe polecenia. Zastąp `URL_REPOZYTORIUM` rzeczywistym adresem. Hasła ani tokenu nie umieszczaj w URL; użyj menedżera poświadczeń Git lub klucza SSH.
@@ -35,7 +35,7 @@ Jeżeli `origin` już istnieje, najpierw sprawdź jego adres zamiast dodawać dr
 
 ## CI i ustawienia GitHub
 
-Workflow [CI](../.github/workflows/ci.yml) buduje rozwiązanie, uruchamia testy jednostkowe i headless UI na Windows i Ubuntu. Po locked restore wykonuje również bramkę audytu NuGet oraz testy jej decyzji. Używa SDK z `global.json`, lockfile NuGet i repozytoryjnego `NuGet.Config`. Zapisuje wyniki TRX, renderowane obrazy UI i podsumowania JSON, bez baz i logów sesji; surowy raport audytu/stderr nie jest automatycznie publikowany jako artifact CI. Akcje są przypięte do pełnych SHA; token ma `contents: read`, a checkout nie zachowuje poświadczeń. Konfiguracja korzysta z [oficjalnych akcji GitHub](https://github.com/actions) i [zaleceń bezpieczeństwa Actions](https://docs.github.com/en/actions/reference/security/secure-use).
+Workflow [CI](../.github/workflows/ci.yml) buduje rozwiązanie, uruchamia testy jednostkowe i headless UI na Windows i Ubuntu. Po locked restore wykonuje również bramkę audytu NuGet oraz testy jej decyzji. Używa dokładnej wersji SDK z `global.json` (bez roll-forward), lockfile NuGet i repozytoryjnego `NuGet.Config`. Zapisuje wyniki TRX, renderowane obrazy UI i podsumowania JSON, bez baz i logów sesji; surowy raport audytu/stderr nie jest automatycznie publikowany jako artifact CI. Akcje są przypięte do pełnych SHA; token ma `contents: read`, a checkout nie zachowuje poświadczeń. Konfiguracja korzysta z [oficjalnych akcji GitHub](https://github.com/actions) i [zaleceń bezpieczeństwa Actions](https://docs.github.com/en/actions/reference/security/secure-use).
 
 Po pierwszym pushu sprawdź wynik zakładki Actions. Lokalny test nie zastępuje wykonania na runnerze GitHub. Następnie ustaw `main` jako domyślną gałąź oraz regułę ochrony wymagającą zielonych kontroli `Build and test (windows-2025)` i `Build and test (ubuntu-24.04)`. W repozytorium zespołowym włącz przegląd pull requestów. Włącz dostępne secret scanning i push protection. Ustal prywatny kanał zgłaszania podatności i uzupełnij [SECURITY.md](../SECURITY.md).
 

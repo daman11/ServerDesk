@@ -6,6 +6,8 @@ Native Windows/Linux workspace for SSH, SFTP, RDP, VNC and serial connections. B
 
 ## Downloads and installation
 
+**[Download ServerDesk 0.45.0 Public Beta](https://github.com/daman11/ServerDesk/releases/tag/v0.45.0)** — [Windows installer](https://github.com/daman11/ServerDesk/releases/download/v0.45.0/ServerDesk-0.45.0-win-x64-Setup.exe), portable and Linux packages, source and SHA-256 checksums.
+
 0.45.0 adds GitHub update checks, optional startup notifications and verified installer download/install/restart for Windows x64 Setup installations. Portable/Linux updates remain manual. It also includes stronger backup validation, RDP repaint recovery and command navigation improvements. Schema 4 is unchanged. Reverse RDP dragging remains experimental. [Release notes](docs/releases/release-0.45.0.md), [verification and limits](docs/reports/release-verification-0.45.0.md), [updates](docs/updates.md).
 
 | System | Package | Start |
@@ -18,7 +20,7 @@ Native Windows/Linux workspace for SSH, SFTP, RDP, VNC and serial connections. B
 
 The binary packages include .NET. Linux additionally needs its system X11/fontconfig libraries, Secret Service for remembered passwords and an installed X11 FreeRDP client (`xfreerdp3` or `xfreerdp`) for in-tab RDP. Linux verification used Ubuntu/WSLg; other desktop/distribution combinations are experimental. ARM/macOS packages are not provided.
 
-This beta is unsigned. Obtain it from a trusted release source and compare its SHA-256 with `SHA256SUMS.txt`. A checksum beside the download does not independently authenticate the publisher. No public download repository is configured in this source snapshot.
+This beta is unsigned. Obtain it from the [official release](https://github.com/daman11/ServerDesk/releases/tag/v0.45.0) and compare its SHA-256 with `SHA256SUMS.txt`. A checksum beside the download does not independently authenticate the publisher.
 
 ## Features
 
@@ -72,7 +74,7 @@ docs/            Current guides; releases/ and reports/ contain history
 .github/         Windows/Linux CI, issue/PR templates and Dependabot
 ```
 
-Git history starts at the imported `v0.31.1` baseline. Keep logical changes in separate commits and release packages outside Git. [Git workflow and first GitHub upload](docs/github.md). No remote is configured until the maintainer selects a repository.
+Git history starts at the imported `v0.31.1` baseline. Keep logical changes in separate commits and release packages outside Git. The public repository is [daman11/ServerDesk](https://github.com/daman11/ServerDesk); [Git workflow and publication guide](docs/github.md).
 
 Report bugs to [daman11/ServerDesk](https://github.com/daman11/ServerDesk/issues). Include the version, OS and reproduction steps; remove infrastructure identifiers from logs. Follow [SECURITY.md](SECURITY.md) for private vulnerability reporting. ServerDesk does not implement telemetry. Update checks use GitHub and are opt-in at startup; see [privacy](docs/privacy.md).
 

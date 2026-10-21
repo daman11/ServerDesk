@@ -20,6 +20,7 @@ internal static class RdpPaneChecks
         var window=new Window { Width=1100,Height=760,Content=pane }; window.Show(); RedesignChecks.Frames();
         if(window.GetVisualDescendants().OfType<Button>().Any(b=>b.Tag as string=="Uruchom RDP"))throw new Exception("RDP has duplicate launch control");
         if(Button(window,"Pokaż okno").IsEnabled || Button(window,"Rozłącz RDP").IsEnabled)throw new Exception("Idle RDP actions incorrectly enabled");
+        using(var uncreated=new WindowsRdpHost())if(uncreated.RefreshDisplay())throw new Exception("Uncreated native RDP host accepted a repaint");
         window.CaptureRenderedFrame()!.Save(Path.Combine(root,"rdp-ready.png"));
         RedesignChecks.Wait(pane.ConnectAsync("",CancellationToken.None)); RedesignChecks.Frames();
         if(repo.HistoryAsync(profileId:profile.Id).GetAwaiter().GetResult().Count!=0)throw new Exception("External RDP process incorrectly entered successful history");

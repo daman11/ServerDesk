@@ -595,6 +595,7 @@
   "Sprawdzanie plików do RDP…": "Checking files for RDP…",
   "Sprawdzenie dostępności i NLA nastąpi przed uruchomieniem klienta.": "Availability and NLA will be checked before starting the client.",
   "Sprawdź serwer": "Check server",
+  "Odśwież obraz pulpitu i oddaj fokus sesji RDP.": "Refresh the desktop image and return focus to the RDP session.",
   "Stacja robocza": "Workstation",
   "Standardowe uwierzytelnianie VNC używa pierwszych 8 bajtów hasła. Transmisja VNC nie jest szyfrowana.": "Standard VNC authentication uses the first 8 bytes of the password. VNC traffic is not encrypted.",
   "Standardowy": "Standard",

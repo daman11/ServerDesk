@@ -45,7 +45,7 @@ internal sealed partial class SessionPane
     }
     internal async Task ShowRestoredPanelAsync()
     { var panel=restoredPanel; restoredPanel=null; if(panel is >0 && Profile.Protocol==Protocol.SSH)await ShowAsync(panel.Value); }
-    internal override void FocusContent() { if(linuxRdp is { IsLoggedIn:true })linuxRdp.FocusDesktop(); else if(Profile.Protocol==Protocol.VNC && IsConnected)vncSurface?.Focus(); else if(terminal.IsVisible)terminal.Focus(); else if(files.IsVisible)remoteList.Focus(); else if(info.IsVisible)info.Focus(); else connectButton.Focus(); }
+    internal override void FocusContent() { if(embeddedRdp is { IsLoggedIn:true })embeddedRdp.FocusDesktop(); else if(linuxRdp is { IsLoggedIn:true })linuxRdp.FocusDesktop(); else if(Profile.Protocol==Protocol.VNC && IsConnected)vncSurface?.Focus(); else if(terminal.IsVisible)terminal.Focus(); else if(files.IsVisible)remoteList.Focus(); else if(info.IsVisible)info.Focus(); else connectButton.Focus(); }
     private void UpdateConnectionActions()
     {
         if(connectButton==null)return;

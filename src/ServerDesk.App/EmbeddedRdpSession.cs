@@ -92,7 +92,7 @@ internal sealed partial class SessionPane
         catch(Exception ex) { rdpHostUnavailable=true; throw new RdpHostUnavailableException(ex); }
     }
     private CancellationTokenSource? rdpResize;
-    private async Task ResizeEmbeddedRdpAsync()
+    private async Task ResizeEmbeddedRdpAsync(bool force=false)
     {
         rdpResize?.Cancel(); var delay=CancellationTokenSource.CreateLinkedTokenSource(lifetime.Token); rdpResize=delay;
         try
@@ -101,7 +101,7 @@ internal sealed partial class SessionPane
             if(embeddedRdp is { IsLoggedIn:true } host && Profile.Rdp.DynamicResolution && host.IsEffectivelyVisible)
             {
                 var scale=TopLevel.GetTopLevel(host)?.RenderScaling??1;
-                if(host.Bounds.Width>0 && host.Bounds.Height>0)host.ResizeDesktop(ServerDesk.Core.RdpDisplaySettings.FromViewport(host.Bounds.Width,host.Bounds.Height,scale));
+                if(host.Bounds.Width>0 && host.Bounds.Height>0)host.ResizeDesktop(ServerDesk.Core.RdpDisplaySettings.FromViewport(host.Bounds.Width,host.Bounds.Height,scale),force);
             }
         }
         catch(OperationCanceledException) when(delay.IsCancellationRequested) { }

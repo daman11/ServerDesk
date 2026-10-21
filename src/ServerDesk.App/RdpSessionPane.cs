@@ -72,7 +72,7 @@ internal sealed partial class SessionPane
         if(rdpShow!=null)
         {
             var label=UseEmbeddedRdp?L.T("Pulpit"):L.T("Pokaż okno"); rdpShow.Content=DeskIcons.Labelled(UseEmbeddedRdp?"monitor":"external-link",label);
-            Avalonia.Automation.AutomationProperties.SetName(rdpShow,label); ToolTip.SetTip(rdpShow,label);
+            Avalonia.Automation.AutomationProperties.SetName(rdpShow,label); ToolTip.SetTip(rdpShow,UseEmbeddedRdp && !UseLinuxEmbeddedRdp?L.T("Odśwież obraz pulpitu i oddaj fokus sesji RDP."):label);
         }
         if(rdpHelp!=null)rdpHelp.Text=UseEmbeddedRdp?L.T("Pulpit otworzy się w tej zakładce. Możesz przenieść ją do drugiego panelu lub osobnego okna.\nCtrl+Alt+← / Ctrl+Alt+→ oddaje klawiaturę do ServerDesk; Ctrl+Alt+End otwiera zdalny ekran zabezpieczeń.\nPliki upuść na strefę schowka, a następnie wklej w folderze zdalnego Eksploratora.\nCertyfikat wymagający weryfikacji potwierdź w systemowym oknie Windows."):OperatingSystem.IsWindows()?L.T("Pulpit działa w osobnym oknie klienta Windows. Dane logowania i certyfikat potwierdź w jego oknie.\nStan uruchomionego klienta nie potwierdza zalogowania."):L.T("Login, hasło i certyfikat potwierdź w konsoli tej zakładki lub oknie klienta.\nKonsola RDP zachowuje szczegóły po błędzie. Pulpit działa w osobnym oknie FreeRDP; uruchomiony klient nie potwierdza zalogowania.");
         if(UseLinuxEmbeddedRdp && rdpHelp!=null)rdpHelp.Text=L.T("Pulpit działa w tej zakładce przez X11/XWayland. Hasło i certyfikat obsługują okna ServerDesk.\nCtrl+Alt+← / Ctrl+Alt+→ lub kliknięcie paska narzędzi oddaje fokus aplikacji.\nMożesz używać podziału widoku i dokowania; przekazywanie folderu skonfiguruj w profilu.");
@@ -123,7 +123,7 @@ internal sealed partial class SessionPane
     private Task ShowRdpWindowAsync()
     {
         if(linuxRdp is { IsRunning:true }) { linuxRdp.FocusDesktop(); return Task.CompletedTask; }
-        if(embeddedRdp is { IsRunning:true }) { embeddedRdp.FocusDesktop(); return Task.CompletedTask; }
+        if(embeddedRdp is { IsRunning:true }) { embeddedRdp.FocusDesktop(); return ResizeEmbeddedRdpAsync(force:true); }
         if(rdpProcess?.TryActivateWindow()==true)return Task.CompletedTask;
         if(terminal.IsLive) { terminal.Focus(); return Task.CompletedTask; }
         return Dialogs.Message(owner,L.T("Okno klienta RDP"),L.T("Okno może jeszcze się uruchamiać albo wyświetlać pytanie o logowanie/certyfikat. Wybierz je na pasku zadań Windows."));

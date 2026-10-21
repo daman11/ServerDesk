@@ -4,6 +4,7 @@ using Avalonia.Controls;
 using Avalonia.Platform;
 using Avalonia;
 using Avalonia.VisualTree;
+using Avalonia.Threading;
 using ServerDesk.Core;
 
 namespace ServerDesk.App;
@@ -25,18 +26,25 @@ internal sealed partial class WindowsRdpHost : NativeControlHost, IDisposable
     internal event Action? Reconnected;
     internal event Action? ViewportChanged;
     private TopLevel? scalingRoot;
+    private readonly DispatcherTimer repaintTimer=new() { Interval=TimeSpan.FromSeconds(5) };
+    internal WindowsRdpHost() { repaintTimer.Tick+=(_,_)=> { if(IsLoggedIn)RefreshDisplay(); }; }
     private delegate void ReconnectHandler(int reason,int attempt,ref int continuation);
     protected override void OnAttachedToVisualTree(VisualTreeAttachmentEventArgs e)
     {
         base.OnAttachedToVisualTree(e); scalingRoot=TopLevel.GetTopLevel(this);
         if(scalingRoot!=null)scalingRoot.ScalingChanged+=ScalingChanged;
+        if(scalingRoot is Window root)root.Activated+=WindowActivated;
+        if(IsLoggedIn)repaintTimer.Start();
         ViewportChanged?.Invoke();
     }
     protected override void OnDetachedFromVisualTree(VisualTreeAttachmentEventArgs e)
     {
         if(scalingRoot!=null)scalingRoot.ScalingChanged-=ScalingChanged;
+        if(scalingRoot is Window root)root.Activated-=WindowActivated;
+        repaintTimer.Stop();
         scalingRoot=null; base.OnDetachedFromVisualTree(e);
     }
+    private void WindowActivated(object? sender,EventArgs e) { if(IsLoggedIn)RefreshDisplay(); }
     private void ScalingChanged(object? sender,EventArgs e) { TryUpdateNativeControlPosition(); ViewportChanged?.Invoke(); }
     internal bool IsRunning { get; private set; }
     private volatile bool isLoggedIn;
@@ -61,12 +69,12 @@ internal sealed partial class WindowsRdpHost : NativeControlHost, IDisposable
             if(window==0)throw new System.ComponentModel.Win32Exception(Marshal.GetLastWin32Error());
             Marshal.ThrowExceptionForHR(AtlAxGetControl(window,out var unknown));
             try { control=Marshal.GetObjectForIUnknown(unknown); } finally { Marshal.Release(unknown); }
-            Subscribe(3,(Action)(()=> { IsLoggedIn=true; IsReconnecting=false; LoginComplete?.Invoke(); }));
-            Subscribe(4,(Action<int>)(reason=> { IsRunning=IsLoggedIn=IsReconnecting=false; Disconnected?.Invoke(reason); }));
+            Subscribe(3,(Action)(()=> { IsLoggedIn=true; IsReconnecting=false; repaintTimer.Start(); LoginComplete?.Invoke(); }));
+            Subscribe(4,(Action<int>)(reason=> { repaintTimer.Stop(); IsRunning=IsLoggedIn=IsReconnecting=false; Disconnected?.Invoke(reason); }));
             Subscribe(12,(Action<int,int>)((width,height)=>RemoteDesktopSize=(width,height)));
             Subscribe(23,(Action<int>)(_=>FocusReleased?.Invoke()));
-            Subscribe(17,(ReconnectHandler)((int reason,int attempt,ref int continuation)=> { IsLoggedIn=false; IsReconnecting=true; continuation=0; Reconnecting?.Invoke(attempt); }));
-            Subscribe(33,(Action)(()=> { IsLoggedIn=true; IsReconnecting=false; LastDisplaySettings=null; Reconnected?.Invoke(); }));
+            Subscribe(17,(ReconnectHandler)((int reason,int attempt,ref int continuation)=> { repaintTimer.Stop(); IsLoggedIn=false; IsReconnecting=true; continuation=0; Reconnecting?.Invoke(attempt); }));
+            Subscribe(33,(Action)(()=> { IsLoggedIn=true; IsReconnecting=false; LastDisplaySettings=null; repaintTimer.Start(); Reconnected?.Invoke(); }));
             RegisterFileDrop();ready.TrySetResult();
             return new PlatformHandle(window,"HWND");
         }
@@ -110,9 +118,18 @@ internal sealed partial class WindowsRdpHost : NativeControlHost, IDisposable
         }
         finally { Marshal.ReleaseComObject(advanced); }
     }
-    internal void FocusDesktop() { if(window!=0)SetFocus(window); }
+    internal bool RefreshDisplay()
+    {
+        if(!OperatingSystem.IsWindows() || disposed || window==0 || !IsEffectivelyVisible || scalingRoot is Window { WindowState:WindowState.Minimized } || !IsWindowVisible(window))return false;
+        // Avalonia invalidation alone does not repaint the HWND hosted in its
+        // native hole. Invalidate only this control and its children, without
+        // synchronous paint reentrancy, network probes or synthetic remote input.
+        TryUpdateNativeControlPosition(); InvalidateVisual();
+        return RedrawWindow(window,0,0,0x0001|0x0002|0x0080); // INVALIDATE | INTERNALPAINT | ALLCHILDREN
+    }
+    internal void FocusDesktop() { if(window!=0) { RefreshDisplay(); SetFocus(window); } }
     internal void ReleaseKeyboard() { if(TopLevel.GetTopLevel(this)?.TryGetPlatformHandle() is {} root)SetFocus(root.Handle); }
-    internal void Disconnect() { if(control!=null && IsRunning) { try { Call("Disconnect"); } catch(Exception ex) when(ex is COMException or TargetInvocationException) { } } IsRunning=IsLoggedIn=IsReconnecting=false; }
+    internal void Disconnect() { repaintTimer.Stop(); if(control!=null && IsRunning) { try { Call("Disconnect"); } catch(Exception ex) when(ex is COMException or TargetInvocationException) { } } IsRunning=IsLoggedIn=IsReconnecting=false; }
     internal string DisconnectDescription(int reason)
     {
         if(reason is 0 or 1 or 2)return L.T("RDP rozłączony · wybierz Połącz ponownie");
@@ -123,10 +140,10 @@ internal sealed partial class WindowsRdpHost : NativeControlHost, IDisposable
     internal int? LastDisplayError { get; private set; }
     internal bool ResizeDesktop(int width,int height)
         =>ResizeDesktop(new RdpDisplaySettings(width+(width&1),height,100,100));
-    internal bool ResizeDesktop(RdpDisplaySettings settings)
+    internal bool ResizeDesktop(RdpDisplaySettings settings,bool force=false)
     {
-        if(!IsLoggedIn || LastDisplaySettings==settings)return false;
-        try { Call("UpdateSessionDisplaySettings",(uint)settings.Width,(uint)settings.Height,0u,0u,0u,(uint)settings.DesktopScaleFactor,(uint)settings.DeviceScaleFactor); LastDisplaySettings=settings; LastDisplayError=null; return true; }
+        if(!IsLoggedIn || !force && LastDisplaySettings==settings)return false;
+        try { Call("UpdateSessionDisplaySettings",(uint)settings.Width,(uint)settings.Height,0u,0u,0u,(uint)settings.DesktopScaleFactor,(uint)settings.DeviceScaleFactor); LastDisplaySettings=settings; LastDisplayError=null; RefreshDisplay(); return true; }
         catch(Exception ex) when(ex is COMException or TargetInvocationException) { LastDisplayError=(ex.InnerException??ex).HResult; return false; } // SmartSizing remains available on older servers.
     }
     private void Release()
@@ -141,7 +158,7 @@ internal sealed partial class WindowsRdpHost : NativeControlHost, IDisposable
         if(window!=0) { DestroyWindow(window); window=0; }
         if(parking!=0) { DestroyWindow(parking); parking=0; }
     }
-    public void Dispose() { if(disposed)return; if(scalingRoot!=null)scalingRoot.ScalingChanged-=ScalingChanged; scalingRoot=null; Disconnect(); disposed=true; Release(); }
+    public void Dispose() { if(disposed)return; if(scalingRoot!=null)scalingRoot.ScalingChanged-=ScalingChanged; if(scalingRoot is Window root)root.Activated-=WindowActivated; scalingRoot=null; Disconnect(); disposed=true; Release(); }
 
     [DefaultDllImportSearchPaths(DllImportSearchPath.System32)]
     [DllImport("atl.dll")] [return:MarshalAs(UnmanagedType.Bool)] private static extern bool AtlAxWinInit();
@@ -152,4 +169,6 @@ internal sealed partial class WindowsRdpHost : NativeControlHost, IDisposable
     [DllImport("user32.dll")] private static extern nint SetFocus(nint window);
     [DllImport("user32.dll")] private static extern bool ShowWindow(nint window,int command);
     [DllImport("user32.dll")] private static extern bool DestroyWindow(nint window);
+    [DllImport("user32.dll")] [return:MarshalAs(UnmanagedType.Bool)] private static extern bool IsWindowVisible(nint window);
+    [DllImport("user32.dll")] [return:MarshalAs(UnmanagedType.Bool)] private static extern bool RedrawWindow(nint window,nint rectangle,nint region,uint flags);
 }

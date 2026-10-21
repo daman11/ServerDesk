@@ -34,8 +34,8 @@ internal static class NativeRdpChecks
                 {
                     host.Ready.GetAwaiter().GetResult(); handle=host.WindowHandle;
                     if(!host.FileDropRegistered)throw new Exception("Native RDP file drop registration failed");
-                    NativeRdpDropChecks.Run(handle);
-                    RdpClipboardExportChecks.Native(root);
+                    if(!args.Contains("--refresh-only")) { NativeRdpDropChecks.Run(handle); RdpClipboardExportChecks.Native(root); }
+                    NativeRdpRefreshChecks.Run(host);
                     Console.WriteLine("PASS native RDP control and OLE file drop created; version="+host.Version); window.Content=null;
                 }
                 else if(step==1)window.Content=host;
@@ -43,6 +43,7 @@ internal static class NativeRdpChecks
                 {
                     if(handle!=host.WindowHandle)throw new Exception("RDP control was recreated when reattached");
                     host.Dispose(); host.Dispose(); if(IsWindow(handle))throw new Exception("Disposed native RDP window still exists");
+                    if(host.RefreshDisplay())throw new Exception("Disposed RDP window accepted a repaint");
                     Console.WriteLine("PASS delayed detach/reattach preserves HWND; repeated disposal releases HWND"); timer.Stop(); window.Close(); done.Cancel();
                 }
                 step++;

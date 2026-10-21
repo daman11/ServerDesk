@@ -2,6 +2,10 @@
 
 ## Unreleased
 
+## 0.45.0 — Public Beta — 2026-10-21
+
+- Add GitHub Releases updates pinned to daman11/ServerDesk: opt-in startup checks, PL/EN update dialog, bounded/cancellable downloads, trusted HTTPS redirect policy and mandatory API SHA-256/size validation. Windows Setup installations can prepare a database backup, confirm session shutdown and hand installation/restart to a standalone helper outside the installed payload. The helper waits for the original PID/start time, re-fetches metadata and verifies the held installer before execution. Portable/Linux installs remain manual; HTTPS/account trust is not Authenticode or an independent publisher signature. Add local regression coverage and a guarded maintainer publication script (preview by default).
+
 - Add Previous/Next controls, a position counter and Alt+Left/Right to command details, following the filtered/sorted results without dispatching commands. Preserve the current parameter draft, preview and Code approval when toggling favorites in an unchanged context; clear details when the selected favorite disappears. Add focused Polish/English navigation, clipboard isolation and compact-layout checks.
 
 - Refresh the embedded Windows RDP HWND and its children after window activation/focus and every five seconds while the logged-in desktop is visible. Stop repaint work during reconnect, detach and shutdown; skip hidden/minimized views. Let Desktop explicitly repaint and resend the current dynamic display settings without recreating the session or probing the server. Add native no-server repaint and RDP pane regressions; live remote monitor-off acceptance remains open.

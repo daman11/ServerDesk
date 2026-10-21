@@ -1,5 +1,7 @@
 # Architektura
 
+Aktualizacje 0.45.0 są częścią utrzymania aplikacji, niezależną od opcjonalnych pluginów i transportów. Core zawiera walidację wydania, sumy i planu instalacji. Infrastructure ma ograniczony klient HTTPS GitHub oraz przygotowanie przekazania. App dostarcza dialog PL/EN, opcję zapisywaną w istniejących preferencjach i potwierdzenie normalnego zamknięcia sesji. `src/ServerDesk.Updater` jest samodzielnym EXE Windows, kopiowanym do katalogu pobrania; współdzieli źródło klienta GitHub i Core, bez zależności protokołów/poświadczeń. Ponownie sprawdza metadane, instalator i wersję na dysku po zakończeniu poprzedniej instancji. [Zaufanie, publikacja i odzyskiwanie](updates.md).
+
 Prezentacja 0.36.2: ActionPresentation dostarcza wspólne symbole i opisy menu/przycisków, z osobnym InputGesture. Własne geometrie są statyczne; SVG upstream nie są zmieniane. Paleta otrzymuje ikony po identyfikatorze źródłowym, a tłumaczenie opcji narzędzi sieciowych odbywa się wyłącznie w szablonie widoku, zachowując surowe wartości żądań.
 
 Wygląd 0.36.1 pozostaje w istniejącym DesignSystem: wspólne karty i palety zaznaczeń, responsywny nagłówek ustawień i ograniczony obszar filtrów komend. Zmiany nie dodają transportu ani modelu danych.

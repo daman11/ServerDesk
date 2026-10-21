@@ -61,7 +61,12 @@ public sealed partial class MainWindow : Window
             {
                 if(initialization!=null)await initialization;
                 var language=restartLanguage??L.Language;
-                if((sessions.Count>0 || networkPanes.Any(p=>p.IsRunning)) && !await Dialogs.Confirm(this,L.T(restartLanguage==null?"Zamknąć ServerDesk?":"Uruchomić ponownie ServerDesk?",language),L.T("Sesje i transfery zostaną rozłączone, a trwająca diagnostyka sieci zatrzymana.",language),language:language)) return;
+                if((pendingUpdate!=null || sessions.Count>0 || networkPanes.Any(p=>p.IsRunning)) && !await Dialogs.Confirm(this,L.T(pendingUpdate!=null?"Zainstalować aktualizację?":restartLanguage==null?"Zamknąć ServerDesk?":"Uruchomić ponownie ServerDesk?",language),L.T(pendingUpdate!=null?"Sesje i transfery zostaną zamknięte. Instalator zaktualizuje program i uruchomi go ponownie. Dane użytkownika pozostaną zachowane.":"Sesje i transfery zostaną rozłączone, a trwająca diagnostyka sieci zatrzymana.",language),language:language)) return;
+                if(pendingUpdate!=null)
+                {
+                    try { StartUpdateHelper(pendingUpdate); }
+                    catch(Exception ex) { ApplicationDiagnostics.Report("StartUpdateInstaller",ex); await Dialogs.Message(this,L.T("ServerDesk — błąd"),L.T("Nie udało się uruchomić pomocnika aktualizacji. Program pozostaje otwarty. Szczegóły znajdziesz w logach.")); return; }
+                }
                 if(restartLanguage!=null)
                 {
                     // Start before teardown so a launch failure leaves live sessions intact.
@@ -80,7 +85,7 @@ public sealed partial class MainWindow : Window
                 foreach(var floating in floatingDocks.Values.ToArray())floating.Window.Close(); floatingDocks.Clear();
                 await Safe(async()=> { await SaveWorkspaceAsync(); await repository.SaveMainWindowPlacementAsync(CaptureMainPlacement()); await repository.SetSettingAsync("sidebar",sidebarWidth.ToString(System.Globalization.CultureInfo.InvariantCulture)); await repository.SetSettingAsync("collapsedFolders",System.Text.Json.JsonSerializer.Serialize(collapsed)); await repository.SetSettingAsync("sidebarHidden",(!sidebar.IsVisible).ToString()); }); readyToClose=true; Close();
             }
-            finally { closePending=false; if(!closing)restartLanguage=null; }
+            finally { closePending=false; if(!closing) { restartLanguage=null; pendingUpdate=null; } }
         };
     }
     private Button Action(string label,Func<Task> action) => Dialogs.Button(label,()=>_ = Safe(action,"Action."+label));
@@ -122,6 +127,7 @@ public sealed partial class MainWindow : Window
         await RestoreSessionSnapshotAsync();
         if(preferences.WorkspaceOnStartup!=WorkspaceStartup.Remember)SetWorkspaceMode((WorkspaceMode)((int)preferences.WorkspaceOnStartup-1));
         workspaceReady=true;
+        if(preferences.CheckUpdatesOnStartup)_ = CheckUpdatesAtStartupAsync();
     }
     private Task EditAsync(ServerProfile? profile)=>EditProfileAsync(profile,profile??new ServerProfile { Folder=BrowserCreationFolder() });
     private Task CreateProfileAsync(ServerProfile draft)=>EditProfileAsync(null,draft);

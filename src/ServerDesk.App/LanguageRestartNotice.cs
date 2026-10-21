@@ -45,7 +45,7 @@ public sealed partial class MainWindow
         DesignSystem.Resource(languageRestartBanner,Border.BorderBrushProperty,"BorderDefault");
         WindowDecorationProperties.SetElementRole(languageRestartBanner,WindowDecorationsElementRole.User);
         AutomationProperties.SetName(languageRestartBanner,L.T("Zmiana języka wymaga restartu"));
-        var stack=new StackPanel { Children={titlebar,languageRestartBanner} };
+        var stack=new StackPanel { Children={titlebar,languageRestartBanner,BuildUpdateBanner()} };
         var header=new Border { Name="WorkspaceHeader",Child=stack,BorderThickness=new Thickness(0,0,0,1) };
         DesignSystem.Resource(header,Border.BorderBrushProperty,"BorderDefault");
         return header;

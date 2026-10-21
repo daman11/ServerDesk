@@ -39,7 +39,7 @@ Copy-Item (Join-Path $repo "docs/releases/release-$version.md") (Join-Path $Outp
 Copy-Item (Join-Path $repo "artifacts/release-verification-$version.md") (Join-Path $Output 'VERIFICATION.md')
 Copy-Item (Join-Path $repo 'LICENSE') $Output
 $files=@($assets)+@($sourceName,'RELEASE-NOTES.md','VERIFICATION.md','LICENSE')
-$metadata=[ordered]@{product='ServerDesk';version=$version;channel='public-beta';license='MIT';createdUtc=[DateTime]::UtcNow.ToString('O');signed=$false;automaticUpdates=$false;files=@($files | ForEach-Object {$item=Get-Item (Join-Path $Output $_); [ordered]@{name=$_;bytes=$item.Length;sha256=(Get-FileHash -LiteralPath $item.FullName).Hash.ToLowerInvariant()}})}
+$metadata=[ordered]@{product='ServerDesk';version=$version;channel='public-beta';license='MIT';createdUtc=[DateTime]::UtcNow.ToString('O');signed=$false;automaticUpdates=$true;updateSource='https://github.com/daman11/ServerDesk';updateInstallation='Windows x64 Setup only, user-confirmed';files=@($files | ForEach-Object {$item=Get-Item (Join-Path $Output $_); [ordered]@{name=$_;bytes=$item.Length;sha256=(Get-FileHash -LiteralPath $item.FullName).Hash.ToLowerInvariant()}})}
 $metadata | ConvertTo-Json -Depth 6 | Set-Content (Join-Path $Output 'release.json') -Encoding utf8
 @($files)+@('release.json') | Sort-Object | ForEach-Object {(Get-FileHash -LiteralPath (Join-Path $Output $_)).Hash.ToLowerInvariant()+'  '+$_} | Set-Content (Join-Path $Output 'SHA256SUMS.txt') -Encoding utf8
 New-Item -ItemType Directory -Force (Split-Path -Parent $destination) | Out-Null

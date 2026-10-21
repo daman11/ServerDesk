@@ -40,7 +40,7 @@ internal static partial class Dialogs
         overview.Children.Add(DesignSystem.SectionHeading("info",L.T("Dane techniczne")));
         var buildText=new SelectableTextBlock { Name="AboutBuildInfo",Text=technical,TextWrapping=TextWrapping.Wrap };
         overview.Children.Add(DesignSystem.Card(buildText,new Thickness(12)));
-        overview.Children.Add(DesignSystem.Hint(L.T("Program nie wysyła telemetrii i nie sprawdza automatycznie aktualizacji. Informacje o wersji możesz skopiować i dołączyć do zgłoszenia problemu autorowi lub opiekunowi wydania.")));
+        overview.Children.Add(DesignSystem.Hint(L.T("Program nie wysyła telemetrii. Sprawdzanie aktualizacji przy starcie jest opcją w ustawieniach. Informacje o wersji możesz skopiować i dołączyć do zgłoszenia problemu.")));
         overview.Children.Add(DesignSystem.Hint(copyright));
         Tab("Program","info",overview);
 
@@ -86,6 +86,8 @@ internal static partial class Dialogs
             finally { status.IsVisible=true; copy.IsEnabled=true; }
         };
         actions.Children.Add(copy);
+        var updates=Button("Sprawdź aktualizacje",async()=> { var prepared=await ApplicationUpdates(dialog,((MainWindow)owner).UpdateRepository); if(prepared!=null) { dialog.Close(); ((MainWindow)owner).RequestUpdateInstall(prepared); } });
+        updates.Name="AboutUpdates"; updates.Margin=new Thickness(0,0,8,4); updates.IsVisible=owner is MainWindow; actions.Children.Add(updates);
         var close=Button("Zamknij",()=>dialog.Close()); close.Name="AboutClose"; close.IsCancel=true; close.Margin=new Thickness(0,0,0,4); actions.Children.Add(close);
         return dialog.ShowDialog(owner);
     }

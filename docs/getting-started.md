@@ -1,6 +1,6 @@
-# ServerDesk 0.44.0 — pierwsze kroki
+# ServerDesk 0.45.0 — pierwsze kroki
 
-**Nowe w 0.44.0:** Pomoc offline (F1 poza wejściem sesji), menu kontekstowe Połączeń, ergonomia schowka i transferów SFTP, akcenty i diagnostyka. Nowe RDP domyślnie w karcie; Windows przyjmuje lokalne pliki na zdalny pulpit. Odwrotny mostek schowka jest eksperymentalny, a ciągły gest ze zdalnego Eksploratora nie jest wdrożony. Schemat 4 pozostaje bez zmian. [Zmiany i ograniczenia](releases/release-0.44.0.md).
+**Nowe w 0.45.0:** sprawdzanie aktualizacji GitHub i instalacja z programu dla Windows Setup, dokładniejsza kontrola kopii, odświeżanie obrazu RDP i nawigacja komend. Wersja ZIP i Linux nadal wymagają ręcznej aktualizacji. Schemat 4 pozostaje bez zmian. [Aktualizacje](updates.md), [zmiany i ograniczenia](releases/release-0.45.0.md).
 
 **Nowe w 0.43.0:** bezpieczna kolejność zapisu profili/haseł, równoległy zapis pluginów i odzyskiwanie cichego SSH/SFTP. Reconnect zachowuje katalogi SFTP, a transfer wymaga ręcznego Ponów. Pierwszy start tworzy kopię i migruje bazę do schematu 4 — starsze aplikacje jej nie otworzą. [Zakres zmian](releases/release-0.43.0.md), [odzyskiwanie bazy](database-backups.md).
 

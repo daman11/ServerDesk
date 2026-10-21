@@ -1,6 +1,6 @@
 # Dokumentacja / Documentation
 
-Bieżące wydanie: [0.44.0 Public Beta](releases/release-0.44.0.md) — Pomoc offline, ergonomia SFTP, menu połączeń, akcenty i diagnostyka oraz osadzone RDP z lokalnym zrzutem plików. Odwrotny mostek schowka jest eksperymentalny; ciągły gest ze zdalnego Eksploratora pozostaje niewdrożony. [Weryfikacja i ograniczenia](reports/release-verification-0.44.0.md).
+Bieżące wydanie: [0.45.0 Public Beta](releases/release-0.45.0.md) — aktualizacje GitHub, ochrona kopii, odświeżanie RDP i nawigacja komend. Odwrotny mostek schowka RDP pozostaje eksperymentalny. [Weryfikacja i ograniczenia](reports/release-verification-0.45.0.md).
 
 | Temat / Topic | Dokument |
 |---|---|
@@ -11,6 +11,7 @@ Bieżące wydanie: [0.44.0 Public Beta](releases/release-0.44.0.md) — Pomoc of
 | Kopie danych i odtwarzanie | [Kopie bazy danych / Database backups](database-backups.md) |
 | Architektura i rozwój | [Architecture](architecture.md), [Development and tests](development.md), [Contributing](../CONTRIBUTING.md) |
 | Repozytorium i GitHub | [Git workflow and first upload](github.md) |
+| Aktualizacje programu | [GitHub Releases, instalacja i model zaufania](updates.md) |
 | Pliki robocze i miejsce na dysku | [Artifact retention and cleanup](artifacts.md) |
 | Wydania | [Release procedure](releasing.md), [Release notes](releases/README.md), [Verification reports](reports/README.md) |
 | Przygotowanie wersji stabilnej | [Kolejność prac i warunki gotowości 1.0](stable-release-plan.md), [Checklista konkretnego RC](rc-checklist.md) |

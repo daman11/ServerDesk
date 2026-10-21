@@ -13,6 +13,12 @@ try {
     $staging=Join-Path $repo ('artifacts/publish-staging-'+[Guid]::NewGuid().ToString('N'))
     & $dotnet publish src/ServerDesk.App -c Release -r $Runtime --self-contained true -p:PublishSingleFile=false -p:RestoreLockedMode=true -p:DebugType=None -p:DebugSymbols=false -m:1 -o $staging
     if($LASTEXITCODE -ne 0){throw 'Publish failed'}
+    if($Runtime -eq 'win-x64'){
+        $updaterStaging=Join-Path $repo ('artifacts/updater-staging-'+[Guid]::NewGuid().ToString('N'))
+        & $dotnet publish src/ServerDesk.Updater -c Release -r win-x64 --self-contained true -p:RestoreLockedMode=true -p:DebugType=None -p:DebugSymbols=false -m:1 -o $updaterStaging
+        if($LASTEXITCODE -ne 0){throw 'Update helper publish failed'}
+        Copy-Item -LiteralPath "$updaterStaging/ServerDesk.Updater.exe" -Destination $staging
+    }
     # Some native NuGet packages copy their symbols even when app symbols are disabled.
     foreach($symbol in (Get-ChildItem -LiteralPath $staging -Recurse -File -Filter '*.pdb')){Remove-Item -LiteralPath $symbol.FullName -Force}
     if($Runtime -eq 'win-x64'){ & ./scripts/test-windows-manifest.ps1 -Executable "$staging/ServerDesk.App.exe" }

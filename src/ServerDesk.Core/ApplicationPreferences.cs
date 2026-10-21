@@ -10,6 +10,7 @@ public sealed record ApplicationPreferences
 {
     public PluginSelection DisabledPlugins { get; init; }=PluginSelection.Empty;
     public string Language { get; init; }="pl";
+    public bool CheckUpdatesOnStartup { get; init; }
     public int InterfaceFontSize { get; init; }=13;
     public string InterfaceFontFamily { get; init; }="Domyślna";
     public int ControlCornerRadius { get; init; }=6;

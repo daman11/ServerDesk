@@ -89,6 +89,7 @@ if(args.Contains("--four-panels")) { FourPanelChecks.Run(root); return; }
 if(args.Contains("--commands")) { CommandPanelChecks.Run(root); return; }
 if(args.Contains("--command-profile")) { CommandPanelChecks.ProfileLayout(root); return; }
 if(args.Contains("--about")) { AboutChecks.Run(root); return; }
+if(args.Contains("--updates")) { ApplicationUpdateChecks.Run(root); return; }
 if(args.Contains("--profile-deletion")) { ProfileDeletionChecks.Run(root); return; }
 if(args.Contains("--application-logs")) { ApplicationLogsChecks.Run(root); return; }
 if(args.Contains("--settings-reset")) { SettingsResetChecks.Run(root); return; }

@@ -1,5 +1,7 @@
 # Verification and historical reviews
 
+Release 0.45.0: [GitHub updater, local checks and publication limits](release-verification-0.45.0.md).
+
 Release 0.44.0: [Help, SFTP ergonomics, diagnostics and Windows RDP file integration](release-verification-0.44.0.md).
 
 RDP clipboard export: [Windows copy-then-drag bridge, local validation and deferred live acceptance, 2026-10-19](rdp-clipboard-export-2026-10-19.md).

@@ -86,6 +86,16 @@ internal static partial class Dialogs
         pluginsPage.Children.Add(DesignSystem.Hint(L.T("Zmiany pluginów działają po zapisaniu, bez restartu. Wyłączenie zatrzymuje ich pracę i ukrywa akcje; ustawienia oraz własne komendy pozostają zachowane.")));
         var trustSection=Section(securityPage,"key","Weryfikacja serwerów SSH");
         Window? settingsOwner=null;
+        var updatesSection=Section(securityPage,"download","Aktualizacje programu");
+        Flag(updatesSection,"updates","Sprawdzaj aktualizacje przy uruchomieniu",p.CheckUpdatesOnStartup,false).Name="CheckUpdatesOnStartup";
+        updatesSection.Children.Add(DesignSystem.Hint(L.T("Opcja działa po zapisaniu, od kolejnego uruchomienia. Sprawdzanie korzysta z GitHub Releases; nie wysyła profili ani haseł. Pobieranie i instalacja wymagają Twojej decyzji.")));
+        var showUpdates=Button("Sprawdź aktualizacje",async()=>
+        {
+            if(settingsOwner==null)return;
+            var prepared=await ApplicationUpdates(settingsOwner,repository);
+            if(prepared!=null && main!=null) { settingsOwner.Close(); main.RequestUpdateInstall(prepared); }
+        }); showUpdates.Name="OpenApplicationUpdates"; updatesSection.Children.Add(showUpdates);
+        searchIndex.Field(updatesSection,showUpdates,"Aktualizacje updates GitHub "+L.T("Aktualizacje programu"));
         var manageTrust=Button("Zarządzaj kluczami…",async()=> { if(settingsOwner!=null)await TrustedHosts(settingsOwner,repository); }); manageTrust.Name="ManageTrustedHosts";
         Label(trustSection,"Zaufane klucze SSH",manageTrust);
         trustSection.Children.Add(DesignSystem.Hint(L.T("Usunięcie zaufania wymaga osobnego potwierdzenia i działa od razu, niezależnie od zapisu ustawień. Następne połączenie wymaga ponownego porównania odcisku.")));
@@ -247,6 +257,7 @@ internal static partial class Dialogs
         {
             DisabledPlugins=new(p.DisabledPlugins.Where(id=>!PluginCatalog.IsKnown(id)).Concat(PluginCatalog.BuiltIn.Where(plugin=>!On("plugin:"+plugin.Id)).Select(plugin=>plugin.Id))),
             Language=language.SelectedIndex==1?"en":"pl",
+            CheckUpdatesOnStartup=On("updates"),
             InterfaceFontSize=(int)(uiFont.Value??13),Density=(InterfaceDensity)Math.Max(0,density.SelectedIndex),AccentColor=accent.Text?.Trim()??"",TerminalFontFamily=family.SelectedItem as string??"Domyślna",
             InterfaceFontFamily=interfaceFamily.SelectedItem as string??"Domyślna",ControlCornerRadius=(int)(cornerRadius.Value??6),MenuItemPadding=(int)(menuPadding.Value??7),ConnectionRowPadding=(int)(connectionPadding.Value??1),
             ShowConnectionAddresses=On("addresses"),ShowTabIcons=On("tabIcons"),ShowTabCloseButtons=On("tabClose"),

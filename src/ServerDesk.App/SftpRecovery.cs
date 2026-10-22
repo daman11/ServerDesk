@@ -34,7 +34,7 @@ internal sealed partial class SessionPane
                     ct.ThrowIfCancellationRequested();
                     var defaults=await repository.PreferencesAsync(ct);
                     var startup=fileDefaultsApplied?null:await FileBrowserStartup.ResolveAsync(defaults,Environment.GetFolderPath(Environment.SpecialFolder.UserProfile),ct);
-                    var client=await factory.SftpAsync(Profile,secret,ct);
+                    var client=await factory.SftpAsync(Profile,secret,sshKey,ct);
                     try
                     {
                         ct.ThrowIfCancellationRequested();

@@ -108,6 +108,7 @@ public sealed partial class MainWindow
     private Task<string?> SessionSecretAsync(ServerProfile profile)=>SessionSecretCoreAsync(profile,false);
     private async Task<string?> SessionSecretCoreAsync(ServerProfile profile,bool forcePrompt)
     {
+        if(profile.Authentication==Authentication.VaultSshKey)throw new InvalidOperationException(L.T("Klucz SSH z sejfu nie jest hasłem. Wybierz wpis SSH Key."));
         if(profile.Protocol==Protocol.Serial || profile.Protocol==Protocol.VNC && profile.Vnc.Authentication==VncAuthentication.None)return "";
         if(profile.Protocol==Protocol.RDP && !OperatingSystem.IsLinux() && (!OperatingSystem.IsWindows() || profile.Rdp.DisplayMode!=RdpDisplayMode.Embedded))return "";
         if(profile.Protocol==Protocol.RDP && OperatingSystem.IsLinux() && string.IsNullOrWhiteSpace(profile.Username))throw new ArgumentException(L.T("Wpisz login w profilu serwera, aby połączyć RDP w zakładce."));
@@ -116,7 +117,7 @@ public sealed partial class MainWindow
         {
             if(IsPluginEnabled(PluginCatalog.Bitwarden))
             {
-                var choice=await ChooseBitwardenAsync(this,profile,reference);
+                using var choice=await ChooseBitwardenAsync(this,profile,reference);
                 if(choice==null)return null;
                 if(!choice.Manual)return choice.Password;
             }
@@ -149,8 +150,11 @@ public sealed partial class MainWindow
         if(!sessions.Contains(pane) || pane.IsBusy || pane.HasActiveClient || closing || closePending)return;
         if(pane.HasAttemptedConnection) { await ReconnectAsync(pane); return; }
         using var busy=pane.WaitForCredentials();
-        var secret=await SessionSecretAsync(pane.Profile); if(secret==null || !sessions.Contains(pane) || closing || closePending)return;
-        await pane.ConnectAsync(secret,lifetime.Token); if(!pane.HasActiveClient) { vm.Status=pane.ConnectionStatus; return; }
+        var vaultKeyMode=pane.Profile.Authentication==Authentication.VaultSshKey;
+        using var choice=vaultKeyMode?await VaultSshKeyAsync(pane.Profile):null; using var key=choice?.TakeSshKey();
+        if(vaultKeyMode && key==null)return;
+        var secret=vaultKeyMode?"":await SessionSecretAsync(pane.Profile); if(secret==null || !sessions.Contains(pane) || closing || closePending)return;
+        await pane.ConnectAsync(secret,lifetime.Token,key); if(!pane.HasActiveClient) { vm.Status=pane.ConnectionStatus; return; }
         await pane.ShowRestoredPanelAsync();
     }
 }

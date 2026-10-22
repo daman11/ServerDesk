@@ -73,7 +73,7 @@ internal sealed partial class SessionPane
         if(!owner.IsPluginEnabled(ServerDesk.Core.PluginCatalog.LinuxMonitoring) || Profile.Protocol!=ServerDesk.Core.Protocol.SSH || monitor!=null || !IsConnected)return;
         var scope=monitoringLifetime??=CancellationTokenSource.CreateLinkedTokenSource(connectionLifetime.Token); var token=scope.Token;
         Renci.SshNet.SshClient client;
-        try { client=await factory.SshAsync(Profile,secret,token); }
+        try { client=await factory.SshAsync(Profile,secret,sshKey,token); }
         catch(OperationCanceledException) when(!owner.IsPluginEnabled(ServerDesk.Core.PluginCatalog.LinuxMonitoring)&&token.IsCancellationRequested) { return; }
         if(token.IsCancellationRequested || ct.IsCancellationRequested || !ReferenceEquals(monitoringLifetime,scope) || !owner.IsPluginEnabled(ServerDesk.Core.PluginCatalog.LinuxMonitoring) || !IsConnected) { await Task.Run(client.Dispose); ct.ThrowIfCancellationRequested(); return; }
         monitor=new LinuxMonitoring(client);

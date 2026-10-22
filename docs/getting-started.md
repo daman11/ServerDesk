@@ -1,6 +1,6 @@
-# ServerDesk 0.46.0 — pierwsze kroki
+# ServerDesk 0.47.0 — pierwsze kroki
 
-**Nowe w lokalnym wydaniu 0.46.0:** [Bitwarden / Vaultwarden](bitwarden.md): jednorazowy wybór hasła i przypisanie wpisu do profilu. Wymaga oficjalnego CLI, jawnego adresu sejfu i wcześniejszego logowania CLI. Ta lokalna paczka nie została jeszcze opublikowana na GitHub.
+**Nowe w lokalnym wydaniu 0.47.0:** [Bitwarden / Vaultwarden](bitwarden.md): klucze SSH Key (RSA/Ed25519) używane z pamięci przez terminal i SFTP oraz prostszy wybór wpisu sejfu. W edytorze SSH wybierz **Klucz SSH z sejfu**, podaj login i przypisz klucz. Wymaga oficjalnego CLI, jawnego adresu sejfu i wcześniejszego logowania CLI. Ta lokalna paczka nie została jeszcze opublikowana na GitHub.
 
 **Nowe w 0.45.1:** opcjonalny skrót na pulpicie oraz powiadomienie Aktualizuj / Pomiń tę wersję / Przypomnij przy następnym uruchomieniu. Domyślnie sprawdzamy wersję przy starcie; zapisane wyłączenie pozostaje zachowane. [Instrukcja testu z 0.45.0](updates.md).
 
@@ -36,17 +36,17 @@ Od 0.37.0 kolejka transferów podaje przyczynę błędu i wskazówki przed ponow
 
 ## Windows x64
 
-Uruchom `ServerDesk-0.46.0-win-x64-Setup.exe`. Instalator działa dla bieżącego użytkownika, dodaje skrót w menu Start i wpis na liście zainstalowanych aplikacji. Nie wymaga osobnej instalacji .NET. Dostępny jest też ZIP: rozpakuj **całe archiwum** do osobnego katalogu i uruchom `ServerDesk.App.exe`.
+Uruchom `ServerDesk-0.47.0-win-x64-Setup.exe`. Instalator działa dla bieżącego użytkownika, dodaje skrót w menu Start i wpis na liście zainstalowanych aplikacji. Nie wymaga osobnej instalacji .NET. Dostępny jest też ZIP: rozpakuj **całe archiwum** do osobnego katalogu i uruchom `ServerDesk.App.exe`.
 
-Wydanie nie ma podpisu zaufanego wydawcy. Pobieraj je z zaufanego źródła; nie wyłączaj ochrony Windows. Sumę paczki możesz porównać z `SHA256SUMS.txt` poleceniem `Get-FileHash .\ServerDesk-0.46.0-win-x64-Setup.exe -Algorithm SHA256`. Suma obok pliku potwierdza zgodność pobrania, ale sama nie potwierdza tożsamości wydawcy.
+Wydanie nie ma podpisu zaufanego wydawcy. Pobieraj je z zaufanego źródła; nie wyłączaj ochrony Windows. Sumę paczki możesz porównać z `SHA256SUMS.txt` poleceniem `Get-FileHash .\ServerDesk-0.47.0-win-x64-Setup.exe -Algorithm SHA256`. Suma obok pliku potwierdza zgodność pobrania, ale sama nie potwierdza tożsamości wydawcy.
 
 Gdy po niepełnej instalacji Windows brakuje plików, aplikacja nie startuje lub zniknął deinstalator, zamknij ServerDesk i uruchom ponownie zaufany Setup tej samej wersji, wskazując dotychczasowy katalog. Instalator odtwarza własne pliki; nie wymaga usuwania bazy ani zapisanych poświadczeń. Jeśli instalacja przerwała się z powodu braku miejsca/uprawnień, najpierw usuń tę przyczynę. Nie kopiuj pojedynczych DLL z innej wersji. [Zakres sprawdzonych napraw](reports/rc-preparation-2026-10-17.md).
 
 ## Linux x64
 
-Ubuntu/Debian: `sudo apt install ./serverdesk_0.46.0_amd64.deb`, następnie uruchom ServerDesk z menu lub poleceniem `serverdesk`. Do zapamiętywania haseł potrzebny jest `libsecret-tools` oraz odblokowany Secret Service (np. GNOME Keyring). Do RDP zainstaluj FreeRDP dla swojej dystrybucji.
+Ubuntu/Debian: `sudo apt install ./serverdesk_0.47.0_amd64.deb`, następnie uruchom ServerDesk z menu lub poleceniem `serverdesk`. Do zapamiętywania haseł potrzebny jest `libsecret-tools` oraz odblokowany Secret Service (np. GNOME Keyring). Do RDP zainstaluj FreeRDP dla swojej dystrybucji.
 
-Archiwum: `mkdir serverdesk-0.46.0`, następnie `tar -xzf ServerDesk-0.46.0-linux-x64.tar.gz -C serverdesk-0.46.0` i `./serverdesk-0.46.0/ServerDesk.App`. W razie braków bibliotek sprawdź zależności w pakiecie DEB lub [development.md](development.md). Testy Linux wykonano pod WSLg; pozostałe środowiska wymagają weryfikacji.
+Archiwum: `mkdir serverdesk-0.47.0`, następnie `tar -xzf ServerDesk-0.47.0-linux-x64.tar.gz -C serverdesk-0.47.0` i `./serverdesk-0.47.0/ServerDesk.App`. W razie braków bibliotek sprawdź zależności w pakiecie DEB lub [development.md](development.md). Testy Linux wykonano pod WSLg; pozostałe środowiska wymagają weryfikacji.
 
 ## Pierwsze połączenie
 

@@ -12,7 +12,7 @@ public static class CredentialReference
     public static IEnumerable<Guid> AllForProfile(ServerProfile profile)=>new[]{ForProfile(profile),profile.Id,Vnc(profile.Id)}.Distinct();
     public static bool CanReuse(ServerProfile before,ServerProfile after)
     {
-        if((before.Bitwarden?.ItemId,before.Bitwarden?.AccountId,before.Bitwarden?.Server)!=(after.Bitwarden?.ItemId,after.Bitwarden?.AccountId,after.Bitwarden?.Server))return false;
+        if((before.Bitwarden?.ItemId,before.Bitwarden?.AccountId,before.Bitwarden?.Server,before.Bitwarden?.Kind)!=(after.Bitwarden?.ItemId,after.Bitwarden?.AccountId,after.Bitwarden?.Server,after.Bitwarden?.Kind))return false;
         if(before.Id!=after.Id || before.Protocol!=after.Protocol || before.Port!=after.Port || !before.Host.Equals(after.Host,StringComparison.OrdinalIgnoreCase))return false;
         if(before.Protocol==Protocol.RDP)
             return RdpIdentity.Parse(before.Username,before.Domain).WindowsUsername.Equals(RdpIdentity.Parse(after.Username,after.Domain).WindowsUsername,StringComparison.OrdinalIgnoreCase);

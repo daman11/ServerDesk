@@ -1,11 +1,12 @@
 namespace ServerDesk.Core;
 
-/// <summary>Non-secret, account-scoped reference; never a cached vault password.</summary>
-public sealed record BitwardenReference(Guid ItemId,Guid AccountId,string Server,string Name)
+public enum BitwardenItemKind { Login=1,SshKey=5 }
+/// <summary>Non-secret, account-scoped reference; never cached vault credentials.</summary>
+public sealed record BitwardenReference(Guid ItemId,Guid AccountId,string Server,string Name,BitwardenItemKind Kind=BitwardenItemKind.Login)
 {
     public void Validate()
     {
-        if(ItemId==Guid.Empty || AccountId==Guid.Empty || Name==null || Name.Length>200 || Name.Any(char.IsControl) || Server!=CanonicalServer(Server))
+        if(!Enum.IsDefined(Kind) || ItemId==Guid.Empty || AccountId==Guid.Empty || Name==null || Name.Length>200 || Name.Any(char.IsControl) || Server!=CanonicalServer(Server))
             throw new ArgumentException(L.T("Niepoprawne przypisanie wpisu Bitwarden."));
     }
     public static string CanonicalServer(string value)

@@ -2,6 +2,10 @@
 
 ## Unreleased
 
+## 0.47.0 — Public Beta — 2026-10-22
+
+- Add SSH key from vault authentication using native Bitwarden/Vaultwarden SSH Key items. Retain only account/server/item/type metadata in a profile; parse bounded RSA/Ed25519 key material from memory, verify public-key/fingerprint consistency and use it for the terminal, SFTP browser/transfers and monitoring. Clear owned key buffers on disconnect, cancellation, failed authentication and close; re-unlock/refetch on reconnect. Preserve active core sessions when disabling the optional plugin. Do not fall back to a password/local key file or send keys to the system credential store. Keep Login-password/passphrase bindings compatible, omit key bindings from configuration export/import/duplication and add synthetic plus disposable OpenSSH regressions. Extra passphrase-encrypted key payloads require Bitwarden's key import workflow first.
+
 - Simplify the Bitwarden / Vaultwarden picker into unlock and item-selection steps. Hide unavailable search/actions until unlock, avoid a duplicate selected-item card, label usernames and explain one-time use versus a saved binding. Share a short three-step setup guide between settings and the picker, with detailed CLI commands collapsed. Show contextual assign/change/remove actions in the connection editor. Retain automatic host search, immediate query/result invalidation, progress, recoverable error/empty states, keyboard navigation and narrow-window layout. Keep existing CLI commands, credential storage and session lifetime unchanged; add focused synthetic PL/EN UI regressions.
 
 ## 0.46.0 — Public Beta — 2026-10-22

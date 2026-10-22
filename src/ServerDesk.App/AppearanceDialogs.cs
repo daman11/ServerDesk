@@ -51,7 +51,7 @@ internal static partial class Dialogs
             vault.Click+=(_,_)=>_ = main.Safe(async()=>
             {
                 vault.IsEnabled=false;
-                try { var choice=await main.ChooseBitwardenAsync(dialog,profile,null); if(choice?.Password is {} password) { input.Text=password; remember.IsChecked=false; input.Focus(); } }
+                try { using var choice=await main.ChooseBitwardenAsync(dialog,profile,null); if(choice?.Password is {} password) { input.Text=password; remember.IsChecked=false; input.Focus(); } }
                 finally { vault.IsEnabled=main.IsPluginEnabled(PluginCatalog.Bitwarden); }
             });
         }

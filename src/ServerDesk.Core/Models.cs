@@ -3,7 +3,7 @@ using System.Text.Json.Serialization;
 namespace ServerDesk.Core;
 
 public enum Protocol { SSH=0,RDP=1,VNC=2,Serial=3 }
-public enum Authentication { Password, PrivateKey }
+public enum Authentication { Password=0,PrivateKey=1,VaultSshKey=2 }
 public sealed record ServerProfile
 {
     public Guid Id { get; init; } = Guid.NewGuid();
@@ -43,6 +43,7 @@ public sealed record ServerProfile
         if (Host.Any(char.IsWhiteSpace) || Host.Any(c => c is '/' or '\\' or '\r' or '\n' or '\0') || Host.StartsWith('-')) throw new ArgumentException(L.T("Niepoprawny adres hosta."));
         if (Port is < 1 or > 65535) throw new ArgumentException(L.T("Port musi mieścić się w zakresie 1–65535."));
         if (!Enum.IsDefined(Protocol) || !Enum.IsDefined(Authentication)) throw new ArgumentException(L.T("Nieznany protokół lub metoda logowania."));
+        if(Authentication==Authentication.VaultSshKey && Protocol!=Protocol.SSH || Bitwarden is { Kind:BitwardenItemKind.SshKey } && (Protocol!=Protocol.SSH || Authentication!=Authentication.VaultSshKey) || Authentication==Authentication.VaultSshKey && Bitwarden is { Kind:not BitwardenItemKind.SshKey })throw new ArgumentException(L.T("Klucz SSH z sejfu wymaga połączenia SSH i metody Klucz SSH z sejfu."));
         if (Username.Any(char.IsControl) || Domain.Any(char.IsControl)) throw new ArgumentException(L.T("Niepoprawny login."));
         ProfileFolder.Validate(Folder,true);
         if (Protocol == Protocol.SSH && string.IsNullOrWhiteSpace(Username)) throw new ArgumentException(L.T("SSH wymaga loginu."));

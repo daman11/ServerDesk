@@ -7,11 +7,17 @@ namespace ServerDesk.Infrastructure;
 public sealed class SshConnectionFactory(ProfileRepository repository)
 {
     public Func<HostKeyChallenge, CancellationToken, Task<bool>>? ConfirmHostKey { get; set; }
-    private ConnectionInfo Info(ServerProfile profile, string secret, out PrivateKeyFile? key)
+    private ConnectionInfo Info(ServerProfile profile,string secret,SshKeyMaterial? vaultKey,out PrivateKeyFile? key)
     {
         profile.Validate(); key = null;
+        if((vaultKey!=null)!=(profile.Authentication==Authentication.VaultSshKey) || profile.Authentication==Authentication.VaultSshKey && secret.Length>0)throw new BitwardenException(BitwardenFailure.InvalidSshKey);
         AuthenticationMethod auth;
-        if (profile.Authentication == Authentication.PrivateKey)
+        if(profile.Authentication==Authentication.VaultSshKey)
+        {
+            if(vaultKey==null)throw new BitwardenException(BitwardenFailure.InvalidSshKey);
+            key=vaultKey.Open(); auth=new PrivateKeyAuthenticationMethod(profile.Username,key);
+        }
+        else if (profile.Authentication == Authentication.PrivateKey)
         {
             try
             {
@@ -52,9 +58,11 @@ public sealed class SshConnectionFactory(ProfileRepository repository)
         catch(SshAuthenticationException ex) { throw new SshLoginException(profile.Authentication,client.ConnectionInfo.AuthenticationMethods.SelectMany(method=>method.AllowedAuthentications??[]),ex); }
         if (accepted != null) await repository.TrustHostAsync(profile.Host, profile.Port, accepted, ct);
     }
-    public Task<SshClient> SshAsync(ServerProfile profile,string secret,CancellationToken ct)=>CreateAsync(profile,secret,info=>new SshClient(info),ct);
-    public Task<SftpClient> SftpAsync(ServerProfile profile,string secret,CancellationToken ct)=>CreateAsync(profile,secret,info=>new SftpClient(info) { OperationTimeout=TimeSpan.FromSeconds(30) },ct);
-    private Task<T> CreateAsync<T>(ServerProfile profile,string secret,Func<ConnectionInfo,T> create,CancellationToken ct) where T:BaseClient=>Task.Run(async()=>
+    public Task<SshClient> SshAsync(ServerProfile profile,string secret,CancellationToken ct)=>SshAsync(profile,secret,null,ct);
+    public Task<SftpClient> SftpAsync(ServerProfile profile,string secret,CancellationToken ct)=>SftpAsync(profile,secret,null,ct);
+    public Task<SshClient> SshAsync(ServerProfile profile,string secret,SshKeyMaterial? vaultKey,CancellationToken ct)=>CreateAsync(profile,secret,vaultKey,info=>new SshClient(info),ct);
+    public Task<SftpClient> SftpAsync(ServerProfile profile,string secret,SshKeyMaterial? vaultKey,CancellationToken ct)=>CreateAsync(profile,secret,vaultKey,info=>new SftpClient(info) { OperationTimeout=TimeSpan.FromSeconds(30) },ct);
+    private Task<T> CreateAsync<T>(ServerProfile profile,string secret,SshKeyMaterial? vaultKey,Func<ConnectionInfo,T> create,CancellationToken ct) where T:BaseClient=>Task.Run(async()=>
     {
         // File reads, passphrase derivation and cleanup can all block. The caller
         // must get its Task before any of that work starts on the UI thread.
@@ -62,7 +70,7 @@ public sealed class SshConnectionFactory(ProfileRepository repository)
         try
         {
             ct.ThrowIfCancellationRequested();
-            var info=Info(profile,secret,out key); ct.ThrowIfCancellationRequested();
+            var info=Info(profile,secret,vaultKey,out key); ct.ThrowIfCancellationRequested();
             client=create(info); await VerifyAndConnect(client,profile,ct).ConfigureAwait(false);
             ct.ThrowIfCancellationRequested(); var connected=client; client=null; return connected;
         }

@@ -204,10 +204,14 @@ public sealed partial class MainWindow : Window
     }
     internal async Task ConnectAsync(ServerProfile? profile)
     {
-        if(profile==null || closing || closePending)return; var secret=await SessionSecretAsync(profile); if(secret==null || closing || closePending)return;
+        if(profile==null || closing || closePending)return;
+        var vaultKeyMode=profile.Protocol==Protocol.SSH && profile.Authentication==Authentication.VaultSshKey;
+        using var keyChoice=vaultKeyMode?await VaultSshKeyAsync(profile):null;
+        using var key=keyChoice?.TakeSshKey(); if(vaultKeyMode && key==null)return;
+        var secret=vaultKeyMode?"":await SessionSecretAsync(profile); if(secret==null || closing || closePending)return;
         var pane=new SessionPane(this,profile,ssh,rdp,repository);
         RegisterPane(pane);
-        try { await pane.ConnectAsync(secret,lifetime.Token); vm.Status=pane.HasActiveClient?$"{profile.Protocol} · {profile.Endpoint} · {profile.Name}":pane.ConnectionStatus; }
+        try { await pane.ConnectAsync(secret,lifetime.Token,key); vm.Status=pane.HasActiveClient?$"{profile.Protocol} · {profile.Endpoint} · {profile.Name}":pane.ConnectionStatus; }
         catch(OperationCanceledException) { throw; }
         catch { pane.MarkFailed(); throw; }
     }
@@ -229,13 +233,22 @@ public sealed partial class MainWindow : Window
         if(pane.IsBusy || closing || closePending || !sessions.Contains(pane))return;
         if((pane.HasActiveClient || pane.ActiveTransfers>0) && !await Dialogs.Confirm(this,L.T("Uruchomić ponownie sesję?"),L.T("Bieżące połączenie, uruchomione polecenia i transfery zostaną przerwane.")))return;
         if(closing || closePending || !sessions.Contains(pane))return;
-        await pane.ReconnectAsync(); if(!pane.HasActiveClient) { vm.Status=pane.ConnectionStatus; return; } vm.Status=(pane.Profile.Protocol==Protocol.RDP?L.T("Ponownie uruchomiono klienta RDP · "):L.T("Ponownie połączono · "))+pane.Profile.Endpoint;
+        if(pane.Profile.Authentication==Authentication.VaultSshKey)
+        {
+            using var waiting=pane.WaitForCredentials();
+            using var choice=await VaultSshKeyAsync(pane.Profile); using var key=choice?.TakeSshKey();
+            if(key==null || closing || closePending || !sessions.Contains(pane))return;
+            await pane.ReconnectAsync("",key);
+        }
+        else await pane.ReconnectAsync();
+        if(!pane.HasActiveClient) { vm.Status=pane.ConnectionStatus; return; } vm.Status=(pane.Profile.Protocol==Protocol.RDP?L.T("Ponownie uruchomiono klienta RDP · "):L.T("Ponownie połączono · "))+pane.Profile.Endpoint;
         await pane.ShowRestoredPanelAsync();
     }
     internal async Task ReauthenticateAsync(SessionPane pane)
     {
         if(pane.IsBusy || closing || closePending || !sessions.Contains(pane))return;
         if(pane.Profile.Protocol==Protocol.Serial)return;
+        if(pane.Profile.Authentication==Authentication.VaultSshKey) { await ReconnectAsync(pane); return; }
         var secret=pane.Profile.Protocol==Protocol.RDP && OperatingSystem.IsLinux()?await SessionSecretCoreAsync(pane.Profile,true):await Dialogs.Prompt(this,pane.Profile.Protocol==Protocol.VNC?L.T("Hasło VNC"):pane.Profile.Protocol==Protocol.RDP?L.T("Hasło RDP"):pane.Profile.Authentication==Authentication.PrivateKey?L.T("Passphrase klucza (puste dla klucza bez hasła)"):L.T("Hasło SSH"),secret:true);
         if(secret==null || closing || closePending || !sessions.Contains(pane))return;
         if((pane.HasActiveClient || pane.ActiveTransfers>0) && !await Dialogs.Confirm(this,L.T("Zmienić poświadczenia i połączyć ponownie?"),L.T("Bieżące połączenie, uruchomione polecenia i transfery zostaną przerwane.")))return;

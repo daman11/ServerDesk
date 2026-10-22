@@ -6,9 +6,11 @@ using ServerDesk.Core;
 
 namespace ServerDesk.Infrastructure;
 
-public enum BitwardenFailure { Configuration,LoginRequired,Locked,AccountChanged,InvalidResponse,CommandFailed,Timeout,NoPassword,ServerNotIdentified }
+public enum BitwardenFailure { Configuration,LoginRequired,Locked,AccountChanged,InvalidResponse,CommandFailed,Timeout,NoPassword,ServerNotIdentified,InvalidSshKey,EncryptedSshKey }
 public sealed class BitwardenException(BitwardenFailure reason):Exception(reason switch
 {
+    BitwardenFailure.InvalidSshKey=>L.T("Wpis nie zawiera poprawnego klucza SSH RSA lub Ed25519 albo dane klucza nie pasują do odcisku. Wybierz wpis typu SSH Key."),
+    BitwardenFailure.EncryptedSshKey=>L.T("Klucz w sejfie wymaga dodatkowego hasła. Zaimportuj go funkcją importu klucza w Bitwarden, podając tam hasło klucza, i zsynchronizuj CLI."),
     BitwardenFailure.Configuration=>L.T("Wskaż zainstalowany program Bitwarden CLI w Ustawienia → Pluginy."),
     BitwardenFailure.ServerNotIdentified=>L.T("CLI nie podaje adresu sejfu. Skonfiguruj jawny adres serwera przed zalogowaniem, najlepiej w osobnym profilu CLI. Zobacz Pomoc → Bitwarden / Vaultwarden."),
     BitwardenFailure.LoginRequired=>L.T("Najpierw zaloguj konto w Bitwarden CLI. Instrukcja jest w Pomoc → Bitwarden / Vaultwarden."),
@@ -22,7 +24,7 @@ public sealed class BitwardenException(BitwardenFailure reason):Exception(reason
 { public BitwardenFailure Reason { get; }=reason; }
 
 // Only metadata leaves a search operation. Passwords are fetched for one exact ID.
-public sealed record BitwardenEntry(BitwardenReference Reference,string Username);
+public sealed record BitwardenEntry(BitwardenReference Reference,string Username,string Fingerprint="");
 public sealed class BitwardenPassword(string username,string password)
 {
     public string Username { get; }=username;
@@ -80,8 +82,9 @@ public sealed class BitwardenCli(IBitwardenCommandRunner runner):IDisposable
         catch { Lock(); throw; }
         finally { CryptographicOperations.ZeroMemory(bytes); }
     }
-    public async Task<IReadOnlyList<BitwardenEntry>> SearchAsync(string query,CancellationToken ct)
+    public async Task<IReadOnlyList<BitwardenEntry>> SearchAsync(string query,CancellationToken ct,BitwardenItemKind kind=BitwardenItemKind.Login)
     {
+        if(!Enum.IsDefined(kind))throw new BitwardenException(BitwardenFailure.InvalidResponse);
         if(query==null || query.Trim().Length is <2 or >200 || query.TrimStart().StartsWith('-') || query.Any(char.IsControl))throw new ArgumentException(L.T("Wpisz co najmniej 2 znaki nazwy wpisu lub adresu."));
         await CheckAccountAsync(null,ct);
         using var json=await JsonAsync(["list","items","--search",query.Trim()],null,ct);
@@ -91,11 +94,12 @@ public sealed class BitwardenCli(IBitwardenCommandRunner runner):IDisposable
             var result=new List<BitwardenEntry>(); var ids=new HashSet<Guid>();
             foreach(var item in json.RootElement.EnumerateArray())
             {
-                if(item.GetProperty("type").GetInt32()!=1 || item.TryGetProperty("deletedDate",out var deleted) && deleted.ValueKind is not (JsonValueKind.Null or JsonValueKind.Undefined))continue;
+                if(item.GetProperty("type").GetInt32()!=(int)kind || item.TryGetProperty("deletedDate",out var deleted) && deleted.ValueKind is not (JsonValueKind.Null or JsonValueKind.Undefined))continue;
                 if(!Guid.TryParse(Text(item,"id",64),out var id) || id==Guid.Empty || !ids.Add(id))throw new BitwardenException(BitwardenFailure.InvalidResponse);
-                var name=Text(item,"name",200); var user=Text(item.GetProperty("login"),"username",1024,true);
-                var reference=new BitwardenReference(id,account!.Id,account.Server,name); reference.Validate();
-                if(result.Count<100)result.Add(new(reference,user));
+                var name=Text(item,"name",200); var user=kind==BitwardenItemKind.Login?Text(item.GetProperty("login"),"username",1024,true):"";
+                var fingerprint=kind==BitwardenItemKind.SshKey?Text(item.GetProperty("sshKey"),"keyFingerprint",128,true):"";
+                var reference=new BitwardenReference(id,account!.Id,account.Server,name,kind); reference.Validate();
+                if(result.Count<100)result.Add(new(reference,user,fingerprint));
             }
             return result;
         }
@@ -103,7 +107,7 @@ public sealed class BitwardenCli(IBitwardenCommandRunner runner):IDisposable
     }
     public async Task<BitwardenPassword> GetPasswordAsync(BitwardenReference reference,CancellationToken ct)
     {
-        reference.Validate(); await CheckAccountAsync(reference,ct);
+        reference.Validate(); if(reference.Kind!=BitwardenItemKind.Login)throw new BitwardenException(BitwardenFailure.NoPassword); await CheckAccountAsync(reference,ct);
         using var json=await JsonAsync(["get","item",reference.ItemId.ToString("D")],null,ct);
         try
         {
@@ -115,6 +119,24 @@ public sealed class BitwardenCli(IBitwardenCommandRunner runner):IDisposable
             return new(Text(login,"username",1024,true),password);
         }
         catch(Exception ex) when(ex is JsonException or InvalidOperationException or ArgumentException or KeyNotFoundException) { throw new BitwardenException(BitwardenFailure.InvalidResponse); }
+    }
+    public async Task<SshKeyMaterial> GetSshKeyAsync(BitwardenReference reference,CancellationToken ct)
+    {
+        reference.Validate(); if(reference.Kind!=BitwardenItemKind.SshKey)throw new BitwardenException(BitwardenFailure.InvalidSshKey);
+        await CheckAccountAsync(reference,ct);
+        using var json=await JsonAsync(["get","item",reference.ItemId.ToString("D")],null,ct);
+        SshKeyMaterial? material=null;
+        try
+        {
+            var root=json.RootElement;
+            if(!Guid.TryParse(Text(root,"id",64),out var id) || id!=reference.ItemId || root.GetProperty("type").GetInt32()!=5 || root.TryGetProperty("deletedDate",out var deleted) && deleted.ValueKind!=JsonValueKind.Null)throw new BitwardenException(BitwardenFailure.InvalidSshKey);
+            var key=root.GetProperty("sshKey");
+            material=await Task.Run(()=>SshKeyMaterial.Create(Text(key,"privateKey",SshKeyMaterial.MaximumBytes,false,true),Text(key,"publicKey",16384,true),Text(key,"keyFingerprint",128,true)),ct);
+            await CheckAccountAsync(reference,ct); ct.ThrowIfCancellationRequested();
+            var result=material; material=null; return result;
+        }
+        catch(Exception ex) when(ex is JsonException or InvalidOperationException or ArgumentException or KeyNotFoundException) { throw new BitwardenException(BitwardenFailure.InvalidResponse); }
+        finally { material?.Dispose(); }
     }
     private async Task CheckAccountAsync(BitwardenReference? reference,CancellationToken ct)
     {

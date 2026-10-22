@@ -44,9 +44,9 @@ public static class SshErrorMessages
             var login=causes.OfType<SshLoginException>().FirstOrDefault();
             var heading=login?.Method switch {
                 Authentication.Password=>L.T("Serwer SSH odrzucił logowanie hasłem."),
-                Authentication.PrivateKey=>L.T("Serwer SSH odrzucił logowanie kluczem prywatnym."),
+                Authentication.PrivateKey or Authentication.VaultSshKey=>L.T("Serwer SSH odrzucił logowanie kluczem prywatnym."),
                 _=>L.T("Serwer SSH odrzucił uwierzytelnianie.") };
-            var hint=login?.Method==Authentication.PrivateKey?
+            var hint=login?.Method is Authentication.PrivateKey or Authentication.VaultSshKey?
                 L.T("Sprawdź login, wybrany klucz, wpis klucza publicznego na serwerze oraz uprawnienia i zasady dostępu konta."):
                 L.T("Sprawdź login i hasło oraz czy konto i logowanie wybraną metodą są dozwolone na serwerze.");
             var methods=login is { OfferedMethods.Count:>0 }?"\n"+L.T("Metody wskazane przez serwer:")+" "+string.Join(", ",login.OfferedMethods):"";

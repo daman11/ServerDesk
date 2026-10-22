@@ -90,7 +90,7 @@ internal sealed partial class SessionPane
         {
             await MainWindow.TransferSlots.WaitAsync(cancel.Token); acquired=true;
             job.State=TransferState.Connecting; job.Detail.Text=L.T("Nawiązywanie połączenia SFTP…"); UpdateTransferQueue();
-            await using var connection=new SftpSession(await factory.SftpAsync(Profile,secret,cancel.Token));
+            await using var connection=new SftpSession(await factory.SftpAsync(Profile,secret,sshKey,cancel.Token));
             transferConnection=connection;
             job.State=TransferState.Running; UpdateTransferQueue();
             var last=Stopwatch.StartNew();

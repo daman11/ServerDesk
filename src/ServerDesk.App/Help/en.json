@@ -3,8 +3,8 @@
     "Id": "bitwarden",
     "Icon": "key",
     "Title": "Bitwarden / Vaultwarden",
-    "Summary": "Vault passwords through the official Bitwarden CLI.",
-    "Keywords": "vault hasla passwords sejf CLI bw plugin MFA",
+    "Summary": "Vault passwords and SSH keys through the official CLI.",
+    "Keywords": "vault hasla passwords sejf CLI bw plugin MFA ssh key klucze rsa ed25519",
     "Sections": [
       {
         "Title": "Initial setup",
@@ -27,11 +27,20 @@
         ]
       },
       {
+        "Title": "SSH key from vault",
+        "Paragraphs": [
+          "Create or import an SSH Key item in the vault and run bw sync in your CLI. In the SSH connection editor select SSH key from vault as the authentication method, enter the server username, choose Bind vault item and save. The list shows only keys and their fingerprints; binding does not fetch the private key.",
+          "When connecting, unlock the vault and choose Use key. RSA 2048–8192 and Ed25519 are supported in OpenSSH, PEM or PKCS#8 format without additional key encryption. Import a key with its own passphrase into Bitwarden first. If the item includes a public key or fingerprint, ServerDesk checks that it matches the private key.",
+          "The terminal, SFTP, transfers and monitoring use the key without a temporary key file. Its buffer stays in the active session's memory and is cleared on termination, error or close. Reconnecting requires unlocking and fetching the item again. SSH host-key trust is confirmed separately.",
+          "Configuration export/import omits the vault binding while preserving the authentication method; choose a key again when connecting. Duplicating opens an unbound editor draft; select a key before saving the copy. Older application versions do not support this method. Disabling the plugin preserves the running session but blocks new connections using a vault key."
+        ]
+      },
+      {
         "Title": "Security and limits",
         "Paragraphs": [
           "The master password, session key and retrieved password are not automatically copied to the clipboard or saved in the database or logs. CLI search returns decrypted results; the plugin retains only metadata and reads the password for the selected ID. Decrypted data exists transiently in process memory; this does not protect against malicious code running as the same user.",
-          "Closing the dialog or disabling the plugin cancels its work and removes its session key from ServerDesk. The plugin does not run bw lock or bw logout, to avoid disrupting other uses of a shared CLI profile. Run bw lock yourself to invalidate sessions for the whole profile. Disabling preserves bindings and allows a manually entered password without saving it.",
-          "This first version reads passwords from Login items. It does not edit the vault or retrieve TOTP, attachments or SSH private keys. Synchronize explicitly using bw sync in your CLI. A valid CLI account and compatible Vaultwarden server are required; the plugin does not bypass TLS verification. Check your own server with a test account before using a real vault."
+          "Closing the dialog or disabling the plugin cancels its work and removes its session key from ServerDesk. The plugin does not run bw lock or bw logout, to avoid disrupting other uses of a shared CLI profile. Run bw lock yourself to invalidate sessions for the whole profile. Disabling preserves bindings and allows a manually entered password without saving it for Login items.",
+          "The plugin reads Login passwords and SSH Key items. It does not edit the vault or retrieve TOTP, attachments or SSH certificates. Synchronize explicitly using bw sync in your CLI. A valid CLI account and compatible Vaultwarden server are required; the plugin does not bypass TLS verification. Check your own server with a test account before using a real vault. Owned key buffers are zeroed, but .NET and the external CLI can retain transient memory copies."
         ]
       }
     ]

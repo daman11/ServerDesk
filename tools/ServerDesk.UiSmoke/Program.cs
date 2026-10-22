@@ -91,6 +91,7 @@ if(args.Contains("--four-panels")) { FourPanelChecks.Run(root); return; }
 if(args.Contains("--commands")) { CommandPanelChecks.Run(root); return; }
 if(args.Contains("--terminal-focus")) { TerminalFocusChecks.Run(root); return; }
 if(args.Contains("--bitwarden")) { BitwardenChecks.Run(root); return; }
+if(args.Contains("--vault-ssh")) { BitwardenSshAcceptanceChecks.Run(root,args[1]); return; }
 if(args.Contains("--command-profile")) { CommandPanelChecks.ProfileLayout(root); return; }
 if(args.Contains("--about")) { AboutChecks.Run(root); return; }
 if(args.Contains("--updates")) { ApplicationUpdateChecks.Run(root); return; }

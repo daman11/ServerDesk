@@ -62,6 +62,8 @@ internal sealed partial class SessionPane : WorkspacePane
     private LinuxMonitoring? monitor;
     private RdpProcessSession? rdpProcess;
     private string secret="";
+    private SshKeyMaterial? sshKey;
+    internal bool HasVaultKeyMaterial=>sshKey is { IsDisposed:false };
     private Button? commandsButton;
     private Control? sessionPluginBoundary;
     private bool infoActive;
@@ -121,11 +123,11 @@ internal sealed partial class SessionPane : WorkspacePane
     private void SetStatus(string text,string glyph,SessionVisualState? visual=null)
     { VisualState=visual??(glyph switch { "●"=>SessionVisualState.Connected,"◌"=>SessionVisualState.Connecting,"↗"=>SessionVisualState.ExternalClient,"○"=>SessionVisualState.Closed,_=>SessionVisualState.Idle }); state.Text=text; ConnectionStatus=text; SetAndRaise(SessionTitleProperty,ref sessionTitle,$"{glyph} {Profile.Name}"); UpdateConnectionActions(); StatusChanged?.Invoke(); }
     private Button Button(string label,Func<Task> action)=>Dialogs.Button(label,()=>_ = owner.Safe(action));
-    public async Task ConnectAsync(string secret,CancellationToken outer)
+    public async Task ConnectAsync(string secret,CancellationToken outer,SshKeyMaterial? vaultKey=null)
     {
         using var waiting=CancellationTokenSource.CreateLinkedTokenSource(outer,lifetime.Token);
         await connectionGate.WaitAsync(waiting.Token);
-        try { await ConnectCoreAsync(secret,outer); }
+        try { await ConnectCoreAsync(secret,outer,vaultKey); }
         catch(Exception ex) when(cancelRequested || outer.IsCancellationRequested || lifetime.IsCancellationRequested)
         {
             await ResetConnectionsAsync();
@@ -144,7 +146,7 @@ internal sealed partial class SessionPane : WorkspacePane
         if(!connecting) { ResetConnections(); SetStatus(L.T("Anulowano łączenie · ")+Profile.Endpoint,"○",SessionVisualState.Idle); }
         RenderOperationStatus();
     }
-    private async Task ConnectCoreAsync(string secret,CancellationToken outer)
+    private async Task ConnectCoreAsync(string secret,CancellationToken outer,SshKeyMaterial? vaultKey)
     {
         if(disposed!=0)throw new ObjectDisposedException(nameof(SessionPane));
         cancelRequested=false; connectionAttempt++;
@@ -152,6 +154,12 @@ internal sealed partial class SessionPane : WorkspacePane
         SshFailureDetails=null; ToolTip.SetTip(state,null);
         if(additionalNotice!=null)additionalNotice.IsVisible=true;
         await ResetConnectionsAsync();
+        if(Profile.Authentication==Authentication.VaultSshKey)
+        {
+            if(Profile.Protocol!=Protocol.SSH || vaultKey==null)throw new BitwardenException(BitwardenFailure.InvalidSshKey);
+            sshKey=vaultKey.Clone();
+        }
+        else if(vaultKey!=null)throw new BitwardenException(BitwardenFailure.InvalidSshKey);
         interruptedTransport=false;
         lifetime.Token.ThrowIfCancellationRequested(); outer.ThrowIfCancellationRequested();
         connectionLifetime.Dispose(); connectionLifetime=CancellationTokenSource.CreateLinkedTokenSource(outer,lifetime.Token);
@@ -170,14 +178,15 @@ internal sealed partial class SessionPane : WorkspacePane
         }
         if(Profile.Protocol is Protocol.VNC or Protocol.Serial) { await ConnectAdditionalAsync(ct); return; }
         terminal.IsVisible=true; files.IsVisible=info.IsVisible=false; infoActive=false; SelectPanel(0);
-        var client=await factory.SshAsync(Profile,secret,ct);
+        var client=await factory.SshAsync(Profile,secret,sshKey,ct);
         try { ct.ThrowIfCancellationRequested(); terminal.ApplyTemplate(); terminalSearch?.Reset(); terminal.Terminal.Reset(); ApplyTerminalConnectionPreferences(preferences); TerminalAppearance.Apply(terminal,await repository.SettingAsync("terminalPalette",ct)??TerminalAppearance.Names[0],(int)terminal.FontSize,preferences.TerminalFontFamily); session=await SshTerminalSession.CreateAsync(client,ct); terminal.AttachConnection(session); commandConnectionId=Guid.NewGuid(); session.Resize(terminal.Terminal.Cols,terminal.Terminal.Rows); terminal.Focus(); connectionStarted=Stopwatch.GetTimestamp(); SetStatus(L.F($"● SSH · {Profile.Username}@{Profile.Host}:{Profile.Port} · połączono"),"●"); _=ObserveEndAsync(session); if(owner.Preferences.ShowMetrics && owner.Preferences.ShowStatusBar)_=StartMonitoringAsync(ct); }
         catch { client.Dispose(); throw; }
     }
-    public async Task ReconnectAsync(string? replacementSecret=null)
+    public async Task ReconnectAsync(string? replacementSecret=null,SshKeyMaterial? replacementKey=null)
     {
+        if(Profile.Authentication==Authentication.VaultSshKey && replacementKey==null) { await owner.ReconnectAsync(this); return; }
         if(restoredPanel==null)restoredPanel=SelectedPanel;
-        await ConnectAsync(replacementSecret??secret,lifetime.Token);
+        await ConnectAsync(replacementSecret??secret,lifetime.Token,replacementKey);
         if(IsConnected)await ShowRestoredPanelAsync();
     }
     private async Task ObserveEndAsync(SshTerminalSession observed)
@@ -198,6 +207,7 @@ internal sealed partial class SessionPane : WorkspacePane
         commandConnectionId=Guid.Empty;
         CancelFileViews();
         connectionLifetime.Cancel();
+        sshKey?.Dispose(); sshKey=null;
         var oldSsh=session; var oldSftp=sftp; var monitoringStop=DetachMonitoring(); var commandsStop=StopCommandPluginAsync();
         var oldRdp=rdpProcess; var oldVnc=vncSession; var oldSerial=serialSession; var oldLinuxRdp=linuxRdp; linuxRdp=null;
         session=null; sftp=null;

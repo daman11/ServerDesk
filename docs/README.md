@@ -1,6 +1,6 @@
 # Dokumentacja / Documentation
 
-Bieżące wydanie lokalne: [0.46.0 Public Beta](releases/release-0.46.0.md) — plugin Bitwarden / Vaultwarden, trwałe przypisania wpisów sejfu i poprawki fokusu SSH oraz wstawiania komend. Publikacja GitHub jest osobnym krokiem. [Weryfikacja i ograniczenia](reports/release-verification-0.46.0.md).
+Bieżące wydanie lokalne: [0.47.0 Public Beta](releases/release-0.47.0.md) — klucze SSH Key z Bitwarden / Vaultwarden dla terminala, SFTP i monitoringu oraz prostszy wybór wpisu sejfu. Publikacja GitHub jest osobnym krokiem. [Weryfikacja i ograniczenia](reports/release-verification-0.47.0.md).
 
 | Temat / Topic | Dokument |
 |---|---|

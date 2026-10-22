@@ -3,8 +3,8 @@
     "Id": "bitwarden",
     "Icon": "key",
     "Title": "Bitwarden / Vaultwarden",
-    "Summary": "Hasła z Bitwarden i Vaultwarden przez oficjalny CLI.",
-    "Keywords": "vault hasla passwords sejf CLI bw plugin MFA",
+    "Summary": "Hasła i klucze SSH z sejfu przez oficjalny CLI.",
+    "Keywords": "vault hasla passwords sejf CLI bw plugin MFA ssh key klucze rsa ed25519",
     "Sections": [
       {
         "Title": "Pierwsza konfiguracja",
@@ -27,11 +27,20 @@
         ]
       },
       {
+        "Title": "Klucz SSH z sejfu",
+        "Paragraphs": [
+          "W sejfie utwórz lub zaimportuj wpis typu SSH Key i wykonaj bw sync w CLI. W edytorze połączenia SSH wybierz metodę logowania Klucz SSH z sejfu, podaj login serwera, wybierz Przypisz wpis sejfu i zapisz profil. Lista pokazuje tylko klucze oraz ich odciski; przypisanie nie pobiera klucza prywatnego.",
+          "Przy łączeniu odblokuj sejf i wybierz Użyj klucza. Obsługiwane są RSA 2048–8192 i Ed25519 w formacie OpenSSH, PEM lub PKCS#8 bez dodatkowego szyfrowania klucza. Klucz z własną passphrase najpierw zaimportuj w Bitwarden. Jeśli wpis zawiera klucz publiczny lub odcisk, ServerDesk sprawdza ich zgodność z kluczem prywatnym.",
+          "Klucz jest używany bez pliku tymczasowego przez terminal, SFTP, transfery i monitoring. Bufor pozostaje w pamięci aktywnej sesji; zakończenie, błąd lub zamknięcie usuwa go. Ponowne łączenie wymaga odblokowania i ponownego pobrania wpisu. Zaufanie do klucza hosta SSH potwierdza się oddzielnie.",
+          "Eksport/import pomija przypisanie sejfu, zachowując metodę logowania; przy łączeniu wybierzesz klucz ponownie. Kopiowanie otwiera edytor bez przypisania — przed zapisaniem kopii wybierz klucz. Starsze wersje programu nie obsługują tej metody. Wyłączenie pluginu zachowuje działającą sesję, lecz blokuje nowe połączenie kluczem z sejfu."
+        ]
+      },
+      {
         "Title": "Bezpieczeństwo i ograniczenia",
         "Paragraphs": [
           "Hasło główne, klucz sesji i pobrane hasło nie są automatycznie kopiowane do schowka ani zapisywane w bazie i logach. CLI zwraca odszyfrowane wyniki wyszukiwania; plugin zachowuje tylko metadane, a hasło odczytuje dla wybranego identyfikatora. Dane odszyfrowane istnieją przejściowo w pamięci procesu; nie jest to ochrona przed złośliwym kodem działającym jako ten sam użytkownik.",
-          "Zamknięcie okna lub wyłączenie pluginu anuluje jego operacje i usuwa klucz sesji z ServerDesk. Plugin nie uruchamia bw lock ani bw logout, aby nie zakłócać innych zastosowań współdzielonego profilu CLI. Jeśli chcesz unieważnić sesje całego profilu, wykonaj bw lock samodzielnie. Wyłączenie pluginu zachowuje przypisania i pozwala podać hasło ręcznie bez zapisu.",
-          "Pierwsza wersja odczytuje hasła wpisów Login. Nie edytuje sejfu, nie pobiera TOTP, załączników ani prywatnych kluczy SSH. Synchronizację wykonuj jawnie przez bw sync w CLI. Wymagany jest poprawny stan konta CLI i zgodna wersja serwera Vaultwarden; plugin nie pomija weryfikacji TLS. Przed użyciem z prawdziwym sejfem sprawdź własny serwer kontem testowym."
+          "Zamknięcie okna lub wyłączenie pluginu anuluje jego operacje i usuwa klucz sesji z ServerDesk. Plugin nie uruchamia bw lock ani bw logout, aby nie zakłócać innych zastosowań współdzielonego profilu CLI. Jeśli chcesz unieważnić sesje całego profilu, wykonaj bw lock samodzielnie. Wyłączenie pluginu zachowuje przypisania i pozwala podać hasło ręcznie bez zapisu dla wpisów Login.",
+          "Plugin odczytuje hasła Login i klucze SSH Key. Nie edytuje sejfu, nie pobiera TOTP, załączników ani certyfikatów SSH. Synchronizację wykonuj jawnie przez bw sync w CLI. Wymagany jest poprawny stan konta CLI i zgodna wersja serwera Vaultwarden; plugin nie pomija weryfikacji TLS. Przed użyciem z prawdziwym sejfem sprawdź własny serwer kontem testowym. Bufory klucza są zerowane, lecz środowisko .NET i zewnętrzny CLI mogą zachowywać przejściowe kopie w pamięci."
         ]
       }
     ]

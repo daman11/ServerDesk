@@ -1,5 +1,6 @@
 using System.Text;
 using System.Text.Json;
+using System.Security.Cryptography;
 using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Input;
@@ -29,12 +30,18 @@ internal static class BitwardenChecks
         {
             "status"=>JsonSerializer.Serialize(new { status=Environment.GetEnvironmentVariable("BW_SESSION")!=null?"unlocked":"locked",userId=Account,serverUrl="https://fixture.invalid" }),
             "unlock"=>Environment.GetEnvironmentVariable("SERVERDESK_BW_PASSWORD")=="master-fixture"?"SYNTHETIC_SESSION_CANARY_abcdef==":throw new Exception("Fixture password missing"),
-            "list"=>mode=="empty"?"[]":"["+Entry()+"]",
-            "get"=>Entry(),
+            "list"=>mode=="empty"?"[]":mode=="keys"?"["+Entry()+","+KeyEntry()+"]":"["+Entry()+"]",
+            "get"=>mode=="keys"?KeyEntry():Entry(),
             _=>throw new Exception("Unexpected CLI mutation")
         };
         Console.Write(json);
         static string Entry()=>JsonSerializer.Serialize(new { id=Item,type=1,name="Fixture vault server",login=new { username="fixture",password=Secret } });
+        string KeyEntry()
+        {
+            var pem=File.ReadAllText(Path.Combine(root,"ssh-key.fixture"));
+            using var stream=new MemoryStream(Encoding.UTF8.GetBytes(pem)); using var key=new Renci.SshNet.PrivateKeyFile(stream); var data=key.HostKeyAlgorithms.First().Data;
+            return JsonSerializer.Serialize(new { id=Guid.Parse("c2f7a0ac-c378-4efb-8369-b21a402ab63a"),type=5,name="Fixture SSH key",sshKey=new { privateKey=pem,publicKey="ssh-rsa "+Convert.ToBase64String(data),keyFingerprint="SHA256:"+Convert.ToBase64String(SHA256.HashData(data)).TrimEnd('=') } });
+        }
     }
     private static T Named<T>(Control root,string name) where T:Control=>root.GetVisualDescendants().OfType<T>().Single(c=>c.Name==name);
     private static void Click(Control root,string name)=>Named<Button>(root,name).RaiseEvent(new RoutedEventArgs(Button.ClickEvent));
@@ -100,9 +107,39 @@ internal static class BitwardenChecks
         public Task SaveAsync(Guid id,string secret,CancellationToken ct=default) { Writes++; throw new Exception("Vault picker must not save credentials"); }
         public Task DeleteAsync(Guid id,CancellationToken ct=default)=>throw new Exception("Vault picker must not delete credentials");
     }
+    private static void KeyPicker(MainWindow main,ProfileRepository repo,string fixture,string root,string language,Vault vault)
+    {
+        File.WriteAllText(Path.Combine(fixture,"mode"),"keys");
+        var profile=new ServerProfile { Name="Key fixture",Host="fixture.invalid",Username="fixture-user",Authentication=Authentication.VaultSshKey };
+        var reads=vault.Reads; var writes=vault.Writes;
+        var choose=main.ChooseBitwardenAsync(main,profile,null,true); RedesignChecks.Frames(3); var picker=main.OwnedWindows.Single();
+        SshAcceptanceChecks.Until(()=>Named<Button>(picker,"BitwardenUnlock").IsEnabled,"Key binding status did not finish");
+        Named<TextBox>(picker,"BitwardenMasterPassword").Text="master-fixture"; Click(picker,"BitwardenUnlock"); SshAcceptanceChecks.Until(()=>Named<Button>(picker,"BitwardenUse").IsEnabled,"SSH key search did not finish");
+        if(Named<ListBox>(picker,"BitwardenEntries").ItemCount!=1 || Named<ListBox>(picker,"BitwardenEntries").SelectedItem is not BitwardenEntry { Reference.Kind:BitwardenItemKind.SshKey })throw new Exception("Key mode mixed Login passwords with SSH Key items");
+        picker.CaptureRenderedFrame()!.Save(Path.Combine(root,"vault-ssh-key-"+language+".png")); Click(picker,"BitwardenUse"); using var binding=Result(choose)!;
+        if(binding.Reference?.Kind!=BitwardenItemKind.SshKey || binding.Password!=null || binding.TakeSshKey()!=null)throw new Exception("Binding retrieved SSH private material instead of metadata");
+        profile=profile with { Bitwarden=binding.Reference }; Wait(repo.SaveAsync(profile));
+        var obtain=main.ChooseBitwardenAsync(main,profile,profile.Bitwarden); RedesignChecks.Frames(3); picker=main.OwnedWindows.Single();
+        if(picker.GetVisualDescendants().OfType<Button>().Any(b=>b.Name=="BitwardenManual"))throw new Exception("SSH key mode offered an invalid password fallback");
+        SshAcceptanceChecks.Until(()=>Named<Button>(picker,"BitwardenUnlock").IsEnabled,"SSH key status did not finish"); Named<TextBox>(picker,"BitwardenMasterPassword").Text="master-fixture"; Click(picker,"BitwardenUnlock"); SshAcceptanceChecks.Until(()=>Named<Button>(picker,"BitwardenUse").IsEnabled,"SSH key picker did not unlock"); Click(picker,"BitwardenUse");
+        using var choice=Result(obtain)!; using var material=choice.TakeSshKey()??throw new Exception("SSH key selection did not return owned material");
+        if(choice.Password!=null || material.Algorithm!="RSA" || material.IsDisposed || vault.Reads!=reads || vault.Writes!=writes)throw new Exception("SSH private material passed through password or system-credential handling");
+        var edit=Dialogs.Edit(main,profile,[]); RedesignChecks.Frames(4); var editor=main.OwnedWindows.Single();
+        if(Named<ComboBox>(editor,"ProfileAuthentication").SelectedItem is not Authentication.VaultSshKey || Named<TextBox>(editor,"ProfilePrivateKey").IsEffectivelyVisible)throw new Exception("SSH vault mode asked for a local key file");
+        Named<ComboBox>(editor,"ProfileProtocol").SelectedItem=Protocol.RDP; RedesignChecks.Frames(3);
+        if(Named<ComboBox>(editor,"ProfileAuthentication").SelectedItem is not Authentication.Password || Named<Button>(editor,"ProfileBitwardenClear").IsVisible)throw new Exception("Changing protocol retained an SSH-only key binding");
+        editor.GetVisualDescendants().OfType<Button>().Single(b=>Equals(b.Tag,"Anuluj")).RaiseEvent(new RoutedEventArgs(Button.ClickEvent)); Wait(edit);
+        if(Result(repo.ListAsync()).Single(p=>p.Id==profile.Id).Bitwarden!=profile.Bitwarden)throw new Exception("Cancelling an editor changed its saved key binding");
+        using(var abandonedMaterial=material.Clone()) { var abandoned=new BitwardenChoice(profile.Bitwarden,"",null,sshKey:abandonedMaterial); abandoned.Dispose(); if(!abandonedMaterial.IsDisposed)throw new Exception("Abandoned picker choice retained key bytes"); }
+        var pane=new SessionPane(main,profile,new(repo),new ExternalRdpClient(),repo); using var cancelled=new CancellationTokenSource(); cancelled.Cancel();
+        try { Wait(pane.ConnectAsync("",cancelled.Token,material)); throw new Exception("Cancelled key connection started"); } catch(OperationCanceledException) { }
+        if(pane.HasVaultKeyMaterial || material.IsDisposed)throw new Exception("Cancelled pane retained or stole caller-owned key material"); Wait(pane.CloseAsync());
+        File.WriteAllText(Path.Combine(fixture,"mode"),"normal");
+    }
     internal static void Run(string root)
     {
         var fixture=Path.Combine(root,"cli-fixture"); Directory.CreateDirectory(fixture); File.WriteAllText(Path.Combine(fixture,"fixture.enabled"),FixtureMarker); File.WriteAllText(Path.Combine(fixture,"mode"),"normal");
+        using(var rsa=RSA.Create(2048))File.WriteAllText(Path.Combine(fixture,"ssh-key.fixture"),rsa.ExportRSAPrivateKeyPem());
         Environment.SetEnvironmentVariable("SERVERDESK_BITWARDEN_FIXTURE",fixture);
         try
         {
@@ -196,11 +233,12 @@ internal static class BitwardenChecks
                 if(Named<TextBox>(settingsWindow,"BitwardenExecutable").Text!=exe)throw new Exception("CLI configuration missing from settings");
                 if(Named<Expander>(settingsWindow,"BitwardenSetupHelp").IsExpanded)throw new Exception("Settings overwhelmed the main fields with expanded setup instructions");
                 settingsWindow.CaptureRenderedFrame()!.Save(Path.Combine(root,"vault-settings-"+language+".png")); settingsWindow.GetVisualDescendants().OfType<Button>().Single(b=>Equals(b.Tag,"Anuluj")).RaiseEvent(new RoutedEventArgs(Button.ClickEvent)); Wait(edit);
+                KeyPicker(main,repo,fixture,root,language,vault);
                 main.Close(); RedesignChecks.Frames(3); var confirm=main.OwnedWindows.Single(); confirm.GetVisualDescendants().OfType<Button>().Single(b=>Equals(b.Tag,"Potwierdź")).RaiseEvent(new RoutedEventArgs(Button.ClickEvent)); SshAcceptanceChecks.Until(()=>!main.IsVisible,"Vault fixture did not close");
             }
             using var logFile=new FileStream(Path.Combine(root,"ui-diagnostics.log"),FileMode.Open,FileAccess.Read,FileShare.ReadWrite|FileShare.Delete);
             using var logReader=new StreamReader(logFile); var diagnostics=logReader.ReadToEnd();
-            if(new[]{Secret,"master-fixture","SYNTHETIC_SESSION_CANARY"}.Any(diagnostics.Contains))throw new Exception("Vault secret reached application diagnostics");
+            if(new[]{Secret,"master-fixture","SYNTHETIC_SESSION_CANARY",File.ReadLines(Path.Combine(fixture,"ssh-key.fixture")).Skip(1).First()}.Any(diagnostics.Contains))throw new Exception("Vault secret reached application diagnostics");
             AppText.SetLanguage("pl"); Console.WriteLine("PASS Bitwarden native child safety, cancellation and credential isolation; PL/EN two-step unlock/select flow, labeled usernames, simple/collapsed detailed setup in picker/settings, unconfigured recovery, contextual profile actions, automatic search, stale-result guards, keyboard and compact 150% layout; synthetic data only");
         }
         finally { Environment.SetEnvironmentVariable("SERVERDESK_BITWARDEN_FIXTURE",null); }

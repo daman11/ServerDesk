@@ -33,11 +33,12 @@ internal static partial class Dialogs
     internal static async Task<BitwardenChoice?> Bitwarden(Window owner,Func<BitwardenCli> create,ServerProfile? profile,BitwardenReference? reference,bool bindingOnly,CancellationToken ct)
     {
         if(ct.IsCancellationRequested)return null;
+        var keyMode=profile is { Protocol:Protocol.SSH,Authentication:Authentication.VaultSshKey };
         using var scope=CancellationTokenSource.CreateLinkedTokenSource(ct);
         BitwardenCli? client=null; Task work=Task.CompletedTask; var busy=false; var closed=false; var statusChecked=false; var needsSetup=false; Control? focusAfter=null;
         // Reserve space for the overlaid dialog scrollbar, including in wide cards.
         var stack=new StackPanel { Spacing=14,Margin=new Thickness(0,0,12,0) };
-        stack.Children.Add(DesignSystem.PageHeading("key","Bitwarden / Vaultwarden",L.T(bindingOnly?"Przypisz zapisane hasło do połączenia.":"Użyj hasła zapisanego w swoim sejfie.")));
+        stack.Children.Add(DesignSystem.PageHeading("key","Bitwarden / Vaultwarden",L.T(keyMode?"Wybierz wpis SSH Key. Login serwera pozostaje zapisany w połączeniu.":bindingOnly?"Przypisz zapisane hasło do połączenia.":"Użyj hasła zapisanego w swoim sejfie.")));
         if(profile!=null)stack.Children.Add(DesignSystem.Hint(profile.Protocol+" · "+profile.Endpoint+(profile.Username.Length>0?" · "+profile.Username:"")));
 
         var state=DesignSystem.Label(L.T("1. Odblokuj sejf")); state.Name="BitwardenState"; state.TextWrapping=TextWrapping.Wrap;
@@ -65,7 +66,7 @@ internal static partial class Dialogs
         {
             if(entry==null)return null;
             var name=DesignSystem.Label(entry.Reference.Name); name.TextTrimming=TextTrimming.CharacterEllipsis;
-            var username=DesignSystem.Hint(entry.Username.Length>0?L.F($"Login: {entry.Username}"):L.T("Brak loginu we wpisie")); username.MaxLines=1; username.TextTrimming=TextTrimming.CharacterEllipsis;
+            var username=DesignSystem.Hint(keyMode?(entry.Fingerprint.Length>0?entry.Fingerprint:L.T("Klucz SSH — odcisk sprawdzimy przed użyciem")):entry.Username.Length>0?L.F($"Login: {entry.Username}"):L.T("Brak loginu we wpisie")); username.MaxLines=1; username.TextTrimming=TextTrimming.CharacterEllipsis;
             var details=new StackPanel { Spacing=3,Children={name,username} };
             var row=new Grid { ColumnDefinitions=new("22,*"),ColumnSpacing=8,Margin=new Thickness(4,6),Children={DeskIcons.Create("key",16,"AccentPrimary"),details} }; Grid.SetColumn(details,1);
             ToolTip.SetTip(row,entry.Reference.Name+"\n"+username.Text); return row;
@@ -75,7 +76,7 @@ internal static partial class Dialogs
         var count=DesignSystem.Hint(""); count.Name="BitwardenResultCount"; count.IsVisible=false;
         var selection=DesignSystem.Label(""); selection.Name="BitwardenSelection"; selection.TextWrapping=TextWrapping.Wrap;
         var selectionUser=DesignSystem.Hint(""); selectionUser.Name="BitwardenSelectionUsername";
-        var purpose=DesignSystem.Hint(L.T(bindingOnly?"Po zapisaniu połączenia użyjemy tego wpisu przy kolejnych logowaniach.":"Hasło zostanie użyte w tej sesji.")); purpose.Name="BitwardenPurpose";
+        var purpose=DesignSystem.Hint(L.T(keyMode?"Klucz prywatny będzie używany tylko w pamięci tej sesji SSH i SFTP.":bindingOnly?"Po zapisaniu połączenia użyjemy tego wpisu przy kolejnych logowaniach.":"Hasło zostanie użyte w tej sesji.")); purpose.Name="BitwardenPurpose";
         var selected=new StackPanel { Spacing=5,Children={DesignSystem.SectionHeading("key",L.T("Przypisany wpis")),selection,selectionUser} };
         if(reference!=null) { selection.Text=reference.Name; selectionUser.Text=reference.Server; }
         var selectedCard=DesignSystem.Card(selected,new Thickness(14)); selectedCard.Name="BitwardenSelectionDetails"; selectedCard.IsVisible=reference!=null;
@@ -98,8 +99,9 @@ internal static partial class Dialogs
             }
         };
         var cancel=Button("Anuluj",()=>dialog.Close()); actions.Children.Add(cancel);
-        if(!bindingOnly && reference!=null) { var manual=Button("Podaj hasło ręcznie",()=>dialog.Close(new BitwardenChoice(null,"",null,true))); manual.Name="BitwardenManual"; actions.Children.Add(manual); }
-        var use=Button(bindingOnly?"Przypisz wpis":"Użyj hasła",()=>{}); use.Name="BitwardenUse"; use.Content=DeskIcons.Labelled("key",L.T(bindingOnly?"Przypisz wpis":"Użyj hasła")); use.Classes.Add("primary"); actions.Children.Add(use);
+        if(!bindingOnly && reference!=null && !keyMode) { var manual=Button("Podaj hasło ręcznie",()=>dialog.Close(new BitwardenChoice(null,"",null,true))); manual.Name="BitwardenManual"; actions.Children.Add(manual); }
+        var useTitle=bindingOnly?(keyMode?"Przypisz klucz":"Przypisz wpis"):(keyMode?"Użyj klucza":"Użyj hasła");
+        var use=Button(useTitle,()=>{}); use.Name="BitwardenUse"; use.Content=DeskIcons.Labelled("key",L.T(useTitle)); use.Classes.Add("primary"); actions.Children.Add(use);
         bool ValidSearch()=>search.Text is {} query && query.Trim().Length is >=2 and <=200 && !query.TrimStart().StartsWith('-') && !query.Any(char.IsControl);
         void Refresh()
         {
@@ -155,7 +157,7 @@ internal static partial class Dialogs
         async Task Search()
         {
             ForgetResults(); status.Text=empty.Text=L.T("Wyszukiwanie wpisów…");
-            var matches=await client!.SearchAsync(search.Text??"",scope.Token);
+            var matches=await client!.SearchAsync(search.Text??"",scope.Token,keyMode?BitwardenItemKind.SshKey:BitwardenItemKind.Login);
             if(closed || scope.IsCancellationRequested)return;
             list.ItemsSource=matches; list.IsVisible=matches.Count>0; empty.IsVisible=matches.Count==0; list.SelectedIndex=matches.Count>0?0:-1;
             list.Height=Math.Clamp(matches.Count*60,60,160);
@@ -183,12 +185,20 @@ internal static partial class Dialogs
         use.Click+=(_,_) =>
         {
             if(!use.IsEnabled)return;
-            Run(bindingOnly?"Przypisywanie wpisu…":"Pobieranie hasła wybranego wpisu…",async() =>
+            Run(bindingOnly?"Przypisywanie wpisu…":keyMode?"Pobieranie klucza SSH…":"Pobieranie hasła wybranego wpisu…",async() =>
             {
                 focusAfter=use;
                 var chosen=reference??(list.SelectedItem as BitwardenEntry)?.Reference;
                 if(chosen==null)return;
                 if(bindingOnly) { dialog.Close(new BitwardenChoice(chosen,(list.SelectedItem as BitwardenEntry)?.Username??"",null)); return; }
+                if(keyMode)
+                {
+                    var material=await client!.GetSshKeyAsync(chosen,scope.Token);
+                    BitwardenChoice? keyChoice=new(chosen,"",null,sshKey:material);
+                    try { if(!scope.IsCancellationRequested && !closed) { dialog.Close(keyChoice); keyChoice=null; } }
+                    finally { keyChoice?.Dispose(); }
+                    return;
+                }
                 var value=await client!.GetPasswordAsync(chosen,scope.Token);
                 if(closed || scope.IsCancellationRequested)return;
                 if(profile is { Protocol:not Protocol.VNC } && profile.Username.Length>0 && value.Username.Length>0 && !string.Equals(profile.Username,value.Username,profile.Protocol==Protocol.RDP?StringComparison.OrdinalIgnoreCase:StringComparison.Ordinal))

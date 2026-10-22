@@ -1,6 +1,6 @@
 # Bitwarden / Vaultwarden
 
-Wbudowany plugin odczytuje hasła wpisów **Login** przez oficjalny **Bitwarden Password Manager CLI**. Działa z kontem Bitwarden US/EU albo serwerem Vaultwarden skonfigurowanym w CLI. Nie wymaga publicznego API do odszyfrowanych haseł ani `bw serve`.
+Wbudowany plugin odczytuje hasła wpisów **Login** oraz klucze prywatne wpisów **SSH Key** przez oficjalny **Bitwarden Password Manager CLI**. Działa z kontem Bitwarden US/EU albo serwerem Vaultwarden obsługującym dany typ wpisu i skonfigurowanym w CLI. Nie wymaga `bw serve` ani włączania agenta SSH Bitwarden. [Typy wpisów CLI](https://bitwarden.com/help/cli/#enums), [klucze SSH w Bitwarden](https://bitwarden.com/help/about-ssh/).
 
 ## Konfiguracja
 
@@ -22,16 +22,29 @@ CLI musi podawać jawny `serverUrl` w `bw status`. Niektóre domyślne konfigura
 - **Login:** hasło trafia do loginu zapisanego w profilu. Różny login we wpisie sejfu wymaga potwierdzenia. Plugin nie zmienia adresu docelowego przy pobieraniu hasła.
 - **Zmiana i powrót:** przypisane połączenie pokazuje przyciski **Zmień wpis sejfu** i **Usuń przypisanie sejfu**. Usunięcie dotyczy samego przypisania po zapisaniu formularza; wpis w sejfie pozostaje zachowany. Bez przypisania widoczny jest przycisk **Przypisz wpis sejfu**. Podczas łączenia przypisanego profilu można wybrać **Podaj hasło ręcznie**. Wyłączony plugin również umożliwia ręczne podanie hasła bez zapisu; zachowuje przypisania na później.
 
+## Klucz SSH przechowywany w sejfie
+
+1. W Bitwarden/Vaultwarden zapisz lub zaimportuj klucz jako wpis **SSH Key**, a następnie zsynchronizuj ten sam profil CLI poleceniem `bw sync`.
+2. W edytorze połączenia SSH ustaw **Uwierzytelnianie SSH → Klucz SSH z sejfu**. Podaj login serwera; wpis SSH Key nie ustala tego loginu.
+3. Wybierz **Przypisz wpis sejfu**, odblokuj sejf i wybierz **Przypisz klucz**. Zapisz połączenie.
+4. Przy łączeniu odblokuj sejf i wybierz **Użyj klucza**. W tym trybie nie wskazujesz lokalnego pliku i nie zapisujesz klucza w magazynie haseł systemu.
+
+Obsługiwane są RSA 2048–8192 bitów i Ed25519, w nieszyfrowanym dodatkowo formacie OpenSSH lub PEM/PKCS#8 zgodnym z SSH.NET. Sam sejf nadal chroni dane swoim szyfrowaniem. Jeśli pole klucza zawiera klucz zabezpieczony dodatkowym passphrase, użyj funkcji importu klucza Bitwarden i podaj hasło podczas importu; plugin wyjaśni tę sytuację zamiast zapisywać tymczasowy plik. Odcisk i klucz publiczny, jeśli CLI je podaje, muszą odpowiadać pobranemu kluczowi prywatnemu. Zaufanie do **klucza hosta serwera** pozostaje osobną kontrolą.
+
+Prywatny materiał jest przechowywany wyłącznie w pamięci aktywnej sesji i służy także jej nowym połączeniom SFTP, transferom oraz monitoringowi. Koniec sesji, błąd łączenia, anulowanie lub zamknięcie czyści własne bufory. Ponowne połączenie ponownie odblokowuje sejf i pobiera aktualny wpis. Wyłączenie opcjonalnego pluginu zamyka jego okna i procesy CLI, zachowując pracujący terminal/SFTP oraz należący do niego klucz do końca tej sesji. Nowe połączenie wymaga ponownego włączenia pluginu.
+
+Profil zapisuje wyłącznie metadane referencji, w tym typ wpisu. Eksport/import konfiguracji pomija przypisanie; metoda **Klucz SSH z sejfu** pozostaje i podczas łączenia poprosi o wybór wpisu. Duplikowanie otwiera edytor bez dotychczasowego przypisania — przed zapisaniem kopii wskaż klucz ponownie. Kopie bazy zachowują referencję. Wyłączony plugin nie zastępuje klucza zapisanym hasłem ani plikiem; inną metodę wybierz świadomie w edytorze. Wersje sprzed 0.47.0 nie obsługują nowej metody logowania — przed powrotem do starszej wersji przywróć zgodną kopię bazy.
+
 ## Ochrona danych i ograniczenia
 
 Hasło główne i klucz sesji są przekazywane tylko w środowisku uruchomionego procesu CLI, nigdy w argumentach. Nie są umieszczane w bazie, logach, schowku ani konfiguracji. Surowe stdout/stderr CLI nie trafia do logów; widoczne są kontrolowane kategorie błędów. Operacje mają limit czasu 60 s, stdout 8 MiB i stderr 64 KiB; zamknięcie okna lub wyłączenie pluginu anuluje i kończy jego procesy.
 
-CLI zwraca odszyfrowane wyniki wyszukiwania, także pola haseł. Plugin zachowuje z nich tylko metadane; hasło odczytuje ponownie dla wybranego dokładnego UUID. Bufory wyjściowe są czyszczone po odczycie. Odszyfrowane dane i niemodyfikowalne ciągi .NET istnieją przejściowo w pamięci. Nie gwarantujemy wyzerowania każdej kopii ani ochrony przed innym złośliwym procesem działającym z uprawnieniami użytkownika.
+CLI zwraca odszyfrowane wyniki wyszukiwania, także pola haseł i kluczy. Plugin zachowuje z nich tylko metadane; sekret odczytuje ponownie dla wybranego dokładnego UUID i typu wpisu. Bufory wyjściowe i własne bufory klucza są czyszczone po użyciu. Odszyfrowane dane, obiekty biblioteki kryptograficznej i niemodyfikowalne ciągi .NET istnieją przejściowo w pamięci. Nie gwarantujemy wyzerowania każdej kopii ani ochrony przed innym złośliwym procesem działającym z uprawnieniami użytkownika.
 
 Zamknięcie okna usuwa lokalny klucz sesji ServerDesk. Nie wykonujemy `bw lock`/`bw logout`, które mogłyby wpłynąć na inne zastosowania tego samego profilu CLI. Aby unieważnić sesje całego profilu, wykonaj `bw lock` samodzielnie. Konto i zaszyfrowany cache pozostają pod kontrolą CLI. Synchronizuj go jawnie poleceniem `bw sync`.
 
 Przypisanie jest sprawdzane względem UUID konta i kanonicznego adresu sejfu przed użyciem. Zmiana konta nie powoduje automatycznego odczytu z nowego sejfu. Kopiowanie profilu i eksport/import konfiguracji pomijają referencje; kopie bazy je zachowują jako metadane. Zmiana lub usunięcie referencji obraca lokalne przypisanie poświadczeń, aby stare hasło systemowe nie wróciło po zmianie źródła.
 
-Pierwsza wersja nie edytuje sejfu i nie pobiera TOTP, załączników ani wpisów SSH Key. Wymaga zgodnego CLI/serwera oraz poprawnego TLS; nie wyłącza jego weryfikacji. Testy automatyczne używają wyłącznie syntetycznych sejfów i atrap CLI. Akceptacja rzeczywistego konta Bitwarden/Vaultwarden pozostaje do wykonania na osobnym koncie testowym.
+Plugin nie edytuje sejfu i nie pobiera TOTP, załączników ani certyfikatów SSH. Wymaga zgodnego CLI/serwera oraz poprawnego TLS; nie wyłącza jego weryfikacji. Testy używają syntetycznych sejfów, atrap CLI i osobnego testowego OpenSSH. Akceptacja rzeczywistego konta Bitwarden/Vaultwarden pozostaje do wykonania na osobnym koncie testowym.
 
 Ta sama instrukcja jest dostępna offline w **Pomoc → Bitwarden / Vaultwarden**, po polsku i angielsku.

@@ -4,7 +4,7 @@ W **Ustawienia → Pluginy** można niezależnie włączyć:
 
 - **Monitoring Linux** — panel monitoringu i metryki na pasku statusu, pobierane przez osobne SSH.
 - **Komendy** — Smart Cheat Sheet, własne szablony, ulubione i automatyczne wykrywanie środowiska SSH.
-- **Bitwarden / Vaultwarden** — wybór hasła i trwałe przypisania wpisów sejfu do połączeń; wymaga wskazanego oficjalnego CLI. [Konfiguracja i ograniczenia](bitwarden.md).
+- **Bitwarden / Vaultwarden** — hasła Login, klucze SSH Key (RSA/Ed25519 w pamięci) i trwałe przypisania wpisów do połączeń; wymaga wskazanego oficjalnego CLI. [Konfiguracja i ograniczenia](bitwarden.md).
 
 To pluginy wbudowane, dostarczane z aplikacją. Domyślnie są włączone, również przy aktualizacji starszych ustawień. Bitwarden nie odczytuje sejfu przy uruchomieniu — działa dopiero po otwarciu wyboru wpisu. Zmiany działają po **Zapisz**, bez restartu. Samo zaznaczenie pola jest podglądem; **Anuluj** zachowuje stan pracy. Konfiguracja CLI również zaczyna obowiązywać po zapisie.
 
@@ -12,7 +12,7 @@ Wyłączenie monitoringu zatrzymuje jego pętlę i zamyka dedykowane SSH, usuwa 
 
 Polecenia już wysłane do terminala działają nadal; plugin nie przerywa pracy powłoki.
 
-Przełączniki zachowują terminal SSH, SFTP, ustawienia modułów, własne komendy w magazynie systemowym, ulubione i zapisane profile. Wyłączenie Bitwarden anuluje i kończy operacje CLI, zamyka wybór wpisu i usuwa lokalny klucz sesji z pamięci pluginu; zachowuje przypisania profili i pozwala podać hasło ręcznie bez zapisu. Nie wykonuje globalnego `bw lock`/`logout` na współdzielonym profilu CLI. Nowe sesje nie uruchamiają wyłączonych dodatków. Ponowne włączenie pozwala używać tych samych danych i istniejącej sesji; panel komend i sejf otwierają się na żądanie.
+Przełączniki zachowują terminal SSH, SFTP, ustawienia modułów, własne komendy w magazynie systemowym, ulubione i zapisane profile. Wyłączenie Bitwarden anuluje i kończy operacje CLI, zamyka wybór wpisu i usuwa lokalny klucz sesji z pamięci pluginu. Zachowuje przypisania profili; dla wpisów Login można podać hasło ręcznie bez zapisu. Aktywny terminal z kluczem SSH zachowuje własny bufor do końca sesji, aby SFTP i transfery mogły nadal działać. Nowe połączenie lub reconnect z kluczem wymaga ponownego włączenia pluginu i odblokowania sejfu; nie zastępuje klucza hasłem ani plikiem lokalnym. Plugin nie wykonuje globalnego `bw lock`/`logout` na współdzielonym profilu CLI. Nowe sesje nie uruchamiają wyłączonych dodatków. Ponowne włączenie pozwala używać tych samych danych; panel komend i sejf otwierają się na żądanie.
 
 Konfiguracja monitoringu pozostaje w sekcji **Monitoring** także wtedy, gdy plugin jest wyłączony. To pozwala przygotować parametry przed ponownym włączeniem. Język nadal ma oddzielny komunikat o restarcie; przełączniki pluginów go nie wymagają.
 

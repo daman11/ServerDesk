@@ -82,7 +82,7 @@ internal static class ProfileEditorDialog
         var domain=new TextBox { Text=original.Domain,PlaceholderText=L.T("Opcjonalnie"),Name="ProfileDomain" };
         var loginField=Field("Login",user,0); var domainField=Field("Domena Windows",domain,0);
         var loginRow=Pair(loginField,domainField); authentication.Children.Add(loginRow);
-        var auth=new ComboBox { ItemsSource=Enum.GetValues<Authentication>(),SelectedItem=original.Authentication,HorizontalAlignment=HorizontalAlignment.Stretch,Name="ProfileAuthentication",ItemTemplate=new FuncDataTemplate<Authentication>((a,_)=>DesignSystem.Label(a==Authentication.PrivateKey?L.T("Klucz prywatny"):L.T("Hasło"))) };
+        var auth=new ComboBox { ItemsSource=Enum.GetValues<Authentication>(),SelectedItem=original.Authentication,HorizontalAlignment=HorizontalAlignment.Stretch,Name="ProfileAuthentication",ItemTemplate=new FuncDataTemplate<Authentication>((a,_)=>DesignSystem.Label(a switch { Authentication.PrivateKey=>L.T("Klucz prywatny"),Authentication.VaultSshKey=>L.T("Klucz SSH z sejfu"),_=>L.T("Hasło") })) };
         var authField=Field("Uwierzytelnianie SSH",auth,0); authentication.Children.Add(authField);
         var key=new TextBox { Text=original.PrivateKeyPath,PlaceholderText=L.T("Ścieżka do pliku klucza"),Name="ProfilePrivateKey" };
         var chooseKey=Dialogs.Button("Wybierz plik",()=>_ = PickKeyAsync());
@@ -96,7 +96,7 @@ internal static class ProfileEditorDialog
         var clearVault=Dialogs.Button("Usuń przypisanie sejfu",()=>{}); clearVault.Name="ProfileBitwardenClear"; clearVault.Content=DeskIcons.Labelled("close",L.T("Usuń przypisanie sejfu")); vaultActions.Children.Add(clearVault);
         void RefreshVault()
         {
-            vaultLabel.Text=bitwarden==null?L.T("Opcjonalnie wybierz wpis z Bitwarden lub Vaultwarden."):L.F($"Hasło z sejfu: {bitwarden.Name}")+"\n"+bitwarden.Server;
+            vaultLabel.Text=bitwarden==null?L.T(auth.SelectedItem is Authentication.VaultSshKey?"Wybierz wpis SSH Key z sejfu.":"Opcjonalnie wybierz wpis z Bitwarden lub Vaultwarden."):(bitwarden.Kind==BitwardenItemKind.SshKey?L.F($"Klucz z sejfu: {bitwarden.Name}"):L.F($"Hasło z sejfu: {bitwarden.Name}"))+"\n"+bitwarden.Server;
             clearVault.IsVisible=bitwarden!=null;
             var caption=L.T(bitwarden==null?"Przypisz wpis sejfu":"Zmień wpis sejfu");
             bindVault.Content=DeskIcons.Labelled("key",caption); AutomationProperties.SetName(bindVault,caption); ToolTip.SetTip(bindVault,caption);
@@ -113,8 +113,8 @@ internal static class ProfileEditorDialog
                 bindVault.IsEnabled=false;
                 try
                 {
-                    var draft=original with { Name=name.Text??"",Host=host.Text??"",Username=user.Text??"",Protocol=protocol.SelectedItem is Protocol selected?selected:Protocol.SSH };
-                    var choice=await main.ChooseBitwardenAsync(dialog,draft,null,true);
+                    var draft=original with { Name=name.Text??"",Host=host.Text??"",Username=user.Text??"",Authentication=(Authentication)auth.SelectedItem!,Protocol=protocol.SelectedItem is Protocol selected?selected:Protocol.SSH };
+                    using var choice=await main.ChooseBitwardenAsync(dialog,draft,null,true);
                     if(choice?.Reference is not {} selectedReference)return;
                     bitwarden=selectedReference; RefreshVault();
                     if(choice.Username.Length>0) { user.Text=choice.Username; domain.Text=""; }
@@ -230,6 +230,7 @@ internal static class ProfileEditorDialog
             if(username.Any(char.IsControl))Error(user,L.T("Login nie może zawierać znaków sterujących."));
             if((domain.Text??"").Any(char.IsControl))Error(domain,L.T("Domena nie może zawierać znaków sterujących."));
             if(selected==Protocol.SSH && auth.SelectedItem is Authentication.PrivateKey && string.IsNullOrWhiteSpace(key.Text))Error(key,L.T("Wybierz plik klucza prywatnego."));
+            if(selected==Protocol.SSH && auth.SelectedItem is Authentication.VaultSshKey && bitwarden?.Kind!=BitwardenItemKind.SshKey)Error(auth,L.T("Wybierz wpis SSH Key przyciskiem Przypisz wpis sejfu."));
             var path=(folder.Text??"").Trim().Trim('/');
             if(path.Length>0 && path.Split('/').Any(s=>string.IsNullOrWhiteSpace(s) || s is "." or ".."))Error(folder,L.T("Użyj nazw folderów rozdzielonych /, bez pustych segmentów ani .."));
             if(!ProfileAppearance.IsColor(appearance.SelectedColor))Error(colorInput,L.T("Kolor musi mieć postać #RRGGBB lub pozostać pusty."));
@@ -291,7 +292,7 @@ internal static class ProfileEditorDialog
         }
         navigation.ItemsSource=navItems; navigation.SelectionChanged+=(_,_)=> { for(var i=0;i<pageControls.Count;i++)pageControls[i].IsVisible=i==navigation.SelectedIndex; }; navigation.SelectedIndex=0;
         foreach(var box in new[]{name,host,port,user,domain,key,folder,tags,description,width,height,localFolder,colorInput,serialPort,baud})box.TextChanged+=(_,_)=>Refresh();
-        auth.SelectionChanged+=(_,_)=>Refresh(); handshake.SelectionChanged+=(_,_)=>Refresh(); protocol.SelectionChanged+=(_,_)=> { if(port.Text is "22" or "3389" or "5900")port.Text=QuickConnect.DefaultPort((Protocol)protocol.SelectedItem!).ToString(); Refresh(); };
+        auth.SelectionChanged+=(_,_)=> { if(bitwarden!=null && (bitwarden.Kind==BitwardenItemKind.SshKey)!=(auth.SelectedItem is Authentication.VaultSshKey))bitwarden=null; RefreshVault(); Refresh(); }; handshake.SelectionChanged+=(_,_)=>Refresh(); protocol.SelectionChanged+=(_,_)=> { if(protocol.SelectedItem is not Protocol.SSH && auth.SelectedItem is Authentication.VaultSshKey)auth.SelectedItem=Authentication.Password; if(port.Text is "22" or "3389" or "5900")port.Text=QuickConnect.DefaultPort((Protocol)protocol.SelectedItem!).ToString(); Refresh(); };
         iconPicker.Changed+=Refresh; appearance.Changed+=Refresh; rdpMode.SelectionChanged+=(_,_)=>Refresh();
         redirect.IsCheckedChanged+=(_,_)=> { localFolder.IsEnabled=!OperatingSystem.IsWindows() && redirect.IsChecked==true; if(OperatingSystem.IsWindows() && redirect.IsChecked!=true)redirect.IsEnabled=false; Refresh(); };
         dialog.Opened+=(_,_)=> { Refresh(); name.Focus(); };

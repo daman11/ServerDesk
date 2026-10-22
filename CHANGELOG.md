@@ -2,6 +2,8 @@
 
 ## Unreleased
 
+- Improve the Bitwarden / Vaultwarden picker with separate access, search and selection sections, automatic host search after unlock, immediate query/result invalidation, progress and recoverable error/empty states, inline offline setup instructions and keyboard navigation. Hide the cleared master-password field after unlocking and stack inputs/actions in narrow windows. Keep the existing CLI commands, credential storage and session lifetime unchanged; add focused synthetic PL/EN UI regressions.
+
 ## 0.46.0 — Public Beta — 2026-10-22
 
 - Add a built-in Bitwarden / Vaultwarden plugin using an explicitly configured official Bitwarden CLI executable and optional CLI profile directory. Select a Login password once or bind an item to a saved SSH/RDP/VNC profile with account/server-scoped identity. Unlock in a masked dialog, retain no vault password/session in profiles or logs, pass secrets only through the owned child environment and forget the picker session on close/disable. Bound profiles support a session-only manual fallback; export/import/duplication strip references. Add bounded process cancellation/output, metadata-only search, wrong-account and persistence regressions, PL/EN settings/dialogs and offline setup documentation. Live personal vault acceptance remains separate from synthetic tests.

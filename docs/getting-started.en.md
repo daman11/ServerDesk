@@ -1,4 +1,6 @@
-# ServerDesk 0.45.1 — getting started
+# ServerDesk 0.46.0 — getting started
+
+**New in the local 0.46.0 release:** [Bitwarden / Vaultwarden](bitwarden.md): one-time password selection and saved item bindings. Requires the official CLI, an explicit vault URL and prior CLI login. This local package has not been published to GitHub.
 
 **New in 0.45.1:** optional desktop shortcut and Update / Skip this version / Remind me at next startup. Startup checks default on; saved opt-outs remain effective. [Testing from 0.45.0](updates.md).
 
@@ -16,7 +18,7 @@ Release 0.43.0 groups side navigation into connections (including Favorites and 
 
 **0.39.1:** safer exports/imports, a database backup catalog in Settings and command cards. Invalid saved diagnostic data is reported without an automatic reset; a history-save failure preserves tool results. [Changes](releases/release-0.39.1.md).
 
-**Plugins (0.39.0):** Settings → Plugins independently enables Linux monitoring and Commands. Save applies without restarting; disabling preserves SSH, SFTP and custom snippets. Both built-in plugins default to enabled.
+**Plugins:** Settings → Plugins independently enables Linux monitoring, Commands and Bitwarden / Vaultwarden. Save applies without restarting; disabling preserves SSH, SFTP and custom snippets. Built-in plugins default to enabled; vault access is on demand.
 
 **Commands — Ctrl+Shift+K.** Browse 165 command variants offline or follow the active SSH host. Add encrypted user snippets, parameters and favorites. Insert never sends Enter; Execute requires confirmation. [Guide, architecture and limits](commands.md), [0.39.0 notes](releases/release-0.39.0.md).
 
@@ -34,17 +36,17 @@ Since 0.37.0, ServerDesk shows transfer failure guidance in the queue. Hover ove
 
 ## Windows x64
 
-Run `ServerDesk-0.45.1-win-x64-Setup.exe`. Setup installs for the current user, creates a Start menu shortcut and registers an uninstaller. No separate .NET installation is needed. Alternatively, extract the **entire** portable ZIP into its own directory and run `ServerDesk.App.exe`.
+Run `ServerDesk-0.46.0-win-x64-Setup.exe`. Setup installs for the current user, creates a Start menu shortcut and registers an uninstaller. No separate .NET installation is needed. Alternatively, extract the **entire** portable ZIP into its own directory and run `ServerDesk.App.exe`.
 
-This beta is not signed with a trusted publisher certificate. Use a trusted release source and do not disable Windows protection. Compare `Get-FileHash .\ServerDesk-0.45.1-win-x64-Setup.exe -Algorithm SHA256` with `SHA256SUMS.txt`. A checksum alongside a download detects corruption; it does not independently authenticate the publisher.
+This beta is not signed with a trusted publisher certificate. Use a trusted release source and do not disable Windows protection. Compare `Get-FileHash .\ServerDesk-0.46.0-win-x64-Setup.exe -Algorithm SHA256` with `SHA256SUMS.txt`. A checksum alongside a download detects corruption; it does not independently authenticate the publisher.
 
 If a partial Windows installation leaves missing files, prevents startup or loses its uninstaller, close ServerDesk and rerun a trusted Setup for the same version into the existing directory. Setup restores its own files without requiring database or saved-credential removal. First resolve any disk-space or permission failure that interrupted installation. Do not mix individual DLLs from different versions. [Tested repair scope](reports/rc-preparation-2026-10-17.md).
 
 ## Linux x64
 
-Ubuntu/Debian: `sudo apt install ./serverdesk_0.45.1_amd64.deb`, then launch ServerDesk from the menu or run `serverdesk`. Remembered passwords need `libsecret-tools` and an unlocked Secret Service such as GNOME Keyring. Install your distribution's FreeRDP client for RDP connections.
+Ubuntu/Debian: `sudo apt install ./serverdesk_0.46.0_amd64.deb`, then launch ServerDesk from the menu or run `serverdesk`. Remembered passwords need `libsecret-tools` and an unlocked Secret Service such as GNOME Keyring. Install your distribution's FreeRDP client for RDP connections.
 
-For TAR.GZ: `mkdir serverdesk-0.43.0`, then `tar -xzf ServerDesk-0.45.1-linux-x64.tar.gz -C serverdesk-0.43.0` and `./serverdesk-0.43.0/ServerDesk.App`. Native library requirements are listed in the DEB and [development.md](development.md). Linux testing used WSLg; other desktops need further verification.
+For TAR.GZ: `mkdir serverdesk-0.46.0`, then `tar -xzf ServerDesk-0.46.0-linux-x64.tar.gz -C serverdesk-0.46.0` and `./serverdesk-0.46.0/ServerDesk.App`. Native library requirements are listed in the DEB and [development.md](development.md). Linux testing used WSLg; other desktops need further verification.
 
 ## Connect
 

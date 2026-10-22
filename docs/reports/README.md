@@ -1,5 +1,7 @@
 # Verification and historical reviews
 
+- [0.46.0 Public Beta](release-verification-0.46.0.md) — Bitwarden / Vaultwarden, SSH focus and command insertion.
+
 Release 0.45.0: [GitHub updater, local checks and publication limits](release-verification-0.45.0.md).
 
 Release 0.44.0: [Help, SFTP ergonomics, diagnostics and Windows RDP file integration](release-verification-0.44.0.md).

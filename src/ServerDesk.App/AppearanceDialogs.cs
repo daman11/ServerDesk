@@ -37,12 +37,24 @@ internal static partial class Dialogs
         }
         if(notice!=null) { var warning=Text(notice,12); warning.Name="CredentialRecoveryNotice"; DesignSystem.Resource(warning,TextBlock.ForegroundProperty,"Warning"); stack.Children.Add(warning); }
         stack.Children.Add(DesignSystem.Label(key?L.T("Passphrase klucza prywatnego"):L.T("Hasło użytkownika"),true));
-        var input=new TextBox { PasswordChar='●',MaxLength=CredentialLimits.MaximumSecretBytes }; stack.Children.Add(input);
+        var input=new TextBox { Name="CredentialPassword",PasswordChar='●',MaxLength=CredentialLimits.MaximumSecretBytes }; stack.Children.Add(input);
         if(vnc)stack.Children.Add(Text(L.T("Standardowe uwierzytelnianie VNC używa pierwszych 8 bajtów hasła. Transmisja VNC nie jest szyfrowana."),12));
         stack.Children.Add(DesignSystem.Label(key?L.T("Pozostaw puste, jeśli klucz nie ma hasła."):L.T("Hasło służy wyłącznie do tej sesji, chyba że włączysz zapis."),true,12));
         var remember=new CheckBox { Content=L.T("Zapamiętaj w systemowym magazynie poświadczeń") }; stack.Children.Add(remember);
+        if(profile?.Bitwarden!=null)remember.IsVisible=false;
         stack.Children.Add(DesignSystem.Label(L.T("Windows: DPAPI · Linux: Secret Service.\nHasło nie jest zapisywane w bazie profili ani eksportowane."),true,12));
         var row=new StackPanel { Orientation=Orientation.Horizontal,HorizontalAlignment=HorizontalAlignment.Right,Spacing=DesignTokens.Medium }; stack.Children.Add(row); var dialog=Window(vnc?L.T("Połączenie VNC"):rdp?L.T("Połączenie RDP"):L.T("Połączenie SSH"),stack);
+        if(owner is MainWindow main && main.IsPluginEnabled(PluginCatalog.Bitwarden))
+        {
+            var vault=Button("Hasło z Bitwarden / Vaultwarden",()=>{}); vault.Name="CredentialBitwarden"; vault.Content=DeskIcons.Labelled("key",L.T("Hasło z Bitwarden / Vaultwarden"));
+            stack.Children.Insert(stack.Children.Count-1,vault);
+            vault.Click+=(_,_)=>_ = main.Safe(async()=>
+            {
+                vault.IsEnabled=false;
+                try { var choice=await main.ChooseBitwardenAsync(dialog,profile,null); if(choice?.Password is {} password) { input.Text=password; remember.IsChecked=false; input.Focus(); } }
+                finally { vault.IsEnabled=main.IsPluginEnabled(PluginCatalog.Bitwarden); }
+            });
+        }
         row.Children.Add(Button("Anuluj",()=>dialog.Close())); var connect=Button("Połącz",()=>dialog.Close(new CredentialInput(input.Text??"",remember.IsChecked==true))); connect.Classes.Add("primary"); row.Children.Add(connect);
         dialog.Opened+=(_,_)=>input.Focus(); dialog.KeyDown+=(_,e)=> { if(e.Key==Avalonia.Input.Key.Escape)dialog.Close(); if(e.Key==Avalonia.Input.Key.Enter)dialog.Close(new CredentialInput(input.Text??"",remember.IsChecked==true)); };
         return await dialog.ShowDialog<CredentialInput?>(owner);

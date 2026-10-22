@@ -16,6 +16,7 @@ internal static class ProfileEditorDialog
     internal static async Task<ServerProfile?> Show(Window owner,ServerProfile? profile,IEnumerable<string> folders,IEnumerable<string>? knownTags=null,IReadOnlyDictionary<string,string>? tagColors=null)
     {
         var original=profile??new ServerProfile();
+        var bitwarden=original.Bitwarden;
         var fresh=string.IsNullOrEmpty(original.Name) && string.IsNullOrEmpty(original.Host);
         var dialog=new Window { Title=fresh?L.T("Nowe połączenie"):L.T("Edytuj połączenie"),Width=780,Height=740,MinWidth=600,MinHeight=460,WindowStartupLocation=WindowStartupLocation.CenterOwner };
         Dialogs.FitToOwnerScreen(dialog,owner);
@@ -87,6 +88,31 @@ internal static class ProfileEditorDialog
         var chooseKey=Dialogs.Button("Wybierz plik",()=>_ = PickKeyAsync());
         var keyRow=new Grid { ColumnDefinitions=new ColumnDefinitions("*,Auto"),ColumnSpacing=8,Children={key} }; Grid.SetColumn(chooseKey,1); keyRow.Children.Add(chooseKey);
         var keyField=Field("Klucz prywatny",keyRow,0,"Klucz pozostaje w wybranym pliku na Twoim komputerze."); fields[key]=fields[keyRow]; authentication.Children.Add(keyField);
+        var vaultRow=new StackPanel { Spacing=8 };
+        var vaultLabel=DesignSystem.Hint(bitwarden?.Name??L.T("Hasło podawane przy łączeniu lub z magazynu systemowego.")); vaultLabel.Name="ProfileBitwardenReference"; vaultRow.Children.Add(vaultLabel);
+        var vaultAvailability=DesignSystem.Hint(L.T("Na Windows hasła sejfu dla RDP wymagają trybu W zakładce ServerDesk. Osobny klient używa własnego okna poświadczeń; zapisane przypisanie pozostaje zachowane.")); vaultAvailability.Name="ProfileBitwardenAvailability"; vaultAvailability.IsVisible=false; vaultRow.Children.Add(vaultAvailability);
+        var vaultActions=new WrapPanel { Orientation=Orientation.Horizontal };
+        var bindVault=Dialogs.Button("Przypisz wpis sejfu",()=>{}); bindVault.Name="ProfileBitwardenBind"; bindVault.Content=DeskIcons.Labelled("key",L.T("Przypisz wpis sejfu")); vaultActions.Children.Add(bindVault);
+        var clearVault=Dialogs.Button("Usuń przypisanie sejfu",()=> { bitwarden=null; vaultLabel.Text=L.T("Hasło podawane przy łączeniu lub z magazynu systemowego."); }); clearVault.Name="ProfileBitwardenClear"; clearVault.Content=DeskIcons.Labelled("close",L.T("Usuń przypisanie sejfu")); vaultActions.Children.Add(clearVault);
+        bindVault.IsEnabled=owner is MainWindow workspace && workspace.IsPluginEnabled(PluginCatalog.Bitwarden);
+        bindVault.Click+=(_,_)=>
+        {
+            if(owner is not MainWindow main)return;
+            _=main.Safe(async()=>
+            {
+                bindVault.IsEnabled=false;
+                try
+                {
+                    var draft=original with { Name=name.Text??"",Host=host.Text??"",Username=user.Text??"",Protocol=protocol.SelectedItem is Protocol selected?selected:Protocol.SSH };
+                    var choice=await main.ChooseBitwardenAsync(dialog,draft,null,true);
+                    if(choice?.Reference is not {} selectedReference)return;
+                    bitwarden=selectedReference; vaultLabel.Text=selectedReference.Name+" · "+selectedReference.Server;
+                    if(choice.Username.Length>0) { user.Text=choice.Username; domain.Text=""; }
+                }
+                finally { bindVault.IsEnabled=main.IsPluginEnabled(PluginCatalog.Bitwarden); }
+            });
+        };
+        vaultRow.Children.Add(vaultActions); connection.Children.Add(vaultRow);
         var rdpShortcut=Dialogs.Button("Ustawienia pulpitu RDP",()=>Select(3)); rdpShortcut.HorizontalAlignment=HorizontalAlignment.Left; connection.Children.Add(rdpShortcut);
 
         var vncCard=Card(connection,"Pulpit VNC"); var vncFrame=(Border)vncCard.Parent!;
@@ -163,6 +189,9 @@ internal static class ProfileEditorDialog
             ((Border)authentication.Parent!).IsVisible=selected is Protocol.SSH or Protocol.RDP;
             addressRow.IsVisible=!isSerial; vncFrame.IsVisible=selected==Protocol.VNC; serialFrame.IsVisible=isSerial;
             authField.IsVisible=selected==Protocol.SSH; keyField.IsVisible=selected==Protocol.SSH && auth.SelectedItem is Authentication.PrivateKey;
+            vaultRow.IsVisible=selected!=Protocol.Serial;
+            var vaultSupported=!isRdp || !OperatingSystem.IsWindows() || rdpMode.SelectedIndex==(int)RdpDisplayMode.Embedded;
+            vaultAvailability.IsVisible=!vaultSupported; bindVault.IsEnabled=vaultSupported && owner is MainWindow main && main.IsPluginEnabled(PluginCatalog.Bitwarden);
             rts.IsEnabled=handshake.SelectedIndex<2;
             rdpShortcut.IsVisible=isRdp; navItems[3].IsVisible=isRdp;
             if(!isRdp && navigation.SelectedIndex==3)Select(0);
@@ -210,7 +239,7 @@ internal static class ProfileEditorDialog
                 if(redirect.IsChecked==true && string.IsNullOrWhiteSpace(localFolder.Text))Error(localFolder,L.T("Wskaż folder do przekazania."));
                 options=options with { Width=w,Height=h,DisplayMode=(RdpDisplayMode)rdpMode.SelectedIndex,KeyboardMode=(RdpKeyboardMode)keyboard.SelectedIndex,Fullscreen=fullscreen.IsChecked==true,Clipboard=clipboard.IsChecked==true,DynamicResolution=dynamic.IsChecked==true,AutoReconnect=reconnect.IsChecked==true,RedirectLocalFolder=redirect.IsChecked==true,LocalFolder=localFolder.Text??"" };
             }
-            var result=original with { Name=(name.Text??"").Trim(),Host=hostname,Port=number,Protocol=selected,Username=username,Domain=domain.Text?.Trim()??"",Authentication=(Authentication)auth.SelectedItem!,PrivateKeyPath=(key.Text??"").Trim(),Folder=path,Tags=ProfileTags.Format(ProfileTags.Parse(tags.Text)),Description=description.Text??"",Favorite=favorite.IsChecked==true,IconId=iconPicker.SelectedId,Color=appearance.SelectedColor,CustomIconPng=appearance.CustomIconPng,Rdp=options,Serial=serialOptions,Vnc=original.Vnc with { Authentication=(VncAuthentication)vncAuth.SelectedIndex,Shared=vncShared.IsChecked==true,ViewOnly=vncViewOnly.IsChecked==true,FitToWindow=vncFit.IsChecked==true } };
+            var result=original with { Bitwarden=selected==Protocol.Serial?null:bitwarden,Name=(name.Text??"").Trim(),Host=hostname,Port=number,Protocol=selected,Username=username,Domain=domain.Text?.Trim()??"",Authentication=(Authentication)auth.SelectedItem!,PrivateKeyPath=(key.Text??"").Trim(),Folder=path,Tags=ProfileTags.Format(ProfileTags.Parse(tags.Text)),Description=description.Text??"",Favorite=favorite.IsChecked==true,IconId=iconPicker.SelectedId,Color=appearance.SelectedColor,CustomIconPng=appearance.CustomIconPng,Rdp=options,Serial=serialOptions,Vnc=original.Vnc with { Authentication=(VncAuthentication)vncAuth.SelectedIndex,Shared=vncShared.IsChecked==true,ViewOnly=vncViewOnly.IsChecked==true,FitToWindow=vncFit.IsChecked==true } };
             string? general=null;
             if(errors.Count==0) { try { result.Validate(); } catch(ArgumentException e) { general=e.Message; } }
             foreach(var (control,field) in fields) { var invalid=errors.TryGetValue(control,out var message); control.Classes.Set("error",invalid); field.Error.Text=message??""; field.Error.IsVisible=invalid; }

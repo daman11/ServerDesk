@@ -13,6 +13,8 @@ using Iciclecreek.Terminal;
 using Avalonia.Controls;
 using System.Text;
 
+if(BitwardenChecks.IsFixture) { await BitwardenChecks.Fixture(args); return; }
+
 if(args.Length==3 && args[0]=="--native-credential-readback")
 { await NativeDesktopChecks.ReadCredential(args[1],args[2]); return; }
 
@@ -88,6 +90,7 @@ if(args.Contains("--help")) { HelpChecks.Run(root); return; }
 if(args.Contains("--four-panels")) { FourPanelChecks.Run(root); return; }
 if(args.Contains("--commands")) { CommandPanelChecks.Run(root); return; }
 if(args.Contains("--terminal-focus")) { TerminalFocusChecks.Run(root); return; }
+if(args.Contains("--bitwarden")) { BitwardenChecks.Run(root); return; }
 if(args.Contains("--command-profile")) { CommandPanelChecks.ProfileLayout(root); return; }
 if(args.Contains("--about")) { AboutChecks.Run(root); return; }
 if(args.Contains("--updates")) { ApplicationUpdateChecks.Run(root); return; }

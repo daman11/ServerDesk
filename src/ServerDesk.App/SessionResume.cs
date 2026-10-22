@@ -112,7 +112,17 @@ public sealed partial class MainWindow
         if(profile.Protocol==Protocol.RDP && !OperatingSystem.IsLinux() && (!OperatingSystem.IsWindows() || profile.Rdp.DisplayMode!=RdpDisplayMode.Embedded))return "";
         if(profile.Protocol==Protocol.RDP && OperatingSystem.IsLinux() && string.IsNullOrWhiteSpace(profile.Username))throw new ArgumentException(L.T("Wpisz login w profilu serwera, aby połączyć RDP w zakładce."));
         string secret; string? notice=null;
-        try { secret=forcePrompt?"":await credentials.GetAsync(CredentialReference.ForProfile(profile),lifetime.Token)??""; }
+        if(profile.Bitwarden is {} reference)
+        {
+            if(IsPluginEnabled(PluginCatalog.Bitwarden))
+            {
+                var choice=await ChooseBitwardenAsync(this,profile,reference);
+                if(choice==null)return null;
+                if(!choice.Manual)return choice.Password;
+            }
+            notice=L.T("Profil ma przypisany wpis sejfu. Hasło podane ręcznie zostanie użyte jednorazowo.");
+        }
+        try { secret=profile.Bitwarden!=null || forcePrompt?"":await credentials.GetAsync(CredentialReference.ForProfile(profile),lifetime.Token)??""; }
         catch(CredentialReadException ex)
         {
             secret=""; notice=ex.Message; vm.Status=notice;
@@ -121,7 +131,7 @@ public sealed partial class MainWindow
         if(secret.Length>0)return secret;
         var input=await Dialogs.Credentials(this,profile.Protocol==Protocol.SSH && profile.Authentication==Authentication.PrivateKey,profile.Protocol==Protocol.RDP,profile.Protocol==Protocol.VNC,notice,profile); if(input==null)return null;
         if(profile.Protocol==Protocol.RDP && OperatingSystem.IsLinux())LinuxRdpProcessSession.ValidatePassword(input.Secret);
-        if(input.Remember && input.Secret.Length>0)
+        if(profile.Bitwarden==null && input.Remember && input.Secret.Length>0)
         {
             try { await credentials.SaveAsync(CredentialReference.ForProfile(profile),input.Secret,lifetime.Token); }
             catch(Exception ex) when(ex is InvalidOperationException or IOException or UnauthorizedAccessException or System.Security.Cryptography.CryptographicException)

@@ -1,9 +1,10 @@
 # Dokumentacja / Documentation
 
-Bieżące wydanie: [0.45.0 Public Beta](releases/release-0.45.0.md) — aktualizacje GitHub, ochrona kopii, odświeżanie RDP i nawigacja komend. Odwrotny mostek schowka RDP pozostaje eksperymentalny. [Weryfikacja i ograniczenia](reports/release-verification-0.45.0.md).
+Bieżące wydanie lokalne: [0.46.0 Public Beta](releases/release-0.46.0.md) — plugin Bitwarden / Vaultwarden, trwałe przypisania wpisów sejfu i poprawki fokusu SSH oraz wstawiania komend. Publikacja GitHub jest osobnym krokiem. [Weryfikacja i ograniczenia](reports/release-verification-0.46.0.md).
 
 | Temat / Topic | Dokument |
 |---|---|
+| Bitwarden / Vaultwarden | [Konfiguracja CLI, przypisania i ochrona danych](bitwarden.md) |
 | Instalacja i pierwsze połączenie | [Instrukcja PL](getting-started.md), [English guide](getting-started.en.md) |
 | Obsługa aplikacji i Pomoc offline | [Podręcznik](user-manual.md), [Network Tools](network-tools.md); w aplikacji: Menu → Pomoc (PL/EN) |
 | Ściągawka i własne polecenia | [Commands: obsługa, bezpieczeństwo, architektura i rozszerzanie](commands.md) |

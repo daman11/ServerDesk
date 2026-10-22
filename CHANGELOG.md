@@ -2,6 +2,10 @@
 
 ## Unreleased
 
+## 0.46.0 — Public Beta — 2026-10-22
+
+- Add a built-in Bitwarden / Vaultwarden plugin using an explicitly configured official Bitwarden CLI executable and optional CLI profile directory. Select a Login password once or bind an item to a saved SSH/RDP/VNC profile with account/server-scoped identity. Unlock in a masked dialog, retain no vault password/session in profiles or logs, pass secrets only through the owned child environment and forget the picker session on close/disable. Bound profiles support a session-only manual fallback; export/import/duplication strip references. Add bounded process cancellation/output, metadata-only search, wrong-account and persistence regressions, PL/EN settings/dialogs and offline setup documentation. Live personal vault acceptance remains separate from synthetic tests.
+
 - Focus terminal input after mouse tab selection and Ctrl+Tab, including split panels and reselecting the current tab. Guard deferred focus against later field selection and rapid tab switches. Show the terminal before inserting a Commands plugin command from SFTP or monitoring, preserve Insert without Enter, and reject a destination changed while waiting for the panel transition. Add focused keyboard/tab and disposable SSH regressions.
 
 ## 0.45.1 — Public Beta — 2026-10-21

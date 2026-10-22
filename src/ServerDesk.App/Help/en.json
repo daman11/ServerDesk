@@ -1,5 +1,40 @@
 [
   {
+    "Id": "bitwarden",
+    "Icon": "key",
+    "Title": "Bitwarden / Vaultwarden",
+    "Summary": "Vault passwords through the official Bitwarden CLI.",
+    "Keywords": "vault hasla passwords sejf CLI bw plugin MFA",
+    "Sections": [
+      {
+        "Title": "Initial setup",
+        "Paragraphs": [
+          "Install the official Bitwarden Password Manager CLI executable (bw.exe on Windows, bw on Linux). Choose its full path in Settings → Plugins → Bitwarden / Vaultwarden. The npm bw.cmd wrapper is not supported on Windows; use the standalone bw.exe.",
+          "Configure your CLI account in your terminal. For Bitwarden US: bw config server https://vault.bitwarden.com. For Bitwarden EU: bw config server https://vault.bitwarden.eu. For Vaultwarden: bw config server https://your-vault-address. Then run bw login and complete sign-in, including MFA. Do not put your password in command arguments.",
+          "The optional CLI profile directory in settings corresponds to BITWARDENCLI_APPDATA_DIR. If you set it, use the same directory when configuring and signing in from your terminal. Empty means the default CLI profile. Unlocking the Bitwarden app or browser extension does not automatically sign in the CLI.",
+          "If bw status does not report serverUrl (for example a default cloud configuration), the plugin does not guess the region. Use an explicit server URL. Prefer configuring and signing in to a separate CLI profile in a new directory; changing the server of an already signed-in profile requires signing out."
+        ]
+      },
+      {
+        "Title": "One-time selection and bindings",
+        "Paragraphs": [
+          "When connecting, choose Password from Bitwarden / Vaultwarden. Enter the master password in the masked field, unlock the vault, search by item name or address (at least 2 characters), select a result and choose Use password. Search shows up to 100 Login items.",
+          "In the connection editor choose Bind vault item. The selected username is filled into the form; review it before saving. Profiles store only item/account/server identifiers and the item name. Connecting asks you to unlock again and reads the current password for that exact item. For SSH private-key authentication, the item password is the passphrase for your selected local key.",
+          "The password is used for the username in the profile; a different item username requires confirmation. Remove vault binding returns to normal credentials. Profile duplication and configuration export/import omit bindings. Database backups preserve them as profile metadata.",
+          "On Windows, vault passwords work with RDP in In ServerDesk tab mode. The external mstsc client uses its own credentials; the editor preserves the binding but disables choosing one in that mode."
+        ]
+      },
+      {
+        "Title": "Security and limits",
+        "Paragraphs": [
+          "The master password, session key and retrieved password are not automatically copied to the clipboard or saved in the database or logs. CLI search returns decrypted results; the plugin retains only metadata and reads the password for the selected ID. Decrypted data exists transiently in process memory; this does not protect against malicious code running as the same user.",
+          "Closing the dialog or disabling the plugin cancels its work and removes its session key from ServerDesk. The plugin does not run bw lock or bw logout, to avoid disrupting other uses of a shared CLI profile. Run bw lock yourself to invalidate sessions for the whole profile. Disabling preserves bindings and allows a manually entered password without saving it.",
+          "This first version reads passwords from Login items. It does not edit the vault or retrieve TOTP, attachments or SSH private keys. Synchronize explicitly using bw sync in your CLI. A valid CLI account and compatible Vaultwarden server are required; the plugin does not bypass TLS verification. Check your own server with a test account before using a real vault."
+        ]
+      }
+    ]
+  },
+  {
     "Id": "start", "Icon": "help", "Title": "Getting started", "Summary": "Add a server, open a session and find the main features.", "Keywords": "start installation help pierwsze kroki pomoc quick connect szybkie",
     "Sections": [
       { "Title": "Your first connection", "Paragraphs": ["1. Choose + or New connection. Enter a name, protocol, address and username. For Serial, choose a device instead of a network address. Save the profile.", "2. Double-click the profile in the connection tree. Enter the required credentials. Before trusting an SSH host key or RDP certificate, compare its fingerprint with information obtained independently from the administrator.", "3. The session opens in a tab. Tabs restored at startup wait for Connect; restoring a tab does not automatically sign in to the server."] },

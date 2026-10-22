@@ -65,6 +65,10 @@ jobs:
           if ($LASTEXITCODE -ne 0) { throw 'Data probe build failed' }
           dotnet artifacts/ci-data-probe/ServerDesk.DataProbe.dll artifacts/ci-data-recovery
           if ($LASTEXITCODE -ne 0) { throw 'Data recovery acceptance failed' }
+      - name: Bitwarden synthetic CLI and plugin lifecycle
+        run: |
+          dotnet artifacts/ci-harness/ServerDesk.UiSmoke.dll artifacts/ci-bitwarden --bitwarden
+          if ($LASTEXITCODE -ne 0) { throw 'Bitwarden acceptance failed' }
       - name: Bounded Linux disk-full recovery
         if: runner.os == 'Linux'
         shell: bash

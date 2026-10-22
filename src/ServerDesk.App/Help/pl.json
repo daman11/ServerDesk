@@ -1,5 +1,40 @@
 [
   {
+    "Id": "bitwarden",
+    "Icon": "key",
+    "Title": "Bitwarden / Vaultwarden",
+    "Summary": "Hasła z Bitwarden i Vaultwarden przez oficjalny CLI.",
+    "Keywords": "vault hasla passwords sejf CLI bw plugin MFA",
+    "Sections": [
+      {
+        "Title": "Pierwsza konfiguracja",
+        "Paragraphs": [
+          "Zainstaluj oficjalny plik wykonywalny Bitwarden Password Manager CLI (bw.exe na Windows, bw na Linux). W Ustawienia → Pluginy → Bitwarden / Vaultwarden wskaż pełną ścieżkę do tego programu. Wersja npm jako bw.cmd na Windows nie jest obsługiwana; użyj samodzielnego pliku bw.exe.",
+          "W swoim terminalu skonfiguruj konto CLI. Dla Bitwarden USA: bw config server https://vault.bitwarden.com. Dla Bitwarden EU: bw config server https://vault.bitwarden.eu. Dla Vaultwarden: bw config server https://adres-twojego-sejfu. Następnie wykonaj bw login i dokończ logowanie, łącznie z MFA. Nie umieszczaj hasła w argumentach polecenia.",
+          "Opcjonalny katalog profilu CLI w ustawieniach odpowiada BITWARDENCLI_APPDATA_DIR. Jeśli go ustawiasz, użyj tego samego katalogu podczas konfiguracji i logowania w swoim terminalu. Puste pole oznacza domyślny profil CLI. Odblokowanie aplikacji lub rozszerzenia Bitwarden nie loguje automatycznie CLI.",
+          "Jeśli bw status nie podaje serverUrl (np. domyślna konfiguracja chmury), plugin nie zgaduje regionu. Użyj jawnego adresu serwera. Najbezpieczniej skonfigurować i zalogować osobny profil CLI w nowym katalogu; zmiana adresu już zalogowanego profilu wymaga jego wylogowania."
+        ]
+      },
+      {
+        "Title": "Wybór jednorazowy i przypisania",
+        "Paragraphs": [
+          "Przy łączeniu wybierz Hasło z Bitwarden / Vaultwarden. Wpisz hasło główne w zamaskowanym polu, odblokuj sejf, wyszukaj wpis po nazwie lub adresie (minimum 2 znaki), zaznacz go i wybierz Użyj hasła. Wyszukiwanie pokazuje maksymalnie 100 wpisów typu Login.",
+          "W edytorze połączenia wybierz Przypisz wpis sejfu. Wybrany login trafi do formularza; sprawdź go przed zapisem. Profil przechowuje wyłącznie identyfikatory wpisu, konta i serwera oraz nazwę. Przy łączeniu ServerDesk ponownie prosi o odblokowanie i pobiera aktualne hasło tego wpisu. Dla SSH z kluczem hasło wpisu służy jako passphrase wybranego lokalnego klucza.",
+          "Hasło używane jest dla loginu w profilu; różnica względem wpisu sejfu wymaga potwierdzenia. Usuń przypisanie sejfu wraca do zwykłych poświadczeń. Kopiowanie profilu i eksport/import konfiguracji pomijają przypisania. Kopia bazy zachowuje je jako dane profilu.",
+          "Na Windows hasła sejfu działają z RDP w trybie W zakładce ServerDesk. Osobny klient mstsc używa własnych poświadczeń; edytor zachowuje przypisanie, ale wyłącza jego wybór w tym trybie."
+        ]
+      },
+      {
+        "Title": "Bezpieczeństwo i ograniczenia",
+        "Paragraphs": [
+          "Hasło główne, klucz sesji i pobrane hasło nie są automatycznie kopiowane do schowka ani zapisywane w bazie i logach. CLI zwraca odszyfrowane wyniki wyszukiwania; plugin zachowuje tylko metadane, a hasło odczytuje dla wybranego identyfikatora. Dane odszyfrowane istnieją przejściowo w pamięci procesu; nie jest to ochrona przed złośliwym kodem działającym jako ten sam użytkownik.",
+          "Zamknięcie okna lub wyłączenie pluginu anuluje jego operacje i usuwa klucz sesji z ServerDesk. Plugin nie uruchamia bw lock ani bw logout, aby nie zakłócać innych zastosowań współdzielonego profilu CLI. Jeśli chcesz unieważnić sesje całego profilu, wykonaj bw lock samodzielnie. Wyłączenie pluginu zachowuje przypisania i pozwala podać hasło ręcznie bez zapisu.",
+          "Pierwsza wersja odczytuje hasła wpisów Login. Nie edytuje sejfu, nie pobiera TOTP, załączników ani prywatnych kluczy SSH. Synchronizację wykonuj jawnie przez bw sync w CLI. Wymagany jest poprawny stan konta CLI i zgodna wersja serwera Vaultwarden; plugin nie pomija weryfikacji TLS. Przed użyciem z prawdziwym sejfem sprawdź własny serwer kontem testowym."
+        ]
+      }
+    ]
+  },
+  {
     "Id": "start", "Icon": "help", "Title": "Pierwsze kroki", "Summary": "Dodaj serwer, otwórz sesję i odnajdź najważniejsze funkcje.", "Keywords": "start getting started instalacja pomoc quick connect szybkie",
     "Sections": [
       { "Title": "Pierwsze połączenie", "Paragraphs": ["1. Wybierz + lub Nowe połączenie. Podaj nazwę, protokół, adres i login. Dla Serial wybierz urządzenie zamiast adresu sieciowego. Zapisz profil.", "2. Otwórz profil dwuklikiem w drzewie połączeń. Podaj wymagane poświadczenia. Przed zaakceptowaniem klucza SSH lub certyfikatu RDP porównaj odcisk z informacją otrzymaną niezależnie od administratora.", "3. Sesja otworzy się w karcie. Odtworzone po uruchomieniu karty czekają na Połącz — ich przywrócenie nie loguje automatycznie do serwerów."] },

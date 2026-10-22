@@ -19,7 +19,7 @@ internal static class HelpChecks
     internal static void Run(string root)
     {
         var pl=HelpContent.Read("pl"); var en=HelpContent.Read("en");
-        if(pl.Length!=14 || !pl.Select(topic=>topic.Id).SequenceEqual(en.Select(topic=>topic.Id)))throw new Exception("PL/EN help coverage differs");
+        if(pl.Length!=15 || !pl.Select(topic=>topic.Id).SequenceEqual(en.Select(topic=>topic.Id)))throw new Exception("PL/EN help coverage differs");
         foreach(var topic in pl.Concat(en))
         {
             if(DeskIcons.Resolve(topic.Icon)=="file" || topic.PlainText.Length<300)throw new Exception("Help topic is incomplete or has a missing icon: "+topic.Id);
@@ -30,7 +30,7 @@ internal static class HelpChecks
         var original=DesignSystem.Preferences; var originalTheme=DesignSystem.CurrentId;
         try { foreach(var language in new[]{"pl","en"})CheckWindow(root,language); }
         finally { AppText.SetLanguage("pl"); DesignSystem.ApplyPreferences(original); DesignSystem.Apply(originalTheme); }
-        Console.WriteLine("PASS help: 14 complete embedded topics in PL/EN, content/diacritic/multi-term search, menu/rail/palette/F1 singleton, copy/empty/keyboard, all topics/font16/Graphite/Light/wide/narrow, dock/float/redock/close/reopen, correct switcher identity, no credentials/connections or saved help session, terminal F1 retained");
+        Console.WriteLine("PASS help: 15 complete embedded topics in PL/EN, content/diacritic/multi-term search, menu/rail/palette/F1 singleton, copy/empty/keyboard, all topics/font16/Graphite/Light/wide/narrow, dock/float/redock/close/reopen, correct switcher identity, no credentials/connections or saved help session, terminal F1 retained");
     }
     private static void CheckWindow(string root,string language)
     {
@@ -54,7 +54,7 @@ internal static class HelpChecks
             if(Named<TextBlock>(help,"HelpArticleTitle").Text!=rdp.Title || Result(clipboard.TryGetTextAsync())!="clipboard sentinel")throw new Exception("Topic selection modified the clipboard or displayed another article");
             Click(copy); RedesignChecks.Frames(); if(Result(clipboard.TryGetTextAsync())!=rdp.PlainText)throw new Exception("Copy omitted help paragraphs");
             search.Text="no-such-help-1f81e8"; RedesignChecks.Frames(); if(list.ItemCount!=0 || copy.IsEnabled || !Named<Button>(help,"HelpClearEmpty").IsEffectivelyVisible)throw new Exception("Empty help has no usable reset");
-            Click(Named<Button>(help,"HelpClearEmpty")); RedesignChecks.Frames(); if(list.ItemCount!=14 || !search.IsFocused)throw new Exception("Clearing help did not restore topics/focus");
+            Click(Named<Button>(help,"HelpClearEmpty")); RedesignChecks.Frames(); if(list.ItemCount!=15 || !search.IsFocused)throw new Exception("Clearing help did not restore topics/focus");
             foreach(var theme in new[]{"graphite","light"})foreach(var width in new[]{1320,900})
             {
                 main.PreviewPreferences(settings.Preferences with { AccentColor="#C85CA7" }); DesignSystem.Apply(theme); main.Width=width; main.Height=720; RedesignChecks.Frames();

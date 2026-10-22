@@ -10,6 +10,7 @@ public sealed record ServerProfile
     // Local vault binding. Rotated when the destination/authentication changes;
     // never carried into a configuration export or a duplicated/imported profile.
     [JsonIgnore(Condition=JsonIgnoreCondition.WhenWritingNull)] public Guid? CredentialId { get; init; }
+    [JsonIgnore(Condition=JsonIgnoreCondition.WhenWritingNull)] public BitwardenReference? Bitwarden { get; init; }
     public string Name { get; init; } = "";
     public string Host { get; init; } = "";
     public int Port { get; init; } = 22;
@@ -34,6 +35,7 @@ public sealed record ServerProfile
     public void Validate()
     {
         if(CredentialId==Guid.Empty)throw new ArgumentException(L.T("Niepoprawne dane profilu."));
+        Bitwarden?.Validate();
         if(Name==null || Host==null || Username==null || Domain==null || PrivateKeyPath==null || Tags==null || Description==null)throw new ArgumentException(L.T("Niepoprawne dane profilu."));
         ProfileIcons.Validate(IconId);
         ProfileAppearance.Validate(Color,CustomIconPng);

@@ -20,9 +20,14 @@ internal sealed class CommandsPlugin:IWorkspacePlugin
     public string Id=>PluginCatalog.Commands;
     public Task ApplyAsync(MainWindow workspace,bool enabled)=>workspace.ApplyCommandsPluginAsync(enabled);
 }
+internal sealed class BitwardenPlugin:IWorkspacePlugin
+{
+    public string Id=>PluginCatalog.Bitwarden;
+    public Task ApplyAsync(MainWindow workspace,bool enabled)=>workspace.ApplyBitwardenPluginAsync(enabled);
+}
 public sealed partial class MainWindow
 {
-    private readonly IWorkspacePlugin[] plugins=[new LinuxMonitoringPlugin(),new CommandsPlugin()];
+    private readonly IWorkspacePlugin[] plugins=[new LinuxMonitoringPlugin(),new CommandsPlugin(),new BitwardenPlugin()];
     private readonly HashSet<string> disabledPlugins=new(StringComparer.Ordinal);
     private readonly SemaphoreSlim pluginGate=new(1);
     private readonly Dictionary<string,bool> appliedPlugins=new(StringComparer.Ordinal);
@@ -33,8 +38,8 @@ public sealed partial class MainWindow
         value.Validate(); await pluginGate.WaitAsync(lifetime.Token);
         try
         {
-            var changed=plugins.Where(p=>!appliedPlugins.TryGetValue(p.Id,out var enabled)||enabled!=PluginCatalog.IsEnabled(value,p.Id)).ToArray();
-            preferences=preferences with { DisabledPlugins=value.DisabledPlugins };
+            var changed=plugins.Where(p=>!appliedPlugins.TryGetValue(p.Id,out var enabled)||enabled!=PluginCatalog.IsEnabled(value,p.Id)||p.Id==PluginCatalog.Bitwarden && bitwardenOptions!=value.Bitwarden).ToArray();
+            preferences=preferences with { DisabledPlugins=value.DisabledPlugins,Bitwarden=value.Bitwarden };
             disabledPlugins.Clear(); disabledPlugins.UnionWith(value.DisabledPlugins);
             RefreshPluginPresentation();
             await Task.WhenAll(changed.Select(async p=> { var enabled=IsPluginEnabled(p.Id); await p.ApplyAsync(this,enabled); appliedPlugins[p.Id]=enabled; }));

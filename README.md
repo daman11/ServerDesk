@@ -1,4 +1,4 @@
-# ServerDesk — 0.45.1 Public Beta
+# ServerDesk — 0.46.0 Public Beta
 
 Native Windows/Linux workspace for SSH, SFTP, RDP, VNC and serial connections. Built with C#, .NET 10 and Avalonia 12. Free and open source under the [MIT license](LICENSE).
 
@@ -6,17 +6,17 @@ Native Windows/Linux workspace for SSH, SFTP, RDP, VNC and serial connections. B
 
 ## Downloads and installation
 
-**[Download ServerDesk 0.45.1 Public Beta](https://github.com/daman11/ServerDesk/releases/tag/v0.45.1)** — [Windows installer](https://github.com/daman11/ServerDesk/releases/download/v0.45.1/ServerDesk-0.45.1-win-x64-Setup.exe), portable and Linux packages, source and SHA-256 checksums.
+Latest published download: **[ServerDesk 0.45.1 Public Beta](https://github.com/daman11/ServerDesk/releases/tag/v0.45.1)** — [Windows installer](https://github.com/daman11/ServerDesk/releases/download/v0.45.1/ServerDesk-0.45.1-win-x64-Setup.exe), portable and Linux packages, source and SHA-256 checksums.
 
-0.45.1 adds an optional Windows desktop shortcut and startup update notifications with Update, Skip this version and Remind me at next startup. Saved opt-outs are respected. Windows Setup installations support verified installer download/install/restart. Portable/Linux updates remain manual. It also includes stronger backup validation, RDP repaint recovery and command navigation improvements. Schema 4 is unchanged. Reverse RDP dragging remains experimental. [Release notes](docs/releases/release-0.45.1.md), [verification and limits](docs/reports/release-verification-0.45.1.md), [updates](docs/updates.md).
+The local 0.46.0 release adds a Bitwarden / Vaultwarden plugin with one-time password selection, persistent account-scoped item bindings, PL/EN setup help, SSH tab focus and Commands insertion fixes. It requires an installed official Bitwarden CLI and prior CLI login. Schema 4 is unchanged; live vault acceptance remains separate from synthetic tests. This local release has not been published to GitHub. [Release notes](docs/releases/release-0.46.0.md), [verification and limits](docs/reports/release-verification-0.46.0.md), [vault setup](docs/bitwarden.md).
 
 | System | Package | Start |
 |---|---|---|
-| Windows x64 | `ServerDesk-0.45.1-win-x64-Setup.exe` | Run Setup; current-user installation and Start menu shortcut |
-| Windows x64 portable | `ServerDesk-0.45.1-win-x64.zip` | Extract everything; run `ServerDesk.App.exe` |
-| Linux x64 DEB | `serverdesk_0.45.1_amd64.deb` | `sudo apt install ./serverdesk_0.45.1_amd64.deb` |
-| Linux x64 archive | `ServerDesk-0.45.1-linux-x64.tar.gz` | Extract into a new directory; run `./ServerDesk.App` |
-| Source | `ServerDesk-0.45.1-source.zip` | .NET 10 SDK required |
+| Windows x64 | `ServerDesk-0.46.0-win-x64-Setup.exe` | Run Setup; current-user installation and Start menu shortcut |
+| Windows x64 portable | `ServerDesk-0.46.0-win-x64.zip` | Extract everything; run `ServerDesk.App.exe` |
+| Linux x64 DEB | `serverdesk_0.46.0_amd64.deb` | `sudo apt install ./serverdesk_0.46.0_amd64.deb` |
+| Linux x64 archive | `ServerDesk-0.46.0-linux-x64.tar.gz` | Extract into a new directory; run `./ServerDesk.App` |
+| Source | `ServerDesk-0.46.0-source.zip` | .NET 10 SDK required |
 
 The binary packages include .NET. Linux additionally needs its system X11/fontconfig libraries, Secret Service for remembered passwords and an installed X11 FreeRDP client (`xfreerdp3` or `xfreerdp`) for in-tab RDP. Linux verification used Ubuntu/WSLg; other desktop/distribution combinations are experimental. ARM/macOS packages are not provided.
 
@@ -24,7 +24,7 @@ This beta is unsigned. Obtain it from the [official release](https://github.com/
 
 ## Features
 
-- Built-in [plugins](docs/plugins.md) for Linux monitoring and Commands; enable or disable after saving, without restarting.
+- Built-in [plugins](docs/plugins.md) for Linux monitoring, Commands and [Bitwarden / Vaultwarden](docs/bitwarden.md); enable or disable after saving, without restarting.
 - Shared offline Smart Cheat Sheet / user snippets panel (Ctrl+Shift+K): 165 command variants, SSH OS/tool discovery, manual profiles, parameters, favorites, encrypted snippets and confirmed terminal actions. [Guide and limits](docs/commands.md).
 - SSH terminal, SFTP transfer queue, batch/recursive deletion with preview and Linux monitoring.
 - Local SSH/Serial scrollback search (Ctrl+Shift+F), reviewed SSH trust management in Settings, and cancellable background filtering/sorting for large file lists.

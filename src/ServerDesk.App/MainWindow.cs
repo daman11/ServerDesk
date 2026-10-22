@@ -79,7 +79,7 @@ public sealed partial class MainWindow : Window
                     }
                 }
                 await profileSortSave; CancelPendingSnapshot(); if(workspaceReady)await Safe(SaveSessionSnapshotAsync);
-                commandPanel?.Dispose(); await Safe(()=>commandPanel?.Shutdown??Task.CompletedTask); closing=true; helpPane?.Dispose(); statusTimer.Stop(); lifetime.Cancel(); foreach(var session in sessions)session.StatusChanged-=PaneStatusChanged;
+                commandPanel?.Dispose(); await Safe(()=>commandPanel?.Shutdown??Task.CompletedTask); await Safe(()=>ApplyBitwardenPluginAsync(false)); closing=true; helpPane?.Dispose(); statusTimer.Stop(); lifetime.Cancel(); foreach(var session in sessions)session.StatusChanged-=PaneStatusChanged;
                 var closingTools=networkPanes.ToArray(); foreach(var tool in closingTools)tool.Dispose(); await Safe(()=>Task.WhenAll(closingTools.Select(tool=>tool.Shutdown))); networkPanes.Clear();
                 await Safe(()=>Task.WhenAll(sessions.Select(session=>session.CloseAsync()).Concat(closingSessions)));
                 foreach(var floating in floatingDocks.Values.ToArray())floating.Window.Close(); floatingDocks.Clear();
@@ -165,7 +165,7 @@ public sealed partial class MainWindow : Window
     private async Task DuplicateAsync()
     {
         if(vm.SelectedServer is not {} p)return;
-        var draft=p with { Id=Guid.NewGuid(),CredentialId=null,Name=p.Name+" — "+L.T("kopia"),LastConnected=null };
+        var draft=p with { Id=Guid.NewGuid(),CredentialId=null,Bitwarden=null,Name=p.Name+" — "+L.T("kopia"),LastConnected=null };
         var edited=await Dialogs.Edit(this,draft,vm.Folders,vm.AllServers.SelectMany(s=>ProfileTags.Parse(s.Tags)),vm.TagColors);
         if(edited!=null)await SaveEditedProfileAsync(null,edited);
     }

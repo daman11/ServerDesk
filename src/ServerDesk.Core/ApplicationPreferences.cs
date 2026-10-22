@@ -9,6 +9,7 @@ public enum TextEditorKind { Automatic,VisualStudioCode,NotepadPlusPlus,Kate,Gno
 public sealed record ApplicationPreferences
 {
     public PluginSelection DisabledPlugins { get; init; }=PluginSelection.Empty;
+    public BitwardenCliOptions Bitwarden { get; init; }=new();
     public string Language { get; init; }="pl";
     public bool CheckUpdatesOnStartup { get; init; }=true;
     public int InterfaceFontSize { get; init; }=13;
@@ -59,6 +60,8 @@ public sealed record ApplicationPreferences
     public void Validate()
     {
         PluginCatalog.Validate(DisabledPlugins);
+        if(Bitwarden==null)throw new ArgumentException(L.T("Niepoprawne ustawienia pluginów."));
+        Bitwarden.Validate();
         if(!AppText.IsSupported(Language))throw new ArgumentException(AppText.T("Nieobsługiwany język aplikacji."));
         if(!InterfaceFonts.Contains(InterfaceFontFamily))throw new ArgumentException(L.T("Nieobsługiwany krój czcionki interfejsu."),nameof(InterfaceFontFamily));
         if(ControlCornerRadius is <0 or >12)throw new ArgumentException(L.T("Zaokrąglenie kontrolek musi mieć od 0 do 12 px."),nameof(ControlCornerRadius));

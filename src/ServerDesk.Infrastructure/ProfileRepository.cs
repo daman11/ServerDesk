@@ -210,7 +210,7 @@ public sealed partial class ProfileRepository
         await using(var db=await Open(ct))
         using(var snapshot=db.BeginTransaction(deferred:true))
         {
-            data=new(2,(await ReadProfilesAsync(db,snapshot,ct)).Select(p=>p with { CredentialId=null }).ToList(),await ReadFoldersAsync(db,snapshot,ct)) { FolderIcons=await ReadFolderIconsAsync(db,snapshot,ct),TagColors=await ReadTagColorsAsync(db,snapshot,ct) };
+            data=new(2,(await ReadProfilesAsync(db,snapshot,ct)).Select(p=>p with { CredentialId=null,Bitwarden=null }).ToList(),await ReadFoldersAsync(db,snapshot,ct)) { FolderIcons=await ReadFolderIconsAsync(db,snapshot,ct),TagColors=await ReadTagColorsAsync(db,snapshot,ct) };
             await snapshot.CommitAsync(ct);
         }
         var bytes=JsonSerializer.SerializeToUtf8Bytes(data,Json);
@@ -253,7 +253,7 @@ public sealed partial class ProfileRepository
         foreach (var p in data.Servers)
         {
             // Imported profiles get new identities; never reuse a local credential reference.
-            var imported = p with { Id = Guid.NewGuid(),CredentialId=null, LastConnected = null };
+            var imported = p with { Id = Guid.NewGuid(),CredentialId=null,Bitwarden=null, LastConnected = null };
             using var cmd = db.CreateCommand(); cmd.Transaction = (SqliteTransaction)transaction; cmd.CommandText = "INSERT INTO profiles VALUES($id,$json)"; cmd.Parameters.AddWithValue("$id", imported.Id.ToString()); cmd.Parameters.AddWithValue("$json", JsonSerializer.Serialize(imported)); await cmd.ExecuteNonQueryAsync(ct);
         }
         foreach (var folder in importedFolders)

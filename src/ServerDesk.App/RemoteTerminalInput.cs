@@ -1,10 +1,20 @@
 using Avalonia.Input;
 using Avalonia.Interactivity;
+using Avalonia.VisualTree;
+using Iciclecreek.Terminal;
 
 namespace ServerDesk.App;
 
 internal sealed partial class SessionPane
 {
+    private void FocusTerminalInput()
+    {
+        terminal.ApplyTemplate();
+        // Focus the actual input surface directly. The outer control posts an
+        // unguarded second focus request, which can outlive a fast tab switch.
+        if(terminal.GetVisualDescendants().OfType<TerminalView>().FirstOrDefault() is {} input)input.Focus();
+        else terminal.Focus();
+    }
     private void ConfigureRemoteTerminalInput()
     {
         if(Profile.Protocol is not (Core.Protocol.SSH or Core.Protocol.Serial))return;

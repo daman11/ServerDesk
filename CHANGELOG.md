@@ -2,6 +2,8 @@
 
 ## Unreleased
 
+- Focus terminal input after mouse tab selection and Ctrl+Tab, including split panels and reselecting the current tab. Guard deferred focus against later field selection and rapid tab switches. Show the terminal before inserting a Commands plugin command from SFTP or monitoring, preserve Insert without Enter, and reject a destination changed while waiting for the panel transition. Add focused keyboard/tab and disposable SSH regressions.
+
 ## 0.45.1 — Public Beta — 2026-10-21
 
 - Add an optional desktop shortcut page to Windows Setup, with Polish/English labels, remembered selection during silent updates and explicit `/DESKTOPSHORTCUT=0|1` overrides. Keep `/NOREGISTER` isolated from shell registration and remove the owned desktop shortcut on uninstall.

@@ -23,6 +23,7 @@ public sealed partial class MainWindow
     private readonly GridSplitter dockSplitter=new() { Name="DockColumnSeparator",ResizeBehavior=GridResizeBehavior.PreviousAndNext };
     private readonly Border rowDockSplitter=new() { Name="DockRowSeparator",Focusable=true,Cursor=new Cursor(StandardCursorType.SizeNorthSouth) };
     private bool refreshingTabs;
+    private long tabFocusRequest;
     private SessionDock focusedDock=SessionDock.Primary;
     private (WorkspaceMode Mode,double Ratio,double Rows,int Height,int Separator)? renderedLayout;
     private sealed class FloatingDock(Window window,Grid host)
@@ -90,7 +91,11 @@ public sealed partial class MainWindow
     {
         var name=location switch { SessionDock.Primary=>"Sesje panelu 1",SessionDock.Secondary=>"Sesje panelu 2",SessionDock.Tertiary=>"Sesje panelu 3",_=>"Sesje panelu 4" };
         AutomationProperties.SetName(control,L.T(name)); control.Name="DockTabs"+DockNumber(location);
-        control.SelectionChanged+=(_,_)=> { if(!refreshingTabs && control.SelectedItem is TabItem { Tag:WorkspacePane pane })FocusSession(pane); };
+        control.SelectionChanged+=(_,_)=>
+        {
+            if(!refreshingTabs && control.SelectedItem is TabItem { Tag:WorkspacePane pane })
+            { FocusSession(pane); QueueTabContentFocus(control,pane); }
+        };
         var scroller=new ScrollViewer { Content=control,HorizontalScrollBarVisibility=ScrollBarVisibility.Hidden,VerticalScrollBarVisibility=ScrollBarVisibility.Disabled };
         scroller.PointerWheelChanged+=(_,e)=> { scroller.Offset=new Vector(Math.Max(0,scroller.Offset.X-(e.Delta.X+e.Delta.Y)*100),0); e.Handled=true; };
         control.SelectionChanged+=(_,_)=>Dispatcher.UIThread.Post(()=> { if(control.SelectedItem is Control selected)selected.BringIntoView(); });
@@ -98,6 +103,23 @@ public sealed partial class MainWindow
         var strip=new Grid { Name="DockStrip"+DockNumber(location),ColumnDefinitions=new ColumnDefinitions("Auto,*"),ClipToBounds=true,Children={number,scroller} }; Grid.SetColumn(scroller,1);
         var rule=new Border { Name="DockStripRule"+DockNumber(location),Height=1,VerticalAlignment=VerticalAlignment.Bottom,IsHitTestVisible=false }; DesignSystem.Resource(rule,Border.BackgroundProperty,"BorderDefault"); Grid.SetColumnSpan(rule,2); strip.Children.Add(rule);
         DesignSystem.Resource(strip,Grid.BackgroundProperty,"BackgroundPrimary"); return strip;
+    }
+    private void QueueTabContentFocus(TabControl source,WorkspacePane pane)
+    {
+        var request=++tabFocusRequest;
+        var root=TopLevel.GetTopLevel(source);
+        // TabItem's pointer handling focuses its header after selecting it. Wait
+        // until that routing finishes, then focus only the still-selected pane.
+        Dispatcher.UIThread.Post(()=>
+        {
+            if(request!=tabFocusRequest || closing || closePending || !Panes.Contains(pane) ||
+                dockState.Focused!=pane.WorkspaceId || !pane.IsEffectivelyVisible ||
+                root==null || TopLevel.GetTopLevel(pane)!=root || root is Window { IsActive:false })return;
+            var current=root.FocusManager?.GetFocusedElement();
+            if(current is Control { IsEffectivelyVisible:true } &&
+                !source.IsKeyboardFocusWithin && !pane.IsKeyboardFocusWithin)return;
+            pane.FocusContent();
+        },DispatcherPriority.Input);
     }
     private void CaptureSplit(bool rows)
     {
@@ -210,6 +232,7 @@ public sealed partial class MainWindow
                 control.ItemsSource=ids.Select(id=>
                 {
                     var pane=Panes.Single(p=>p.WorkspaceId==id); var tab=new TabItem { Header=WorkspaceTabHeader(pane),Tag=pane,Classes={"session-tab"} }; tab.ContextMenu=new ContextMenu { ItemsSource=DockMenu(pane) };
+                    tab.Tapped+=(_,_)=> { if(ReferenceEquals(control.SelectedItem,tab)) { FocusSession(pane); QueueTabContentFocus(control,pane); } };
                     DragSupport.Source(tab,TabDrag,()=>pane,DragDropEffects.Move); DragDrop.SetAllowDrop(tab,true);
                     DragDrop.AddDragOverHandler(tab,(_,e)=> { e.DragEffects=e.DataTransfer.TryGetValue(TabDrag) is {} source && Panes.Contains(source)?DragDropEffects.Move:DragDropEffects.None; e.Handled=true; });
                     DragDrop.AddDropHandler(tab,(_,e)=> { if(e.DataTransfer.TryGetValue(TabDrag) is {} source && Panes.Contains(source))DockSession(source,location,pane.WorkspaceId); e.Handled=true; });
@@ -285,7 +308,7 @@ public sealed partial class MainWindow
     {
         var dock=ActivePane is {} pane?dockState.Location(pane.WorkspaceId):focusedDock; var ids=dockState.Items(dock);
         if(dock==SessionDock.Floating)return;
-        if(ids.Count==0)return; var index=dockState.Focused==null?0:ids.ToList().IndexOf(dockState.Focused.Value); var next=(Math.Max(0,index)+(reverse?ids.Count-1:1))%ids.Count; var target=Panes.Single(p=>p.WorkspaceId==ids[next]); FocusSession(target);
+        if(ids.Count==0)return; var index=dockState.Focused==null?0:ids.ToList().IndexOf(dockState.Focused.Value); var next=(Math.Max(0,index)+(reverse?ids.Count-1:1))%ids.Count; var target=Panes.Single(p=>p.WorkspaceId==ids[next]); FocusSession(target); var control=dockTabs[dock]; (control.SelectedItem as TabItem)?.Focus(); QueueTabContentFocus(control,target);
     }
     internal void Reorder(WorkspacePane pane,int offset)
     {

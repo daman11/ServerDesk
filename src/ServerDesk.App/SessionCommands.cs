@@ -60,7 +60,17 @@ internal sealed partial class SessionPane
         if(command.ContainsSecret)throw new InvalidOperationException(L.T("Sekretne parametry są dostępne tylko do kopiowania; nie wysyłamy ich do historii powłoki."));
         var text=CommandDispatch.Prepare(ticket,WorkspaceId,CommandConnectionId,command,execute,definition.Risk,confirmed,dangerousConfirmed);
         if(commandEnvironment is { Platform:not CommandPlatform.General } actual && (!CommandCatalog.Supports(definition,actual)||definition.Tools.Any(t=>actual.Tool(t)==ToolAvailability.NotDetected)||!CompatibleShell(command.Shell,actual.Shell)))throw new InvalidOperationException(L.T("Komenda nie pasuje do wykrytego systemu lub wymaganego narzędzia."));
-        SelectPanel(0); await terminal.SendInputAsync(text,connectionLifetime.Token); terminal.Focus();
+        var connection=session;
+        var ct=connectionLifetime.Token;
+        // Selecting the toolbar segment alone leaves SFTP/monitoring on screen.
+        // Show the terminal, then revalidate after waiting for the connection gate.
+        await ShowAsync(0);
+        if(!CanAcceptCommands || !ReferenceEquals(owner.CommandTarget,this) ||
+            !ReferenceEquals(session,connection) || ticket.ConnectionId!=CommandConnectionId || !terminal.IsLive)
+            throw new InvalidOperationException(L.T("Sesja zmieniła się. Wybierz komendę ponownie."));
+        await terminal.SendInputAsync(text,ct);
+        if(ReferenceEquals(owner.CommandTarget,this) && ReferenceEquals(session,connection) && terminal.IsEffectivelyVisible)
+            FocusTerminalInput();
     }
     internal static bool CompatibleShell(CommandShell rendered,CommandShell actual)=>actual==CommandShell.Any||rendered==CommandShell.Any||rendered==actual||actual==CommandShell.Zsh&&rendered==CommandShell.Bash;
 }

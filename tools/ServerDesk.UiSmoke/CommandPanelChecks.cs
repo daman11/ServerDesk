@@ -215,6 +215,20 @@ internal static partial class CommandPanelChecks
         RedesignChecks.Frames(5); var rowBefore=terminal.Terminal.Buffer.YBase+terminal.Terminal.Buffer.Y;
         Wait(panel.DispatchAsync("insert")); RedesignChecks.Frames(10); var after=SshAcceptanceChecks.Text(terminal); if(!after.Contains("hostname"))throw new Exception("Insert did not reach terminal");
         if(terminal.Terminal.Buffer.YBase+terminal.Terminal.Buffer.Y!=rowBefore)throw new Exception("Insert sent a newline / executed a command");
+        foreach(var view in new[]{1,2,1,0,2,1})
+        {
+            Wait(terminal.SendInputAsync("\u0015"));
+            SshAcceptanceChecks.Until(()=>!CurrentLine(terminal).Contains("hostname"),"Fixture did not clear pending input");
+            Wait(one.ShowAsync(view)); RedesignChecks.Frames(3);
+            Select(panel,"general.hostname");
+            rowBefore=terminal.Terminal.Buffer.YBase+terminal.Terminal.Buffer.Y;
+            Wait(panel.DispatchAsync("insert")); RedesignChecks.Frames(6);
+            if(!terminal.IsVisible || one.SelectedPanel!=0 || !terminal.IsKeyboardFocusWithin)
+                throw new Exception("Insert from SFTP/monitoring did not show and focus the terminal");
+            SshAcceptanceChecks.Until(()=>CurrentLine(terminal).Contains("hostname"),"Repeated Insert did not reach the current input line");
+            if(terminal.Terminal.Buffer.YBase+terminal.Terminal.Buffer.Y!=rowBefore)
+                throw new Exception("Repeated Insert was lost or submitted a command");
+        }
         // Discard typed input; this only affects the disposable fixture line editor.
         Wait(terminal.SendInputAsync("\u0015"));
         var two=new SessionPane(main,profile with { Id=Guid.NewGuid(),Name="Commands fixture two" },factory,new ExternalRdpClient(),repo); main.RegisterPane(two); Wait(two.ConnectAsync("serverdesk-test-passphrase",CancellationToken.None)); Wait(two.DiscoverCommandsAsync());
@@ -226,6 +240,19 @@ internal static partial class CommandPanelChecks
         Wait(panel.ResolveContextAsync()); Select(panel,dangerous.Id); var execution=panel.DispatchAsync("execute"); RedesignChecks.Frames(3); Click(main.OwnedWindows.Single(),"Potwierdź"); RedesignChecks.Frames(4);
         if(execution.IsCompleted||main.OwnedWindows.Count()!=1)throw new Exception("Dangerous command skipped its second confirmation"); Click(main.OwnedWindows.Single(),"Potwierdź"); Wait(execution);
         var otherTerminal=two.Children.OfType<TerminalControl>().Single(); SshAcceptanceChecks.Until(()=>SshAcceptanceChecks.Text(otherTerminal).Contains("SERVERDESK_COMMAND_DANGER_OK"),"Explicitly confirmed command did not execute");
+        // A command waiting for a panel transition must not follow a later tab change.
+        var gate=(SemaphoreSlim)typeof(SessionPane).GetField("connectionGate",BindingFlags.Instance|BindingFlags.NonPublic)!.GetValue(two)!;
+        Wait(gate.WaitAsync()); Task pending;
+        try
+        {
+            var ticket=new CommandDispatchTicket(two.WorkspaceId,two.CommandConnectionId,"general.hostname");
+            pending=two.SendCommandAsync(ticket,new("hostname",false,false,false),CommandCatalog.Default.BuiltIns.Single(c=>c.Id=="general.hostname"),false,false,false);
+            if(pending.IsCompleted)throw new Exception("Command fixture did not wait for the panel transition");
+            main.FocusSession(one);
+        }
+        finally { gate.Release(); }
+        try { Wait(pending); throw new Exception("Command waiting for a panel transition accepted a stale destination"); } catch(InvalidOperationException) { }
+        if(CurrentLine(otherTerminal).Contains("hostname"))throw new Exception("Rejected command still reached the old terminal");
         // Pin manual Windows while switching between Linux sessions.
         Named<ComboBox>(panel,"CommandMode").SelectedIndex=1; Named<ComboBox>(panel,"CommandSystem").SelectedItem="windows11"; Named<ComboBox>(panel,"CommandShell").SelectedItem=CommandShell.PowerShell; Named<CheckBox>(panel,"CommandPin").IsChecked=true;
         main.FocusSession(one); RedesignChecks.Frames(8); if(panel.Environment.Platform!=CommandPlatform.Windows)throw new Exception("Pinned context followed active host");
@@ -236,6 +263,7 @@ internal static partial class CommandPanelChecks
         Wait(one.ReconnectAsync()); var nextDiscovery=Result(one.DiscoverCommandsAsync());
         if(one.CommandConnectionId==previousConnection||ReferenceEquals(previousDiscovery,nextDiscovery))throw new Exception("Reconnect reused stale command identity or discovery cache");
         try { Wait(one.SendCommandAsync(old,new("hostname",false,false,false),CommandCatalog.Default.BuiltIns.Single(c=>c.Id=="general.hostname"),false,false,false)); throw new Exception("Pre-reconnect command ticket accepted"); } catch(InvalidOperationException) { }
-        main.CaptureRenderedFrame()!.Save(Path.Combine(root,"commands-ssh.png")); Close(main); Console.WriteLine("PASS commands real SSH separate exec, cache/refresh, Insert, stale destination, manual/pin, multiline guard");
+        main.CaptureRenderedFrame()!.Save(Path.Combine(root,"commands-ssh.png")); Close(main); Console.WriteLine("PASS commands real SSH separate exec, cache/refresh, repeated Insert from terminal/SFTP/monitoring without Enter, focus, stale destination/panel wait, manual/pin, multiline guard");
+        static string CurrentLine(TerminalControl control)=>control.Terminal.Buffer.Lines[control.Terminal.Buffer.YBase+control.Terminal.Buffer.Y]?.TranslateToString(true)??"";
     }
 }

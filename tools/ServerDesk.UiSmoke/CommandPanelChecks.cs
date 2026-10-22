@@ -127,11 +127,14 @@ internal static partial class CommandPanelChecks
             var first=list.Items.OfType<CommandMatch>().Single(m=>m.Command.Id==firstCard.Tag as string);
             if(firstCard.GetVisualDescendants().OfType<TextBlock>().Single(t=>t.Name=="CommandCardTemplate").Text!=first.Command.Template)throw new Exception("Card does not show its command template");
             var cardPoint=firstCard.TranslatePoint(new Point(20,15),main)!.Value; var hit=main.InputHitTest(cardPoint) as Control;
-            main.MouseMove(cardPoint,RawInputModifiers.None); main.MouseDown(cardPoint,MouseButton.Left,RawInputModifiers.None); main.MouseUp(cardPoint,MouseButton.Left,RawInputModifiers.None); RedesignChecks.Frames(4);
+            main.MouseMove(cardPoint,RawInputModifiers.None); var pointerTimer=System.Diagnostics.Stopwatch.StartNew();
+            main.MouseDown(cardPoint,MouseButton.Left,RawInputModifiers.None);
+            var pointAfterDown=firstCard.TranslatePoint(new Point(20,15),main); var afterDown=main.InputHitTest(cardPoint) as Control; var pressTime=pointerTimer.ElapsedMilliseconds;
+            main.MouseUp(cardPoint,MouseButton.Left,RawInputModifiers.None); RedesignChecks.Frames(4);
             if(!Named<Border>(panel,"CommandDetailCard").IsVisible || list.IsEffectivelyVisible || !Named<ScrollViewer>(panel,"CommandDetails").GetVisualDescendants().OfType<TextBlock>().Any(t=>t.Text==first.Command.Title))
             {
                 main.CaptureRenderedFrame()!.Save(Path.Combine(root,$"commands-pointer-failure-{language}.png"));
-                throw new Exception($"Pointer click did not open selected details: {language}/{first.Command.Id}; point={cardPoint}, hit={hit?.GetType().Name}/{hit?.Name}, active={main.IsActive}, enabled={main.IsEnabled}, visible={Named<Border>(panel,"CommandDetailCard").IsVisible}, selected={(list.SelectedItem as CommandMatch)?.Command.Id}");
+                throw new Exception($"Pointer click did not open selected details: {language}/{first.Command.Id}; point={cardPoint}, afterDown={pointAfterDown}, pressMs={pressTime}, hit={hit?.GetType().Name}/{hit?.Name}, afterHit={afterDown?.Name}, cardAttached={TopLevel.GetTopLevel(firstCard)!=null}, active={main.IsActive}, enabled={main.IsEnabled}, visible={Named<Border>(panel,"CommandDetailCard").IsVisible}, selected={(list.SelectedItem as CommandMatch)?.Command.Id}");
             }
             Click(panel,"Lista komend"); RedesignChecks.Frames(4);
             if(!list.IsEffectivelyVisible || list.SelectedItem is not CommandMatch kept || kept.Command.Id!=first.Command.Id)throw new Exception("Back did not preserve the command browser selection");

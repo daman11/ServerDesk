@@ -29,7 +29,7 @@ internal sealed partial class CommandPanel
         Grid.SetColumn(stepper,1); Grid.SetRow(detailContext,1); Grid.SetColumnSpan(detailContext,2);
         AddHandler(KeyDownEvent,(_,e)=>
         {
-            if(!showingDetails || e.KeyModifiers!=KeyModifiers.Alt || e.Key is not (Key.Left or Key.Right))return;
+            if(knowledgeMode || !showingDetails || e.KeyModifiers!=KeyModifiers.Alt || e.Key is not (Key.Left or Key.Right))return;
             NavigateCommand(e.Key==Key.Left?-1:1); e.Handled=true;
         },RoutingStrategies.Tunnel);
         return navigation;
@@ -65,7 +65,7 @@ internal sealed partial class CommandPanel
         filtersView.IsVisible=resultsView.IsVisible=!showingDetails;
         detailCard.IsVisible=detailActions.IsVisible=showingDetails;
         dispatchHint.IsVisible=showingDetails;
-        favorite.IsVisible=edit.IsVisible=duplicate.IsVisible=showingDetails;
+        favorite.IsVisible=edit.IsVisible=duplicate.IsVisible=showingDetails&&!knowledgeMode;
         footerSurface.IsVisible=showingDetails||notice.IsVisible;
     }
 }

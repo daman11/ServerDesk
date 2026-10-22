@@ -20,6 +20,7 @@ internal sealed partial class CommandPanel
     }
     private void Select(CommandMatch? match)
     {
+        ClearDocumentationViews();
         selected=match?.Command; ticket=null; values.Clear(); detail.Children.Clear(); preview.Text=""; validation.Text=""; codeApproval.IsChecked=false;
         if(selected==null) { detail.Children.Add(Dialogs.Text(L.T("Wybierz komendę, aby zobaczyć opis, parametry i podgląd."))); dispatchHint.Text=""; SetButtons(false); ShowCommandList(false); return; }
         var c=selected; if(target?.CanAcceptCommands==true)ticket=new(target.WorkspaceId,target.CommandConnectionId,c.Id);
@@ -48,6 +49,14 @@ internal sealed partial class CommandPanel
         detail.Children.Add(DesignSystem.SectionHeading("square-terminal",L.T("Podgląd komendy"))); detail.Children.Add(preview); detail.Children.Add(validation);
         if(c.Detail.Length>0) { detail.Children.Add(DesignSystem.SectionHeading("info",L.T("Opis i wskazówki"))); detail.Children.Add(Dialogs.Text(c.Detail,12)); }
         if(c.Examples.Length>0)detail.Children.Add(Dialogs.Text(L.T("Przykłady")+"\n"+string.Join("\n",c.Examples),12));
+        var references=CommandKnowledgeCatalog.Default.ForCommand(c);
+        if(references.Count>0)detail.Children.Add(DesignSystem.SectionHeading("info",L.T("Przełączniki i dokumentacja")));
+        foreach(var reference in references)
+        {
+            detail.Children.Add(CommandKnowledgeViews.Options(reference));
+            var documentationView=new CommandDocumentationView(owner,documentation,reference.Sources,lifetime.Token,TrackDocumentation);
+            documentationViews.Add(documentationView); detail.Children.Add(documentationView);
+        }
         if(c.Origin==CommandOrigin.User)
         {
             var delete=Action("Usuń komendę",DeleteAsync); delete.HorizontalAlignment=HorizontalAlignment.Left; detail.Children.Add(delete);

@@ -110,10 +110,36 @@
     ]
   },
   {
-    "Id": "plugins", "Icon": "plugins", "Title": "Plugins: monitoring and commands", "Summary": "Enable extras and use command templates with care.", "Keywords": "plugins commands cheatsheet linux monitoring komendy sciagnawka",
+    "Id": "plugins",
+    "Icon": "plugins",
+    "Title": "Plugins: monitoring and commands",
+    "Summary": "Enable extras and use command templates with care.",
+    "Keywords": "plugins commands cheatsheet linux monitoring komendy sciagnawka",
     "Sections": [
-      { "Title": "Enabling plugins", "Paragraphs": ["Settings → Plugins independently enables Linux monitoring and Commands. Changes apply after Save, without restarting. Disabling a plugin preserves its preferences and custom commands and does not disconnect the terminal or SFTP.", "Monitoring reads real data over a separate SSH channel without an agent or sudo. The first CPU value requires another sample. Some details depend on commands available on the remote Linux system; polling is reduced in inactive panels."] },
-      { "Title": "Commands", "Paragraphs": ["Open Commands from the rail or Ctrl+Shift+K. Choose a system profile, search a description or command, and use category and risk filters. Clicking a card opens details, parameters, the preview and guidance. You can store your own templates.", "In details, use the arrows or Alt+Left/Right to browse neighboring commands in the current results. The counter shows your position. Toggling a favorite keeps the current form while the command and context remain unchanged. Moving to another command starts its own form.", "Before inserting or running a command, check the active server and full preview. Action availability depends on the session and context. Execution is a separate explicit action: viewing a list or details does not run commands. Do not put secrets in template names or descriptions."] }
+      {
+        "Title": "Enabling plugins",
+        "Paragraphs": [
+          "Settings → Plugins independently enables Linux monitoring and Commands. Changes apply after Save, without restarting. Disabling a plugin preserves its preferences and custom commands and does not disconnect the terminal or SFTP.",
+          "Monitoring reads real data over a separate SSH channel without an agent or sudo. The first CPU value requires another sample. Some details depend on commands available on the remote Linux system; polling is reduced in inactive panels."
+        ]
+      },
+      {
+        "Title": "Commands",
+        "Paragraphs": [
+          "Open Commands from the rail or Ctrl+Shift+K. Choose a system profile, search a description or command, and use category and risk filters. Clicking a card opens details, parameters, the preview and guidance. You can store your own templates.",
+          "In details, use the arrows or Alt+Left/Right to browse neighboring commands in the current results. The counter shows your position. Toggling a favorite keeps the current form while the command and context remain unchanged. Moving to another command starts its own form.",
+          "Before inserting or running a command, check the active server and full preview. Action availability depends on the session and context. Execution is a separate explicit action: viewing a list or details does not run commands. Do not put secrets in template names or descriptions."
+        ]
+      },
+      {
+        "Title": "Guides and tool options",
+        "Paragraphs": [
+          "Commands → Guides contains 14 mini guides and 168 option/syntax descriptions for 22 tools. Choose Mini guides or Tool options, a system and a query. Topics include SSH keys on Linux/Windows, IP/DNS configuration, logs, services, Docker and disk usage. Steps show configuration files, examples and risk; Copy example never sends anything to a session.",
+          "Open ls and search for -a, -A or an option's meaning. Linux short options are case sensitive. Each reference states its scope, such as GNU ls rather than the PowerShell ls alias. Expandable references also appear in matching built-in command details. They never modify the preview or parameter form.",
+          "Official documentation → Refresh documentation downloads current text from the selected publisher on demand. Its cached copy and check date work offline; failure or cancellation preserves the previous copy. Opening the panel downloads nothing. Open website shows the complete original in your browser. Long text is excerpted and the publisher's version may differ from your server.",
+          "Guides and option tables are reviewed content shipped with the application. Refreshing documentation does not automatically update them or change executable templates. Downloaded text is never run. Disabling the plugin cancels downloads and preserves copies; full factory reset removes the active cache while preserving the pre-reset database backup."
+        ]
+      }
     ]
   },
   {

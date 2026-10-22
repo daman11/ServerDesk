@@ -1,0 +1,24 @@
+# ServerDesk 0.48.0 verification
+
+Date: 2026-10-22. Public Beta, MIT. Scope: Commands offline guides, tool options and explicit official documentation refresh. No new dependencies, database migration, user-command format change or credential/session protocol changes.
+
+## Verification scope
+
+- Locked restore and solution Release builds passed on Windows and Linux/WSL with zero warnings/errors. Unit/loopback suites: **1088 passed on each OS, 0 failed, 0 skipped**. Nineteen new cases cover bilingual catalog/filtering, configuration paths, GNU/PowerShell distinction, text sanitization, Unicode/bounds, explicit-only fixed-URL requests, conditional caching, redirect restrictions/loops, cancellation/timeout/error preservation, malformed cache repair and full reset.
+- Full current headless matrix: **48 Windows and 49 Linux scenarios passed**, including the new command-knowledge scenario and supplemental Bitwarden, Help, error logging, updates, SFTP clipboard, Network Tools and App Polish checks. New PL/EN checks visit all 14 guides at 1280×800 and 920×620 (font 16) in light/dark themes, verify keyboard focus, exact-case flags, empty results, copy-only steps, unchanged executable previews, source changes, cancel/retry, cached reopen and plugin disable/drain/re-enable. Synthetic fixtures verify no credential calls, profile changes or sessions from knowledge browsing. Existing command-detail navigation also passed a focused Windows regression.
+- **All 31 official sources downloaded successfully** through the real bounded client, using isolated public-document cache only. This found and corrected a stale GNU find endpoint. Check dates, titles, excerpt sizes and truncation are recorded in local source metadata; no maintainer profile, command or search context was sent. The test is an opt-in network probe, separate from offline CI.
+- Regression caught a partially clipped command card shifting 8 pixels during selection, cancelling Avalonia's tap gesture. Command/guide cards use standard button release activation; real headless pointer and keyboard checks passed after the fix. Option rows are built only when expanded. New action labels are registered in the shared icon metadata.
+- Dependency audit covered all five solution projects with no reported advisories/diagnostics; 23 audit-gate fixtures passed. Repository links, notices, generated/private-file exclusions and diff checks passed. No dependencies or lockfiles changed. Bounded source scanning reported no findings with the existing exact fixture exceptions; the final history scan is recorded in the frozen local verification.
+- DataProbe passed all eight historical-data/process recovery cases on each OS. Native Windows published startup/off-screen placement, restart, settings reset and embedded RDP host checks passed without a remote server. The self-contained Linux package survived a six-second WSLg startup using isolated data; this is a process check, not physical desktop acceptance.
+- Staged Windows Setup passed compiled Polish text, upgrade from 0.47.0, busy refusal, repair/reinstall, full payload-byte verification, desktop-shortcut choices and preservation of isolated data/unknown files. Registration was skipped to preserve the maintainer desktop. Linux DEB/TAR checks passed complete payload bytes, executable bits, version/amd64, root ownership, launchers and desktop entry.
+- Final clean-commit payload/installer/content checks, source export and SHA-256 set are recorded in the local release's VERIFICATION.md before assembling the immutable directory.
+
+## Limits
+
+Guides and option tables are reviewed bundled summaries (knowledge 1.0.0, reviewed 2026-10-22), not every switch/version. On-demand refresh downloads separate publisher text; it does not update reviewed instructions or executable templates. Text is normally English and may describe a newer tool than the server. Public HTTPS publishers receive normal IP/request metadata. Their URLs/layouts/availability may change. Downloads are limited to 15 s, 2 MiB decompressed and a marked 100000-character excerpt; Open website provides the full original.
+
+No guide command or network reconfiguration was executed against a maintainer connection. Examples require adaptation to the target system; network changes can disconnect access. Public cache is part of SQLite/database backups and survives plugin disable. Factory reset clears the active cache after preserving its database backup.
+
+No VMware/hardware acceptance was repeated. Existing physical RDP keyboard/mouse/IME/DPI, reverse transfer, monitor-off/network and live personal vault acceptance limits remain. Linux uses WSL/headless/process checks, not clean-distribution desktop acceptance. Packages remain unsigned; this local release does not publish anything remotely.
+
+See [usage](../commands.md), [privacy](../privacy.md), [release notes](../releases/release-0.48.0.md) and [known issues](../known-issues.md).

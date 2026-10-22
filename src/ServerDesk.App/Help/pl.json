@@ -110,10 +110,36 @@
     ]
   },
   {
-    "Id": "plugins", "Icon": "plugins", "Title": "Pluginy: monitoring i komendy", "Summary": "Włączaj dodatki i korzystaj z komend świadomie.", "Keywords": "plugins commands cheatsheet linux monitoring komendy sciagnawka",
+    "Id": "plugins",
+    "Icon": "plugins",
+    "Title": "Pluginy: monitoring i komendy",
+    "Summary": "Włączaj dodatki i korzystaj z komend świadomie.",
+    "Keywords": "plugins commands cheatsheet linux monitoring komendy sciagnawka",
     "Sections": [
-      { "Title": "Włączanie dodatków", "Paragraphs": ["W Ustawienia → Pluginy niezależnie włączasz Monitoring Linux i Komendy. Zmiany działają po Zapisz, bez restartu. Wyłączenie nie usuwa ustawień ani własnych komend i nie rozłącza terminala lub SFTP.", "Monitoring pobiera rzeczywiste dane przez oddzielny kanał SSH, bez agenta i sudo. Pierwsza wartość CPU wymaga kolejnej próbki. Część danych zależy od poleceń dostępnych na zdalnym Linuxie; odświeżanie jest ograniczane w nieaktywnym panelu."] },
-      { "Title": "Komendy", "Paragraphs": ["Otwórz Komendy z paska lub przez Ctrl+Shift+K. Wybierz profil systemu, wyszukaj opis albo polecenie i użyj filtrów kategorii oraz ryzyka. Kliknięcie karty pokazuje szczegóły, parametry, podgląd i wskazówki. Możesz przechowywać własne szablony.", "W szczegółach użyj strzałek lub Alt+← / Alt+→, aby przejść do sąsiedniej komendy z bieżących wyników. Licznik pokazuje pozycję na liście. Oznaczenie gwiazdką zachowuje aktualny formularz, jeśli komenda i kontekst pozostają bez zmian. Przejście do innej komendy rozpoczyna jej nowy formularz.", "Przed wstawieniem lub wykonaniem sprawdź aktywny serwer i pełny podgląd. Dostępność akcji zależy od sesji i kontekstu. Wykonanie komendy jest osobną, jawną akcją; sama lista lub otwarcie szczegółów nie uruchamia poleceń. Nie wpisuj sekretów do nazw i opisów szablonów."] }
+      {
+        "Title": "Włączanie dodatków",
+        "Paragraphs": [
+          "W Ustawienia → Pluginy niezależnie włączasz Monitoring Linux i Komendy. Zmiany działają po Zapisz, bez restartu. Wyłączenie nie usuwa ustawień ani własnych komend i nie rozłącza terminala lub SFTP.",
+          "Monitoring pobiera rzeczywiste dane przez oddzielny kanał SSH, bez agenta i sudo. Pierwsza wartość CPU wymaga kolejnej próbki. Część danych zależy od poleceń dostępnych na zdalnym Linuxie; odświeżanie jest ograniczane w nieaktywnym panelu."
+        ]
+      },
+      {
+        "Title": "Komendy",
+        "Paragraphs": [
+          "Otwórz Komendy z paska lub przez Ctrl+Shift+K. Wybierz profil systemu, wyszukaj opis albo polecenie i użyj filtrów kategorii oraz ryzyka. Kliknięcie karty pokazuje szczegóły, parametry, podgląd i wskazówki. Możesz przechowywać własne szablony.",
+          "W szczegółach użyj strzałek lub Alt+← / Alt+→, aby przejść do sąsiedniej komendy z bieżących wyników. Licznik pokazuje pozycję na liście. Oznaczenie gwiazdką zachowuje aktualny formularz, jeśli komenda i kontekst pozostają bez zmian. Przejście do innej komendy rozpoczyna jej nowy formularz.",
+          "Przed wstawieniem lub wykonaniem sprawdź aktywny serwer i pełny podgląd. Dostępność akcji zależy od sesji i kontekstu. Wykonanie komendy jest osobną, jawną akcją; sama lista lub otwarcie szczegółów nie uruchamia poleceń. Nie wpisuj sekretów do nazw i opisów szablonów."
+        ]
+      },
+      {
+        "Title": "Poradniki i przełączniki",
+        "Paragraphs": [
+          "Komendy → Poradniki zawiera 14 mini poradników i 168 opisów przełączników/składni dla 22 narzędzi. Wybierz Mini poradniki albo Przełączniki narzędzi, system i zapytanie. Tematy obejmują klucze SSH na Linux/Windows, sieć IP/DNS, logi, usługi, Docker i miejsce na dysku. Kroki pokazują pliki konfiguracji, przykłady i ryzyko; Kopiuj przykład nie wysyła nic do sesji.",
+          "Otwórz np. ls i wyszukaj -a, -A albo znaczenie opcji. Wielkość liter krótkich przełączników Linux ma znaczenie. Opisy wskazują zakres, np. GNU ls zamiast aliasu ls w PowerShell. Sekcje opcji są także w szczegółach pasujących wbudowanych komend. Nie zmieniają podglądu ani formularza parametrów.",
+          "Oficjalna dokumentacja → Odśwież dokumentację pobiera na żądanie aktualny tekst wybranego źródła. Kopia i data sprawdzenia działają offline; błąd lub anulowanie zachowuje poprzednią kopię. Otwarcie panelu nie pobiera niczego. Otwórz stronę pokazuje pełny oryginał w przeglądarce. Długie teksty są skracane, a wersja wydawcy może różnić się od wersji na serwerze.",
+          "Poradniki i tabelki opcji są sprawdzoną biblioteką dostarczaną z aplikacją. Odświeżenie dokumentacji nie aktualizuje ich automatycznie ani nie zmienia wykonywalnych szablonów. Pobrany tekst nie jest uruchamiany. Wyłączenie pluginu anuluje pobieranie i zachowuje kopie; pełny reset fabryczny usuwa je z aktywnej bazy, zachowując wcześniejszą kopię bazy."
+        ]
+      }
     ]
   },
   {

@@ -1,4 +1,6 @@
-# Pierwotne MVP — wydanie 0.45.1
+# Pierwotne MVP — wydanie lokalne 0.48.0
+
+0.48.0 rozszerza opcjonalny plugin Komendy o 14 poradników offline, 168 opisów opcji/składni dla 22 narzędzi oraz odświeżanie oficjalnej dokumentacji na żądanie. Pobrany tekst jest oddzielony od sprawdzonych szablonów; nie zamyka otwartych prób sprzętowych i akceptacji 1.0. [Obsługa](commands.md), [zakres weryfikacji](reports/release-verification-0.48.0.md). 0.47.0 dodało klucze SSH z Bitwarden/Vaultwarden; 0.46.0 integrację sejfu, fokus terminala i niezawodne wstawianie komend. Publikacja nowych lokalnych paczek pozostaje osobnym krokiem.
 
 0.45.1 dodaje opcjonalny skrót na pulpicie i decyzje Aktualizuj / Pomiń tę wersję / Przypomnij przy następnym uruchomieniu. Sprawdzanie jest domyślnie włączone, przy zachowaniu zapisanego wyłączenia. [Zakres weryfikacji](reports/release-verification-0.45.1.md), [obsługa aktualizacji](updates.md).
 

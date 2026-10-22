@@ -3,12 +3,12 @@
 W **Ustawienia → Pluginy** można niezależnie włączyć:
 
 - **Monitoring Linux** — panel monitoringu i metryki na pasku statusu, pobierane przez osobne SSH.
-- **Komendy** — Smart Cheat Sheet, własne szablony, ulubione i automatyczne wykrywanie środowiska SSH.
+- **Komendy** — Smart Cheat Sheet, mini poradniki offline, opisy przełączników, dokumentacja wydawców odświeżana na żądanie, własne szablony, ulubione i automatyczne wykrywanie środowiska SSH.
 - **Bitwarden / Vaultwarden** — hasła Login, klucze SSH Key (RSA/Ed25519 w pamięci) i trwałe przypisania wpisów do połączeń; wymaga wskazanego oficjalnego CLI. [Konfiguracja i ograniczenia](bitwarden.md).
 
 To pluginy wbudowane, dostarczane z aplikacją. Domyślnie są włączone, również przy aktualizacji starszych ustawień. Bitwarden nie odczytuje sejfu przy uruchomieniu — działa dopiero po otwarciu wyboru wpisu. Zmiany działają po **Zapisz**, bez restartu. Samo zaznaczenie pola jest podglądem; **Anuluj** zachowuje stan pracy. Konfiguracja CLI również zaczyna obowiązywać po zapisie.
 
-Wyłączenie monitoringu zatrzymuje jego pętlę i zamyka dedykowane SSH, usuwa stare metryki i wraca z otwartego panelu do terminala. Zwykły pasek statusu i licznik transferów pozostają dostępne. Wyłączenie komend zamyka panel, anuluje wykrywanie, blokuje dotychczasowe akcje i ukrywa wpisy w menu, pasku bocznym, palecie oraz sesji SSH; Ctrl+Shift+K nie otwiera panelu.
+Wyłączenie monitoringu zatrzymuje jego pętlę i zamyka dedykowane SSH, usuwa stare metryki i wraca z otwartego panelu do terminala. Zwykły pasek statusu i licznik transferów pozostają dostępne. Wyłączenie komend zamyka panel, anuluje i kończy pobieranie dokumentacji (zachowując publiczne kopie w SQLite), anuluje wykrywanie, blokuje dotychczasowe akcje i ukrywa wpisy w menu, pasku bocznym, palecie oraz sesji SSH; Ctrl+Shift+K nie otwiera panelu.
 
 Polecenia już wysłane do terminala działają nadal; plugin nie przerywa pracy powłoki.
 

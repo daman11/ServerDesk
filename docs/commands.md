@@ -1,5 +1,19 @@
 # Komendy / Commands
 
+## Mini poradniki, przełączniki i dokumentacja (0.48.0)
+
+W **Komendy → Poradniki** wybierz **Mini poradniki** lub **Przełączniki narzędzi**, system i zapytanie. Biblioteka działa offline: **14 poradników**, **22 narzędzia**, **168 opisów przełączników/składni**, PL/EN. Są klucze SSH, IP/DNS, NetworkManager, Netplan, systemd-networkd, Debian ifupdown, sieć Windows, journal/Event Log, usługi, Docker i diagnostyka dysku. Kroki pokazują pliki konfiguracji, ryzyko i przykłady do kopiowania; nie wykonują ich w sesji.
+
+Przykład: wybierz **Przełączniki narzędzi → ls**. Każda opcja ma składnię i znaczenie; wyszukaj **-a**, **-A** albo **--group**. Krótkie opcje Linux zachowują rozróżnianie wielkości liter. Zakres opisuje GNU/BusyBox/BSD i różnicę względem aliasu ls w PowerShell. To zestaw częstych opcji, nie pełny podręcznik każdej wersji. Pasujące wbudowane komendy mają również zwijane sekcje opcji; ich przeglądanie nie zmienia szablonu ani podglądu.
+
+**Oficjalna dokumentacja → Odśwież dokumentację** pobiera aktualny tekst wybranego źródła z oficjalnej strony. **31 stałych źródeł** obejmuje GNU, OpenSSH, systemd, NetworkManager, Netplan, Debian, Microsoft, Docker, Git i curl. Przy kopii widoczna jest data sprawdzenia oraz tytuł wydawcy. Kolejne otwarcie działa offline. **Otwórz stronę** uruchamia pełny oryginał w przeglądarce. Długie teksty mają oznaczony wyciąg do 100 000 znaków. Dokumentacja może opisywać inną wersję niż zainstalowana na serwerze.
+
+Odświeżenie dotyczy **tekstu dokumentacji**. Poradniki i tabelki opcji pozostają sprawdzoną biblioteką dostarczaną z aplikacją; zmieniają się w wydaniach ServerDesk. Pobrana treść nie tworzy ani nie zmienia wykonywalnych szablonów. Otwarcie panelu/poradnika nie wywołuje HTTP. Pobieranie ma limit 15 s i 2 MiB rozpakowanej odpowiedzi, nie przyjmuje dowolnego URL, nie wysyła kontekstu sesji, loginu, zapytania ani komendy. Dopuszcza do trzech przekierowań HTTPS wyłącznie w obrębie tego samego wydawcy, sprawdza typ i usuwa aktywny HTML. Błąd lub anulowanie zachowuje wcześniejszą kopię; przy braku kopii poradniki nadal działają offline.
+
+Publiczne kopie są w SQLite pod commands.documentation.v1.*, niezależnie od szyfrowanych własnych komend. Są objęte kopiami bazy i usuwane z aktywnej bazy przez pełny reset fabryczny. Ukrycie panelu anuluje pobieranie; wyłączenie pluginu anuluje i kończy jego zadania, zachowując dane oraz terminal/SFTP. Biblioteka ma wersję 1.0.0 i datę przeglądu 2026-10-22.
+
+EN: **Commands → Guides** provides 14 offline PL/EN mini guides and 168 option/syntax descriptions for 22 tools. Search exact Linux short flags case-sensitively. Copy-only guide steps never dispatch to a session. Expand **Official documentation**, select a source and click **Refresh documentation** to cache current publisher text. Opening a panel never downloads it. Failure/cancellation preserves the last copy. Downloaded text is a separate reference: reviewed guides, option tables and executable templates are unchanged. The publisher may document a different tool version; use Open website for the full original.
+
 Krok rozwojowy po 0.44.0: szczegóły mają **Poprzednia komenda / Następna komenda**, licznik pozycji oraz **Alt+← / Alt+→**. Nawigacja trzyma się bieżących wyników, filtrów i sortowania; nie kopiuje ani nie wykonuje polecenia. Gwiazdka zachowuje wpisane parametry, podgląd i zgodę Code, jeśli ta sama komenda i kontekst pozostają wybrane. Po usunięciu ostatniego wpisu z Ulubionych panel wraca do pustej listy. Przejście do innej komendy tworzy jej nowy formularz; wartości robocze nie są zapisywane ani przenoszone między komendami. [Testy i granice](reports/command-navigation-2026-10-21.md).
 
 EN: Command details include Previous/Next, a position counter and Alt+Left/Right, following the current filtered/sorted results without copying or execution. Toggling a favorite keeps the current form and Code approval only while the same command/context remain selected. Moving to another command starts its own form; draft parameter values are not persisted or shared between commands.
@@ -84,6 +98,9 @@ Historia jest domyślnie wyłączona. W menu można ją włączyć lub wyczyści
 Całe wieloliniowe skrypty są **copy-only**, także gdy terminal obsługuje bracketed paste: bieżący program i shell nie dają ogólnej gwarancji wklejenia bez wykonania. Panel sprawdza tożsamość karty i konkretnego połączenia po potwierdzeniu i przed wysłaniem. Przełączenie karty lub reconnect unieważnia wcześniej przechwycony cel. Nie resetuje linii, nie wysyła Ctrl+U, nie czyści terminala ani nie dodaje sudo samoistnie.
 
 ## Dla dewelopera
+
+Osobny model CommandKnowledgeCatalog ładuje knowledge.v1.json generowany offline przez scripts/generate-command-knowledge.py. CommandDocumentationClient pobiera stałe źródła wyłącznie na żądanie. CommandKnowledgeTests oraz harness --command-knowledge używają syntetycznego HTTP. --command-docs-live to oddzielny opt-in kontroli 31 publicznych źródeł; nie należy do offline CI. Format własnych komend i biblioteka 165 wariantów pozostają bez zmian.
+
 
 Od 0.39.1 eksport własnej biblioteki zapisuje najpierw plik tymczasowy i zastępuje wybrany JSON po pomyślnym zamknięciu. Błąd/anulowanie zachowuje poprzedni plik; wymagany jest cel w systemie plików. Eksport jest jawny, a istniejące potwierdzenie ryzyka pozostaje wymagane. Nowe pliki Unix mają uprawnienia 0600.
 

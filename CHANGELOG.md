@@ -2,6 +2,11 @@
 
 ## Unreleased
 
+## 0.48.0 — Public Beta — 2026-10-22
+
+- Expand the Commands plugin with 14 offline PL/EN mini guides, 22 tool references and 168 option/syntax descriptions. Cover SSH keys, network configuration ownership and files, logs, services, Docker and disk diagnostics. Add searchable platform-filtered views, case-sensitive short-flag lookup, copy-only steps and scoped command references without modifying previews.
+- Add on-demand official documentation refresh from 31 fixed sources. Cache bounded readable text and dates for offline use; preserve copies on failure/cancellation, restrict HTTPS redirects, strip active HTML and drain work on plugin disable. Keep guides/options and templates separate from downloaded text. Add synthetic network/security/lifecycle, PL/EN layout and opt-in official-source checks. No dependencies or schema changes.
+
 ## 0.47.0 — Public Beta — 2026-10-22
 
 - Add SSH key from vault authentication using native Bitwarden/Vaultwarden SSH Key items. Retain only account/server/item/type metadata in a profile; parse bounded RSA/Ed25519 key material from memory, verify public-key/fingerprint consistency and use it for the terminal, SFTP browser/transfers and monitoring. Clear owned key buffers on disconnect, cancellation, failed authentication and close; re-unlock/refetch on reconnect. Preserve active core sessions when disabling the optional plugin. Do not fall back to a password/local key file or send keys to the system credential store. Keep Login-password/passphrase bindings compatible, omit key bindings from configuration export/import/duplication and add synthetic plus disposable OpenSSH regressions. Extra passphrase-encrypted key payloads require Bitwarden's key import workflow first.

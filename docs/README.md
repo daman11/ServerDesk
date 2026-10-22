@@ -1,6 +1,6 @@
 # Dokumentacja / Documentation
 
-Bieżące wydanie lokalne: [0.47.0 Public Beta](releases/release-0.47.0.md) — klucze SSH Key z Bitwarden / Vaultwarden dla terminala, SFTP i monitoringu oraz prostszy wybór wpisu sejfu. Publikacja GitHub jest osobnym krokiem. [Weryfikacja i ograniczenia](reports/release-verification-0.47.0.md).
+Bieżące wydanie lokalne: [0.48.0 Public Beta](releases/release-0.48.0.md) — mini poradniki offline, opisy przełączników narzędzi oraz dokumentacja oficjalna odświeżana na żądanie w pluginie Komendy. Publikacja GitHub jest osobnym krokiem. [Weryfikacja i ograniczenia](reports/release-verification-0.48.0.md).
 
 | Temat / Topic | Dokument |
 |---|---|

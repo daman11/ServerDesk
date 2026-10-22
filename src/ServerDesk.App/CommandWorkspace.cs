@@ -13,6 +13,8 @@ public sealed partial class MainWindow
     private CommandPanel? commandPanel;
     private Task commandPanelInitialization=Task.CompletedTask;
     private double commandWorkspaceWidth;
+    internal Func<ServerDesk.Infrastructure.CommandDocumentationClient>? CommandDocumentationFactory { get; set; }
+    internal ServerDesk.Infrastructure.CommandDocumentationClient CreateCommandDocumentation()=>CommandDocumentationFactory?.Invoke()??new(repository);
     internal SessionPane? CommandTarget=>ActiveSession;
     internal async Task OpenCommandsPanelAsync()
     {
@@ -33,6 +35,7 @@ public sealed partial class MainWindow
     }
     internal void CloseCommandsPanel()
     {
+        commandPanel?.PauseDocumentation();
         commandPanel?.ClearSelection();
         commandPanelHost.IsVisible=commandPanelSplitter.IsVisible=false; commandWorkspace.ColumnDefinitions[1].Width=commandWorkspace.ColumnDefinitions[2].Width=new GridLength(0); UpdateActivity();
     }

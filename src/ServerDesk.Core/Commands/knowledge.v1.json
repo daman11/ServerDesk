@@ -1,0 +1,2340 @@
+{
+  "schemaVersion": 1,
+  "version": "1.0.0",
+  "reviewedOn": "2026-10-22",
+  "sources": [
+    {
+      "id": "gnu-ls-files",
+      "title": "GNU ls · Which files are listed",
+      "url": "https://www.gnu.org/software/coreutils/manual/html_node/Which-files-are-listed.html"
+    },
+    {
+      "id": "gnu-ls-info",
+      "title": "GNU ls · File information",
+      "url": "https://www.gnu.org/software/coreutils/manual/html_node/What-information-is-listed.html"
+    },
+    {
+      "id": "gnu-ls-sort",
+      "title": "GNU ls · Sorting",
+      "url": "https://www.gnu.org/software/coreutils/manual/html_node/Sorting-the-output.html"
+    },
+    {
+      "id": "gnu-ls-format",
+      "title": "GNU ls · Output formatting",
+      "url": "https://www.gnu.org/software/coreutils/manual/html_node/General-output-formatting.html"
+    },
+    {
+      "id": "gnu-grep",
+      "title": "GNU grep manual",
+      "url": "https://www.gnu.org/software/grep/manual/grep.html"
+    },
+    {
+      "id": "gnu-find",
+      "title": "GNU findutils manual",
+      "url": "https://www.gnu.org/software/findutils/manual/find.html"
+    },
+    {
+      "id": "gnu-tail",
+      "title": "GNU tail manual",
+      "url": "https://www.gnu.org/software/coreutils/manual/html_node/tail-invocation.html"
+    },
+    {
+      "id": "gnu-df",
+      "title": "GNU df manual",
+      "url": "https://www.gnu.org/software/coreutils/manual/html_node/df-invocation.html"
+    },
+    {
+      "id": "gnu-du",
+      "title": "GNU du manual",
+      "url": "https://www.gnu.org/software/coreutils/manual/html_node/du-invocation.html"
+    },
+    {
+      "id": "gnu-chmod",
+      "title": "GNU chmod manual",
+      "url": "https://www.gnu.org/software/coreutils/manual/html_node/chmod-invocation.html"
+    },
+    {
+      "id": "openssh-keygen",
+      "title": "OpenSSH · ssh-keygen",
+      "url": "https://man.openbsd.org/ssh-keygen"
+    },
+    {
+      "id": "openssh-client",
+      "title": "OpenSSH · ssh",
+      "url": "https://man.openbsd.org/ssh"
+    },
+    {
+      "id": "systemd-journal",
+      "title": "systemd · journalctl",
+      "url": "https://www.freedesktop.org/software/systemd/man/latest/journalctl.html"
+    },
+    {
+      "id": "systemd-services",
+      "title": "systemd · systemctl",
+      "url": "https://www.freedesktop.org/software/systemd/man/latest/systemctl.html"
+    },
+    {
+      "id": "systemd-network",
+      "title": "systemd · .network files",
+      "url": "https://www.freedesktop.org/software/systemd/man/latest/systemd.network.html"
+    },
+    {
+      "id": "networkmanager",
+      "title": "NetworkManager · nmcli",
+      "url": "https://networkmanager.dev/docs/api/latest/nmcli.html"
+    },
+    {
+      "id": "netplan-try",
+      "title": "Netplan · try and rollback limits",
+      "url": "https://netplan.readthedocs.io/en/stable/netplan-try/"
+    },
+    {
+      "id": "netplan-yaml",
+      "title": "Netplan · YAML configuration",
+      "url": "https://netplan.readthedocs.io/en/stable/netplan-yaml/"
+    },
+    {
+      "id": "debian-network",
+      "title": "Debian · Network setup",
+      "url": "https://www.debian.org/doc/manuals/debian-reference/ch05.en.html"
+    },
+    {
+      "id": "debian-interfaces",
+      "title": "Debian ifupdown · interfaces",
+      "url": "https://manpages.debian.org/unstable/ifupdown/interfaces.5.en.html"
+    },
+    {
+      "id": "iproute-ip",
+      "title": "Debian/iproute2 · ip",
+      "url": "https://manpages.debian.org/unstable/iproute2/ip.8.en.html"
+    },
+    {
+      "id": "iproute-ss",
+      "title": "Debian/iproute2 · ss",
+      "url": "https://manpages.debian.org/unstable/iproute2/ss.8.en.html"
+    },
+    {
+      "id": "curl-manual",
+      "title": "curl · command-line reference",
+      "url": "https://curl.se/docs/manpage.html"
+    },
+    {
+      "id": "docker-logs",
+      "title": "Docker · container logs",
+      "url": "https://docs.docker.com/reference/cli/docker/container/logs/"
+    },
+    {
+      "id": "git-reference",
+      "title": "Git · global options",
+      "url": "https://git-scm.com/docs/git"
+    },
+    {
+      "id": "debian-apt",
+      "title": "Debian/APT · apt",
+      "url": "https://manpages.debian.org/unstable/apt/apt.8.en.html"
+    },
+    {
+      "id": "windows-ssh",
+      "title": "Microsoft · OpenSSH key management",
+      "url": "https://learn.microsoft.com/en-us/windows-server/administration/openssh/openssh_keymanagement"
+    },
+    {
+      "id": "windows-events",
+      "title": "Microsoft · Get-WinEvent",
+      "url": "https://learn.microsoft.com/en-us/powershell/module/microsoft.powershell.diagnostics/get-winevent?view=powershell-7.6"
+    },
+    {
+      "id": "powershell-files",
+      "title": "Microsoft · Get-ChildItem",
+      "url": "https://learn.microsoft.com/en-us/powershell/module/microsoft.powershell.management/get-childitem?view=powershell-7.6"
+    },
+    {
+      "id": "windows-ip",
+      "title": "Microsoft · Get-NetIPConfiguration",
+      "url": "https://learn.microsoft.com/en-us/powershell/module/nettcpip/get-netipconfiguration?view=windowsserver2025-ps"
+    },
+    {
+      "id": "windows-network-settings",
+      "title": "Microsoft · Network and Internet settings",
+      "url": "https://learn.microsoft.com/en-us/windows/apps/develop/launch/launch-settings#network--internet"
+    }
+  ],
+  "tools": [
+    {
+      "id": "ls",
+      "tools": [
+        "ls"
+      ],
+      "title": "ls",
+      "scope": "GNU coreutils. BusyBox/BSD mogą obsługiwać inny zestaw opcji. Wielkość liter ma znaczenie; -l i -1 to różne przełączniki.",
+      "scopeEn": "GNU coreutils. BusyBox/BSD may support different options. Case matters; -l and -1 are different switches.",
+      "platform": "Linux",
+      "sources": [
+        "gnu-ls-files",
+        "gnu-ls-info",
+        "gnu-ls-sort",
+        "gnu-ls-format"
+      ],
+      "options": [
+        {
+          "syntax": "-a, --all",
+          "description": "Także ukryte pliki oraz . i ..",
+          "descriptionEn": "Include dotfiles, . and ..",
+          "example": ""
+        },
+        {
+          "syntax": "-A, --almost-all",
+          "description": "Ukryte pliki bez . i ..",
+          "descriptionEn": "Include dotfiles except . and ..",
+          "example": ""
+        },
+        {
+          "syntax": "-l",
+          "description": "Szczegóły, uprawnienia, właściciel i rozmiar.",
+          "descriptionEn": "Detailed permissions, ownership and size.",
+          "example": ""
+        },
+        {
+          "syntax": "-h, --human-readable",
+          "description": "Czytelne rozmiary z -l lub -s.",
+          "descriptionEn": "Readable sizes with -l or -s.",
+          "example": "ls -lh -- /var/log"
+        },
+        {
+          "syntax": "-d, --directory",
+          "description": "Sam katalog zamiast jego zawartości.",
+          "descriptionEn": "Directory itself, not its contents.",
+          "example": ""
+        },
+        {
+          "syntax": "-R, --recursive",
+          "description": "Także zawartość podkatalogów.",
+          "descriptionEn": "Descend into subdirectories.",
+          "example": ""
+        },
+        {
+          "syntax": "-t",
+          "description": "Najnowsza modyfikacja jako pierwsza.",
+          "descriptionEn": "Newest modification first.",
+          "example": ""
+        },
+        {
+          "syntax": "-r, --reverse",
+          "description": "Odwróć wybrane sortowanie.",
+          "descriptionEn": "Reverse the selected order.",
+          "example": ""
+        },
+        {
+          "syntax": "-S",
+          "description": "Sortuj malejąco według rozmiaru.",
+          "descriptionEn": "Sort by size, largest first.",
+          "example": ""
+        },
+        {
+          "syntax": "-1",
+          "description": "Jedna nazwa w wierszu.",
+          "descriptionEn": "One name per line.",
+          "example": ""
+        },
+        {
+          "syntax": "-F, --classify",
+          "description": "Znaczniki typu, np. / i *.",
+          "descriptionEn": "Type markers, e.g. / and *.",
+          "example": ""
+        },
+        {
+          "syntax": "-i, --inode",
+          "description": "Pokaż numer i-węzła.",
+          "descriptionEn": "Show inode numbers.",
+          "example": ""
+        },
+        {
+          "syntax": "-n, --numeric-uid-gid",
+          "description": "UID/GID zamiast nazw.",
+          "descriptionEn": "Numeric UID/GID instead of names.",
+          "example": ""
+        },
+        {
+          "syntax": "--color=auto",
+          "description": "Kolory dla wyjścia terminala.",
+          "descriptionEn": "Colors for terminal output.",
+          "example": ""
+        },
+        {
+          "syntax": "--group-directories-first",
+          "description": "Katalogi przed pozostałymi wpisami.",
+          "descriptionEn": "Group directories before other entries.",
+          "example": ""
+        },
+        {
+          "syntax": "--",
+          "description": "Koniec opcji; dalej nazwy plików.",
+          "descriptionEn": "End options; filenames follow.",
+          "example": "ls -lah -- /var/log"
+        }
+      ]
+    },
+    {
+      "id": "grep",
+      "tools": [
+        "grep"
+      ],
+      "title": "grep",
+      "scope": "GNU grep; wzorzec cytuj w powłoce. -r pomija napotkane linki, -R może za nimi podążać.",
+      "scopeEn": "GNU grep; quote the pattern in the shell. -r skips encountered symlinks; -R may follow them.",
+      "platform": "Linux",
+      "sources": [
+        "gnu-grep"
+      ],
+      "options": [
+        {
+          "syntax": "-i, --ignore-case",
+          "description": "Bez rozróżniania wielkości liter.",
+          "descriptionEn": "Ignore letter case.",
+          "example": ""
+        },
+        {
+          "syntax": "-n, --line-number",
+          "description": "Numery pasujących wierszy.",
+          "descriptionEn": "Include matching line numbers.",
+          "example": ""
+        },
+        {
+          "syntax": "-v, --invert-match",
+          "description": "Wiersze, które nie pasują.",
+          "descriptionEn": "Select non-matching lines.",
+          "example": ""
+        },
+        {
+          "syntax": "-r, --recursive",
+          "description": "Przeszukaj podkatalogi.",
+          "descriptionEn": "Search subdirectories.",
+          "example": ""
+        },
+        {
+          "syntax": "-F, --fixed-strings",
+          "description": "Zwykły tekst zamiast regex.",
+          "descriptionEn": "Literal strings, not regex.",
+          "example": ""
+        },
+        {
+          "syntax": "-E, --extended-regexp",
+          "description": "Rozszerzone wyrażenia regularne.",
+          "descriptionEn": "Extended regular expressions.",
+          "example": ""
+        },
+        {
+          "syntax": "-l, --files-with-matches",
+          "description": "Tylko nazwy pasujących plików.",
+          "descriptionEn": "Only names of matching files.",
+          "example": ""
+        },
+        {
+          "syntax": "-c, --count",
+          "description": "Liczba pasujących wierszy.",
+          "descriptionEn": "Count matching lines.",
+          "example": ""
+        },
+        {
+          "syntax": "-A N / -B N / -C N",
+          "description": "Kontekst po / przed / z obu stron.",
+          "descriptionEn": "Context after / before / both sides.",
+          "example": "grep -n -C 2 -- 'error' app.log"
+        },
+        {
+          "syntax": "-e WZORZEC / PATTERN",
+          "description": "Jawny wzorzec, także zaczynający się od -.",
+          "descriptionEn": "Explicit pattern, including a leading -.",
+          "example": ""
+        }
+      ]
+    },
+    {
+      "id": "find",
+      "tools": [
+        "find"
+      ],
+      "title": "find",
+      "scope": "GNU find. Testy nie są zwykłymi opcjami. Cytuj wzorce; -delete i -exec mogą zmieniać dane.",
+      "scopeEn": "GNU find. Tests are not ordinary options. Quote patterns; -delete and -exec can modify data.",
+      "platform": "Linux",
+      "sources": [
+        "gnu-find"
+      ],
+      "options": [
+        {
+          "syntax": "-name 'WZORZEC' / 'PATTERN'",
+          "description": "Nazwa pasująca do globu.",
+          "descriptionEn": "Name matching a glob.",
+          "example": ""
+        },
+        {
+          "syntax": "-iname 'WZORZEC' / 'PATTERN'",
+          "description": "Nazwa bez wielkości liter.",
+          "descriptionEn": "Case-insensitive name.",
+          "example": ""
+        },
+        {
+          "syntax": "-type f / -type d",
+          "description": "Tylko pliki / katalogi.",
+          "descriptionEn": "Only files / directories.",
+          "example": ""
+        },
+        {
+          "syntax": "-maxdepth N",
+          "description": "Ogranicz głębokość wyszukiwania.",
+          "descriptionEn": "Limit search depth.",
+          "example": ""
+        },
+        {
+          "syntax": "-mtime +N",
+          "description": "Starsze według pełnych dób modyfikacji.",
+          "descriptionEn": "Older by rounded modification days.",
+          "example": ""
+        },
+        {
+          "syntax": "-size +100M",
+          "description": "Pliki większe niż 100 MiB.",
+          "descriptionEn": "Files larger than 100 MiB.",
+          "example": ""
+        },
+        {
+          "syntax": "-print0",
+          "description": "Nazwy zakończone bajtem NUL.",
+          "descriptionEn": "NUL-terminated filenames.",
+          "example": ""
+        },
+        {
+          "syntax": "-L (przed ścieżką / before path)",
+          "description": "Podążaj za linkami symbolicznymi.",
+          "descriptionEn": "Follow symbolic links.",
+          "example": ""
+        }
+      ]
+    },
+    {
+      "id": "journalctl",
+      "tools": [
+        "journalctl"
+      ],
+      "title": "journalctl",
+      "scope": "Linux z systemd. Widoczność dziennika zależy od uprawnień; starszy systemd może nie mieć nowszych opcji.",
+      "scopeEn": "Linux with systemd. Journal access depends on permissions; older versions may lack newer options.",
+      "platform": "Linux",
+      "sources": [
+        "systemd-journal"
+      ],
+      "options": [
+        {
+          "syntax": "-u, --unit=UNIT",
+          "description": "Dziennik wskazanej jednostki.",
+          "descriptionEn": "Entries for the selected unit.",
+          "example": ""
+        },
+        {
+          "syntax": "-b, --boot",
+          "description": "Bieżący rozruch; -b -1 poprzedni.",
+          "descriptionEn": "Current boot; -b -1 previous boot.",
+          "example": ""
+        },
+        {
+          "syntax": "-n, --lines=N",
+          "description": "Ostatnie N wpisów.",
+          "descriptionEn": "Last N entries.",
+          "example": ""
+        },
+        {
+          "syntax": "-f, --follow",
+          "description": "Nowe wpisy na żywo; Ctrl+C kończy.",
+          "descriptionEn": "Follow new entries; Ctrl+C stops.",
+          "example": ""
+        },
+        {
+          "syntax": "--since=TIME",
+          "description": "Początek zakresu czasu.",
+          "descriptionEn": "Start of the time range.",
+          "example": ""
+        },
+        {
+          "syntax": "--until=TIME",
+          "description": "Koniec zakresu czasu.",
+          "descriptionEn": "End of the time range.",
+          "example": ""
+        },
+        {
+          "syntax": "-p, --priority=LEVEL",
+          "description": "Poziom i poważniejsze, np. warning.",
+          "descriptionEn": "Level and more severe, e.g. warning.",
+          "example": ""
+        },
+        {
+          "syntax": "-k, --dmesg",
+          "description": "Komunikaty jądra.",
+          "descriptionEn": "Kernel messages.",
+          "example": ""
+        },
+        {
+          "syntax": "--user",
+          "description": "Dziennik usług bieżącego użytkownika.",
+          "descriptionEn": "Current user's service journal.",
+          "example": ""
+        },
+        {
+          "syntax": "--no-pager",
+          "description": "Wypisz bez przeglądarki less.",
+          "descriptionEn": "Output without a pager.",
+          "example": ""
+        },
+        {
+          "syntax": "--list-boots",
+          "description": "Lista dostępnych rozruchów.",
+          "descriptionEn": "List available boots.",
+          "example": ""
+        },
+        {
+          "syntax": "--disk-usage",
+          "description": "Miejsce zajęte przez dzienniki.",
+          "descriptionEn": "Disk usage of journal files.",
+          "example": ""
+        }
+      ]
+    },
+    {
+      "id": "systemctl",
+      "tools": [
+        "systemctl"
+      ],
+      "title": "systemctl",
+      "scope": "Tylko systemd. Status, włączenie przy starcie i działanie teraz to różne stany.",
+      "scopeEn": "systemd only. Runtime state and enablement at boot are different states.",
+      "platform": "Linux",
+      "sources": [
+        "systemd-services"
+      ],
+      "options": [
+        {
+          "syntax": "status UNIT",
+          "description": "Bieżący stan i ostatnie komunikaty.",
+          "descriptionEn": "Current state and recent messages.",
+          "example": ""
+        },
+        {
+          "syntax": "list-units --failed",
+          "description": "Jednostki z błędem.",
+          "descriptionEn": "Units in failed state.",
+          "example": ""
+        },
+        {
+          "syntax": "--type=service",
+          "description": "Ogranicz do usług.",
+          "descriptionEn": "Restrict to services.",
+          "example": ""
+        },
+        {
+          "syntax": "--all",
+          "description": "Także jednostki nieaktywne.",
+          "descriptionEn": "Include inactive units.",
+          "example": ""
+        },
+        {
+          "syntax": "--user",
+          "description": "Menedżer bieżącego użytkownika.",
+          "descriptionEn": "Current user's service manager.",
+          "example": ""
+        },
+        {
+          "syntax": "--no-pager",
+          "description": "Bez przeglądarki wyników.",
+          "descriptionEn": "Disable the output pager.",
+          "example": ""
+        },
+        {
+          "syntax": "--full",
+          "description": "Bez skracania wierszy.",
+          "descriptionEn": "Do not ellipsize lines.",
+          "example": ""
+        },
+        {
+          "syntax": "enable --now UNIT",
+          "description": "Włącz przy starcie i uruchom teraz.",
+          "descriptionEn": "Enable at boot and start now.",
+          "example": ""
+        },
+        {
+          "syntax": "daemon-reload",
+          "description": "Wczytaj zmienione definicje jednostek.",
+          "descriptionEn": "Reload changed unit definitions.",
+          "example": ""
+        }
+      ]
+    },
+    {
+      "id": "ip",
+      "tools": [
+        "ip"
+      ],
+      "title": "ip",
+      "scope": "iproute2. 'show' odczytuje stan; 'add', 'del' i 'set' mogą zerwać połączenie. To nie zapis trwałej konfiguracji.",
+      "scopeEn": "iproute2. 'show' reads state; 'add', 'del' and 'set' may disconnect you. They do not provide persistent configuration.",
+      "platform": "Linux",
+      "sources": [
+        "iproute-ip"
+      ],
+      "options": [
+        {
+          "syntax": "-br, -brief",
+          "description": "Zwięzły widok interfejsów.",
+          "descriptionEn": "Brief interface output.",
+          "example": ""
+        },
+        {
+          "syntax": "-4 / -6",
+          "description": "Tylko IPv4 / IPv6.",
+          "descriptionEn": "IPv4 / IPv6 only.",
+          "example": ""
+        },
+        {
+          "syntax": "-s, -stats",
+          "description": "Statystyki interfejsów.",
+          "descriptionEn": "Interface statistics.",
+          "example": ""
+        },
+        {
+          "syntax": "-d, -details",
+          "description": "Dodatkowe szczegóły.",
+          "descriptionEn": "Additional details.",
+          "example": ""
+        },
+        {
+          "syntax": "-j, -json",
+          "description": "Wynik JSON.",
+          "descriptionEn": "JSON output.",
+          "example": ""
+        },
+        {
+          "syntax": "address show",
+          "description": "Adresy przypisane interfejsom.",
+          "descriptionEn": "Addresses assigned to interfaces.",
+          "example": ""
+        },
+        {
+          "syntax": "route show",
+          "description": "Tablica routingu.",
+          "descriptionEn": "Routing table.",
+          "example": ""
+        },
+        {
+          "syntax": "link show",
+          "description": "Łącza i ich stan.",
+          "descriptionEn": "Links and their state.",
+          "example": ""
+        }
+      ]
+    },
+    {
+      "id": "ss",
+      "tools": [
+        "ss"
+      ],
+      "title": "ss",
+      "scope": "iproute2. Informacje o procesach (-p) mogą wymagać dodatkowych uprawnień.",
+      "scopeEn": "iproute2. Process details (-p) may require extra permissions.",
+      "platform": "Linux",
+      "sources": [
+        "iproute-ss"
+      ],
+      "options": [
+        {
+          "syntax": "-t, --tcp",
+          "description": "Gniazda TCP.",
+          "descriptionEn": "TCP sockets.",
+          "example": ""
+        },
+        {
+          "syntax": "-u, --udp",
+          "description": "Gniazda UDP.",
+          "descriptionEn": "UDP sockets.",
+          "example": ""
+        },
+        {
+          "syntax": "-l, --listening",
+          "description": "Tylko nasłuchujące gniazda.",
+          "descriptionEn": "Listening sockets only.",
+          "example": ""
+        },
+        {
+          "syntax": "-a, --all",
+          "description": "Także nienasłuchujące gniazda.",
+          "descriptionEn": "Include non-listening sockets.",
+          "example": ""
+        },
+        {
+          "syntax": "-n, --numeric",
+          "description": "Bez zamiany portów na nazwy.",
+          "descriptionEn": "Do not resolve service names.",
+          "example": ""
+        },
+        {
+          "syntax": "-p, --processes",
+          "description": "Procesy korzystające z gniazd.",
+          "descriptionEn": "Processes using the sockets.",
+          "example": ""
+        },
+        {
+          "syntax": "-s, --summary",
+          "description": "Podsumowanie gniazd.",
+          "descriptionEn": "Socket summary.",
+          "example": ""
+        },
+        {
+          "syntax": "-4 / -6",
+          "description": "Tylko IPv4 / IPv6.",
+          "descriptionEn": "IPv4 / IPv6 only.",
+          "example": ""
+        }
+      ]
+    },
+    {
+      "id": "ssh-keygen",
+      "tools": [
+        "ssh-keygen"
+      ],
+      "title": "ssh-keygen",
+      "scope": "OpenSSH. Hasło klucza podawaj w interaktywnym pytaniu, nie w argumentach. Nie nadpisuj istniejącego klucza.",
+      "scopeEn": "OpenSSH. Enter passphrases at the interactive prompt, not in arguments. Do not overwrite an existing key.",
+      "platform": "General",
+      "sources": [
+        "openssh-keygen"
+      ],
+      "options": [
+        {
+          "syntax": "-t TYPE",
+          "description": "Typ klucza, np. ed25519 lub rsa.",
+          "descriptionEn": "Key type, e.g. ed25519 or rsa.",
+          "example": ""
+        },
+        {
+          "syntax": "-a ROUNDS",
+          "description": "Koszt KDF ochrony hasłem klucza.",
+          "descriptionEn": "Passphrase-protection KDF work factor.",
+          "example": ""
+        },
+        {
+          "syntax": "-C COMMENT",
+          "description": "Komentarz identyfikujący klucz.",
+          "descriptionEn": "Comment identifying the key.",
+          "example": ""
+        },
+        {
+          "syntax": "-f FILE",
+          "description": "Plik wejściowy lub docelowy.",
+          "descriptionEn": "Input or destination file.",
+          "example": ""
+        },
+        {
+          "syntax": "-l",
+          "description": "Pokaż odcisk klucza.",
+          "descriptionEn": "Show a key fingerprint.",
+          "example": ""
+        },
+        {
+          "syntax": "-E sha256",
+          "description": "Format skrótu odcisku.",
+          "descriptionEn": "Fingerprint hash algorithm.",
+          "example": ""
+        },
+        {
+          "syntax": "-p",
+          "description": "Zmień hasło istniejącego klucza.",
+          "descriptionEn": "Change an existing key's passphrase.",
+          "example": ""
+        },
+        {
+          "syntax": "-y",
+          "description": "Wyprowadź klucz publiczny z prywatnego.",
+          "descriptionEn": "Derive the public key from private material.",
+          "example": ""
+        }
+      ]
+    },
+    {
+      "id": "ssh",
+      "tools": [
+        "ssh"
+      ],
+      "title": "ssh",
+      "scope": "Klient OpenSSH. Serwer RDP nie jest serwerem SSH. Nie wyłączaj sprawdzania tożsamości hosta przy diagnozowaniu.",
+      "scopeEn": "OpenSSH client. An RDP server is not an SSH server. Keep host identity checking enabled while diagnosing.",
+      "platform": "General",
+      "sources": [
+        "openssh-client"
+      ],
+      "options": [
+        {
+          "syntax": "-p PORT",
+          "description": "Port serwera SSH.",
+          "descriptionEn": "SSH server port.",
+          "example": ""
+        },
+        {
+          "syntax": "-i FILE",
+          "description": "Wybrany plik klucza logowania.",
+          "descriptionEn": "Selected identity key file.",
+          "example": ""
+        },
+        {
+          "syntax": "-l USER",
+          "description": "Login na serwerze.",
+          "descriptionEn": "Server username.",
+          "example": ""
+        },
+        {
+          "syntax": "-v / -vv / -vvv",
+          "description": "Rosnący poziom diagnostyki.",
+          "descriptionEn": "Increasing diagnostic verbosity.",
+          "example": ""
+        },
+        {
+          "syntax": "-o IdentitiesOnly=yes",
+          "description": "Ogranicz proponowane tożsamości.",
+          "descriptionEn": "Restrict offered identities.",
+          "example": ""
+        },
+        {
+          "syntax": "-F FILE",
+          "description": "Alternatywny plik konfiguracji klienta.",
+          "descriptionEn": "Alternative client configuration file.",
+          "example": ""
+        },
+        {
+          "syntax": "-J HOST",
+          "description": "Host pośredni ProxyJump.",
+          "descriptionEn": "ProxyJump gateway host.",
+          "example": ""
+        }
+      ]
+    },
+    {
+      "id": "nmcli",
+      "tools": [
+        "nmcli"
+      ],
+      "title": "nmcli",
+      "scope": "Tylko interfejsy zarządzane przez NetworkManager. Zmiana profilu i jego aktywacja to oddzielne operacje.",
+      "scopeEn": "Only interfaces managed by NetworkManager. Editing and activating a profile are separate operations.",
+      "platform": "Linux",
+      "sources": [
+        "networkmanager"
+      ],
+      "options": [
+        {
+          "syntax": "-t, --terse",
+          "description": "Zwięzły format dla skryptów.",
+          "descriptionEn": "Terse script-friendly output.",
+          "example": ""
+        },
+        {
+          "syntax": "-f, --fields FIELDS",
+          "description": "Wybierz wyświetlane pola.",
+          "descriptionEn": "Choose displayed fields.",
+          "example": ""
+        },
+        {
+          "syntax": "-g, --get-values FIELDS",
+          "description": "Same wartości wybranych pól.",
+          "descriptionEn": "Only selected field values.",
+          "example": ""
+        },
+        {
+          "syntax": "-p, --pretty",
+          "description": "Czytelne formatowanie dla człowieka.",
+          "descriptionEn": "Human-readable formatting.",
+          "example": ""
+        },
+        {
+          "syntax": "-a, --ask",
+          "description": "Pytaj o brakujące dane interaktywnie.",
+          "descriptionEn": "Prompt for missing data interactively.",
+          "example": ""
+        },
+        {
+          "syntax": "connection show",
+          "description": "Zapisane profile połączeń.",
+          "descriptionEn": "Saved connection profiles.",
+          "example": ""
+        },
+        {
+          "syntax": "device status",
+          "description": "Stan urządzeń sieciowych.",
+          "descriptionEn": "Network device status.",
+          "example": ""
+        },
+        {
+          "syntax": "device show IFACE",
+          "description": "Szczegóły wybranego urządzenia.",
+          "descriptionEn": "Details of the selected device.",
+          "example": ""
+        }
+      ]
+    },
+    {
+      "id": "netplan",
+      "tools": [
+        "netplan"
+      ],
+      "title": "netplan",
+      "scope": "Ubuntu/inne systemy używające Netplan. Dostępność poleceń zależy od wersji; try ma ograniczenia wycofywania zmian.",
+      "scopeEn": "Ubuntu/other systems using Netplan. Commands depend on version; try has rollback limitations.",
+      "platform": "Linux",
+      "sources": [
+        "netplan-try",
+        "netplan-yaml"
+      ],
+      "options": [
+        {
+          "syntax": "get",
+          "description": "Pokaż scaloną konfigurację.",
+          "descriptionEn": "Show merged configuration.",
+          "example": ""
+        },
+        {
+          "syntax": "generate",
+          "description": "Sprawdź i wygeneruj konfigurację backendu.",
+          "descriptionEn": "Validate and generate backend configuration.",
+          "example": ""
+        },
+        {
+          "syntax": "try --timeout N",
+          "description": "Próba zmian z terminem potwierdzenia.",
+          "descriptionEn": "Try changes with a confirmation deadline.",
+          "example": ""
+        },
+        {
+          "syntax": "apply",
+          "description": "Zastosuj zmiany bez interaktywnego rollbacku.",
+          "descriptionEn": "Apply changes without interactive rollback.",
+          "example": ""
+        },
+        {
+          "syntax": "--debug",
+          "description": "Więcej informacji diagnostycznych.",
+          "descriptionEn": "More diagnostic information.",
+          "example": ""
+        },
+        {
+          "syntax": "--help",
+          "description": "Pomoc dla zainstalowanej wersji.",
+          "descriptionEn": "Help for the installed version.",
+          "example": ""
+        }
+      ]
+    },
+    {
+      "id": "curl",
+      "tools": [
+        "curl"
+      ],
+      "title": "curl",
+      "scope": "curl; wielkość liter ma znaczenie. -I sprawdza nagłówki. Nie używaj -k jako naprawy niezaufanego TLS.",
+      "scopeEn": "curl; case matters. -I requests headers. Do not use -k as a fix for untrusted TLS.",
+      "platform": "General",
+      "sources": [
+        "curl-manual"
+      ],
+      "options": [
+        {
+          "syntax": "-I, --head",
+          "description": "Zapytanie o nagłówki HEAD.",
+          "descriptionEn": "Request HEAD response headers.",
+          "example": ""
+        },
+        {
+          "syntax": "-L, --location",
+          "description": "Podążaj za przekierowaniami HTTP.",
+          "descriptionEn": "Follow HTTP redirects.",
+          "example": ""
+        },
+        {
+          "syntax": "--max-time SECONDS",
+          "description": "Limit całej operacji.",
+          "descriptionEn": "Overall operation timeout.",
+          "example": ""
+        },
+        {
+          "syntax": "--connect-timeout SECONDS",
+          "description": "Limit ustanawiania połączenia.",
+          "descriptionEn": "Connection establishment timeout.",
+          "example": ""
+        },
+        {
+          "syntax": "-s, --silent",
+          "description": "Bez paska postępu i komunikatów błędu.",
+          "descriptionEn": "Hide progress and error messages.",
+          "example": ""
+        },
+        {
+          "syntax": "-S, --show-error",
+          "description": "Pokaż błędy także z -s.",
+          "descriptionEn": "Show errors even with -s.",
+          "example": ""
+        },
+        {
+          "syntax": "-f, --fail",
+          "description": "Błąd statusu dla HTTP 400+.",
+          "descriptionEn": "Fail for HTTP status 400+.",
+          "example": ""
+        },
+        {
+          "syntax": "-o, --output FILE",
+          "description": "Zapisz odpowiedź do pliku.",
+          "descriptionEn": "Save the response to a file.",
+          "example": ""
+        },
+        {
+          "syntax": "-H, --header HEADER",
+          "description": "Dodaj wskazany nagłówek.",
+          "descriptionEn": "Add a request header.",
+          "example": ""
+        }
+      ]
+    },
+    {
+      "id": "tail",
+      "tools": [
+        "tail"
+      ],
+      "title": "tail",
+      "scope": "GNU tail. Do rotowanych plików logów przydatne jest -F.",
+      "scopeEn": "GNU tail. -F is useful for rotated log files.",
+      "platform": "Linux",
+      "sources": [
+        "gnu-tail"
+      ],
+      "options": [
+        {
+          "syntax": "-n N, --lines=N",
+          "description": "Ostatnie N wierszy.",
+          "descriptionEn": "Last N lines.",
+          "example": ""
+        },
+        {
+          "syntax": "-f, --follow",
+          "description": "Śledź dopisywaną zawartość.",
+          "descriptionEn": "Follow appended content.",
+          "example": ""
+        },
+        {
+          "syntax": "-F",
+          "description": "Śledź nazwę i ponawiaj po rotacji.",
+          "descriptionEn": "Follow by name and retry after rotation.",
+          "example": ""
+        },
+        {
+          "syntax": "-c N, --bytes=N",
+          "description": "Ostatnie N bajtów.",
+          "descriptionEn": "Last N bytes.",
+          "example": ""
+        },
+        {
+          "syntax": "--pid=PID",
+          "description": "Zakończ po zniknięciu procesu przy -f.",
+          "descriptionEn": "Stop following after the process exits.",
+          "example": ""
+        }
+      ]
+    },
+    {
+      "id": "df",
+      "tools": [
+        "df"
+      ],
+      "title": "df",
+      "scope": "GNU df: zajętość systemu plików, nie rozmiar pojedynczego katalogu.",
+      "scopeEn": "GNU df: filesystem usage, not an individual directory's size.",
+      "platform": "Linux",
+      "sources": [
+        "gnu-df"
+      ],
+      "options": [
+        {
+          "syntax": "-h, --human-readable",
+          "description": "Rozmiary w potęgach 1024.",
+          "descriptionEn": "Sizes in powers of 1024.",
+          "example": ""
+        },
+        {
+          "syntax": "-H, --si",
+          "description": "Rozmiary w potęgach 1000.",
+          "descriptionEn": "Sizes in powers of 1000.",
+          "example": ""
+        },
+        {
+          "syntax": "-T, --print-type",
+          "description": "Pokaż typ systemu plików.",
+          "descriptionEn": "Show filesystem type.",
+          "example": ""
+        },
+        {
+          "syntax": "-i, --inodes",
+          "description": "Wolne i-węzły zamiast bloków.",
+          "descriptionEn": "Free inodes instead of blocks.",
+          "example": ""
+        },
+        {
+          "syntax": "-x, --exclude-type=TYPE",
+          "description": "Pomiń wskazany typ systemu plików.",
+          "descriptionEn": "Exclude a filesystem type.",
+          "example": ""
+        }
+      ]
+    },
+    {
+      "id": "du",
+      "tools": [
+        "du"
+      ],
+      "title": "du",
+      "scope": "GNU du. Odczyt dużego drzewa może potrwać; brak uprawnień daje niepełny wynik.",
+      "scopeEn": "GNU du. Large trees may take time; access denial yields incomplete results.",
+      "platform": "Linux",
+      "sources": [
+        "gnu-du"
+      ],
+      "options": [
+        {
+          "syntax": "-h, --human-readable",
+          "description": "Czytelne rozmiary.",
+          "descriptionEn": "Human-readable sizes.",
+          "example": ""
+        },
+        {
+          "syntax": "-s, --summarize",
+          "description": "Tylko podsumowanie argumentów.",
+          "descriptionEn": "Only totals for arguments.",
+          "example": ""
+        },
+        {
+          "syntax": "-d N, --max-depth=N",
+          "description": "Ogranicz poziomy raportu.",
+          "descriptionEn": "Limit reported depth.",
+          "example": ""
+        },
+        {
+          "syntax": "-x, --one-file-system",
+          "description": "Nie przechodź na inne systemy plików.",
+          "descriptionEn": "Stay on one filesystem.",
+          "example": ""
+        },
+        {
+          "syntax": "--apparent-size",
+          "description": "Rozmiar logiczny zamiast alokacji.",
+          "descriptionEn": "Logical size, not allocated storage.",
+          "example": ""
+        }
+      ]
+    },
+    {
+      "id": "chmod",
+      "tools": [
+        "chmod"
+      ],
+      "title": "chmod",
+      "scope": "Zmienia uprawnienia. -R dotyczy całego drzewa; pliki i katalogi mają inne potrzeby dotyczące x.",
+      "scopeEn": "Changes permissions. -R affects a whole tree; files and directories have different needs for x.",
+      "platform": "Linux",
+      "sources": [
+        "gnu-chmod"
+      ],
+      "options": [
+        {
+          "syntax": "u / g / o / a",
+          "description": "Właściciel / grupa / inni / wszyscy.",
+          "descriptionEn": "Owner / group / others / all.",
+          "example": ""
+        },
+        {
+          "syntax": "+r / -w / +x",
+          "description": "Dodaj odczyt / odbierz zapis / dodaj wykonanie.",
+          "descriptionEn": "Add read / remove write / add execute.",
+          "example": ""
+        },
+        {
+          "syntax": "600 / 640 / 750",
+          "description": "Zapis ósemkowy trójek rwx.",
+          "descriptionEn": "Octal notation of rwx triplets.",
+          "example": ""
+        },
+        {
+          "syntax": "-R, --recursive",
+          "description": "Zmień też potomne wpisy.",
+          "descriptionEn": "Also change descendant entries.",
+          "example": ""
+        },
+        {
+          "syntax": "-c, --changes",
+          "description": "Raportuj tylko faktyczne zmiany.",
+          "descriptionEn": "Report only actual changes.",
+          "example": ""
+        },
+        {
+          "syntax": "--reference=FILE",
+          "description": "Użyj uprawnień pliku wzorcowego.",
+          "descriptionEn": "Use a reference file's permissions.",
+          "example": ""
+        }
+      ]
+    },
+    {
+      "id": "docker-logs",
+      "tools": [
+        "docker"
+      ],
+      "title": "docker logs",
+      "scope": "Te opcje dotyczą podpolecenia logs, nie wszystkich poleceń Docker. Działanie zależy od sterownika logowania.",
+      "scopeEn": "These options belong to the logs subcommand, not every Docker command. Availability depends on the logging driver.",
+      "platform": "General",
+      "sources": [
+        "docker-logs"
+      ],
+      "options": [
+        {
+          "syntax": "logs --follow, logs -f",
+          "description": "Śledź nowe komunikaty kontenera.",
+          "descriptionEn": "Follow new container messages.",
+          "example": ""
+        },
+        {
+          "syntax": "logs --tail N",
+          "description": "Ostatnie N wierszy.",
+          "descriptionEn": "Last N lines.",
+          "example": ""
+        },
+        {
+          "syntax": "logs --since TIME",
+          "description": "Początek czasu lub np. 30m.",
+          "descriptionEn": "Start timestamp or e.g. 30m.",
+          "example": ""
+        },
+        {
+          "syntax": "logs --until TIME",
+          "description": "Koniec zakresu czasu.",
+          "descriptionEn": "End of the time range.",
+          "example": ""
+        },
+        {
+          "syntax": "logs --timestamps, logs -t",
+          "description": "Dodaj znaczniki czasu.",
+          "descriptionEn": "Add timestamps.",
+          "example": ""
+        },
+        {
+          "syntax": "logs --details",
+          "description": "Dodatkowe atrybuty wpisów.",
+          "descriptionEn": "Additional log entry attributes.",
+          "example": ""
+        }
+      ]
+    },
+    {
+      "id": "git",
+      "tools": [
+        "git"
+      ],
+      "title": "git · global",
+      "scope": "Opcje globalne stoją przed podpoleceniem, np. git -C /repo status. Parametry status/log/diff mają oddzielne znaczenie.",
+      "scopeEn": "Global options precede the subcommand, e.g. git -C /repo status. status/log/diff have their own parameters.",
+      "platform": "General",
+      "sources": [
+        "git-reference"
+      ],
+      "options": [
+        {
+          "syntax": "-C PATH",
+          "description": "Działaj w podanym katalogu.",
+          "descriptionEn": "Operate in the specified directory.",
+          "example": ""
+        },
+        {
+          "syntax": "--no-pager",
+          "description": "Bez przeglądarki wyników.",
+          "descriptionEn": "Disable output paging.",
+          "example": ""
+        },
+        {
+          "syntax": "--git-dir=PATH",
+          "description": "Wskaż katalog danych repozytorium.",
+          "descriptionEn": "Select repository metadata directory.",
+          "example": ""
+        },
+        {
+          "syntax": "--work-tree=PATH",
+          "description": "Wskaż drzewo robocze.",
+          "descriptionEn": "Select the working tree.",
+          "example": ""
+        },
+        {
+          "syntax": "--version",
+          "description": "Wersja klienta Git.",
+          "descriptionEn": "Git client version.",
+          "example": ""
+        },
+        {
+          "syntax": "--help",
+          "description": "Pomoc dla podpolecenia.",
+          "descriptionEn": "Help for a subcommand.",
+          "example": ""
+        }
+      ]
+    },
+    {
+      "id": "apt",
+      "tools": [
+        "apt"
+      ],
+      "title": "apt",
+      "scope": "Debian/Ubuntu. Interfejs dla człowieka; do skryptów dobierz apt-get. update odświeża indeks, a upgrade zmienia pakiety.",
+      "scopeEn": "Debian/Ubuntu. Human-facing interface; use apt-get as appropriate in scripts. update refreshes indexes; upgrade changes packages.",
+      "platform": "Linux",
+      "sources": [
+        "debian-apt"
+      ],
+      "options": [
+        {
+          "syntax": "list --installed",
+          "description": "Lista zainstalowanych pakietów.",
+          "descriptionEn": "List installed packages.",
+          "example": ""
+        },
+        {
+          "syntax": "list --upgradable",
+          "description": "Dostępne aktualizacje.",
+          "descriptionEn": "Available upgrades.",
+          "example": ""
+        },
+        {
+          "syntax": "show PACKAGE",
+          "description": "Informacje o pakiecie.",
+          "descriptionEn": "Package information.",
+          "example": ""
+        },
+        {
+          "syntax": "search TERM",
+          "description": "Przeszukaj opisy pakietów.",
+          "descriptionEn": "Search package descriptions.",
+          "example": ""
+        },
+        {
+          "syntax": "-s, --simulate",
+          "description": "Symulacja planowanej operacji.",
+          "descriptionEn": "Simulate the planned operation.",
+          "example": ""
+        },
+        {
+          "syntax": "--no-install-recommends",
+          "description": "Bez automatycznych rekomendacji.",
+          "descriptionEn": "Do not automatically install recommendations.",
+          "example": ""
+        }
+      ]
+    },
+    {
+      "id": "get-childitem",
+      "tools": [
+        "Get-ChildItem"
+      ],
+      "title": "Get-ChildItem",
+      "scope": "PowerShell. Alias ls nie oznacza GNU ls; przełączników -lah nie przenoś z Linuxa.",
+      "scopeEn": "PowerShell. The ls alias is not GNU ls; do not transfer Linux -lah switches.",
+      "platform": "Windows",
+      "sources": [
+        "powershell-files"
+      ],
+      "options": [
+        {
+          "syntax": "-Path PATH",
+          "description": "Ścieżka z obsługą wildcardów.",
+          "descriptionEn": "Path supporting wildcards.",
+          "example": ""
+        },
+        {
+          "syntax": "-LiteralPath PATH",
+          "description": "Ścieżka bez interpretowania wildcardów.",
+          "descriptionEn": "Path without wildcard interpretation.",
+          "example": ""
+        },
+        {
+          "syntax": "-Force",
+          "description": "Także ukryte wpisy; bez obejścia ACL.",
+          "descriptionEn": "Include hidden items; does not bypass ACLs.",
+          "example": ""
+        },
+        {
+          "syntax": "-Recurse",
+          "description": "Zawartość podkatalogów.",
+          "descriptionEn": "Subdirectory contents.",
+          "example": ""
+        },
+        {
+          "syntax": "-Depth N",
+          "description": "Głębokość przeglądania.",
+          "descriptionEn": "Traversal depth.",
+          "example": ""
+        },
+        {
+          "syntax": "-File / -Directory",
+          "description": "Tylko pliki / katalogi.",
+          "descriptionEn": "Files / directories only.",
+          "example": ""
+        },
+        {
+          "syntax": "-Filter PATTERN",
+          "description": "Filtr dostawcy systemu plików.",
+          "descriptionEn": "Filesystem provider filter.",
+          "example": ""
+        },
+        {
+          "syntax": "-Name",
+          "description": "Tylko nazwy zamiast obiektów.",
+          "descriptionEn": "Names instead of objects.",
+          "example": ""
+        }
+      ]
+    },
+    {
+      "id": "get-winevent",
+      "tools": [
+        "Get-WinEvent"
+      ],
+      "title": "Get-WinEvent",
+      "scope": "Windows PowerShell/PowerShell na Windows. Dostęp do części logów wymaga podniesionych uprawnień.",
+      "scopeEn": "Windows PowerShell/PowerShell on Windows. Some logs require elevated access.",
+      "platform": "Windows",
+      "sources": [
+        "windows-events"
+      ],
+      "options": [
+        {
+          "syntax": "-LogName NAME",
+          "description": "Wybrany dziennik.",
+          "descriptionEn": "Selected event log.",
+          "example": ""
+        },
+        {
+          "syntax": "-MaxEvents N",
+          "description": "Ogranicz liczbę wpisów.",
+          "descriptionEn": "Limit the entry count.",
+          "example": ""
+        },
+        {
+          "syntax": "-FilterHashtable @{...}",
+          "description": "Filtrowanie m.in. czasu, ID i poziomu.",
+          "descriptionEn": "Filter time, event ID and level.",
+          "example": ""
+        },
+        {
+          "syntax": "-FilterXPath QUERY",
+          "description": "Zapytanie XPath do dziennika.",
+          "descriptionEn": "XPath event query.",
+          "example": ""
+        },
+        {
+          "syntax": "-ListLog PATTERN",
+          "description": "Lista dostępnych dzienników.",
+          "descriptionEn": "List available event logs.",
+          "example": ""
+        },
+        {
+          "syntax": "-Oldest",
+          "description": "Najstarsze wpisy jako pierwsze.",
+          "descriptionEn": "Oldest entries first.",
+          "example": ""
+        },
+        {
+          "syntax": "-Path FILE",
+          "description": "Odczytaj zapisany plik EVTX.",
+          "descriptionEn": "Read a saved EVTX file.",
+          "example": ""
+        }
+      ]
+    },
+    {
+      "id": "get-netipconfiguration",
+      "tools": [
+        "Get-NetIPConfiguration"
+      ],
+      "title": "Get-NetIPConfiguration",
+      "scope": "Moduł NetTCPIP w Windows; odczyt stanu sieci.",
+      "scopeEn": "Windows NetTCPIP module; reads network state.",
+      "platform": "Windows",
+      "sources": [
+        "windows-ip"
+      ],
+      "options": [
+        {
+          "syntax": "-InterfaceAlias NAME",
+          "description": "Wskaż nazwę interfejsu.",
+          "descriptionEn": "Select an interface name.",
+          "example": ""
+        },
+        {
+          "syntax": "-InterfaceIndex N",
+          "description": "Wskaż numer interfejsu.",
+          "descriptionEn": "Select an interface index.",
+          "example": ""
+        },
+        {
+          "syntax": "-Detailed",
+          "description": "Dodatkowe właściwości.",
+          "descriptionEn": "Additional properties.",
+          "example": ""
+        },
+        {
+          "syntax": "-All",
+          "description": "Także interfejsy wirtualne/rozłączone.",
+          "descriptionEn": "Include virtual/disconnected interfaces.",
+          "example": ""
+        },
+        {
+          "syntax": "-AllCompartments",
+          "description": "Wszystkie przedziały sieciowe.",
+          "descriptionEn": "All network compartments.",
+          "example": ""
+        }
+      ]
+    }
+  ],
+  "guides": [
+    {
+      "id": "ssh-key-linux",
+      "title": "Jak wygenerować klucz SSH w Linuxie",
+      "titleEn": "Generate an SSH key on Linux",
+      "summary": "Klucz Ed25519, odcisk i bezpieczne przekazanie części publicznej.",
+      "summaryEn": "Ed25519 key, fingerprint and safe public-key sharing.",
+      "category": "security",
+      "platform": "Linux",
+      "appliesTo": "Linux z klientem OpenSSH",
+      "appliesToEn": "Linux with OpenSSH client",
+      "warning": "",
+      "warningEn": "",
+      "tags": [
+        "ssh-keygen",
+        "klucz",
+        "key",
+        "ed25519",
+        "authorized_keys",
+        "ssh"
+      ],
+      "sources": [
+        "openssh-keygen",
+        "openssh-client"
+      ],
+      "steps": [
+        {
+          "title": "Sprawdź istniejące pliki",
+          "titleEn": "Check existing files",
+          "text": "Wykonaj na komputerze, z którego będziesz się łączyć. Jeśli klucz już istnieje, wybierz inną nazwę; nie zastępuj go bez planu migracji.",
+          "textEn": "Run on the computer you will connect from. If a key exists, choose another name; do not replace it without a migration plan.",
+          "code": "ls -la -- ~/.ssh",
+          "risk": "ReadOnly"
+        },
+        {
+          "title": "Utwórz klucz",
+          "titleEn": "Create the key",
+          "text": "Zmień komentarz. Program zapyta o plik i hasło ochronne; wpisz hasło w pytaniu, nie w komendzie. Domyślnie powstaną id_ed25519 i id_ed25519.pub.",
+          "textEn": "Change the comment. The program prompts for a file and protective passphrase; enter it at the prompt, not in the command. Defaults are id_ed25519 and id_ed25519.pub.",
+          "code": "ssh-keygen -t ed25519 -a 64 -C 'user@example.com'",
+          "risk": "Modify"
+        },
+        {
+          "title": "Sprawdź odcisk części publicznej",
+          "titleEn": "Check the public fingerprint",
+          "text": "Plik .pub można przekazać administratorowi serwera. Plik bez .pub jest prywatny: nie wklejaj go do zgłoszeń ani logów.",
+          "textEn": "The .pub file can be shared with the server administrator. The file without .pub is private: keep it out of tickets and logs.",
+          "code": "ssh-keygen -lf ~/.ssh/id_ed25519.pub",
+          "risk": "ReadOnly"
+        },
+        {
+          "title": "Wybierz klucz w ServerDesk",
+          "titleEn": "Select the key in ServerDesk",
+          "text": "W profilu SSH ustaw Klucz prywatny i wskaż plik bez .pub. Administrator dopisuje część publiczną do authorized_keys właściwego konta. Zweryfikuj odcisk hosta przy pierwszym połączeniu.",
+          "textEn": "Choose Private key in the SSH profile and select the file without .pub. The administrator adds the public part to the correct account's authorized_keys. Verify the host fingerprint on first connection.",
+          "code": "",
+          "risk": "ReadOnly"
+        }
+      ]
+    },
+    {
+      "id": "ssh-key-windows",
+      "title": "Jak wygenerować klucz SSH w Windows",
+      "titleEn": "Generate an SSH key on Windows",
+      "summary": "OpenSSH w PowerShell i lokalizacja plików użytkownika.",
+      "summaryEn": "OpenSSH in PowerShell and user key locations.",
+      "category": "security",
+      "platform": "Windows",
+      "appliesTo": "Windows z zainstalowanym klientem OpenSSH",
+      "appliesToEn": "Windows with the OpenSSH client installed",
+      "warning": "",
+      "warningEn": "",
+      "tags": [
+        "ssh-keygen",
+        "klucz",
+        "key",
+        "ed25519",
+        "powershell"
+      ],
+      "sources": [
+        "windows-ssh",
+        "openssh-keygen"
+      ],
+      "steps": [
+        {
+          "title": "Sprawdź klienta i katalog",
+          "titleEn": "Check client and directory",
+          "text": "Otwórz PowerShell. Brak ssh-keygen oznacza konieczność zainstalowania funkcji Klient OpenSSH. Domyślny katalog to .ssh w profilu bieżącego użytkownika.",
+          "textEn": "Open PowerShell. If ssh-keygen is missing, install the OpenSSH Client optional feature. The default directory is .ssh in the current user's profile.",
+          "code": "Get-Command ssh-keygen\nGet-ChildItem -Force -LiteralPath \"$HOME\\.ssh\"",
+          "risk": "ReadOnly"
+        },
+        {
+          "title": "Wygeneruj Ed25519",
+          "titleEn": "Generate Ed25519",
+          "text": "Podaj komentarz i odpowiedz na pytania o ścieżkę i passphrase. Nie potwierdzaj nadpisania istniejącego pliku.",
+          "textEn": "Set a comment and answer the path/passphrase prompts. Do not approve overwriting an existing file.",
+          "code": "ssh-keygen -t ed25519 -a 64 -C 'user@example.com'",
+          "risk": "Modify"
+        },
+        {
+          "title": "Odczytaj wyłącznie klucz publiczny",
+          "titleEn": "Read only the public key",
+          "text": "Wysyłaj plik z rozszerzeniem .pub. Nie zmieniaj ACL klucza prywatnego na dostęp dla wszystkich.",
+          "textEn": "Share the file ending in .pub. Do not grant everyone access to the private key's ACL.",
+          "code": "Get-Content -LiteralPath \"$HOME\\.ssh\\id_ed25519.pub\"",
+          "risk": "ReadOnly"
+        },
+        {
+          "title": "Zapisz profil SSH",
+          "titleEn": "Save an SSH profile",
+          "text": "W ServerDesk wybierz plik id_ed25519 jako Klucz prywatny. Opcja Klucz SSH z sejfu służy do osobnego wpisu SSH Key w Bitwarden/Vaultwarden. Login to konto na serwerze docelowym.",
+          "textEn": "Select id_ed25519 as a Private key in ServerDesk. SSH key from vault instead uses a separate SSH Key item in Bitwarden/Vaultwarden. The username is an account on the destination server.",
+          "code": "",
+          "risk": "ReadOnly"
+        }
+      ]
+    },
+    {
+      "id": "linux-network-owner",
+      "title": "Linux: gdzie zmieniać ustawienia sieci",
+      "titleEn": "Linux: where to change network settings",
+      "summary": "Najpierw ustal, który menedżer zarządza interfejsem.",
+      "summaryEn": "First identify which manager owns the interface.",
+      "category": "network",
+      "platform": "Linux",
+      "appliesTo": "Linux; dostępność poleceń zależy od instalacji",
+      "appliesToEn": "Linux; command availability depends on installation",
+      "warning": "Zmiana adresu, bramy lub profilu może zerwać SSH/RDP. Przed zmianą przygotuj konsolę i sposób powrotu.",
+      "warningEn": "Changing address, gateway or profile may disconnect SSH/RDP. Prepare console access and a recovery plan first.",
+      "tags": [
+        "ip",
+        "siec",
+        "network",
+        "dns",
+        "adres",
+        "gateway",
+        "brama",
+        "konfiguracja"
+      ],
+      "sources": [
+        "debian-network",
+        "networkmanager",
+        "netplan-yaml",
+        "systemd-network"
+      ],
+      "steps": [
+        {
+          "title": "Zapisz stan wyjściowy",
+          "titleEn": "Record the current state",
+          "text": "Zanotuj adresy, nazwę interfejsu i bramę. Zmiany ip są zwykle ulotne; trwałą konfigurację wprowadza się w narzędziu zarządzającym siecią.",
+          "textEn": "Record addresses, interface name and gateway. ip changes are usually temporary; persistent settings belong to the active network manager.",
+          "code": "ip -brief address\nip route show",
+          "risk": "ReadOnly"
+        },
+        {
+          "title": "Ustal właściciela interfejsu",
+          "titleEn": "Find the interface owner",
+          "text": "Sprawdź nmcli device status i networkctl status. Sama obecność lub aktywność usługi nie dowodzi, że zarządza konkretnym interfejsem. Nie konfiguruj go jednocześnie w dwóch menedżerach.",
+          "textEn": "Check nmcli device status and networkctl status. A running service alone does not prove it owns a particular interface. Do not configure it in two managers at once.",
+          "code": "nmcli device status\nnetworkctl status",
+          "risk": "ReadOnly"
+        },
+        {
+          "title": "Wybierz właściwą konfigurację",
+          "titleEn": "Choose the correct configuration",
+          "text": "NetworkManager: zapisane profile; Netplan: /etc/netplan/*.yaml; networkd: /etc/systemd/network/*.network; ifupdown: /etc/network/interfaces. Cloud-init może ponownie generować pliki.",
+          "textEn": "NetworkManager: saved profiles; Netplan: /etc/netplan/*.yaml; networkd: /etc/systemd/network/*.network; ifupdown: /etc/network/interfaces. Cloud-init may regenerate files.",
+          "code": "",
+          "risk": "ReadOnly"
+        },
+        {
+          "title": "Sprawdź po zmianie",
+          "titleEn": "Verify after changing",
+          "text": "Porównaj adres, trasę i DNS. Testuj oddzielnie dostęp po IP i po nazwie; błąd DNS nie oznacza automatycznie braku sieci.",
+          "textEn": "Compare address, route and DNS. Test IP reachability separately from name resolution; DNS failure does not automatically mean the network is down.",
+          "code": "ip -brief address\nip route show\ngetent hosts example.com",
+          "risk": "ReadOnly"
+        }
+      ]
+    },
+    {
+      "id": "networkmanager-profile",
+      "title": "NetworkManager: profil, adres i DNS",
+      "titleEn": "NetworkManager: profile, address and DNS",
+      "summary": "Odróżnij zapisany profil od aktywnego urządzenia.",
+      "summaryEn": "Distinguish a saved profile from an active device.",
+      "category": "network",
+      "platform": "Linux",
+      "appliesTo": "Interfejsy obsługiwane przez NetworkManager",
+      "appliesToEn": "Interfaces managed by NetworkManager",
+      "warning": "Ponowna aktywacja profilu może odłączyć bieżącą sesję. Nie włączaj --show-secrets do zwykłej diagnostyki.",
+      "warningEn": "Reactivating a profile can disconnect the session. Do not enable --show-secrets for ordinary diagnostics.",
+      "tags": [
+        "nmcli",
+        "nmtui",
+        "dns",
+        "networkmanager",
+        "static",
+        "siec",
+        "ip"
+      ],
+      "sources": [
+        "networkmanager"
+      ],
+      "steps": [
+        {
+          "title": "Znajdź profil i urządzenie",
+          "titleEn": "Find profile and device",
+          "text": "Nazwy profilu i interfejsu mogą się różnić. Zanotuj UUID oraz nazwę aktywnego profilu.",
+          "textEn": "Profile and interface names may differ. Record the UUID and active profile name.",
+          "code": "nmcli connection show\nnmcli device status",
+          "risk": "ReadOnly"
+        },
+        {
+          "title": "Otwórz ustawienia",
+          "titleEn": "Open settings",
+          "text": "W środowisku graficznym otwórz ustawienia połączenia. W konsoli możesz użyć nmtui, jeśli jest zainstalowane. Ustaw adres/prefiks, bramę i DNS w jednym wybranym profilu.",
+          "textEn": "Use the desktop connection settings. At a console, nmtui is an option if installed. Set address/prefix, gateway and DNS in one chosen profile.",
+          "code": "sudo nmtui",
+          "risk": "Modify"
+        },
+        {
+          "title": "Sprawdź profil przed aktywacją",
+          "titleEn": "Review before activation",
+          "text": "Zapis profilu nie jest tym samym co aktywacja. Pliki profili zwykle znajdują się w /etc/NetworkManager/system-connections/ i mogą zawierać sekrety; nie publikuj ich.",
+          "textEn": "Saving a profile is separate from activation. Profile files usually live in /etc/NetworkManager/system-connections/ and may contain secrets; do not publish them.",
+          "code": "",
+          "risk": "ReadOnly"
+        },
+        {
+          "title": "Zweryfikuj aktywny stan",
+          "titleEn": "Verify active state",
+          "text": "Aktywuj profil świadomie z dostępną konsolą awaryjną. Potem sprawdź stan urządzenia, trasę i DNS; nie zakładaj, że sam zapis zmienił działające połączenie.",
+          "textEn": "Activate deliberately with recovery console access. Then check device state, route and DNS; saving alone does not prove the running connection changed.",
+          "code": "nmcli device show\nip route show",
+          "risk": "ReadOnly"
+        }
+      ]
+    },
+    {
+      "id": "netplan-network",
+      "title": "Ubuntu / Netplan: trwała konfiguracja sieci",
+      "titleEn": "Ubuntu / Netplan: persistent network configuration",
+      "summary": "Pliki YAML, sprawdzenie składni i próba z limitem czasu.",
+      "summaryEn": "YAML files, syntax checking and a time-limited trial.",
+      "category": "network",
+      "platform": "Linux",
+      "appliesTo": "Systemy z Netplan; wybierz backend zgodny z istniejącą instalacją",
+      "appliesToEn": "Systems using Netplan; retain the installation's existing renderer",
+      "warning": "Dostęp konsolowy i kopia są konieczne przed ryzykowną zmianą zdalnej sieci. Netplan dokumentuje ograniczenia rollbacku, zwłaszcza dla urządzeń wirtualnych.",
+      "warningEn": "Arrange console access and a backup before risky remote network changes. Netplan documents rollback limitations, especially for virtual devices.",
+      "tags": [
+        "ubuntu",
+        "netplan",
+        "yaml",
+        "network",
+        "siec",
+        "dns",
+        "ip"
+      ],
+      "sources": [
+        "netplan-yaml",
+        "netplan-try"
+      ],
+      "steps": [
+        {
+          "title": "Znajdź źródło konfiguracji",
+          "titleEn": "Find the configuration source",
+          "text": "Sprawdź pliki /etc/netplan/*.yaml oraz adnotacje cloud-init. Nie edytuj wygenerowanych plików w /run. Przed zmianą zachowaj kopię konfiguracji i jej uprawnienia.",
+          "textEn": "Inspect /etc/netplan/*.yaml and cloud-init notices. Do not edit generated files under /run. Preserve a configuration backup and its permissions first.",
+          "code": "ls -l -- /etc/netplan",
+          "risk": "ReadOnly"
+        },
+        {
+          "title": "Edytuj właściwy YAML",
+          "titleEn": "Edit the correct YAML",
+          "text": "Użyj rzeczywistej nazwy interfejsu. Ustaw addresses z prefiksem, trasę domyślną i nameservers według dokumentacji. Zachowaj renderer networkd albo NetworkManager. Nie wklejaj przykładowych adresów w ciemno.",
+          "textEn": "Use the real interface name. Set addresses with prefixes, a default route and nameservers using the reference. Retain the networkd or NetworkManager renderer. Do not blindly paste sample addresses.",
+          "code": "",
+          "risk": "Modify"
+        },
+        {
+          "title": "Sprawdź i wypróbuj",
+          "titleEn": "Validate and try",
+          "text": "generate sprawdza konfigurację i generuje pliki backendu. try wymaga świadomego potwierdzenia zmian przed upływem czasu. W razie problemu sprawdź, czy wycofanie faktycznie nastąpiło.",
+          "textEn": "generate validates configuration and generates backend files. try requires deliberate confirmation before its deadline. If it fails, verify that rollback actually occurred.",
+          "code": "sudo netplan generate\nsudo netplan try --timeout 120",
+          "risk": "Dangerous"
+        },
+        {
+          "title": "Potwierdź działanie",
+          "titleEn": "Confirm operation",
+          "text": "Sprawdź adresy, trasy i rozwiązywanie nazw z drugiej sesji. netplan apply stosuje zmiany bez interaktywnego okna wycofania.",
+          "textEn": "Check addresses, routes and name resolution from another session. netplan apply applies changes without an interactive rollback window.",
+          "code": "ip -brief address\nip route show\ngetent hosts example.com",
+          "risk": "ReadOnly"
+        }
+      ]
+    },
+    {
+      "id": "debian-ifupdown",
+      "title": "Debian: konfiguracja ifupdown",
+      "titleEn": "Debian: ifupdown configuration",
+      "summary": "Kiedy używać interfaces i dlaczego nie restartować sieci w ciemno.",
+      "summaryEn": "When interfaces applies and why not to restart networking blindly.",
+      "category": "network",
+      "platform": "Linux",
+      "appliesTo": "Wyłącznie interfejsy zarządzane przez ifupdown",
+      "appliesToEn": "Only interfaces managed by ifupdown",
+      "warning": "",
+      "warningEn": "",
+      "tags": [
+        "debian",
+        "interfaces",
+        "ifupdown",
+        "network",
+        "siec",
+        "dns"
+      ],
+      "sources": [
+        "debian-interfaces",
+        "debian-network"
+      ],
+      "steps": [
+        {
+          "title": "Sprawdź menedżer",
+          "titleEn": "Check the manager",
+          "text": "Nie każdy Debian używa ifupdown. NetworkManager lub networkd mogą obsługiwać ten sam komputer, ale inne interfejsy.",
+          "textEn": "Not every Debian system uses ifupdown. NetworkManager or networkd may manage the same machine, but different interfaces.",
+          "code": "ip -brief address\nsystemctl status networking --no-pager",
+          "risk": "ReadOnly"
+        },
+        {
+          "title": "Znajdź aktywne pliki",
+          "titleEn": "Find active files",
+          "text": "Główny plik to /etc/network/interfaces. Pliki z interfaces.d są używane zgodnie z dyrektywami source/source-directory, a nie samym faktem istnienia katalogu.",
+          "textEn": "The main file is /etc/network/interfaces. interfaces.d files are included by source/source-directory directives, not merely because that directory exists.",
+          "code": "cat /etc/network/interfaces",
+          "risk": "ReadOnly"
+        },
+        {
+          "title": "Zmień tylko właściwy interfejs",
+          "titleEn": "Change only the intended interface",
+          "text": "Zachowaj kopię; dopasuj stanza iface i rodzinę inet/inet6. Konfigurację DNS dopasuj do zainstalowanego resolvera. W dokumentacji sprawdź składnię swojej wersji.",
+          "textEn": "Keep a backup; match the iface stanza and inet/inet6 family. Adapt DNS to the installed resolver. Check your version's syntax in the reference.",
+          "code": "",
+          "risk": "Modify"
+        },
+        {
+          "title": "Zastosuj z planem powrotu",
+          "titleEn": "Apply with a recovery plan",
+          "text": "ifdown odłącza interfejs. Nie wykonuj restartu całej sieci przez jedyną sesję SSH. Po zastosowaniu porównaj trasę i rozwiązywanie nazw.",
+          "textEn": "ifdown disconnects an interface. Do not restart all networking through your only SSH session. After applying, compare routes and name resolution.",
+          "code": "ip route show\ngetent hosts example.com",
+          "risk": "ReadOnly"
+        }
+      ]
+    },
+    {
+      "id": "networkd-config",
+      "title": "systemd-networkd: pliki .network",
+      "titleEn": "systemd-networkd: .network files",
+      "summary": "Dopasowanie interfejsu, trwałe pliki i kontrola backendu.",
+      "summaryEn": "Interface matching, persistent files and backend verification.",
+      "category": "network",
+      "platform": "Linux",
+      "appliesTo": "Interfejsy zarządzane bezpośrednio przez systemd-networkd",
+      "appliesToEn": "Interfaces managed directly by systemd-networkd",
+      "warning": "",
+      "warningEn": "",
+      "tags": [
+        "systemd",
+        "networkd",
+        "networkctl",
+        "network",
+        "siec"
+      ],
+      "sources": [
+        "systemd-network"
+      ],
+      "steps": [
+        {
+          "title": "Sprawdź właściciela",
+          "titleEn": "Check ownership",
+          "text": "networkctl pokaże stan łącza i plik konfiguracji, jeśli jest dostępny. Netplan może generować konfigurację networkd — wtedy zmieniaj źródłowy YAML.",
+          "textEn": "networkctl shows link state and the configuration file when available. Netplan may generate networkd configuration; in that case edit the source YAML.",
+          "code": "networkctl status",
+          "risk": "ReadOnly"
+        },
+        {
+          "title": "Znajdź trwały plik",
+          "titleEn": "Find the persistent file",
+          "text": "Lokalne pliki administratora są w /etc/systemd/network/*.network. W /run są dane ulotne. Kolejność plików i dopasowanie [Match] wpływają na wybór konfiguracji.",
+          "textEn": "Local administrator files live in /etc/systemd/network/*.network. /run is temporary. File ordering and [Match] determine which configuration applies.",
+          "code": "ls -l -- /etc/systemd/network",
+          "risk": "ReadOnly"
+        },
+        {
+          "title": "Edytuj ostrożnie",
+          "titleEn": "Edit carefully",
+          "text": "W sekcji [Match] dopasuj właściwe łącze, a w [Network] ustaw adresy, DHCP lub DNS. Zapisz kopię i zapewnij konsolę przed rekonfiguracją.",
+          "textEn": "Match the intended link in [Match]; set addresses, DHCP or DNS in [Network]. Keep a backup and arrange console access before reconfiguration.",
+          "code": "",
+          "risk": "Modify"
+        },
+        {
+          "title": "Zweryfikuj efekt",
+          "titleEn": "Verify the result",
+          "text": "Sposób reload/reconfigure dobierz do zainstalowanej wersji networkctl. Sprawdź logi jednostki i stan IP; nie uruchamiaj drugiego menedżera na tym samym interfejsie.",
+          "textEn": "Choose reload/reconfigure according to the installed networkctl version. Check unit logs and IP state; do not activate a second manager for the same interface.",
+          "code": "journalctl -u systemd-networkd -n 50 --no-pager\nip -brief address",
+          "risk": "ReadOnly"
+        }
+      ]
+    },
+    {
+      "id": "windows-network",
+      "title": "Windows: gdzie zmienić IP i DNS",
+      "titleEn": "Windows: where to change IP and DNS",
+      "summary": "Właściwy adapter, ustawienia systemu i kontrola PowerShell.",
+      "summaryEn": "The correct adapter, system settings and PowerShell checks.",
+      "category": "network",
+      "platform": "Windows",
+      "appliesTo": "Windows 10/11 i Windows Server; ścieżki GUI zależą od edycji",
+      "appliesToEn": "Windows 10/11 and Server; GUI paths depend on edition",
+      "warning": "Zmiana adaptera używanego przez RDP może natychmiast zerwać pulpit. W środowisku zdalnym zapewnij konsolę lub inny kanał zarządzania.",
+      "warningEn": "Changing the RDP network adapter may immediately disconnect the desktop. Arrange a console or another management channel.",
+      "tags": [
+        "windows",
+        "ip",
+        "dns",
+        "network",
+        "siec",
+        "adapter",
+        "rdp"
+      ],
+      "sources": [
+        "windows-ip",
+        "windows-network-settings"
+      ],
+      "steps": [
+        {
+          "title": "Zidentyfikuj adapter",
+          "titleEn": "Identify the adapter",
+          "text": "Zanotuj InterfaceAlias i InterfaceIndex. Nie pomyl adaptera fizycznego z VPN, Hyper-V albo rozłączonym urządzeniem.",
+          "textEn": "Record InterfaceAlias and InterfaceIndex. Distinguish the physical adapter from VPN, Hyper-V or disconnected devices.",
+          "code": "Get-NetIPConfiguration -All",
+          "risk": "ReadOnly"
+        },
+        {
+          "title": "Otwórz właściwości sieci",
+          "titleEn": "Open network properties",
+          "text": "W Windows 11: Ustawienia → Sieć i Internet → wybrane połączenie → Przypisanie adresu IP / DNS. Klasyczne właściwości adapterów otwiera ncpa.cpl. Server Core wymaga narzędzi konsolowych.",
+          "textEn": "On Windows 11: Settings → Network & internet → selected connection → IP assignment / DNS assignment. ncpa.cpl opens classic adapter properties. Server Core requires console tools.",
+          "code": "",
+          "risk": "ReadOnly"
+        },
+        {
+          "title": "Wprowadź dane dla właściwej sieci",
+          "titleEn": "Enter settings for the correct network",
+          "text": "Przed zmianą zapisz poprzedni stan i zapewnij alternatywny dostęp. Ustaw adres, prefiks/maskę, bramę i DNS zgodnie z planem sieci; nie kopiuj cudzych adresów.",
+          "textEn": "Record the old state and arrange alternative access first. Set address, prefix/mask, gateway and DNS for your network; do not copy someone else's addresses.",
+          "code": "",
+          "risk": "Modify"
+        },
+        {
+          "title": "Sprawdź adres i DNS",
+          "titleEn": "Verify address and DNS",
+          "text": "Sprawdź aktywną konfigurację i oddzielnie zapytanie DNS. Logi klientów VPN i reguły zapory mogą wyjaśnić brak dostępu mimo poprawnego adresu.",
+          "textEn": "Check active configuration and a separate DNS query. VPN logs and firewall rules may explain lack of access even when the address is correct.",
+          "code": "Get-NetIPConfiguration -Detailed\nGet-DnsClientServerAddress\nResolve-DnsName example.com",
+          "risk": "ReadOnly"
+        }
+      ]
+    },
+    {
+      "id": "linux-journal",
+      "title": "Linux: jak sprawdzać logi",
+      "titleEn": "Linux: how to inspect logs",
+      "summary": "Rozruch, konkretna usługa, zakres czasu i śledzenie zmian.",
+      "summaryEn": "Boot, service, time range and following new entries.",
+      "category": "logs",
+      "platform": "Linux",
+      "appliesTo": "Linux z systemd-journald; inne systemy mogą używać plików/syslog",
+      "appliesToEn": "Linux with systemd-journald; other systems may use files/syslog",
+      "warning": "",
+      "warningEn": "",
+      "tags": [
+        "journalctl",
+        "logi",
+        "logs",
+        "bledy",
+        "tail",
+        "systemd",
+        "ssh"
+      ],
+      "sources": [
+        "systemd-journal",
+        "gnu-tail"
+      ],
+      "steps": [
+        {
+          "title": "Zacznij od bieżącego rozruchu",
+          "titleEn": "Start with the current boot",
+          "text": "Ogranicz wynik do ostatnich wpisów. Brak dostępu do dziennika może wymagać innej roli; nie zmieniaj uprawnień logów dla wszystkich.",
+          "textEn": "Limit the output to recent entries. Journal access may require another role; do not make logs world-readable.",
+          "code": "journalctl -b -n 100 --no-pager",
+          "risk": "ReadOnly"
+        },
+        {
+          "title": "Wybierz usługę i czas",
+          "titleEn": "Choose a service and time",
+          "text": "Zastąp nazwę jednostki właściwą dla serwera; SSH bywa ssh.service albo sshd.service. Filtr czasu ułatwia powiązanie logu z konkretnym problemem.",
+          "textEn": "Replace the unit name for your server; SSH may be ssh.service or sshd.service. Time filters help correlate entries with the problem.",
+          "code": "journalctl -u ssh --since '1 hour ago' -n 100 --no-pager",
+          "risk": "ReadOnly"
+        },
+        {
+          "title": "Śledź na żywo",
+          "titleEn": "Follow live entries",
+          "text": "-f czeka na nowe zdarzenia. Ctrl+C kończy obserwację. Wpisy mogą zawierać prywatne adresy i identyfikatory; sprawdź je przed udostępnieniem.",
+          "textEn": "-f waits for new events. Ctrl+C stops following. Entries may contain private addresses and identifiers; review before sharing.",
+          "code": "journalctl -u ssh -f",
+          "risk": "ReadOnly"
+        },
+        {
+          "title": "Gdy usługa zapisuje do pliku",
+          "titleEn": "When a service logs to a file",
+          "text": "Ścieżkę ustal w konfiguracji usługi. /var/log i kontenery nie gwarantują jednego wspólnego pliku. GNU tail -F radzi sobie z częścią przypadków rotacji.",
+          "textEn": "Find the path in the service configuration. /var/log and containers do not guarantee a single shared file. GNU tail -F handles common rotation cases.",
+          "code": "ls -lah -- /var/log",
+          "risk": "ReadOnly"
+        }
+      ]
+    },
+    {
+      "id": "windows-event-log",
+      "title": "Windows: Podgląd zdarzeń i PowerShell",
+      "titleEn": "Windows: Event Viewer and PowerShell",
+      "summary": "Dzienniki System/Application, filtry poziomu i czasu.",
+      "summaryEn": "System/Application logs with level and time filters.",
+      "category": "logs",
+      "platform": "Windows",
+      "appliesTo": "Windows; PowerShell z Get-WinEvent",
+      "appliesToEn": "Windows; PowerShell with Get-WinEvent",
+      "warning": "",
+      "warningEn": "",
+      "tags": [
+        "windows",
+        "logi",
+        "logs",
+        "get-winevent",
+        "event",
+        "bledy",
+        "powershell"
+      ],
+      "sources": [
+        "windows-events"
+      ],
+      "steps": [
+        {
+          "title": "Wybierz dziennik",
+          "titleEn": "Choose a log",
+          "text": "Otwórz Podgląd zdarzeń → Dzienniki systemu Windows → System lub Aplikacja. Dodatkowe kanały są w Dzienniki aplikacji i usług. Sprawdź uprawnienia, jeśli log jest niedostępny.",
+          "textEn": "Open Event Viewer → Windows Logs → System or Application. Additional channels are under Applications and Services Logs. Check permissions if access is denied.",
+          "code": "Get-WinEvent -ListLog System,Application",
+          "risk": "ReadOnly"
+        },
+        {
+          "title": "Odczytaj ostatnie zdarzenia",
+          "titleEn": "Read recent events",
+          "text": "MaxEvents ogranicza wynik. Domyślnie najnowsze wpisy są pierwsze. Nie czyść dziennika podczas diagnozowania.",
+          "textEn": "MaxEvents limits output. Newest entries come first by default. Do not clear the log during diagnosis.",
+          "code": "Get-WinEvent -LogName System -MaxEvents 30",
+          "risk": "ReadOnly"
+        },
+        {
+          "title": "Filtruj na źródle",
+          "titleEn": "Filter at the source",
+          "text": "Poziomy 2 i 3 oznaczają Error i Warning. FilterHashtable zawęża wynik po stronie dziennika i bywa skuteczniejszy niż pobieranie wszystkich wpisów.",
+          "textEn": "Levels 2 and 3 mean Error and Warning. FilterHashtable narrows the query at the event log instead of retrieving every entry.",
+          "code": "Get-WinEvent -FilterHashtable @{LogName='System';Level=2,3;StartTime=(Get-Date).AddHours(-1)} -MaxEvents 50",
+          "risk": "ReadOnly"
+        },
+        {
+          "title": "Powiąż z objawem",
+          "titleEn": "Correlate with the symptom",
+          "text": "Porównaj czas, dostawcę, Event ID i treść. Sam numer zdarzenia bez nazwy dostawcy nie identyfikuje jednoznacznie przyczyny. Przed wysłaniem usuń prywatne dane.",
+          "textEn": "Compare timestamp, provider, Event ID and message. An event number alone without its provider does not uniquely identify the cause. Remove private data before sharing.",
+          "code": "",
+          "risk": "ReadOnly"
+        }
+      ]
+    },
+    {
+      "id": "systemd-service",
+      "title": "Linux: diagnoza niedziałającej usługi",
+      "titleEn": "Linux: diagnose a failed service",
+      "summary": "Stan, definicja jednostki i powiązany dziennik.",
+      "summaryEn": "State, unit definition and related journal.",
+      "category": "services",
+      "platform": "Linux",
+      "appliesTo": "Linux z systemd; przykładowa jednostka ssh",
+      "appliesToEn": "Linux with systemd; example ssh unit",
+      "warning": "",
+      "warningEn": "",
+      "tags": [
+        "systemctl",
+        "uslugi",
+        "service",
+        "failed",
+        "bledy",
+        "journalctl"
+      ],
+      "sources": [
+        "systemd-services",
+        "systemd-journal"
+      ],
+      "steps": [
+        {
+          "title": "Sprawdź stan",
+          "titleEn": "Check state",
+          "text": "Zastąp ssh właściwą jednostką. Włączona przy starcie nie znaczy działająca teraz; active/failed i enabled to osobne informacje.",
+          "textEn": "Replace ssh with the correct unit. Enabled at boot does not mean running now; active/failed and enabled are separate facts.",
+          "code": "systemctl status ssh --no-pager --full\nsystemctl list-units --failed --no-pager",
+          "risk": "ReadOnly"
+        },
+        {
+          "title": "Odczytaj dziennik",
+          "titleEn": "Read the journal",
+          "text": "Szukaj pierwszego błędu z czasu uruchomienia, a nie tylko ostatniego komunikatu o zakończeniu procesu.",
+          "textEn": "Look for the first error at startup time, not just the final process-exit message.",
+          "code": "journalctl -u ssh -b -n 100 --no-pager",
+          "risk": "ReadOnly"
+        },
+        {
+          "title": "Sprawdź jednostkę",
+          "titleEn": "Inspect the unit",
+          "text": "systemctl cat pokazuje jednostkę i nadpisania. Treść może zawierać ustawienia środowiska; przed publikacją usuń sekrety. Po zmianie definicji potrzebny bywa daemon-reload.",
+          "textEn": "systemctl cat shows the unit and overrides. Content may include environment settings; remove secrets before sharing. Unit-definition changes may need daemon-reload.",
+          "code": "systemctl cat ssh",
+          "risk": "ReadOnly"
+        },
+        {
+          "title": "Dopiero potem naprawiaj",
+          "titleEn": "Repair after diagnosis",
+          "text": "Sprawdź konfigurację poleceniem walidującym właściwym dla usługi. Restart zmienia stan i może rozłączyć sesję; wykonaj go świadomie z dostępnym planem powrotu.",
+          "textEn": "Use the service's own configuration validator. Restart changes state and may disconnect the session; do it deliberately with a recovery plan.",
+          "code": "",
+          "risk": "ReadOnly"
+        }
+      ]
+    },
+    {
+      "id": "docker-log-check",
+      "title": "Docker: jak czytać logi kontenera",
+      "titleEn": "Docker: read container logs",
+      "summary": "Nazwa kontenera, ograniczony wynik i obserwacja w czasie.",
+      "summaryEn": "Container name, bounded output and live following.",
+      "category": "devops",
+      "platform": "Linux",
+      "appliesTo": "Host z dostępem do demona Docker; przykład kontenera web",
+      "appliesToEn": "Host with Docker daemon access; example container web",
+      "warning": "",
+      "warningEn": "",
+      "tags": [
+        "docker",
+        "kontener",
+        "container",
+        "logi",
+        "logs",
+        "tail"
+      ],
+      "sources": [
+        "docker-logs"
+      ],
+      "steps": [
+        {
+          "title": "Wybierz właściwy kontener",
+          "titleEn": "Choose the right container",
+          "text": "Podmień web na nazwę lub ID. Uprawnienia do demona Docker dają szeroki dostęp do hosta; nie zmieniaj grup użytkownika tylko po to, by ominąć błąd dostępu.",
+          "textEn": "Replace web with a name or ID. Docker daemon access is powerful; do not change group membership just to bypass access denial.",
+          "code": "docker ps -a",
+          "risk": "ReadOnly"
+        },
+        {
+          "title": "Ogranicz wynik",
+          "titleEn": "Bound the output",
+          "text": "Odczytaj ostatnie wiersze i znaczniki czasu. Obsługa zależy od sterownika logowania i sposobu zapisu aplikacji.",
+          "textEn": "Read recent lines with timestamps. Support depends on the logging driver and how the application writes logs.",
+          "code": "docker logs --tail 100 --timestamps web",
+          "risk": "ReadOnly"
+        },
+        {
+          "title": "Śledź zakres czasu",
+          "titleEn": "Follow a time range",
+          "text": "--since 30m zawęża początek, a --follow dopisuje nowe wpisy. Ctrl+C kończy obserwację, nie zatrzymuje kontenera.",
+          "textEn": "--since 30m narrows the start; --follow streams new entries. Ctrl+C stops following without stopping the container.",
+          "code": "docker logs --since 30m --follow web",
+          "risk": "ReadOnly"
+        },
+        {
+          "title": "Gdy brakuje komunikatów",
+          "titleEn": "When messages are missing",
+          "text": "Aplikacja może zapisywać do własnego pliku zamiast stdout/stderr. Sprawdź jej konfigurację i driver. Nie usuwaj kontenera ani wolumenów w ramach samego odczytu logów.",
+          "textEn": "The application may log to its own file rather than stdout/stderr. Check its configuration and driver. Reading logs does not require deleting containers or volumes.",
+          "code": "",
+          "risk": "ReadOnly"
+        }
+      ]
+    },
+    {
+      "id": "linux-disk-space",
+      "title": "Linux: co zajmuje miejsce na dysku",
+      "titleEn": "Linux: investigate disk usage",
+      "summary": "System plików, i-węzły i rozmiary katalogów bez usuwania danych.",
+      "summaryEn": "Filesystem usage, inodes and directory sizes without deleting data.",
+      "category": "storage",
+      "platform": "Linux",
+      "appliesTo": "GNU df/du; BusyBox może mieć inne opcje",
+      "appliesToEn": "GNU df/du; BusyBox options may differ",
+      "warning": "",
+      "warningEn": "",
+      "tags": [
+        "df",
+        "du",
+        "disk",
+        "dysk",
+        "miejsce",
+        "inode",
+        "storage"
+      ],
+      "sources": [
+        "gnu-df",
+        "gnu-du"
+      ],
+      "steps": [
+        {
+          "title": "Sprawdź właściwy mount",
+          "titleEn": "Check the correct mount",
+          "text": "df raportuje systemy plików. Zwróć uwagę, czy problem dotyczy /, /var czy osobnego woluminu.",
+          "textEn": "df reports filesystems. Determine whether /, /var or a separate volume is affected.",
+          "code": "df -hT",
+          "risk": "ReadOnly"
+        },
+        {
+          "title": "Sprawdź i-węzły",
+          "titleEn": "Check inodes",
+          "text": "Brak i-węzłów może uniemożliwiać tworzenie plików mimo wolnych bajtów. Dotyczy to często bardzo wielu małych plików.",
+          "textEn": "Inode exhaustion can prevent file creation despite free bytes, often because of many small files.",
+          "code": "df -i",
+          "risk": "ReadOnly"
+        },
+        {
+          "title": "Zawęź duży katalog",
+          "titleEn": "Narrow down a large directory",
+          "text": "Podmień /var na badany katalog. -x pozostaje na tym samym systemie plików; błędy dostępu mogą zaniżyć wynik. Duże drzewo wymaga czasu.",
+          "textEn": "Replace /var with the directory under investigation. -x stays on one filesystem; access errors may undercount. Large trees take time.",
+          "code": "du -x -h --max-depth=1 -- /var",
+          "risk": "ReadOnly"
+        },
+        {
+          "title": "Wyjaśnij rozbieżności",
+          "titleEn": "Explain differences",
+          "text": "df i du mierzą inne rzeczy. Przyczyną różnic mogą być otwarte usunięte pliki, snapshoty, rezerwacje lub brak uprawnień. Nie kasuj logów i baz bez sprawdzenia retencji i kopii.",
+          "textEn": "df and du measure different things. Open deleted files, snapshots, reserved space or permissions may explain differences. Review retention and backups before deleting logs or databases.",
+          "code": "",
+          "risk": "ReadOnly"
+        }
+      ]
+    },
+    {
+      "id": "ssh-debug",
+      "title": "SSH: jak ustalić powód problemu z logowaniem",
+      "titleEn": "SSH: investigate login failure",
+      "summary": "Rozdziel połączenie TCP, tożsamość hosta i uwierzytelnianie.",
+      "summaryEn": "Separate TCP connection, host identity and authentication.",
+      "category": "security",
+      "platform": "General",
+      "appliesTo": "Klient OpenSSH i dostęp do logów serwera przez administratora",
+      "appliesToEn": "OpenSSH client and administrator access to server logs",
+      "warning": "",
+      "warningEn": "",
+      "tags": [
+        "ssh",
+        "debug",
+        "logowanie",
+        "login",
+        "permission",
+        "blad",
+        "klucz",
+        "key"
+      ],
+      "sources": [
+        "openssh-client",
+        "openssh-keygen"
+      ],
+      "steps": [
+        {
+          "title": "Sprawdź etap błędu",
+          "titleEn": "Identify the failure stage",
+          "text": "Timeout, connection refused i permission denied oznaczają różne etapy. Zweryfikuj adres, port, VPN oraz login zapisany w profilu ServerDesk.",
+          "textEn": "Timeout, connection refused and permission denied refer to different stages. Check address, port, VPN and the ServerDesk profile username.",
+          "code": "",
+          "risk": "ReadOnly"
+        },
+        {
+          "title": "Włącz diagnostykę klienta",
+          "titleEn": "Enable client diagnostics",
+          "text": "Zastąp host i login. Czytaj, czy klient dociera do serwera i jakie metody proponuje. Nie wyłączaj kontroli klucza hosta i nie publikuj całego logu bez przeglądu.",
+          "textEn": "Replace host and username. Inspect whether the client reaches the server and which methods it offers. Keep host-key checks enabled and review the log before sharing.",
+          "code": "ssh -v user@server.example",
+          "risk": "ReadOnly"
+        },
+        {
+          "title": "Porównaj klucz publiczny",
+          "titleEn": "Compare the public key",
+          "text": "Sprawdź odcisk .pub i authorized_keys właściwego konta na serwerze. Windows OpenSSH może mieć osobne reguły dla kont administratorów. Nie wysyłaj klucza prywatnego administratorowi.",
+          "textEn": "Compare the .pub fingerprint with the correct server account's authorized_keys. Windows OpenSSH may have separate administrator-account rules. Do not send the administrator your private key.",
+          "code": "",
+          "risk": "ReadOnly"
+        },
+        {
+          "title": "Skoreluj z logiem serwera",
+          "titleEn": "Correlate server logs",
+          "text": "Administrator sprawdza log SSH i zasady konta w czasie próby. Sam klient często nie otrzymuje szczegółowej przyczyny odrzucenia; kolejne próby w ciemno mogą blokować konto.",
+          "textEn": "The administrator checks SSH logs and account policy at the attempt time. The client often does not receive the detailed rejection reason; blind retries may lock the account.",
+          "code": "",
+          "risk": "ReadOnly"
+        }
+      ]
+    }
+  ]
+}

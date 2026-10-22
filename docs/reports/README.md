@@ -1,5 +1,8 @@
 # Verification and historical reviews
 
+- [0.48.0 Public Beta](release-verification-0.48.0.md) — guides, tool options, bounded documentation refresh and offline/plugin lifecycle.
+- [0.47.0 Public Beta](release-verification-0.47.0.md) — native vault SSH keys and disposable OpenSSH acceptance.
+
 - [0.46.0 Public Beta](release-verification-0.46.0.md) — Bitwarden / Vaultwarden, SSH focus and command insertion.
 
 Release 0.45.0: [GitHub updater, local checks and publication limits](release-verification-0.45.0.md).

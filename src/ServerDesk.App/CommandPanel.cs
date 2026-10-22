@@ -24,7 +24,12 @@ internal sealed partial class CommandPanel : Border,IDisposable
     private bool updating,ready,libraryLocked,working;
     private Task preferenceSave=Task.CompletedTask;
     private Task actionWork=Task.CompletedTask;
-    internal Task Shutdown=>Task.WhenAll(preferenceSave,actionWork);
+    private readonly HashSet<Task> documentationTasks=[];
+    private readonly List<CommandDocumentationView> documentationViews=[];
+    private readonly CommandDocumentationClient documentation;
+    private readonly CommandKnowledgePanel knowledge;
+    private bool knowledgeMode;
+    internal Task Shutdown=>Task.WhenAll(preferenceSave,actionWork,Task.WhenAll(documentationTasks.ToArray()));
     private readonly TextBlock context=Dialogs.Text("",12),notice=Dialogs.Text("",12),count=DesignSystem.Label("",true,12);
     private readonly ComboBox mode=new() { Name="CommandMode",ItemsSource=new[]{L.T("Automatyczny"),L.T("Ręczny")},SelectedIndex=0,MinWidth=130 };
     private readonly CheckBox pin=new() { Name="CommandPin",Content=L.T("Przypnij profil") };
@@ -56,15 +61,31 @@ internal sealed partial class CommandPanel : Border,IDisposable
         contextOptions.Classes.Add("network-options"); DesignSystem.Resource(validation,TextBlock.ForegroundProperty,"Danger");
         validation.IsVisible=false; validation.PropertyChanged+=(_,e)=> { if(e.Property==TextBlock.TextProperty)validation.IsVisible=!string.IsNullOrEmpty(validation.Text); };
         DesignSystem.Resource(this,BackgroundProperty,"BackgroundSecondary"); DesignSystem.Resource(this,BorderBrushProperty,"BorderDefault");
-        var grid=new Grid { RowDefinitions=new("Auto,Auto,*,Auto"),RowSpacing=9,ClipToBounds=true }; Child=grid;
+        documentation=owner.CreateCommandDocumentation(); knowledge=new(owner,documentation,lifetime.Token,TrackDocumentation) { IsVisible=false };
+        var root=new Grid { RowDefinitions=new("Auto,Auto,*"),RowSpacing=8,ClipToBounds=true }; Child=root;
+        var grid=new Grid { RowDefinitions=new("Auto,*,Auto"),RowSpacing=9,ClipToBounds=true };
+        var views=new Grid { Children={grid,knowledge} }; Grid.SetRow(views,2); root.Children.Add(views);
         var header=new Grid { ColumnDefinitions=new("*,Auto,Auto,Auto,Auto,Auto,Auto"),RowDefinitions=new("Auto,Auto"),ColumnSpacing=3,RowSpacing=8 };
         header.Children.Add(DesignSystem.SectionHeading("square-terminal",L.T("Komendy")));
         var pluginBadge=DesignSystem.Badge(L.T("Plugin")); pluginBadge.Name="CommandPluginBadge"; Grid.SetColumn(pluginBadge,1); header.Children.Add(pluginBadge); ToolTip.SetTip(pluginBadge,L.T("Plugin wbudowany · dostarczany z ServerDesk"));
-        var moduleHint=DesignSystem.Hint(L.T("Ściągawka poleceń i własne komendy")); Grid.SetRow(moduleHint,1); Grid.SetColumnSpan(moduleHint,7); header.Children.Add(moduleHint);
+        var moduleHint=DesignSystem.Hint(L.T("Ściągawka, mini poradniki i przełączniki narzędzi")); Grid.SetRow(moduleHint,1); Grid.SetColumnSpan(moduleHint,7); header.Children.Add(moduleHint);
         var options=DeskIcons.Button("more",L.T("Opcje komend"),()=> { }); Grid.SetColumn(options,5); header.Children.Add(options);
         options.ContextMenu=new() { ItemsSource=new[]{Menu("Nowa komenda",()=>EditAsync(null)),Menu("Kategorie komend",CategoriesAsync),Menu("Import komend JSON",ImportAsync),Menu("Eksport komend JSON",ExportAsync),Menu("Ponów odczyt biblioteki",ReloadLibraryAsync),Menu("Historia komend: włącz / wyłącz",ToggleHistoryAsync),Menu("Wyczyść historię komend",ClearHistoryAsync)} }; options.Click+=(_,_)=>options.ContextMenu.Open(options);
         var close=DeskIcons.Button("close",L.T("Zamknij panel komend"),owner.CloseCommandsPanel); Grid.SetColumn(close,6); header.Children.Add(close);
-        var moduleHeader=new Border { Name="CommandModuleHeader",Child=header,Padding=new Thickness(0,0,0,10),BorderThickness=new Thickness(0,0,0,1) }; DesignSystem.Resource(moduleHeader,Border.BorderBrushProperty,"BorderStrong"); grid.Children.Add(moduleHeader);
+        var moduleHeader=new Border { Name="CommandModuleHeader",Child=header,Padding=new Thickness(0,0,0,10),BorderThickness=new Thickness(0,0,0,1) }; DesignSystem.Resource(moduleHeader,Border.BorderBrushProperty,"BorderStrong"); root.Children.Add(moduleHeader);
+        var commandsTab=new Button { Name="CommandBrowseTab",Content=DeskIcons.Labelled("square-terminal",L.T("Komendy"),14),HorizontalAlignment=HorizontalAlignment.Stretch };
+        var knowledgeTab=new Button { Name="CommandKnowledgeTab",Content=DeskIcons.Labelled("info",L.T("Poradniki"),14),HorizontalAlignment=HorizontalAlignment.Stretch };
+        commandsTab.Classes.Add("segment"); knowledgeTab.Classes.Add("segment"); commandsTab.Classes.Add("active");
+        AutomationName(commandsTab,"Komendy"); AutomationName(knowledgeTab,"Poradniki i przełączniki");
+        var tabs=new Grid { ColumnDefinitions=new("*,*"),ColumnSpacing=6,Children={commandsTab,knowledgeTab} }; Grid.SetColumn(knowledgeTab,1); Grid.SetRow(tabs,1); root.Children.Add(tabs);
+        void ChangeView(bool showKnowledge)
+        {
+            if(lifetime.IsCancellationRequested)return;
+            knowledgeMode=showKnowledge; PauseDocumentation(); grid.IsVisible=!showKnowledge; knowledge.IsVisible=showKnowledge; options.IsVisible=!showKnowledge;
+            commandsTab.Classes.Set("active",!showKnowledge); knowledgeTab.Classes.Set("active",showKnowledge); UpdateCommandView();
+            if(showKnowledge) { knowledge.SetEnvironment(environment); knowledge.FocusSearch(); } else FocusSearch();
+        }
+        commandsTab.Click+=(_,_)=>ChangeView(false); knowledgeTab.Click+=(_,_)=>ChangeView(true);
         var controls=new StackPanel { Spacing=7 };
         var modeRow=new WrapPanel { Orientation=Orientation.Horizontal }; modeRow.Children.Add(mode); pin.Margin=new Thickness(8,0); modeRow.Children.Add(pin);
         modeRow.Children.Add(DeskIcons.Button("refresh",L.T("Odśwież rozpoznanie systemu"),()=>Run(()=>ResolveContextAsync(true))));
@@ -91,7 +112,7 @@ internal sealed partial class CommandPanel : Border,IDisposable
         var filter=new Grid { ColumnDefinitions=new("*,Auto"),ColumnSpacing=6 }; filter.Children.Add(section); var add=DeskIcons.Button("plus",L.T("Nowa komenda"),()=>Run(()=>EditAsync(null))); Grid.SetColumn(add,1); filter.Children.Add(add);
         var filter2=new Grid { ColumnDefinitions=new("*,*"),ColumnSpacing=6 }; filter2.Children.Add(category); Grid.SetColumn(sort,1); filter2.Children.Add(sort);
         var filterBody=new StackPanel { Spacing=8,Children={search,filter,filter2,riskFilter,controls} }; filtersView=filterBody;
-        Grid.SetRow(filterBody,1); grid.Children.Add(filterBody);
+        grid.Children.Add(filterBody);
         var results=new Grid { Name="CommandBrowser",RowDefinitions=new("Auto,*"),RowSpacing=7,MinHeight=96,ClipToBounds=true }; resultsView=results;
         BuildCommandBrowser(results); Grid.SetRow(list,1); results.Children.Add(list);
         list.Classes.Add("command-list"); list.ItemTemplate=new FuncDataTemplate<CommandMatch>((match,_)=>match==null?null:Row(match)); list.SelectionChanged+=(_,_)=> { if(!updating)Select(list.SelectedItem as CommandMatch); };
@@ -106,7 +127,7 @@ internal sealed partial class CommandPanel : Border,IDisposable
         var navigation=BuildDetailNavigation();
         var detailBody=new Grid { RowDefinitions=new("Auto,*"),RowSpacing=12,Children={navigation,detailScroll} }; Grid.SetRow(detailScroll,1);
         detailCard=DesignSystem.Card(detailBody,new Thickness(12)); detailCard.Name="CommandDetailCard";
-        var content=new Grid { Children={results,detailCard} }; Grid.SetRow(content,2); grid.Children.Add(content);
+        var content=new Grid { Children={results,detailCard} }; Grid.SetRow(content,1); grid.Children.Add(content);
         var footer=new StackPanel { Spacing=6 }; footer.Children.Add(notice); footer.Children.Add(dispatchHint);
         notice.IsVisible=false;
         var actions=new Grid { Name="CommandActions",ColumnDefinitions=new("*,*,*"),ColumnSpacing=6 }; detailActions=actions;
@@ -116,13 +137,13 @@ internal sealed partial class CommandPanel : Border,IDisposable
         for(var i=0;i<3;i++) { var b=buttons[i]; b.Padding=new Thickness(6,5); b.HorizontalAlignment=HorizontalAlignment.Stretch; b.HorizontalContentAlignment=HorizontalAlignment.Center; Grid.SetColumn(b,i); actions.Children.Add(b); }
         var management=new[]{(favorite,"star","Ulubione"),(edit,"edit","Edytuj"),(duplicate,"copy","Duplikuj")};
         for(var i=0;i<management.Length;i++) { var (b,glyph,label)=management[i]; b.Content=DeskIcons.Create(glyph,16); b.Classes.Add("chrome"); b.Classes.Add("icon"); b.Width=30; b.Height=30; ToolTip.SetTip(b,L.T(label)); Avalonia.Automation.AutomationProperties.SetName(b,L.T(label)); Grid.SetColumn(b,i+2); header.Children.Add(b); }
-        footer.Children.Add(actions); footerSurface=new Border { Child=footer,Padding=new Thickness(0,8,0,0),BorderThickness=new Thickness(0,1,0,0) }; DesignSystem.Resource(footerSurface,BorderBrushProperty,"BorderDefault"); Grid.SetRow(footerSurface,3); grid.Children.Add(footerSurface);
+        footer.Children.Add(actions); footerSurface=new Border { Child=footer,Padding=new Thickness(0,8,0,0),BorderThickness=new Thickness(0,1,0,0) }; DesignSystem.Resource(footerSurface,BorderBrushProperty,"BorderDefault"); Grid.SetRow(footerSurface,2); grid.Children.Add(footerSurface);
         notice.PropertyChanged+=(_,e)=> { if(e.Property==TextBlock.TextProperty) { notice.IsVisible=!string.IsNullOrEmpty(notice.Text); footerSurface.IsVisible=showingDetails||notice.IsVisible; } };
         grid.LayoutUpdated+=(_,_)=>
         {
             if(!filtersView.IsVisible || !contextOptions.IsExpanded || filterScroll.Bounds.Height<=0 || grid.Bounds.Height<=0)return;
             // Give profile editing the remaining space without pushing results or status offscreen.
-            var fixedHeight=moduleHeader.DesiredSize.Height+filterBody.DesiredSize.Height-filterScroll.DesiredSize.Height+(footerSurface.IsVisible?footerSurface.DesiredSize.Height:0)+grid.RowSpacing*3;
+            var fixedHeight=filterBody.DesiredSize.Height-filterScroll.DesiredSize.Height+(footerSurface.IsVisible?footerSurface.DesiredSize.Height:0)+grid.RowSpacing*2;
             var maximum=Math.Clamp(grid.Bounds.Height-fixedHeight-Math.Max(results.MinHeight,70+count.Bounds.Height+results.RowSpacing),72,280);
             if(Math.Abs(filterScroll.MaxHeight-maximum)>.5)filterScroll.MaxHeight=maximum;
         };
@@ -135,6 +156,14 @@ internal sealed partial class CommandPanel : Border,IDisposable
         KeyDown+=(_,e)=> { if(!e.Handled && e.Key==Key.Escape && showingDetails && !working) { ShowCommandList(true); e.Handled=true; } };
     }
     private Button Action(string label,Func<Task> action)=>Dialogs.Button(label,()=>Run(action));
+    private static void AutomationName(Control control,string label)=>Avalonia.Automation.AutomationProperties.SetName(control,L.T(label));
+    private void TrackDocumentation(Task task)
+    {
+        documentationTasks.Add(task); _=Observe();
+        async Task Observe() { try { await task; } catch(OperationCanceledException) { } catch(Exception ex) { ApplicationDiagnostics.Report("Commands.Knowledge",ex,Serilog.Events.LogEventLevel.Warning); } finally { documentationTasks.Remove(task); } }
+    }
+    private void ClearDocumentationViews() { foreach(var view in documentationViews)view.Dispose(); documentationViews.Clear(); }
+    internal void PauseDocumentation() { foreach(var view in documentationViews)view.CancelPending(); knowledge.Pause(); }
     private MenuItem Menu(string label,Func<Task> action) { var m=DeskIcons.ActionMenu(label); m.Click+=(_,_)=>Run(action); return m; }
     private void Run(Func<Task> action) { if(!working && !lifetime.IsCancellationRequested && owner.IsPluginEnabled(PluginCatalog.Commands))actionWork=RunAsync(action); }
     private async Task RunAsync(Func<Task> action)
@@ -226,9 +255,9 @@ internal sealed partial class CommandPanel : Border,IDisposable
         if(pane?.CanAcceptCommands!=true)contextDetail+="\n"+L.T("Kopiowanie dostępne. Wstawianie i wykonanie wymagają aktywnego terminala SSH.");
         ToolTip.SetTip(context,contextDetail); DesignSystem.Resource(context,TextBlock.ForegroundProperty,environment.Diagnostic.Length>0?"Warning":"ForegroundSecondary");
         ToolTip.SetTip(detailContext,contextDetail);
-        RefreshList();
+        knowledge.SetEnvironment(environment); RefreshList();
     }
-    internal void FocusSearch() { ShowCommandList(false); search.Focus(); }
+    internal void FocusSearch() { if(knowledgeMode) { knowledge.FocusSearch(); return; } ShowCommandList(false); search.Focus(); }
     internal void ClearSelection() { list.SelectedItem=null; Select(null); }
     private Control Row(CommandMatch match)
     {
@@ -245,7 +274,11 @@ internal sealed partial class CommandPanel : Border,IDisposable
         var row=new Border { Name="CommandCard",Tag=c.Id,Child=body,Padding=new Thickness(10),CornerRadius=new CornerRadius(7),BorderThickness=new Thickness(1),Background=Brushes.Transparent };
         DesignSystem.Resource(row,BorderBrushProperty,"BorderDefault"); Avalonia.Automation.AutomationProperties.SetName(row,c.Title+" · "+L.T("Więcej informacji"));
         ToolTip.SetTip(row,L.T("Więcej informacji"));
-        row.Tapped+=(_,e)=> { list.SelectedItem=match; ShowCommandDetails(); e.Handled=true; }; return row;
+        // A partially clipped selected item can scroll during PointerPressed.
+        // Button release activation survives that layout shift; Tapped can cancel it.
+        var open=new Button { Content=row,Padding=new Thickness(0),BorderThickness=new Thickness(0),Background=Brushes.Transparent,HorizontalAlignment=HorizontalAlignment.Stretch,HorizontalContentAlignment=HorizontalAlignment.Stretch };
+        Avalonia.Automation.AutomationProperties.SetName(open,c.Title+" · "+L.T("Więcej informacji"));
+        open.Click+=(_,e)=> { list.SelectedItem=match; ShowCommandDetails(); e.Handled=true; }; return open;
     }
     internal void RefreshList(bool preserveDetails=false)
     {
@@ -273,7 +306,7 @@ internal sealed partial class CommandPanel : Border,IDisposable
     private static string Risk(CommandRisk risk)=>L.T(risk switch { CommandRisk.ReadOnly=>"Tylko odczyt",CommandRisk.Modify=>"Zmienia stan",_=>"Niebezpieczna" });
     private static string CategoryLabel(string value)=>L.T(value switch { "system"=>"Informacje systemowe","network"=>"Sieć","services"=>"Usługi","packages"=>"Pakiety","files"=>"Pliki i uprawnienia","users"=>"Użytkownicy i grupy","storage"=>"Dyski i pamięć masowa","logs"=>"Logi i diagnostyka","security"=>"Bezpieczeństwo","devops"=>"DevOps",_=>value });
     private static string SystemLabel(string value)=>value switch { "general"=>L.T("Ogólne"),"linux"=>"Linux","ubuntu"=>"Ubuntu","debian"=>"Debian","rhel"=>"Red Hat Enterprise Linux","rocky"=>"Rocky Linux","almalinux"=>"AlmaLinux","centos"=>"CentOS Stream","fedora"=>"Fedora","arch"=>"Arch Linux","alpine"=>"Alpine Linux","windows10"=>"Windows 10","windows11"=>"Windows 11","windows-server"=>"Windows Server",_=>"Windows" };
-    public void Dispose() { if(lifetime.IsCancellationRequested)return; lifetime.Cancel(); queryDebounce.Dispose(); values.Clear(); preview.Text=""; }
+    public void Dispose() { if(lifetime.IsCancellationRequested)return; lifetime.Cancel(); ClearDocumentationViews(); knowledge.Dispose(); documentation.Dispose(); queryDebounce.Dispose(); values.Clear(); preview.Text=""; }
     private sealed class DispatcherDebounce(Action action) : IDisposable
     {
         private readonly Avalonia.Threading.DispatcherTimer timer=Create(action);

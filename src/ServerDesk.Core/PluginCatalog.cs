@@ -10,7 +10,7 @@ public static class PluginCatalog
     public const string Bitwarden="bitwarden";
     public static IReadOnlyList<PluginDefinition> BuiltIn { get; }=Array.AsReadOnly<PluginDefinition>([
         new(LinuxMonitoring,"Monitoring Linux","Parametry serwera i pasek metryk. Korzysta z osobnego połączenia SSH.","chart-no-axes-combined"),
-        new(Commands,"Komendy","Ściągawka poleceń, własne szablony i wykrywanie systemu przez SSH.","square-terminal"),
+        new(Commands,"Komendy","Ściągawka, mini poradniki, przełączniki narzędzi i własne szablony.","square-terminal"),
         new(Bitwarden,"Bitwarden / Vaultwarden","Hasła i klucze SSH z sejfu oraz przypisania do połączeń. Wymaga oficjalnego Bitwarden CLI.","key")
     ]);
     public static bool IsKnown(string id)=>BuiltIn.Any(p=>p.Id==id);

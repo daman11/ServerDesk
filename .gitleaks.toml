@@ -4,6 +4,14 @@ title = "ServerDesk secret scanning"
 useDefault = true
 
 [[allowlists]]
+description = "Exact dynamic PEM wrapper for a randomly generated test key, not key material"
+targetRules = ["private-key"]
+condition = "AND"
+paths = ['''^tests/ServerDesk.Tests/BitwardenSshKeyTests\.cs$''']
+regexTarget = "line"
+regexes = ['''^\s*try \{ return "-----BEGIN OPENSSH PRIVATE KEY-----\\n"\+Convert\.ToBase64String\(bytes,Base64FormattingOptions\.InsertLineBreaks\)\+"\\n-----END OPENSSH PRIVATE KEY-----\\n"; \}\s*$''']
+
+[[allowlists]]
 description = "Exact prose protocol list in an acceptance report, not a credential"
 targetRules = ["generic-api-key"]
 condition = "AND"

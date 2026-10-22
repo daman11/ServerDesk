@@ -50,9 +50,12 @@ internal static class BitwardenChecks
         void Enter()=>picker.KeyPress(Key.Enter,RawInputModifiers.None,PhysicalKey.Enter,"\r");
         void Completed()=>SshAcceptanceChecks.Until(()=>!progress.IsVisible,"Picker operation did not complete");
         var reads=Calls("get");
-        if(use.IsEnabled || !master.IsKeyboardFocusWithin || master.PasswordChar!='●')throw new Exception("Locked picker did not protect/focus the master input");
+        if(use.IsEnabled || use.IsVisible || Named<StackPanel>(picker,"BitwardenSearchSection").IsVisible || !master.IsKeyboardFocusWithin || master.PasswordChar!='●')throw new Exception("Locked picker did not show only the unlock step with protected input");
         var help=Named<Expander>(picker,"BitwardenSetupHelp"); help.IsExpanded=true; RedesignChecks.Frames(3);
-        if(!help.GetVisualDescendants().OfType<TextBlock>().Any(t=>t.Text?.Contains("bw config server")==true))throw new Exception("Offline CLI setup guidance missing"); help.IsExpanded=false;
+        var technical=Named<Expander>(picker,"BitwardenTerminalInstructions");
+        if(technical.IsExpanded || !help.GetVisualDescendants().OfType<TextBlock>().Any(t=>t.Text==AppText.T("1. Zainstaluj Bitwarden CLI")))throw new Exception("First-time setup did not start with plain numbered steps");
+        technical.IsExpanded=true; RedesignChecks.Frames(2);
+        if(!technical.GetVisualDescendants().OfType<TextBlock>().Any(t=>t.Text?.Contains("bw config server")==true))throw new Exception("Detailed offline CLI instructions missing"); technical.IsExpanded=false; help.IsExpanded=false;
         picker.CaptureRenderedFrame()!.Save(Path.Combine(root,"vault-locked-"+language+".png"));
         Mode("failure"); Click(picker,"BitwardenRetry"); Completed();
         if(!error.IsVisible || error.Text!.Contains(Secret) || Named<Button>(picker,"BitwardenUnlock").IsEnabled)throw new Exception("Failed status check left a misleading unlock action");
@@ -60,7 +63,7 @@ internal static class BitwardenChecks
         master.Text="wrong-fixture"; master.Focus(); Enter(); Completed();
         if(!error.IsVisible || !string.IsNullOrEmpty(master.Text) || !master.IsKeyboardFocusWithin || !Named<Grid>(picker,"BitwardenUnlockRow").IsVisible || use.IsEnabled)throw new Exception("Rejected master password was retained or could not be retried from the keyboard");
         master.Text="master-fixture"; master.Focus(); Enter(); SshAcceptanceChecks.Until(()=>use.IsEnabled,"Unlock did not automatically search the profile host");
-        if(Named<Grid>(picker,"BitwardenUnlockRow").IsVisible || !string.IsNullOrEmpty(master.Text) || !search.IsKeyboardFocusWithin || Named<TextBlock>(picker,"BitwardenSelectionUsername").Text!="fixture")throw new Exception("Unlocked picker retained master input or lost selection/focus");
+        if(Named<Grid>(picker,"BitwardenUnlockRow").IsVisible || !string.IsNullOrEmpty(master.Text) || !search.IsKeyboardFocusWithin || !Named<StackPanel>(picker,"BitwardenSearchSection").IsVisible || !use.IsVisible || Named<Border>(picker,"BitwardenSelectionDetails").IsVisible || !list.GetVisualDescendants().OfType<TextBlock>().Any(t=>t.Text==AppText.F($"Login: {"fixture"}")))throw new Exception("Unlocked picker did not show a single labeled selection step");
         search.Text="fixture immediate edit"; Click(picker,"BitwardenUse");
         if(!picker.IsVisible || use.IsEnabled || list.ItemCount!=0 || Calls("get")!=reads)throw new Exception("Immediate query edit accepted the previous result before TextChanged dispatch");
         search.Text="x"; RedesignChecks.Frames(2); var searches=Calls("list"); Enter(); RedesignChecks.Frames(2);
@@ -78,9 +81,9 @@ internal static class BitwardenChecks
         picker.KeyPress(Key.F,RawInputModifiers.Control,PhysicalKey.F,"f"); RedesignChecks.Frames(2);
         if(!search.IsKeyboardFocusWithin)throw new Exception("Ctrl+F did not focus vault search");
         picker.CaptureRenderedFrame()!.Save(Path.Combine(root,"vault-picker-"+language+".png"));
-        var selected=Named<Border>(picker,"BitwardenSelectionDetails"); var scroll=Named<ScrollViewer>(picker,"DialogScroll");
-        var selectedBottom=selected.TranslatePoint(default,picker)!.Value.Y+selected.Bounds.Height; var viewportBottom=scroll.TranslatePoint(default,picker)!.Value.Y+scroll.Bounds.Height;
-        if(selectedBottom>viewportBottom+1)throw new Exception("The selected-item preview is clipped in the normal one-result layout");
+        var purpose=Named<TextBlock>(picker,"BitwardenPurpose"); var scroll=Named<ScrollViewer>(picker,"DialogScroll");
+        var purposeBottom=purpose.TranslatePoint(default,picker)!.Value.Y+purpose.Bounds.Height; var viewportBottom=scroll.TranslatePoint(default,picker)!.Value.Y+scroll.Bounds.Height;
+        if(purposeBottom>viewportBottom+1)throw new Exception("The next-step explanation is clipped in the normal one-result layout");
         var width=picker.Width; picker.Width=400; RedesignChecks.Frames(4); picker.SetRenderScaling(1.5); RedesignChecks.Frames(4);
         var actions=Named<StackPanel>(picker,"DialogActions"); var row=Named<Grid>(picker,"BitwardenSearchRow");
         if(actions.Orientation!=Avalonia.Layout.Orientation.Vertical || row.ColumnDefinitions.Count!=1 || row.Children[0].Bounds.Width<150 || row.Children[1].Bounds.Y<row.Children[0].Bounds.Bottom)throw new Exception("Narrow picker did not stack controls cleanly");
@@ -131,6 +134,9 @@ internal static class BitwardenChecks
                 var settings=Result(repo.ApplicationSettingsAsync()) with { Preferences=new() { Language=language,Bitwarden=options,ShowMetrics=false } }; Wait(repo.SaveApplicationSettingsAsync(settings));
                 var vault=new Vault(); var main=new MainWindow(new(repo),repo,vault,new(repo),new ExternalRdpClient()); main.Show(); RedesignChecks.Frames(15);
                 var profile=new ServerProfile { Name="Vault fixture",Host="fixture.invalid",Username="fixture" }; Wait(repo.SaveAsync(profile));
+                var unboundEdit=Dialogs.Edit(main,profile,[]); RedesignChecks.Frames(3); var unboundEditor=main.OwnedWindows.Single();
+                if(Named<Button>(unboundEditor,"ProfileBitwardenClear").IsVisible || Avalonia.Automation.AutomationProperties.GetName(Named<Button>(unboundEditor,"ProfileBitwardenBind"))!=AppText.T("Przypisz wpis sejfu"))throw new Exception("Unbound editor offered an irrelevant remove action");
+                unboundEditor.GetVisualDescendants().OfType<Button>().Single(b=>Equals(b.Tag,"Anuluj")).RaiseEvent(new RoutedEventArgs(Button.ClickEvent)); Wait(unboundEdit);
                 var pane=new SessionPane(main,profile,new(repo),new ExternalRdpClient(),repo); main.RegisterPane(pane); RedesignChecks.Frames(4); var emulator=pane.Children.OfType<Iciclecreek.Terminal.TerminalControl>().Single().Terminal;
                 var choice=main.ChooseBitwardenAsync(main,profile,null,true); RedesignChecks.Frames(3); var picker=main.OwnedWindows.Single();
                 SshAcceptanceChecks.Until(()=>Named<Button>(picker,"BitwardenUnlock").IsEnabled,"Picker status did not finish");
@@ -138,7 +144,7 @@ internal static class BitwardenChecks
                 if(binding.Reference?.ItemId!=Item || binding.Password!=null)throw new Exception("Binding picker fetched or retained a password");
                 var linked=profile with { Bitwarden=binding.Reference }; Wait(repo.SaveAsync(linked));
                 var editing=Dialogs.Edit(main,linked,[]); RedesignChecks.Frames(4); var editor=main.OwnedWindows.Single();
-                if(!Named<TextBlock>(editor,"ProfileBitwardenReference").Text!.Contains(binding.Reference!.Name))throw new Exception("Profile editor lost the vault binding");
+                if(!Named<TextBlock>(editor,"ProfileBitwardenReference").Text!.Contains(binding.Reference!.Name) || !Named<Button>(editor,"ProfileBitwardenClear").IsVisible || Avalonia.Automation.AutomationProperties.GetName(Named<Button>(editor,"ProfileBitwardenBind"))!=AppText.T("Zmień wpis sejfu"))throw new Exception("Bound profile did not clearly show its change/remove actions");
                 if(OperatingSystem.IsWindows())
                 {
                     Named<ComboBox>(editor,"ProfileProtocol").SelectedItem=Protocol.RDP; Named<TabControl>(editor,"ProfileEditorNavigation").SelectedIndex=3; RedesignChecks.Frames(3);
@@ -146,7 +152,9 @@ internal static class BitwardenChecks
                     if(Named<Button>(editor,"ProfileBitwardenBind").IsEnabled || !Named<TextBlock>(editor,"ProfileBitwardenAvailability").IsVisible)throw new Exception("External Windows RDP advertised unsupported vault credentials");
                     Named<ComboBox>(editor,"ProfileProtocol").SelectedItem=Protocol.SSH;
                 }
-                Click(editor,"ProfileBitwardenClear"); editor.GetVisualDescendants().OfType<Button>().Single(b=>Equals(b.Tag,"Zapisz")).RaiseEvent(new RoutedEventArgs(Button.ClickEvent));
+                Click(editor,"ProfileBitwardenClear");
+                if(Named<Button>(editor,"ProfileBitwardenClear").IsVisible || Avalonia.Automation.AutomationProperties.GetName(Named<Button>(editor,"ProfileBitwardenBind"))!=AppText.T("Przypisz wpis sejfu"))throw new Exception("Removing a draft binding did not restore the simple assign action");
+                editor.GetVisualDescendants().OfType<Button>().Single(b=>Equals(b.Tag,"Zapisz")).RaiseEvent(new RoutedEventArgs(Button.ClickEvent));
                 if(Result(editing)?.Bitwarden!=null || Result(repo.ListAsync()).Single().Bitwarden!=linked.Bitwarden)throw new Exception("Removing an editor binding changed data before the profile save");
                 var obtain=main.ChooseBitwardenAsync(main,linked,linked.Bitwarden); RedesignChecks.Frames(3); picker=main.OwnedWindows.Single();
                 SshAcceptanceChecks.Until(()=>Named<Button>(picker,"BitwardenUnlock").IsEnabled,"Bound picker status did not finish");
@@ -176,15 +184,24 @@ internal static class BitwardenChecks
                 var failed=main.ChooseBitwardenAsync(main,profile,null); RedesignChecks.Frames(4); picker=main.OwnedWindows.Single();
                 if(!Named<TextBlock>(picker,"BitwardenError").IsVisible || Named<TextBlock>(picker,"BitwardenError").Text!.Contains(Secret))throw new Exception("Unexpected vault error leaked raw data");
                 picker.GetVisualDescendants().OfType<Button>().Single(b=>Equals(b.Tag,"Anuluj")).RaiseEvent(new RoutedEventArgs(Button.ClickEvent)); Wait(failed); main.BitwardenFactory=BitwardenCli.Create;
+                main.BitwardenFactory=_=>throw new BitwardenException(BitwardenFailure.Configuration);
+                var setupNeeded=main.ChooseBitwardenAsync(main,profile,null); RedesignChecks.Frames(4); picker=main.OwnedWindows.Single();
+                if(Named<Grid>(picker,"BitwardenUnlockRow").IsVisible || Named<StackPanel>(picker,"BitwardenSearchSection").IsVisible || Named<Button>(picker,"BitwardenUse").IsVisible || !Named<Expander>(picker,"BitwardenSetupHelp").IsExpanded || Named<TextBlock>(picker,"BitwardenState").Text!=AppText.T("Najpierw przygotuj sejf"))throw new Exception("Unconfigured vault did not guide the user to setup before asking for a password");
+                picker.CaptureRenderedFrame()!.Save(Path.Combine(root,"vault-setup-required-"+language+".png"));
+                main.BitwardenFactory=BitwardenCli.Create; Click(picker,"BitwardenRetry");
+                SshAcceptanceChecks.Until(()=>Named<Button>(picker,"BitwardenUnlock").IsEnabled,"Setup retry did not recover after configuration");
+                if(!Named<Grid>(picker,"BitwardenUnlockRow").IsVisible || !Named<TextBox>(picker,"BitwardenMasterPassword").IsKeyboardFocusWithin || Named<Button>(picker,"BitwardenUse").IsVisible)throw new Exception("Recovered setup did not return to the unlock step");
+                picker.GetVisualDescendants().OfType<Button>().Single(b=>Equals(b.Tag,"Anuluj")).RaiseEvent(new RoutedEventArgs(Button.ClickEvent)); Wait(setupNeeded);
                 var edit=Dialogs.Settings(main,repo,()=>Task.CompletedTask); RedesignChecks.Frames(5); var settingsWindow=main.OwnedWindows.Single(); Named<TabControl>(settingsWindow,"SettingsCategories").SelectedIndex=6; RedesignChecks.Frames(3);
                 if(Named<TextBox>(settingsWindow,"BitwardenExecutable").Text!=exe)throw new Exception("CLI configuration missing from settings");
+                if(Named<Expander>(settingsWindow,"BitwardenSetupHelp").IsExpanded)throw new Exception("Settings overwhelmed the main fields with expanded setup instructions");
                 settingsWindow.CaptureRenderedFrame()!.Save(Path.Combine(root,"vault-settings-"+language+".png")); settingsWindow.GetVisualDescendants().OfType<Button>().Single(b=>Equals(b.Tag,"Anuluj")).RaiseEvent(new RoutedEventArgs(Button.ClickEvent)); Wait(edit);
                 main.Close(); RedesignChecks.Frames(3); var confirm=main.OwnedWindows.Single(); confirm.GetVisualDescendants().OfType<Button>().Single(b=>Equals(b.Tag,"Potwierdź")).RaiseEvent(new RoutedEventArgs(Button.ClickEvent)); SshAcceptanceChecks.Until(()=>!main.IsVisible,"Vault fixture did not close");
             }
             using var logFile=new FileStream(Path.Combine(root,"ui-diagnostics.log"),FileMode.Open,FileAccess.Read,FileShare.ReadWrite|FileShare.Delete);
             using var logReader=new StreamReader(logFile); var diagnostics=logReader.ReadToEnd();
             if(new[]{Secret,"master-fixture","SYNTHETIC_SESSION_CANARY"}.Any(diagnostics.Contains))throw new Exception("Vault secret reached application diagnostics");
-            AppText.SetLanguage("pl"); Console.WriteLine("PASS Bitwarden native child safety, cancellation, metadata-only binding, selected/one-time password, PL/EN picker/settings; automatic search, query invalidation, empty/error/retry states, keyboard focus/selection, compact 150% layout and offline setup; no core session/data changes; synthetic data only");
+            AppText.SetLanguage("pl"); Console.WriteLine("PASS Bitwarden native child safety, cancellation and credential isolation; PL/EN two-step unlock/select flow, labeled usernames, simple/collapsed detailed setup in picker/settings, unconfigured recovery, contextual profile actions, automatic search, stale-result guards, keyboard and compact 150% layout; synthetic data only");
         }
         finally { Environment.SetEnvironmentVariable("SERVERDESK_BITWARDEN_FIXTURE",null); }
     }

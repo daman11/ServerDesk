@@ -89,11 +89,21 @@ internal static class ProfileEditorDialog
         var keyRow=new Grid { ColumnDefinitions=new ColumnDefinitions("*,Auto"),ColumnSpacing=8,Children={key} }; Grid.SetColumn(chooseKey,1); keyRow.Children.Add(chooseKey);
         var keyField=Field("Klucz prywatny",keyRow,0,"Klucz pozostaje w wybranym pliku na Twoim komputerze."); fields[key]=fields[keyRow]; authentication.Children.Add(keyField);
         var vaultRow=new StackPanel { Spacing=8 };
-        var vaultLabel=DesignSystem.Hint(bitwarden?.Name??L.T("Hasło podawane przy łączeniu lub z magazynu systemowego.")); vaultLabel.Name="ProfileBitwardenReference"; vaultRow.Children.Add(vaultLabel);
+        var vaultLabel=DesignSystem.Hint(""); vaultLabel.Name="ProfileBitwardenReference"; vaultRow.Children.Add(vaultLabel);
         var vaultAvailability=DesignSystem.Hint(L.T("Na Windows hasła sejfu dla RDP wymagają trybu W zakładce ServerDesk. Osobny klient używa własnego okna poświadczeń; zapisane przypisanie pozostaje zachowane.")); vaultAvailability.Name="ProfileBitwardenAvailability"; vaultAvailability.IsVisible=false; vaultRow.Children.Add(vaultAvailability);
         var vaultActions=new WrapPanel { Orientation=Orientation.Horizontal };
         var bindVault=Dialogs.Button("Przypisz wpis sejfu",()=>{}); bindVault.Name="ProfileBitwardenBind"; bindVault.Content=DeskIcons.Labelled("key",L.T("Przypisz wpis sejfu")); vaultActions.Children.Add(bindVault);
-        var clearVault=Dialogs.Button("Usuń przypisanie sejfu",()=> { bitwarden=null; vaultLabel.Text=L.T("Hasło podawane przy łączeniu lub z magazynu systemowego."); }); clearVault.Name="ProfileBitwardenClear"; clearVault.Content=DeskIcons.Labelled("close",L.T("Usuń przypisanie sejfu")); vaultActions.Children.Add(clearVault);
+        var clearVault=Dialogs.Button("Usuń przypisanie sejfu",()=>{}); clearVault.Name="ProfileBitwardenClear"; clearVault.Content=DeskIcons.Labelled("close",L.T("Usuń przypisanie sejfu")); vaultActions.Children.Add(clearVault);
+        void RefreshVault()
+        {
+            vaultLabel.Text=bitwarden==null?L.T("Opcjonalnie wybierz wpis z Bitwarden lub Vaultwarden."):L.F($"Hasło z sejfu: {bitwarden.Name}")+"\n"+bitwarden.Server;
+            clearVault.IsVisible=bitwarden!=null;
+            var caption=L.T(bitwarden==null?"Przypisz wpis sejfu":"Zmień wpis sejfu");
+            bindVault.Content=DeskIcons.Labelled("key",caption); AutomationProperties.SetName(bindVault,caption); ToolTip.SetTip(bindVault,caption);
+        }
+        clearVault.Click+=(_,_)=> { bitwarden=null; RefreshVault(); };
+        foreach(var action in vaultActions.Children)action.Margin=new Thickness(0,0,8,0);
+        RefreshVault();
         bindVault.IsEnabled=owner is MainWindow workspace && workspace.IsPluginEnabled(PluginCatalog.Bitwarden);
         bindVault.Click+=(_,_)=>
         {
@@ -106,7 +116,7 @@ internal static class ProfileEditorDialog
                     var draft=original with { Name=name.Text??"",Host=host.Text??"",Username=user.Text??"",Protocol=protocol.SelectedItem is Protocol selected?selected:Protocol.SSH };
                     var choice=await main.ChooseBitwardenAsync(dialog,draft,null,true);
                     if(choice?.Reference is not {} selectedReference)return;
-                    bitwarden=selectedReference; vaultLabel.Text=selectedReference.Name+" · "+selectedReference.Server;
+                    bitwarden=selectedReference; RefreshVault();
                     if(choice.Username.Length>0) { user.Text=choice.Username; domain.Text=""; }
                 }
                 finally { bindVault.IsEnabled=main.IsPluginEnabled(PluginCatalog.Bitwarden); }

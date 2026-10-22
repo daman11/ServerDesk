@@ -12,17 +12,35 @@ namespace ServerDesk.App;
 
 internal static partial class Dialogs
 {
+    internal static Expander BitwardenSetupGuide()
+    {
+        var steps=new StackPanel { Spacing=14,Margin=new Thickness(0,10,0,0) };
+        foreach(var (title,description) in new[]
+        {
+            ("1. Zainstaluj Bitwarden CLI","Potrzebny jest program bw.exe na Windows lub bw na Linux. Aplikacja Bitwarden i rozszerzenie przeglądarki nie zastępują tego programu."),
+            ("2. Zaloguj swój sejf","W terminalu ustaw adres sejfu i zaloguj konto. Szczegółowe polecenia znajdziesz poniżej."),
+            ("3. Wskaż program w ServerDesk","Otwórz Ustawienia → Pluginy → Bitwarden / Vaultwarden. Wybierz plik programu i zapisz ustawienia.")
+        })
+        {
+            steps.Children.Add(new StackPanel { Spacing=4,Children={DesignSystem.Label(L.T(title)),DesignSystem.Hint(L.T(description))} });
+        }
+        var technical=new StackPanel { Spacing=10,Margin=new Thickness(0,8,0,0) };
+        foreach(var paragraph in HelpContent.Read(L.Language).Single(topic=>topic.Id=="bitwarden").Sections[0].Paragraphs)technical.Children.Add(DesignSystem.Hint(paragraph));
+        steps.Children.Add(new Expander { Name="BitwardenTerminalInstructions",Header=L.T("Polecenia i ustawienia CLI"),Content=technical,HorizontalAlignment=HorizontalAlignment.Stretch,HorizontalContentAlignment=HorizontalAlignment.Stretch,Classes={"network-options"} });
+        return new Expander { Name="BitwardenSetupHelp",Header=DeskIcons.Labelled("help",L.T("Pierwsza konfiguracja sejfu")),Content=steps,HorizontalAlignment=HorizontalAlignment.Stretch,HorizontalContentAlignment=HorizontalAlignment.Stretch,Classes={"network-options"} };
+    }
+
     internal static async Task<BitwardenChoice?> Bitwarden(Window owner,Func<BitwardenCli> create,ServerProfile? profile,BitwardenReference? reference,bool bindingOnly,CancellationToken ct)
     {
         if(ct.IsCancellationRequested)return null;
         using var scope=CancellationTokenSource.CreateLinkedTokenSource(ct);
-        BitwardenCli? client=null; Task work=Task.CompletedTask; var busy=false; var closed=false; var statusChecked=false; Control? focusAfter=null;
+        BitwardenCli? client=null; Task work=Task.CompletedTask; var busy=false; var closed=false; var statusChecked=false; var needsSetup=false; Control? focusAfter=null;
         // Reserve space for the overlaid dialog scrollbar, including in wide cards.
         var stack=new StackPanel { Spacing=14,Margin=new Thickness(0,0,12,0) };
-        stack.Children.Add(DesignSystem.PageHeading("key","Bitwarden / Vaultwarden",L.T(bindingOnly?"Przypisz wpis sejfu. Hasło nie zostanie zapisane w profilu.":"Wybierz hasło do tego połączenia. Sejf zostanie zamknięty w ServerDesk po zamknięciu okna.")));
+        stack.Children.Add(DesignSystem.PageHeading("key","Bitwarden / Vaultwarden",L.T(bindingOnly?"Przypisz zapisane hasło do połączenia.":"Użyj hasła zapisanego w swoim sejfie.")));
         if(profile!=null)stack.Children.Add(DesignSystem.Hint(profile.Protocol+" · "+profile.Endpoint+(profile.Username.Length>0?" · "+profile.Username:"")));
 
-        var state=DesignSystem.Label(L.T("Dostęp do sejfu")); state.Name="BitwardenState";
+        var state=DesignSystem.Label(L.T("1. Odblokuj sejf")); state.Name="BitwardenState"; state.TextWrapping=TextWrapping.Wrap;
         var server=DesignSystem.Hint(""); server.Name="BitwardenServer"; server.IsVisible=false;
         var status=DesignSystem.Hint(L.T("Sprawdzanie stanu Bitwarden CLI…")); status.Name="BitwardenStatus";
         var progress=new ProgressBar { Name="BitwardenProgress",IsIndeterminate=true,Height=3,IsVisible=false };
@@ -32,6 +50,7 @@ internal static partial class Dialogs
         var master=new TextBox { Name="BitwardenMasterPassword",PasswordChar='●',MaxLength=4096,PlaceholderText=L.T("Hasło główne sejfu") };
         AutomationProperties.SetName(master,L.T("Hasło główne sejfu"));
         var unlock=Button("Odblokuj sejf",()=>{}); unlock.Name="BitwardenUnlock"; unlock.Content=DeskIcons.Labelled("key",L.T("Odblokuj sejf"));
+        unlock.Classes.Add("primary");
         var unlockRow=new Grid { Name="BitwardenUnlockRow",ColumnDefinitions=new("*,Auto"),ColumnSpacing=8,Children={master,unlock} }; Grid.SetColumn(unlock,1);
         var access=new StackPanel { Spacing=8,Children={stateRow,server,status,progress,warning,unlockRow} };
         stack.Children.Add(DesignSystem.Card(access,new Thickness(14)));
@@ -46,7 +65,7 @@ internal static partial class Dialogs
         {
             if(entry==null)return null;
             var name=DesignSystem.Label(entry.Reference.Name); name.TextTrimming=TextTrimming.CharacterEllipsis;
-            var username=DesignSystem.Hint(entry.Username.Length>0?entry.Username:L.T("Brak loginu we wpisie")); username.MaxLines=1; username.TextTrimming=TextTrimming.CharacterEllipsis;
+            var username=DesignSystem.Hint(entry.Username.Length>0?L.F($"Login: {entry.Username}"):L.T("Brak loginu we wpisie")); username.MaxLines=1; username.TextTrimming=TextTrimming.CharacterEllipsis;
             var details=new StackPanel { Spacing=3,Children={name,username} };
             var row=new Grid { ColumnDefinitions=new("22,*"),ColumnSpacing=8,Margin=new Thickness(4,6),Children={DeskIcons.Create("key",16,"AccentPrimary"),details} }; Grid.SetColumn(details,1);
             ToolTip.SetTip(row,entry.Reference.Name+"\n"+username.Text); return row;
@@ -56,18 +75,15 @@ internal static partial class Dialogs
         var count=DesignSystem.Hint(""); count.Name="BitwardenResultCount"; count.IsVisible=false;
         var selection=DesignSystem.Label(""); selection.Name="BitwardenSelection"; selection.TextWrapping=TextWrapping.Wrap;
         var selectionUser=DesignSystem.Hint(""); selectionUser.Name="BitwardenSelectionUsername";
-        var selectionHint=DesignSystem.Hint(L.T(bindingOnly?"Przypisanie zachowa metadane wpisu i sejfu, bez hasła.":"Hasło zostanie pobrane dopiero po wybraniu Użyj hasła."));
-        var selected=new StackPanel { Spacing=5,Children={DesignSystem.SectionHeading("key",L.T(reference!=null?"Przypisany wpis":"Wybrany wpis")),selection,selectionUser,selectionHint} };
+        var purpose=DesignSystem.Hint(L.T(bindingOnly?"Po zapisaniu połączenia użyjemy tego wpisu przy kolejnych logowaniach.":"Hasło zostanie użyte w tej sesji.")); purpose.Name="BitwardenPurpose";
+        var selected=new StackPanel { Spacing=5,Children={DesignSystem.SectionHeading("key",L.T("Przypisany wpis")),selection,selectionUser} };
         if(reference!=null) { selection.Text=reference.Name; selectionUser.Text=reference.Server; }
         var selectedCard=DesignSystem.Card(selected,new Thickness(14)); selectedCard.Name="BitwardenSelectionDetails"; selectedCard.IsVisible=reference!=null;
-        var resultsHeading=new Grid { ColumnDefinitions=new("*,Auto"),ColumnSpacing=8,Children={DesignSystem.SectionHeading("search",L.T("Wybór wpisu")),count} }; Grid.SetColumn(count,1);
-        var entries=new StackPanel { Name="BitwardenSearchSection",Spacing=8,IsVisible=reference==null,Children={resultsHeading,searchRow,results} };
-        stack.Children.Add(entries); stack.Children.Add(selectedCard);
+        var resultsHeading=new Grid { ColumnDefinitions=new("*,Auto"),ColumnSpacing=8,Children={DesignSystem.SectionHeading("search",L.T("2. Wybierz wpis")),count} }; Grid.SetColumn(count,1);
+        var entries=new StackPanel { Name="BitwardenSearchSection",Spacing=8,IsVisible=false,Children={resultsHeading,searchRow,results} };
+        stack.Children.Add(entries); stack.Children.Add(selectedCard); stack.Children.Add(purpose);
 
-        var setup=HelpContent.Read(L.Language).Single(topic=>topic.Id=="bitwarden").Sections[0];
-        var guidance=new StackPanel { Spacing=10,Margin=new Thickness(0,8,0,0) };
-        foreach(var paragraph in setup.Paragraphs)guidance.Children.Add(DesignSystem.Hint(paragraph));
-        var help=new Expander { Name="BitwardenSetupHelp",Header=DeskIcons.Labelled("help",L.T("Instrukcja konfiguracji")),Content=guidance,HorizontalAlignment=HorizontalAlignment.Stretch,HorizontalContentAlignment=HorizontalAlignment.Stretch,Classes={"network-options"} }; stack.Children.Add(help);
+        var help=BitwardenSetupGuide(); stack.Children.Add(help);
         var actions=new StackPanel { Orientation=Orientation.Horizontal,HorizontalAlignment=HorizontalAlignment.Right,Spacing=8 }; stack.Children.Add(actions);
         var dialog=Window("Bitwarden / Vaultwarden",stack); dialog.Name="BitwardenPicker"; dialog.Width=720;
         dialog.SizeChanged+=(_,_) =>
@@ -87,24 +103,24 @@ internal static partial class Dialogs
         bool ValidSearch()=>search.Text is {} query && query.Trim().Length is >=2 and <=200 && !query.TrimStart().StartsWith('-') && !query.Any(char.IsControl);
         void Refresh()
         {
-            var unlocked=client?.IsUnlocked==true; var ready=!busy && unlocked;
-            state.Text=L.T(unlocked?"Sejf odblokowany":"Dostęp do sejfu");
+            var unlocked=client?.IsUnlocked==true && !needsSetup; var ready=!busy && unlocked;
+            state.Text=L.T(unlocked?"Sejf odblokowany":needsSetup?"Najpierw przygotuj sejf":"1. Odblokuj sejf");
             DesignSystem.Resource(state,TextBlock.ForegroundProperty,unlocked?"Success":"ForegroundPrimary");
-            unlockRow.IsVisible=!unlocked; master.IsEnabled=unlock.IsEnabled=!busy && statusChecked && !unlocked;
+            unlockRow.IsVisible=!unlocked && statusChecked && !needsSetup; master.IsEnabled=unlock.IsEnabled=!busy && statusChecked && !unlocked && !needsSetup;
             retry.IsVisible=!unlocked; retry.IsEnabled=!busy; progress.IsVisible=busy;
-            status.IsVisible=busy || !unlocked || warning.IsVisible;
+            status.IsVisible=busy || !unlocked && statusChecked && !warning.IsVisible;
+            entries.IsVisible=unlocked && reference==null; purpose.IsVisible=unlocked; use.IsVisible=unlocked;
             searchRow.IsEnabled=list.IsEnabled=ready; find.IsEnabled=ready && ValidSearch(); clear.IsVisible=!string.IsNullOrEmpty(search.Text);
             use.IsEnabled=ready&&(reference!=null||list.SelectedItem is BitwardenEntry);
         }
         void ForgetResults()
         {
             list.ItemsSource=null; list.IsVisible=false; empty.IsVisible=true; count.IsVisible=false;
-            if(reference==null)selectedCard.IsVisible=false;
         }
         void Run(string message,Func<Task> action)
         {
             if(busy || closed || scope.IsCancellationRequested)return;
-            busy=true; warning.IsVisible=false; status.Text=L.T(message); Refresh(); work=Execute();
+            busy=true; needsSetup=false; warning.IsVisible=false; status.Text=L.T(message); Refresh(); work=Execute();
             async Task Execute()
             {
                 try { client??=create(); await action(); }
@@ -114,10 +130,12 @@ internal static partial class Dialogs
                     if(!closed && !scope.IsCancellationRequested)
                     {
                         warning.Text=ex is BitwardenException or ArgumentException?ex.Message:L.T("Nie udało się wykonać operacji sejfu."); warning.IsVisible=true;
+                        needsSetup=ex is BitwardenException { Reason:BitwardenFailure.Configuration or BitwardenFailure.LoginRequired or BitwardenFailure.ServerNotIdentified };
+                        if(needsSetup) { statusChecked=false; help.IsExpanded=true; }
                         status.Text=L.T("Operacja sejfu nie została ukończona. Możesz spróbować ponownie.");
                         if(client?.IsUnlocked!=true) { ForgetResults(); empty.Text=L.T("Odblokuj sejf, aby wyszukać wpisy."); }
                         else if(!list.IsVisible)empty.Text=L.T("Wyszukiwanie nie zostało ukończone. Spróbuj ponownie.");
-                        focusAfter=client?.IsUnlocked==true?(reference==null?search:use):statusChecked?master:retry;
+                        focusAfter=needsSetup?retry:client?.IsUnlocked==true?(reference==null?search:use):statusChecked?master:retry;
                         // Never log CLI output, command data, master passwords or vault contents.
                         if(ex is BitwardenException or ArgumentException)Serilog.Log.Warning("Bitwarden operation failed: {Reason}",ex is BitwardenException failure?failure.Reason.ToString():ex.GetType().Name);
                         else ApplicationDiagnostics.Report("BitwardenPicker",ex);
@@ -132,7 +150,7 @@ internal static partial class Dialogs
             var account=await client!.StatusAsync(scope.Token);
             if(closed || scope.IsCancellationRequested)return;
             statusChecked=true; server.Text=account.Server; server.IsVisible=true;
-            status.Text=L.T("Odblokuj sejf hasłem głównym."); focusAfter=master;
+            status.Text=L.T("Podaj hasło, którym odblokowujesz swój sejf."); focusAfter=master;
         }
         async Task Search()
         {
@@ -155,6 +173,7 @@ internal static partial class Dialogs
                 try { await client!.UnlockAsync(password,scope.Token,reference); }
                 finally { password=""; }
                 if(closed || scope.IsCancellationRequested)return;
+                help.IsExpanded=false;
                 status.Text=L.T("Sejf odblokowany na czas tego okna."); focusAfter=reference==null?search:use;
                 if(reference==null && ValidSearch())await Search();
                 else empty.Text=L.T("Wpisz co najmniej 2 znaki nazwy wpisu lub adresu.");
@@ -181,12 +200,6 @@ internal static partial class Dialogs
         };
         list.SelectionChanged+=(_,_) =>
         {
-            if(reference==null)
-            {
-                var entry=list.SelectedItem as BitwardenEntry; selectedCard.IsVisible=entry!=null;
-                selection.Text=entry?.Reference.Name??"";
-                selectionUser.Text=entry==null?"":entry.Username.Length>0?entry.Username:L.T("Brak loginu we wpisie");
-            }
             Refresh();
         };
         // TextChanged is deferred by TextBox. Invalidate synchronously so an immediate

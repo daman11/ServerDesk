@@ -2,7 +2,7 @@
 
 ## Unreleased
 
-- Improve the Bitwarden / Vaultwarden picker with separate access, search and selection sections, automatic host search after unlock, immediate query/result invalidation, progress and recoverable error/empty states, inline offline setup instructions and keyboard navigation. Hide the cleared master-password field after unlocking and stack inputs/actions in narrow windows. Keep the existing CLI commands, credential storage and session lifetime unchanged; add focused synthetic PL/EN UI regressions.
+- Simplify the Bitwarden / Vaultwarden picker into unlock and item-selection steps. Hide unavailable search/actions until unlock, avoid a duplicate selected-item card, label usernames and explain one-time use versus a saved binding. Share a short three-step setup guide between settings and the picker, with detailed CLI commands collapsed. Show contextual assign/change/remove actions in the connection editor. Retain automatic host search, immediate query/result invalidation, progress, recoverable error/empty states, keyboard navigation and narrow-window layout. Keep existing CLI commands, credential storage and session lifetime unchanged; add focused synthetic PL/EN UI regressions.
 
 ## 0.46.0 — Public Beta — 2026-10-22
 

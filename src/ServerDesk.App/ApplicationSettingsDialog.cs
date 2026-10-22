@@ -97,7 +97,8 @@ internal static partial class Dialogs
             if(plugin.Id==PluginCatalog.Bitwarden)
             {
                 Label(section,"Program Bitwarden CLI",bitwardenExecutable); Label(section,"Katalog profilu CLI (opcjonalnie)",bitwardenDirectory);
-                section.Children.Add(DesignSystem.Hint(L.T("Zainstaluj oficjalny plik wykonywalny bw, skonfiguruj serwer i zaloguj konto w CLI. ServerDesk odblokuje sejf w oknie poświadczeń. Instrukcja jest w Pomoc → Bitwarden / Vaultwarden.")));
+                section.Children.Add(DesignSystem.Hint(L.T("Najpierw skonfiguruj i zaloguj konto CLI. Przy łączeniu ServerDesk poprosi tylko o odblokowanie sejfu.")));
+                section.Children.Add(BitwardenSetupGuide());
             }
         }
         pluginsPage.Children.Add(DesignSystem.Hint(L.T("Zmiany pluginów działają po zapisaniu, bez restartu. Wyłączenie zatrzymuje ich pracę i ukrywa akcje; ustawienia oraz własne komendy pozostają zachowane.")));

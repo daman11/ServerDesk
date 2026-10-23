@@ -52,7 +52,7 @@ public sealed partial class MainWindow
     {
         var tags=ProfileTags.Parse(profile.Tags); if(tags.Length==0)return row;
         var stack=new StackPanel { Spacing=3,ClipToBounds=true,Children={row} };
-        var chips=new Grid { Name="ConnectionRowTags",ColumnDefinitions=new ColumnDefinitions(tags.Length==1?"*,0,0":"Auto,*,Auto"),ColumnSpacing=4,Margin=new Thickness(3+20+DesignTokens.IconGap*2,0,0,2),ClipToBounds=true };
+        var chips=new Grid { Name="ConnectionRowTags",ColumnDefinitions=new ColumnDefinitions(tags.Length==1?"*,0,0":"Auto,*,Auto"),ColumnSpacing=4,Margin=new Thickness(3+36+DesignTokens.IconGap*2,0,0,2),ClipToBounds=true };
         for(var i=0;i<Math.Min(2,tags.Length);i++)
         {
             var name=tags[i]; var chip=ConnectionTagVisuals.Chip(name,vm.TagColors,vm.SelectedTags.Contains(name,StringComparer.OrdinalIgnoreCase),quiet:true); chip.MaxWidth=i==0 && tags.Length>1?90:130; chip.ClipToBounds=true; chip.HorizontalAlignment=HorizontalAlignment.Left; Grid.SetColumn(chip,i); chips.Children.Add(chip);

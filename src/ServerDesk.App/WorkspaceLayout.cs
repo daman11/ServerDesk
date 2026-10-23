@@ -170,20 +170,24 @@ public sealed partial class MainWindow
     }
     private static Control Row(string icon,string name,bool favorite=false,bool connected=false,string? protocol=null,ServerProfile? profile=null,string? detail=null)
     {
-        var row=new Grid { ColumnDefinitions=new ColumnDefinitions(profile==null?"0,20,*,Auto,Auto,Auto":"3,20,*,Auto,Auto,Auto"),ColumnSpacing=DesignTokens.IconGap,MinHeight=24 };
+        var row=new Grid { ColumnDefinitions=new ColumnDefinitions(profile==null?"0,36,*,Auto,Auto":"3,36,*,Auto,Auto"),ColumnSpacing=DesignTokens.IconGap,MinHeight=24 };
         if(profile!=null)row.Children.Add(new Border { Width=3,Height=18,CornerRadius=new CornerRadius(2),Background=ProfileVisual.ColorBrush(profile.Color) });
-        Control glyph=profile==null?DeskIcons.Create(icon,16,"ForegroundSecondary"):new ProfileVisual(profile); Grid.SetColumn(glyph,1); row.Children.Add(glyph); var text=DesignSystem.Label(name); text.FontWeight=profile==null?FontWeight.SemiBold:FontWeight.Normal; text.TextTrimming=TextTrimming.CharacterEllipsis;
+        // Keep the status slot beside the server icon even while disconnected.
+        // The protocol stays at the right edge, independent of status/favorites.
+        var glyph=new Grid { ColumnDefinitions=new ColumnDefinitions("20,12"),ColumnSpacing=4,VerticalAlignment=VerticalAlignment.Center };
+        glyph.Children.Add(profile==null?DeskIcons.Create(icon,16,"ForegroundSecondary"):new ProfileVisual(profile));
+        if(connected) { var dot=DeskIcons.Create("circle-check",12,"Success"); Grid.SetColumn(dot,1); glyph.Children.Add(dot); }
+        Grid.SetColumn(glyph,1); row.Children.Add(glyph); var text=DesignSystem.Label(name); text.FontWeight=profile==null?FontWeight.SemiBold:FontWeight.Normal; text.TextTrimming=TextTrimming.CharacterEllipsis;
         Grid.SetColumn(text,2); row.Children.Add(text);
         if(!string.IsNullOrEmpty(detail))
         {
             row.RowDefinitions=new RowDefinitions("Auto,Auto"); row.RowSpacing=2;
             var secondary=DesignSystem.Label(detail,true,DesignTokens.Micro); secondary.Name="ConnectionSortValue"; secondary.TextTrimming=TextTrimming.CharacterEllipsis;
-            Grid.SetRow(secondary,1); Grid.SetColumn(secondary,2); Grid.SetColumnSpan(secondary,4); row.Children.Add(secondary); Grid.SetRowSpan(glyph,2);
+            Grid.SetRow(secondary,1); Grid.SetColumn(secondary,2); Grid.SetColumnSpan(secondary,3); row.Children.Add(secondary); Grid.SetRowSpan(glyph,2);
             if(profile!=null)Grid.SetRowSpan(row.Children[0],2);
         }
-        if(protocol!=null) { var badge=DesignSystem.Label(protocol,true,DesignTokens.Micro); badge.Margin=new Thickness(3,0); Grid.SetColumn(badge,3); row.Children.Add(badge); }
-        if(favorite) { var star=DeskIcons.Create("favorite",12); Grid.SetColumn(star,4); row.Children.Add(star); }
-        if(connected) { var dot=DeskIcons.Create("circle-check",12,"Success"); Grid.SetColumn(dot,5); row.Children.Add(dot); }
+        if(favorite) { var star=DeskIcons.Create("favorite",12); Grid.SetColumn(star,3); row.Children.Add(star); }
+        if(protocol!=null) { var badge=DesignSystem.Label(protocol,true,DesignTokens.Micro); badge.Margin=new Thickness(3,0); Grid.SetColumn(badge,4); row.Children.Add(badge); }
         return row;
     }
     private Control TabHeader(SessionPane p)

@@ -17,8 +17,59 @@ internal static class TreeAppearanceChecks
     private static T Field<T>(object owner,string name)=>(T)owner.GetType().GetField(name,BindingFlags.Instance|BindingFlags.NonPublic)!.GetValue(owner)!;
     private static IEnumerable<TreeViewItem> Nodes(IEnumerable<object?> items)
     { foreach(var node in items.OfType<TreeViewItem>()) { yield return node; foreach(var child in Nodes(node.Items))yield return child; } }
+    internal static void ConnectionStatusLayout(string root)
+    {
+        var preferences=DesignSystem.Preferences;
+        var factory=typeof(MainWindow).GetMethod("Row",BindingFlags.Static|BindingFlags.NonPublic)!;
+        try
+        {
+            foreach(var theme in new[]{"dark","light"})foreach(var width in new[]{180,300})foreach(var font in new[]{13,16})
+            {
+                DesignSystem.Apply(theme); DesignSystem.ApplyPreferences(preferences with { InterfaceFontSize=font });
+                var stack=new StackPanel { Spacing=12,Width=width,Margin=new Thickness(16) };
+                var window=new Window { Width=width+32,Height=600,Content=stack };
+                var rows=new List<(Control Row,Protocol Protocol,bool Connected)>();
+                foreach(var protocol in new[]{Protocol.SSH,Protocol.RDP})foreach(var favorite in new[]{false,true})foreach(var connected in new[]{false,true})
+                {
+                    var profile=new ServerProfile { Name="server-production",Host="fixture.invalid",Protocol=protocol,Port=protocol==Protocol.RDP?3389:22,Favorite=favorite,Color="#4C9CE5" };
+                    var row=(Control)factory.Invoke(null,[ProfileIcons.Resolve(profile),profile.Name,favorite,connected,protocol.ToString(),profile,font==16?profile.Endpoint:null])!;
+                    stack.Children.Add(row); rows.Add((row,protocol,connected));
+                }
+                window.Show(); RedesignChecks.Frames(3);
+                try
+                {
+                    foreach(var group in rows.GroupBy(r=>r.Protocol))
+                    {
+                        double? protocolX=null,nameX=null;
+                        foreach(var (row,protocol,connected) in group)
+                        {
+                            var texts=row.GetVisualDescendants().OfType<TextBlock>().ToArray();
+                            var badge=texts.Single(t=>t.Text==protocol.ToString()); var name=texts.Single(t=>t.Text=="server-production");
+                            var x=badge.TranslatePoint(default,row)!.Value.X; var nx=name.TranslatePoint(default,row)!.Value.X;
+                            if(protocolX.HasValue && (Math.Abs(protocolX.Value-x)>.1 || Math.Abs(nameX!.Value-nx)>.1))throw new Exception("Connection status/favorite moved protocol or server name");
+                            protocolX=x; nameX=nx;
+                            if(badge.Bounds.Width<=0 || x+badge.Bounds.Width>row.Bounds.Width+.1 || nx+name.Bounds.Width>x+.1)throw new Exception("Protocol clipped or overlapped server name");
+                            var marker=row.GetVisualDescendants().OfType<DeskIcon>().SingleOrDefault(i=>i.Glyph=="circle-check");
+                            if((marker!=null)!=connected)throw new Exception("Connected marker does not match row state");
+                            if(marker!=null)
+                            {
+                                var icon=row.GetVisualDescendants().OfType<ProfileVisual>().Single();
+                                var markerX=marker.TranslatePoint(default,row)!.Value.X; var iconX=icon.TranslatePoint(default,row)!.Value.X;
+                                if(markerX<iconX+icon.Bounds.Width || markerX+marker.Bounds.Width>nx)throw new Exception("Status marker overlaps icon or server name");
+                            }
+                        }
+                    }
+                    window.CaptureRenderedFrame()!.Save(Path.Combine(root,$"connection-status-{theme}-{width}-font{font}.png"));
+                }
+                finally { window.Close(); }
+            }
+        }
+        finally { DesignSystem.ApplyPreferences(preferences); DesignSystem.Apply("dark"); }
+        Console.WriteLine("PASS connection row layout: fixed protocol/name positions across connected/disconnected and favorite states; separate icon/status; SSH/RDP, narrow/wide rows, fonts 13/16, address details, Dark/Light");
+    }
     internal static void Run(MainWindow main,ProfileRepository repo,string root)
     {
+        ConnectionStatusLayout(root);
         var vm=Field<MainViewModel>(main,"vm"); var tree=Field<TreeView>(main,"tree"); var savedPreferences=main.Preferences;
         foreach(var folder in new[]{"01 Empty","02 Empty brand","03 Services/Empty","04 Only folders/Child"})RedesignChecks.Wait(repo.AddFolderAsync(folder));
         RedesignChecks.Wait(repo.SetFolderIconAsync("02 Empty brand","brand-docker"));

@@ -55,7 +55,7 @@ internal static class TreeAppearanceChecks
                             {
                                 var icon=row.GetVisualDescendants().OfType<ProfileVisual>().Single();
                                 var markerX=marker.TranslatePoint(default,row)!.Value.X; var iconX=icon.TranslatePoint(default,row)!.Value.X;
-                                if(markerX<iconX+icon.Bounds.Width || markerX+marker.Bounds.Width>nx)throw new Exception("Status marker overlaps icon or server name");
+                                if(markerX<0 || markerX+marker.Bounds.Width>iconX)throw new Exception("Status marker is not in the leading slot before the server icon");
                             }
                         }
                     }

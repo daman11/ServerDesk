@@ -25,5 +25,7 @@
 third-party/** -text
 # The upstream CC license deliberately ends with a blank line; retain pinned bytes.
 third-party/simple-icons/CC-BY-SA-4.0.txt whitespace=-blank-at-eof
+# Preserve the exact upstream Bitwarden notice, including its trademark-line space.
+third-party/bitwarden/LICENSE.txt whitespace=-blank-at-eol
 src/ServerDesk.App/Assets/** -text
 tests/ServerDesk.Tests/Fixtures/** -text

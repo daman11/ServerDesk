@@ -5,6 +5,7 @@ import io
 import json
 import re
 import subprocess
+import sys
 import tarfile
 import tempfile
 import xml.etree.ElementTree as ET
@@ -12,6 +13,7 @@ import xml.etree.ElementTree as ET
 root = Path(__file__).resolve().parents[1]
 version = ET.parse(root / "Directory.Build.props").findtext("PropertyGroup/Version")
 payload = root / f"artifacts/linux-x64-{version}"
+subprocess.run([sys.executable, str(root / "scripts/test-bitwarden-component.py"), str(payload), "linux-x64"], check=True)
 expected = {p.relative_to(payload).as_posix(): p for p in payload.rglob("*") if p.is_file()}
 deb = root / f"artifacts/serverdesk_{version}_amd64.deb"
 assert subprocess.check_output(["dpkg-deb", "-f", str(deb), "Version"], text=True).strip() == version
@@ -31,6 +33,7 @@ def check(archive, prefix):
             assert hashlib.file_digest(stream, "sha256").digest() == hashlib.sha256(expected[relative].read_bytes()).digest(), relative
     assert set(actual) == set(expected), set(expected) - set(actual)
     assert actual["ServerDesk.App"].mode & 0o111
+    assert actual["components/bitwarden/bw"].mode & 0o111
 
 with tarfile.open(root / f"artifacts/ServerDesk-{version}-linux-x64.tar.gz") as archive:
     check(archive, "")

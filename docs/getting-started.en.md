@@ -1,5 +1,7 @@
 # ServerDesk 0.47.0 — getting started
 
+**New in 0.49.0:** Bitwarden / Vaultwarden includes its OSS client, GUI server setup, sign-in, 2FA and sync. No bw file selection is needed. [Setup](bitwarden.md).
+
 **New in the local 0.47.0 release:** [Bitwarden / Vaultwarden](bitwarden.md): SSH Key items (RSA/Ed25519) used from memory by the terminal and SFTP, plus simpler vault selection. In the SSH editor select **SSH key from vault**, enter the server username and bind a key. Requires the official CLI, an explicit vault URL and prior CLI login. This local package has not been published to GitHub.
 
 **New in 0.45.1:** optional desktop shortcut and Update / Skip this version / Remind me at next startup. Startup checks default on; saved opt-outs remain effective. [Testing from 0.45.0](updates.md).

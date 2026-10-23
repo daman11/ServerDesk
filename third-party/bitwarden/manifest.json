@@ -1,0 +1,26 @@
+{
+  "version": "2026.10.0",
+  "commit": "b449ac1d255784380d75ef026343198891286be7",
+  "license": "GPL-3.0-only",
+  "sourceUrl": "https://codeload.github.com/bitwarden/clients/tar.gz/b449ac1d255784380d75ef026343198891286be7",
+  "upstreamSourceSha256": "9d0a656e1742240b4626b8d417b02f9d22a6e8bd49d9843a15a643e11d8b64e7",
+  "sourceSha256": "aa05a0045f8f7dc484e8db10129e0ad9623ae1dfd2903ff51429354caa22634d",
+  "notices": [
+    { "file": "LICENSE.txt", "sha256": "01fe7fd5a624e6a81557ff4b76c4a7b9a3d89c6a1b58083b74aff7bce843bb41" },
+    { "file": "LICENSE_GPL.txt", "sha256": "b98fbb37db5b23bc5cfdcd16793206a5a7120a7b01f75374e5e0888376e4691c" }
+  ],
+  "runtimes": {
+    "win-x64": {
+      "file": "bw.exe",
+      "archiveUrl": "https://github.com/bitwarden/clients/releases/download/cli-v2026.10.0/bw-oss-windows-2026.10.0.zip",
+      "archiveSha256": "2711c0e9527bbc88ecda4b884f4f1cff896e727cf6d7e82324dce2476fa1ef03",
+      "sha256": "12a5812aca9e5f9b512241a0780653e6f2b67edba38db978ab9f25cde467eea3"
+    },
+    "linux-x64": {
+      "file": "bw",
+      "archiveUrl": "https://github.com/bitwarden/clients/releases/download/cli-v2026.10.0/bw-oss-linux-2026.10.0.zip",
+      "archiveSha256": "a300959a347bd71ff571da75687c8388da2ecd747a20f0abddd18643eb9466ba",
+      "sha256": "c0f43adf9a56d33f8f608d098184f7f15d8e053247ed7f5b3c08739345e7ae5b"
+    }
+  }
+}

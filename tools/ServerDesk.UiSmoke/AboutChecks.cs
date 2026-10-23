@@ -34,6 +34,7 @@ internal static class AboutChecks
                     tabs.SelectedIndex=index; RedesignChecks.Frames(4);
                     if(AutomationProperties.GetName((TabItem)tabs.Items[index]!)!=AppText.T(title))throw new Exception("About section header language mismatch");
                     if(index==1 && Named<SelectableTextBlock>(dialog,"AboutLicenseText").Text!=File.ReadAllText("LICENSE"))throw new Exception("About does not preserve the original MIT license");
+                    if(index==2 && !dialog.GetVisualDescendants().OfType<TextBlock>().Any(t=>t.Text?.Contains("Bitwarden CLI OSS")==true && t.Text.Contains("GPL v3")))throw new Exception("Bundled vault component license is missing");
                     var close=Named<Button>(dialog,"AboutClose");
                     foreach(var button in new[]{copy,close})
                     {

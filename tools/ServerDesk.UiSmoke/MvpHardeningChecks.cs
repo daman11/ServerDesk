@@ -72,7 +72,7 @@ internal static class MvpHardeningChecks
             if(OperatingSystem.IsWindows()) { mode.SelectedIndex=0; RedesignChecks.Frames(); Verify(fullscreen.IsEnabled,"External RDP lost fullscreen option"); }
             fullscreen.BringIntoView(); RedesignChecks.Frames(); editor.CaptureRenderedFrame()!.Save(Path.Combine(root,"rdp-fullscreen-"+language+".png"));
             editor.GetVisualDescendants().OfType<Button>().Single(b=>b.Tag as string=="Anuluj").RaiseEvent(new RoutedEventArgs(Button.ClickEvent)); RedesignChecks.Wait(editing);
-            owner.Close(); RedesignChecks.Frames(15); Verify(!owner.IsVisible,"Hardening owner did not close");
+            owner.Close(); SshAcceptanceChecks.Until(()=>!owner.IsVisible,"Hardening owner did not close");
             Console.WriteLine("PASS "+language+": protected command/report exports, no host binding, failure preservation/local-path guidance, diagnostic success with failed history, invalid WoL feedback and RDP fullscreen scope; native pickers bypassed");
         }
     }

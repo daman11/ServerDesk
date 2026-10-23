@@ -4,7 +4,7 @@ W **Ustawienia → Pluginy** można niezależnie włączyć:
 
 - **Monitoring Linux** — panel monitoringu i metryki na pasku statusu, pobierane przez osobne SSH.
 - **Komendy** — Smart Cheat Sheet, mini poradniki offline, opisy przełączników, dokumentacja wydawców odświeżana na żądanie, własne szablony, ulubione i automatyczne wykrywanie środowiska SSH.
-- **Bitwarden / Vaultwarden** — hasła Login, klucze SSH Key (RSA/Ed25519 w pamięci) i trwałe przypisania wpisów do połączeń; wymaga wskazanego oficjalnego CLI. [Konfiguracja i ograniczenia](bitwarden.md).
+- **Bitwarden / Vaultwarden** — hasła Login, klucze SSH Key (RSA/Ed25519 w pamięci) i trwałe przypisania; oficjalny klient OSS jest dołączony, konfiguracja i logowanie odbywają się w GUI. [Konfiguracja i ograniczenia](bitwarden.md).
 
 To pluginy wbudowane, dostarczane z aplikacją. Domyślnie są włączone, również przy aktualizacji starszych ustawień. Bitwarden nie odczytuje sejfu przy uruchomieniu — działa dopiero po otwarciu wyboru wpisu. Zmiany działają po **Zapisz**, bez restartu. Samo zaznaczenie pola jest podglądem; **Anuluj** zachowuje stan pracy. Konfiguracja CLI również zaczyna obowiązywać po zapisie.
 
@@ -27,3 +27,6 @@ Konfiguracja monitoringu pozostaje w sekcji **Monitoring** także wtedy, gdy plu
 Stan przełączników jest zapisywany atomowo z innymi ustawieniami w istniejącej bazie (schema 4), jako lista stabilnych ID. `PluginSelection` zachowuje niezmienność i porównywanie wartości ustawień po JSON roundtrip. Zmiany cyklu życia są serializowane; nieudane zastosowanie można ponowić.
 
 Aktualna wersja nie instaluje paczek ani zewnętrznych DLL. Registry i kontrakt dotyczą zaufanego kodu dostarczanego z ServerDesk; nie są sandboxem. Sieciowe narzędzia diagnostyczne pozostają dotychczasowym modułem. [Zakres testów](reports/plugins-2026-10-17.md).
+
+
+Bitwarden / Vaultwarden offers bundled-client GUI setup in Settings → Plugins and an owned-account sign-in/sync/sign-out dialog. Saving precedes account work; cancelling starts no client. External settings remain under Advanced. Account work uses plugin cancellation/drain and preserves core terminal/SFTP sessions. Account cache survives disable and factory reset; see [vault setup/privacy](bitwarden.md).

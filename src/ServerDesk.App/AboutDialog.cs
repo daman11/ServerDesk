@@ -64,6 +64,8 @@ internal static partial class Dialogs
         Component("Połączenia","SSH.NET · MarcusW.VncClient · System.IO.Ports");
         Component("Dane i diagnostyka","Microsoft.Data.Sqlite · SQLitePCLRaw · Serilog");
         Component("Narzędzia sieciowe","DnsClient · SharpSnmpLib");
+        Component("Bitwarden / Vaultwarden","Bitwarden CLI OSS "+ServerDesk.Infrastructure.BitwardenRuntime.Version+" · GPL v3");
+        components.Children.Add(DesignSystem.Hint(L.T("Dołączony klient sejfu działa jako osobny proces GPL v3. Licencje i odpowiadające źródła OSS są w components/bitwarden. Kod ServerDesk pozostaje MIT.")));
         components.Children.Add(DesignSystem.Hint(L.T("Pełny wykaz zależności i teksty ich licencji są dołączane do paczek instalacyjnych i przenośnych: THIRD-PARTY-NOTICES.md, DEPENDENCIES.json i folder licenses. Licencja MIT ServerDesk nie zastępuje licencji tych składników.")));
         components.Children.Add(DesignSystem.Hint(L.T("FreeRDP i systemowy magazyn haseł są składnikami zewnętrznymi. Nazwy i znaki graficzne należą do ich właścicieli; ich obecność nie oznacza rekomendacji ServerDesk.")));
         Tab("Składniki","layers",components);

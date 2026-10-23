@@ -75,18 +75,9 @@ internal static partial class Dialogs
         var monitoringPage=Page("chart-no-axes-combined","Monitoring","Parametry serwera i informacje na pasku statusu.");
         var securityPage=Page("key","Bezpieczeństwo","Tożsamość serwerów i zapisane zaufanie SSH.");
         var pluginsPage=Page("plugins","Pluginy","Włączaj dodatki i dostosuj zakres działania aplikacji.");
-        var bitwardenExecutable=new TextBox { Name="BitwardenExecutable",Text=p.Bitwarden.Executable,MaxLength=4096,PlaceholderText=L.T("Pełna ścieżka do bw.exe lub bw") };
-        var bitwardenDirectory=new TextBox { Name="BitwardenDataDirectory",Text=p.Bitwarden.DataDirectory,MaxLength=4096,PlaceholderText=L.T("Puste: domyślny profil Bitwarden CLI") };
+        var bitwardenConnection=new BitwardenConnectionSettings(p.Bitwarden);
         Window? settingsOwner=null;
-        bitwardenExecutable.InnerRightContent=DeskIcons.Button("folder","Wybierz plik",()=>
-        {
-            if(main!=null)_=main.Safe(async()=>
-            {
-                if(settingsOwner==null)return;
-                var files=await settingsOwner.StorageProvider.OpenFilePickerAsync(new() { Title=L.T("Program Bitwarden CLI"),AllowMultiple=false });
-                if(files.FirstOrDefault()?.TryGetLocalPath() is {} path)bitwardenExecutable.Text=path;
-            });
-        });
+        var openBitwardenAfterSave=false;
         foreach(var plugin in PluginCatalog.BuiltIn)
         {
             var section=Section(pluginsPage,plugin.Icon,plugin.Name,"Wbudowany");
@@ -96,8 +87,7 @@ internal static partial class Dialogs
             toggle.Name="PluginEnabled_"+plugin.Id.Replace('-','_'); AutomationProperties.SetName(toggle,L.T(plugin.Name));
             if(plugin.Id==PluginCatalog.Bitwarden)
             {
-                Label(section,"Program Bitwarden CLI",bitwardenExecutable); Label(section,"Katalog profilu CLI (opcjonalnie)",bitwardenDirectory);
-                section.Children.Add(DesignSystem.Hint(L.T("Najpierw skonfiguruj i zaloguj konto CLI. Przy łączeniu ServerDesk poprosi tylko o odblokowanie sejfu.")));
+                section.Children.Add(bitwardenConnection);
                 section.Children.Add(BitwardenSetupGuide());
             }
         }
@@ -281,7 +271,7 @@ internal static partial class Dialogs
             TerminalScrollbackLines=(int)(scrollback.Value??10000),TerminalCursor=(TerminalCursorShape)Math.Max(0,cursor.SelectedIndex),TerminalCursorBlink=On("blink"),
             SftpLocalDirectory=localDirectory.Text??"",SftpShowHidden=On("hidden"),SftpLocalSort=(FileSort)Math.Max(0,localFileSort.SelectedIndex),SftpRemoteSort=(FileSort)Math.Max(0,remoteFileSort.SelectedIndex),SftpLocalDescending=On("localDescending"),SftpRemoteDescending=On("remoteDescending"),SftpStartRemote=startSide.SelectedIndex==1,
             SftpTextEditor=(TextEditorKind)Math.Max(0,editor.SelectedIndex),SftpTextEditorPath=editorPath.Text??"",
-            Bitwarden=new(bitwardenExecutable.Text?.Trim()??"",bitwardenDirectory.Text?.Trim()??""),
+            Bitwarden=bitwardenConnection.Read(),
             SidebarWidth=(int)(sidebarWidth.Value??272),SidebarOnStartup=(SidebarStartup)Math.Max(0,sidebarStart.SelectedIndex),TabLabelWidth=(int)(tabWidth.Value??220),ShowProtocolBadges=On("protocols"),ShowSessionStatus=On("sessionStatus"),
             TabStripHeight=(int)(tabHeight.Value??35),PaneSeparatorSize=(int)(separatorSize.Value??4),ShowPanelNumbers=On("panelNumbers"),NewTabTarget=(NewTabPlacement)Math.Max(0,tabTarget.SelectedIndex),WorkspaceOnStartup=(WorkspaceStartup)Math.Max(0,startupLayout.SelectedIndex),
             ShowStatusBar=On("status"),ShowMetrics=On("metrics"),ShowTransferCount=On("transfers"),MetricCpu=On("cpu"),MetricMemory=On("ram"),MetricNetwork=On("network"),MetricUptime=On("uptime"),MetricDisk=On("disk"),MetricSystem=On("system"),MetricClock=On("clock")
@@ -301,7 +291,7 @@ internal static partial class Dialogs
         interfaceFamily.SelectionChanged+=(_,_)=>preview();
         cursor.SelectionChanged+=(_,_)=>preview(); localDirectory.TextChanged+=(_,_)=>preview(); localFileSort.SelectionChanged+=(_,_)=>preview(); remoteFileSort.SelectionChanged+=(_,_)=>preview(); startSide.SelectionChanged+=(_,_)=>preview();
         editor.SelectionChanged+=(_,_)=> { editorPath.IsEnabled=editor.SelectedIndex==(int)TextEditorKind.Custom; preview(); }; editorPath.TextChanged+=(_,_)=>preview();
-        bitwardenExecutable.TextChanged+=(_,_)=>preview(); bitwardenDirectory.TextChanged+=(_,_)=>preview();
+        bitwardenConnection.Changed+=()=>preview();
         tabTarget.SelectionChanged+=(_,_)=>preview(); startupLayout.SelectionChanged+=(_,_)=>preview();
         TabItem Category(string glyph,string title,StackPanel page)
         {
@@ -364,6 +354,7 @@ internal static partial class Dialogs
         };
         var body=new DockPanel(); DockPanel.SetDock(header,Dock.Top); body.Children.Add(header); DockPanel.SetDock(footerSurface,Dock.Bottom); body.Children.Add(footerSurface); body.Children.Add(categoryHost);
         var dialog=new Window { Title=L.T("Ustawienia ServerDesk"),Width=960,Height=720,MinWidth=680,MinHeight=500,WindowStartupLocation=WindowStartupLocation.CenterOwner,Content=body };
+
         settingsOwner=dialog;
         void ResizeNavigation()
         {
@@ -382,19 +373,20 @@ internal static partial class Dialogs
         var defaults=Button("Domyślne ustawienia",()=>
         {
             resetting=true;
-            try { var d=ApplicationSettings.Defaults; var pref=d.Preferences; bitwardenExecutable.Text=pref.Bitwarden.Executable; bitwardenDirectory.Text=pref.Bitwarden.DataDirectory; language.SelectedIndex=pref.Language=="en"?1:0; theme.SelectedIndex=Array.FindIndex(DesignSystem.Themes,t=>t.Id==d.Theme); uiFont.Value=pref.InterfaceFontSize; interfaceFamily.SelectedItem=pref.InterfaceFontFamily; cornerRadius.Value=pref.ControlCornerRadius; menuPadding.Value=pref.MenuItemPadding; connectionPadding.Value=pref.ConnectionRowPadding; density.SelectedIndex=(int)pref.Density; accent.Text=pref.AccentColor; palette.SelectedItem=d.TerminalPalette; terminalFont.Value=d.TerminalFont; family.SelectedItem=pref.TerminalFontFamily; scrollback.Value=pref.TerminalScrollbackLines; cursor.SelectedIndex=(int)pref.TerminalCursor; localDirectory.Text=pref.SftpLocalDirectory; editor.SelectedIndex=(int)pref.SftpTextEditor; editorPath.Text=pref.SftpTextEditorPath; localFileSort.SelectedIndex=(int)pref.SftpLocalSort; remoteFileSort.SelectedIndex=(int)pref.SftpRemoteSort; startSide.SelectedIndex=pref.SftpStartRemote?1:0; sidebarWidth.Value=pref.SidebarWidth; sidebarStart.SelectedIndex=(int)pref.SidebarOnStartup; tabWidth.Value=pref.TabLabelWidth; tabHeight.Value=pref.TabStripHeight; separatorSize.Value=pref.PaneSeparatorSize; tabTarget.SelectedIndex=(int)pref.NewTabTarget; startupLayout.SelectedIndex=(int)pref.WorkspaceOnStartup; interval.Value=d.MonitorInterval; foreach(var (key,flag) in flags)flag.IsChecked=flagDefaults[key]; }
+            try { var d=ApplicationSettings.Defaults; var pref=d.Preferences; bitwardenConnection.Apply(pref.Bitwarden); language.SelectedIndex=pref.Language=="en"?1:0; theme.SelectedIndex=Array.FindIndex(DesignSystem.Themes,t=>t.Id==d.Theme); uiFont.Value=pref.InterfaceFontSize; interfaceFamily.SelectedItem=pref.InterfaceFontFamily; cornerRadius.Value=pref.ControlCornerRadius; menuPadding.Value=pref.MenuItemPadding; connectionPadding.Value=pref.ConnectionRowPadding; density.SelectedIndex=(int)pref.Density; accent.Text=pref.AccentColor; palette.SelectedItem=d.TerminalPalette; terminalFont.Value=d.TerminalFont; family.SelectedItem=pref.TerminalFontFamily; scrollback.Value=pref.TerminalScrollbackLines; cursor.SelectedIndex=(int)pref.TerminalCursor; localDirectory.Text=pref.SftpLocalDirectory; editor.SelectedIndex=(int)pref.SftpTextEditor; editorPath.Text=pref.SftpTextEditorPath; localFileSort.SelectedIndex=(int)pref.SftpLocalSort; remoteFileSort.SelectedIndex=(int)pref.SftpRemoteSort; startSide.SelectedIndex=pref.SftpStartRemote?1:0; sidebarWidth.Value=pref.SidebarWidth; sidebarStart.SelectedIndex=(int)pref.SidebarOnStartup; tabWidth.Value=pref.TabLabelWidth; tabHeight.Value=pref.TabStripHeight; separatorSize.Value=pref.PaneSeparatorSize; tabTarget.SelectedIndex=(int)pref.NewTabTarget; startupLayout.SelectedIndex=(int)pref.WorkspaceOnStartup; interval.Value=d.MonitorInterval; foreach(var (key,flag) in flags)flag.IsChecked=flagDefaults[key]; }
             finally { resetting=false; preview(); }
         }); defaults.Name="RestoreDefaultSettings"; defaults.HorizontalAlignment=HorizontalAlignment.Left; ToolTip.SetTip(defaults,L.T("Ustawienia domyślne zmieniają tylko formularz. Zastosuj je przyciskiem Zapisz; Anuluj przywraca poprzednie preferencje.")); actions.Children.Add(defaults);
         var cancel=Button("Anuluj",()=> { if(!saving && !factoryReset.IsBusy)dialog.Close(); }); Grid.SetColumn(cancel,1); actions.Children.Add(cancel);
         factoryReset.BusyChanged+=()=> { var enabled=!saving && !factoryReset.IsBusy; categories.IsEnabled=actions.IsEnabled=search.IsEnabled=saveRestart.IsEnabled=enabled; };
-        async Task SaveAsync(bool restart)
+        async Task SaveAsync(bool restart,bool connectVault=false)
         {
             if(saving || factoryReset.IsBusy)return; saving=true; categories.IsEnabled=false; actions.IsEnabled=false; search.IsEnabled=false; saveRestart.IsEnabled=false;
-            try { var draft=Draft(); draft.Validate(); await repository.SaveApplicationSettingsAsync(new(SelectedTheme(),palette.SelectedItem as string??TerminalAppearance.Names[0],(int)(terminalFont.Value??14),(int)(interval.Value??5),On("remember"),draft)); saved=true; main?.UpdateLanguageRestartNotice(draft.Language); preview(); if(main!=null)await main.ApplyPluginsAsync(draft); await changed(); restartAfterSave=restart?draft.Language:null; saving=false; dialog.Close(); }
+            try { var draft=Draft(); draft.Validate(); await repository.SaveApplicationSettingsAsync(new(SelectedTheme(),palette.SelectedItem as string??TerminalAppearance.Names[0],(int)(terminalFont.Value??14),(int)(interval.Value??5),On("remember"),draft)); saved=true; main?.UpdateLanguageRestartNotice(draft.Language); preview(); if(main!=null)await main.ApplyPluginsAsync(draft); await changed(); restartAfterSave=restart?draft.Language:null; openBitwardenAfterSave=connectVault; saving=false; dialog.Close(); }
             catch(ArgumentException ex)
             {
                 ShowValidation(ex); search.Text="";
                 var (index,field)=ex.ParamName switch {
+                    nameof(ApplicationPreferences.Bitwarden)=>(6,bitwardenConnection.FocusTarget),
                     nameof(ApplicationPreferences.SftpLocalDirectory)=>(2,(Control)localDirectory),
                     nameof(ApplicationPreferences.SftpLocalSort)=>(2,localFileSort),
                     nameof(ApplicationPreferences.SftpTextEditor)=>(2,editor),
@@ -413,6 +405,7 @@ internal static partial class Dialogs
             catch(Exception ex) { ApplicationDiagnostics.Report("Settings.Save",ex); error.Text=L.T("Nie udało się zapisać lub zastosować ustawień. Spróbuj ponownie."); }
             finally { saving=false; categories.IsEnabled=true; actions.IsEnabled=true; search.IsEnabled=true; saveRestart.IsEnabled=true; }
         }
+        bitwardenConnection.SaveAndConnect=async()=>await SaveAsync(false,true);
         saveRestart.Click+=async (_,_)=>await SaveAsync(true);
         var save=Button("Zapisz",async()=>await SaveAsync(false)); save.Classes.Add("primary"); Grid.SetColumn(save,2); actions.Children.Add(save);
         void UpdateRestartReminder()
@@ -436,5 +429,6 @@ internal static partial class Dialogs
         finally { factoryReset.Dispose(); backupBrowser.Dispose(); await Task.WhenAll(factoryReset.ShutdownAsync(),backupBrowser.Shutdown); }
         if(!saved) { if(main!=null)main.PreviewPreferences(runtime); else DesignSystem.ApplyPreferences(runtime); DesignSystem.Apply(originalTheme); }
         if(restartAfterSave!=null)main?.RequestRestart(restartAfterSave);
+        else if(saved && openBitwardenAfterSave && main!=null)await main.ConfigureBitwardenAccountAsync(owner);
     }
 }

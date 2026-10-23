@@ -18,13 +18,22 @@ public sealed record BitwardenReference(Guid ItemId,Guid AccountId,string Server
     }
 }
 
-public sealed record BitwardenCliOptions(string Executable="",string DataDirectory="")
+public sealed record BitwardenCliOptions(string Executable="",string DataDirectory="",string Server="",string Email="")
 {
+    [System.Text.Json.Serialization.JsonIgnore] public bool UsesBundledClient=>Executable.Length==0;
+    [System.Text.Json.Serialization.JsonIgnore] public string EffectiveServer=>Server.Length==0?"https://vault.bitwarden.com":BitwardenReference.CanonicalServer(Server);
     public void Validate()
     {
         foreach(var path in new[]{Executable,DataDirectory})
             if(path==null || path.Length>4096 || path.Any(char.IsControl) || path.Length>0 && !AbsoluteOnEitherPlatform(path))
                 throw new ArgumentException(L.T("Podaj pełną ścieżkę do Bitwarden CLI i opcjonalnego katalogu danych, bez argumentów."));
+        if(Server==null || Email==null || Email.Length>254 || Email.Any(c=>char.IsControl(c)||char.IsWhiteSpace(c)) || Email.Length>0 && (!Email.Contains('@') || Email.StartsWith('-')))
+            throw new ArgumentException(L.T("Podaj poprawny adres e-mail konta sejfu."));
+        if(Server.Length>0)
+        {
+            var uri=new Uri(BitwardenReference.CanonicalServer(Server));
+            if(uri.Scheme!="https")throw new ArgumentException(L.T("Serwer sejfu musi używać HTTPS i zaufanego certyfikatu."));
+        }
     }
     // Preserve an inactive other-platform configuration when restoring a backup.
     private static bool AbsoluteOnEitherPlatform(string path)=>path.StartsWith('/') || path.Length>=3 && char.IsAsciiLetter(path[0]) && path[1]==':' && path[2] is '\\' or '/' || path.StartsWith("\\\\",StringComparison.Ordinal) && path.Length>4;

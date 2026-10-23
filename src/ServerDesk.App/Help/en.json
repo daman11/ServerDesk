@@ -3,23 +3,23 @@
     "Id": "bitwarden",
     "Icon": "key",
     "Title": "Bitwarden / Vaultwarden",
-    "Summary": "Vault passwords and SSH keys through the official CLI.",
+    "Summary": "Vault passwords and SSH keys, with GUI setup and sign-in.",
     "Keywords": "vault hasla passwords sejf CLI bw plugin MFA ssh key klucze rsa ed25519",
     "Sections": [
       {
         "Title": "Initial setup",
         "Paragraphs": [
-          "Install the official Bitwarden Password Manager CLI executable (bw.exe on Windows, bw on Linux). Choose its full path in Settings → Plugins → Bitwarden / Vaultwarden. The npm bw.cmd wrapper is not supported on Windows; use the standalone bw.exe.",
-          "Configure your CLI account in your terminal. For Bitwarden US: bw config server https://vault.bitwarden.com. For Bitwarden EU: bw config server https://vault.bitwarden.eu. For Vaultwarden: bw config server https://your-vault-address. Then run bw login and complete sign-in, including MFA. Do not put your password in command arguments.",
-          "The optional CLI profile directory in settings corresponds to BITWARDENCLI_APPDATA_DIR. If you set it, use the same directory when configuring and signing in from your terminal. Empty means the default CLI profile. Unlocking the Bitwarden app or browser extension does not automatically sign in the CLI.",
-          "If bw status does not report serverUrl (for example a default cloud configuration), the plugin does not guess the region. Use an explicit server URL. Prefer configuring and signing in to a separate CLI profile in a new directory; changing the server of an already signed-in profile requires signing out."
+          "Enable Bitwarden / Vaultwarden in Settings → Plugins. The official OSS client is included in a complete ServerDesk package; no CLI installation or file selection is needed. Choose Bitwarden US, Bitwarden EU or Custom server, then enter the HTTPS address and account email.",
+          "Choose Save and connect to vault. Settings are saved before opening sign-in. Enter your master password in the masked field. Enter authenticator, email or YubiKey OTP codes in a separate dialog. Select a method configured on your account. A new device may require another email code.",
+          "After sign-in, use the vault dialog to sync or sign out. ServerDesk keeps a separate profile per server and email and does not change the Bitwarden app or browser account. Closing the dialog locks ServerDesk access to decrypted data; the next use asks for your master password.",
+          "External client and legacy configuration is an advanced option for an existing CLI. Its executable and data directory are preserved. Configure a shared profile yourself; ServerDesk does not change its server or sign it out. Complete packages support Windows/Linux x64; reinstall the full package if the component is missing or damaged."
         ]
       },
       {
         "Title": "One-time selection and bindings",
         "Paragraphs": [
           "When connecting, choose Password from Bitwarden / Vaultwarden. Enter the master password in the masked field, unlock the vault, search by item name or address (at least 2 characters), select a result and choose Use password. Search shows up to 100 Login items.",
-          "The dialog first shows Unlock your vault, then Choose an item. Search appears after unlocking, when a valid connection address is searched automatically. Results show the item name and a labeled username. Editing the query clears the previous selection. First-time vault setup in settings and the picker explains three preparation steps; CLI commands and settings contain the details. Help works offline. Check again retries the CLI status check.",
+          "The dialog first shows Unlock your vault, then Choose an item. Search appears after unlocking, when a valid connection address is searched automatically. Results show the item name and a labeled username. Editing the query clears the previous selection. First-time vault setup in settings and the picker explains three preparation steps; Vault setup details contain the details. Help works offline. Check again retries the CLI status check.",
           "Enter in the password field unlocks the vault; Enter in search finds items. Arrow Down focuses the results, Enter in the list accepts the selection, Ctrl+F returns to search, and Esc closes the dialog. In narrow windows buttons stack below the input fields.",
           "In the connection editor choose Bind vault item. The selected username is filled into the form; review it before saving. Profiles store only item/account/server identifiers and the item name. Connecting asks you to unlock again and reads the current password for that exact item. For SSH private-key authentication, the item password is the passphrase for your selected local key.",
           "The password is used for the username in the profile; a different item username requires confirmation. Bound connections show Change vault item and Remove vault binding. Removing the binding requires saving the form and leaves the vault item intact. Unbound connections show Bind vault item. Profile duplication and configuration export/import omit bindings. Database backups preserve them as profile metadata.",
@@ -39,8 +39,8 @@
         "Title": "Security and limits",
         "Paragraphs": [
           "The master password, session key and retrieved password are not automatically copied to the clipboard or saved in the database or logs. CLI search returns decrypted results; the plugin retains only metadata and reads the password for the selected ID. Decrypted data exists transiently in process memory; this does not protect against malicious code running as the same user.",
-          "Closing the dialog or disabling the plugin cancels its work and removes its session key from ServerDesk. The plugin does not run bw lock or bw logout, to avoid disrupting other uses of a shared CLI profile. Run bw lock yourself to invalidate sessions for the whole profile. Disabling preserves bindings and allows a manually entered password without saving it for Login items.",
-          "The plugin reads Login passwords and SSH Key items. It does not edit the vault or retrieve TOTP, attachments or SSH certificates. Synchronize explicitly using bw sync in your CLI. A valid CLI account and compatible Vaultwarden server are required; the plugin does not bypass TLS verification. Check your own server with a test account before using a real vault. Owned key buffers are zeroed, but .NET and the external CLI can retain transient memory copies."
+          "Closing the dialog or disabling the plugin cancels its processes and forgets ServerDesk's session key. Sign out of vault account affects only the owned ServerDesk profile; saved bindings remain. External profiles are never signed out. Disabling the plugin preserves data and active SSH/SFTP sessions. Factory reset retains account cache and recovery copies; it is not a secure wipe. Sign out before removing configuration.",
+          "The plugin reads Login passwords and SSH Key items; it does not edit the vault or fetch TOTP, attachments or SSH certificates. Use Sync vault explicitly. SSO/FIDO2 and personal API-key primary sign-in are not supported by the GUI. If Bitwarden requests an extra client_secret check during email sign-in, use the masked dialog. HTTPS with a trusted certificate is required; TLS checks are never bypassed. The client may fetch public Bitwarden configuration on first launch. Validate your server using a separate test account."
         ]
       }
     ]

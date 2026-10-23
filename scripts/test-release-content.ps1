@@ -17,6 +17,15 @@ foreach($runtime in @('win-x64','linux-x64')) {
         if(-not (Test-Path -LiteralPath $copy) -or (Get-FileHash -LiteralPath $copy).Hash -ne (Get-FileHash -LiteralPath $file.FullName).Hash){throw "Missing or stale offline documentation: $relative in $runtime"}
     }
     $inventory=Get-Content "$directory/DEPENDENCIES.json" -Raw | ConvertFrom-Json
+    $vault=Get-Content "$repo/third-party/bitwarden/manifest.json" -Raw | ConvertFrom-Json
+    $component=Join-Path $directory 'components/bitwarden'
+    foreach($file in @('README.md','manifest.json','LICENSE.txt','LICENSE_GPL.txt')){
+        if((Get-FileHash "$component/$file").Hash -ne (Get-FileHash "$repo/third-party/bitwarden/$file").Hash){throw "Changed vault metadata: $file"}
+        if((Get-FileHash "$directory/third-party/bitwarden/$file").Hash -ne (Get-FileHash "$repo/third-party/bitwarden/$file").Hash){throw "Missing/changed offline component provenance: $file"}
+    }
+    if((Get-FileHash "$component/$($vault.runtimes.$runtime.file)").Hash -ne $vault.runtimes.$runtime.sha256 -or (Get-FileHash "$component/SOURCE.tar.gz").Hash -ne $vault.sourceSha256){throw 'Changed vault executable/source'}
+    $registered=@($inventory.components | Where-Object id -eq 'Bitwarden CLI OSS')
+    if($registered.Count -ne 1 -or $registered[0].version -ne $vault.version -or $registered[0].sha256 -ne $vault.runtimes.$runtime.sha256 -or $registered[0].license -ne $vault.license){throw 'Incomplete component inventory'}
     $brands=Get-Content "$directory/licenses/simple-icons/manifest.json" -Raw | ConvertFrom-Json
     foreach($asset in $brands.assets){if((Get-FileHash -LiteralPath "$directory/licenses/simple-icons/icons/$($asset.name).svg").Hash -ne $asset.sha256){throw "Changed brand asset: $($asset.name) in $runtime"}}
     foreach($notice in $brands.notices){if((Get-FileHash -LiteralPath "$directory/licenses/simple-icons/$($notice.file)").Hash -ne $notice.sha256){throw "Changed brand notice: $($notice.file) in $runtime"}}

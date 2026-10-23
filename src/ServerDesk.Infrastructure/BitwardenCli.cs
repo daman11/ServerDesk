@@ -6,14 +6,16 @@ using ServerDesk.Core;
 
 namespace ServerDesk.Infrastructure;
 
-public enum BitwardenFailure { Configuration,LoginRequired,Locked,AccountChanged,InvalidResponse,CommandFailed,Timeout,NoPassword,ServerNotIdentified,InvalidSshKey,EncryptedSshKey }
+public enum BitwardenFailure { Configuration,LoginRequired,Locked,AccountChanged,InvalidResponse,CommandFailed,Timeout,NoPassword,ServerNotIdentified,InvalidSshKey,EncryptedSshKey,ComponentUnavailable,AccountBusy }
 public sealed class BitwardenException(BitwardenFailure reason):Exception(reason switch
 {
     BitwardenFailure.InvalidSshKey=>L.T("Wpis nie zawiera poprawnego klucza SSH RSA lub Ed25519 albo dane klucza nie pasują do odcisku. Wybierz wpis typu SSH Key."),
-    BitwardenFailure.EncryptedSshKey=>L.T("Klucz w sejfie wymaga dodatkowego hasła. Zaimportuj go funkcją importu klucza w Bitwarden, podając tam hasło klucza, i zsynchronizuj CLI."),
-    BitwardenFailure.Configuration=>L.T("Wskaż zainstalowany program Bitwarden CLI w Ustawienia → Pluginy."),
+    BitwardenFailure.EncryptedSshKey=>L.T("Klucz w sejfie wymaga dodatkowego hasła. Zaimportuj go funkcją importu klucza w Bitwarden, podając tam hasło klucza, i zsynchronizuj sejf."),
+    BitwardenFailure.Configuration=>L.T("Sprawdź konfigurację sejfu w Ustawienia → Pluginy → Bitwarden / Vaultwarden."),
+    BitwardenFailure.ComponentUnavailable=>L.T("Brakuje dołączonego komponentu sejfu lub jego pliki są uszkodzone. Zainstaluj ponownie pełny pakiet ServerDesk."),
+    BitwardenFailure.AccountBusy=>L.T("Inna operacja używa tego konta sejfu. Poczekaj na jej zakończenie i spróbuj ponownie."),
     BitwardenFailure.ServerNotIdentified=>L.T("CLI nie podaje adresu sejfu. Skonfiguruj jawny adres serwera przed zalogowaniem, najlepiej w osobnym profilu CLI. Zobacz Pomoc → Bitwarden / Vaultwarden."),
-    BitwardenFailure.LoginRequired=>L.T("Najpierw zaloguj konto w Bitwarden CLI. Instrukcja jest w Pomoc → Bitwarden / Vaultwarden."),
+    BitwardenFailure.LoginRequired=>L.T("Zaloguj konto w oknie sejfu. Konfiguracja jest w Ustawienia → Pluginy → Bitwarden / Vaultwarden."),
     BitwardenFailure.Locked=>L.T("Odblokuj sejf hasłem głównym."),
     BitwardenFailure.AccountChanged=>L.T("Konto lub serwer sejfu jest inne niż w przypisaniu. Wybierz właściwe konto albo przypisz wpis ponownie."),
     BitwardenFailure.InvalidResponse=>L.T("Bitwarden CLI zwrócił nieprawidłowe lub zbyt duże dane."),
@@ -39,7 +41,7 @@ public interface IBitwardenCommandRunner
 }
 
 /// <summary>One short-lived picker session. No plaintext persistence or HTTP listener.</summary>
-public sealed class BitwardenCli(IBitwardenCommandRunner runner):IDisposable
+public sealed partial class BitwardenCli(IBitwardenCommandRunner runner):IDisposable
 {
     private readonly CancellationTokenSource lifetime=new();
     private string? session;
@@ -168,32 +170,48 @@ public sealed class BitwardenCli(IBitwardenCommandRunner runner):IDisposable
     public void Dispose() { if(Interlocked.Exchange(ref disposed,1)!=0)return; lifetime.Cancel(); Lock(); lifetime.Dispose(); }
 }
 
-public sealed class BitwardenProcessRunner:IBitwardenCommandRunner
+public sealed partial class BitwardenProcessRunner:IBitwardenAccountCommandRunner
 {
     private readonly BitwardenCliOptions options;
-    public BitwardenProcessRunner(BitwardenCliOptions options) { options.Validate(); this.options=options; }
-    public async Task<byte[]> RunAsync(IReadOnlyList<string> arguments,string? session,string? masterPassword,CancellationToken ct)
+    private readonly bool managed;
+    public bool OwnsProfile=>managed;
+    public string Server { get; }
+    public BitwardenProcessRunner(BitwardenCliOptions options)
     {
+        options.Validate(); managed=options.UsesBundledClient; Server=options.EffectiveServer;
+        this.options=managed?BitwardenRuntime.Resolve(options):options;
+    }
+    public Task<byte[]> RunAsync(IReadOnlyList<string> arguments,string? session,string? masterPassword,CancellationToken ct)
+        =>RunCoreAsync(arguments,session,masterPassword,null,ct);
+    private async Task<byte[]> RunCoreAsync(IReadOnlyList<string> arguments,string? session,string? masterPassword,Func<BitwardenChallenge,CancellationToken,Task<string>>? challenge,CancellationToken ct)
+    {
+        if(managed)await BitwardenRuntime.VerifyAsync(options.Executable,ct).ConfigureAwait(false);
         if(options.Executable.Length==0 || !Path.IsPathFullyQualified(options.Executable) || !File.Exists(options.Executable) || OperatingSystem.IsWindows() && !options.Executable.EndsWith(".exe",StringComparison.OrdinalIgnoreCase) || options.DataDirectory.Length>0 && (!Path.IsPathFullyQualified(options.DataDirectory) || !Directory.Exists(options.DataDirectory)))throw new BitwardenException(BitwardenFailure.Configuration);
         var start=new ProcessStartInfo(options.Executable) { UseShellExecute=false,CreateNoWindow=true,RedirectStandardInput=true,RedirectStandardOutput=true,RedirectStandardError=true,WorkingDirectory=Path.GetDirectoryName(options.Executable)! };
         foreach(var key in start.Environment.Keys.Where(k=>k.StartsWith("BW_",StringComparison.OrdinalIgnoreCase) || k.StartsWith("BITWARDENCLI_",StringComparison.OrdinalIgnoreCase) || k is "NODE_OPTIONS" or "NODE_PATH" or "NODE_TLS_REJECT_UNAUTHORIZED" or "SERVERDESK_BW_PASSWORD").ToArray())start.Environment.Remove(key);
         if(options.DataDirectory.Length>0)start.Environment["BITWARDENCLI_APPDATA_DIR"]=options.DataDirectory;
         if(session!=null)start.Environment["BW_SESSION"]=session;
         if(masterPassword!=null)start.Environment["SERVERDESK_BW_PASSWORD"]=masterPassword;
+        start.Environment["NO_COLOR"]="1"; start.Environment["FORCE_COLOR"]="0";
         foreach(var arg in arguments)start.ArgumentList.Add(arg);
-        using var timeout=CancellationTokenSource.CreateLinkedTokenSource(ct); timeout.CancelAfter(TimeSpan.FromSeconds(60));
+        using var timeout=CancellationTokenSource.CreateLinkedTokenSource(ct); timeout.CancelAfter(TimeSpan.FromSeconds(challenge==null?60:180));
+        using var profileLock=managed?LockProfile(options.DataDirectory):null;
         using var process=new Process { StartInfo=start };
         byte[]? output=null; byte[]? error=null;
         try
         {
             ct.ThrowIfCancellationRequested(); if(!process.Start())throw new BitwardenException(BitwardenFailure.CommandFailed);
-            process.StandardInput.Close();
+            if(challenge==null)process.StandardInput.Close();
             // Process.Start has copied the environment. Do not retain secrets in StartInfo.
             start.Environment.Remove("BW_SESSION"); start.Environment.Remove("SERVERDESK_BW_PASSWORD");
+            start.Environment.Remove("BW_CLIENTID"); start.Environment.Remove("BW_CLIENTSECRET");
             using var cancelled=timeout.Token.Register(()=> { try { if(!process.HasExited)process.Kill(true); } catch(InvalidOperationException) { } catch(System.ComponentModel.Win32Exception) { } });
             async Task<byte[]> Read(Stream stream,int limit)
             { try { return await ReadOutputAsync(stream,limit,timeout.Token).ConfigureAwait(false); } catch { timeout.Cancel(); throw; } }
-            var stdout=Read(process.StandardOutput.BaseStream,8*1024*1024); var stderr=Read(process.StandardError.BaseStream,64*1024);
+            var stdout=Read(process.StandardOutput.BaseStream,8*1024*1024);
+            async Task<byte[]> Interactive()
+            { try { return await ReadChallengesAsync(process,challenge!,timeout.Token).ConfigureAwait(false); } catch { timeout.Cancel(); throw; } }
+            var stderr=challenge==null?Read(process.StandardError.BaseStream,64*1024):Interactive();
             try { await Task.WhenAll(stdout,stderr,process.WaitForExitAsync(timeout.Token)).ConfigureAwait(false); }
             finally { if(stdout.IsCompletedSuccessfully)output=stdout.Result; if(stderr.IsCompletedSuccessfully)error=stderr.Result; }
             ct.ThrowIfCancellationRequested();
@@ -206,6 +224,7 @@ public sealed class BitwardenProcessRunner:IBitwardenCommandRunner
         finally
         {
             start.Environment.Remove("BW_SESSION"); start.Environment.Remove("SERVERDESK_BW_PASSWORD");
+            start.Environment.Remove("BW_CLIENTID"); start.Environment.Remove("BW_CLIENTSECRET");
             if(output!=null)CryptographicOperations.ZeroMemory(output); if(error!=null)CryptographicOperations.ZeroMemory(error);
         }
     }

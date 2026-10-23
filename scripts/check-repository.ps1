@@ -53,6 +53,10 @@ try {
     foreach($notice in $brands.notices){
         if((Get-FileHash -LiteralPath "third-party/simple-icons/$($notice.file)").Hash -ne $notice.sha256){$problems.Add("Upstream brand notice bytes changed: $($notice.file)")}
     }
+    $vault=Get-Content third-party/bitwarden/manifest.json -Raw | ConvertFrom-Json
+    foreach($notice in $vault.notices){
+        if((Get-FileHash -LiteralPath "third-party/bitwarden/$($notice.file)").Hash -ne $notice.sha256){$problems.Add("Upstream vault notice bytes changed: $($notice.file)")}
+    }
     if($problems.Count -gt 0){throw ($problems -join "`n")}
     Write-Output "PASS repository content: $($files.Count) files, required metadata, generated/private-file exclusions, credential patterns, portable paths, pinned Actions, Markdown links and upstream notice hashes"
     Write-Output 'This is a bounded content check, not a complete secret or security audit.'

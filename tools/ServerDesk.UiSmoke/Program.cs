@@ -63,6 +63,7 @@ if(args.Contains("--native-restart-helper")) { AppBuilder.Configure<App>().UsePl
 if(args.Contains("--native-startup")) { AppBuilder.Configure<App>().UsePlatformDetect().WithInterFont().SetupWithoutStarting(); NativeStartupChecks.Run(root); return; }
 if(args.Contains("--native-linux-rdp")) { AppBuilder.Configure<App>().UsePlatformDetect().WithInterFont().SetupWithoutStarting(); NativeLinuxRdpChecks.Run(root,int.Parse(args[Array.IndexOf(args,"--native-linux-rdp")+1])); return; }
 if(args.Contains("--native-titlebar")) { AppBuilder.Configure<App>().UsePlatformDetect().WithInterFont().SetupWithoutStarting(); NativeChromeChecks.Run(root); return; }
+if(args.Contains("--bitwarden-native")) { await BitwardenNativeChecks.Run(root); return; }
 AppBuilder.Configure<App>().UseHeadless(new AvaloniaHeadlessPlatformOptions { UseHeadlessDrawing=false }).UseSkia().WithInterFont().SetupWithoutStarting();
 if(args.Contains("--brand-assets")) { BrandAssets.Generate(root); return; }
 if(args.Contains("--ssh-acceptance")) { SshAcceptanceChecks.Run(root,args[1]); return; }
@@ -91,6 +92,7 @@ if(args.Contains("--four-panels")) { FourPanelChecks.Run(root); return; }
 if(args.Contains("--commands")) { CommandPanelChecks.Run(root); return; }
 if(args.Contains("--terminal-focus")) { TerminalFocusChecks.Run(root); return; }
 if(args.Contains("--bitwarden")) { BitwardenChecks.Run(root); return; }
+if(args.Contains("--bitwarden-managed")) { BitwardenManagedChecks.Run(root); return; }
 if(args.Contains("--vault-ssh")) { BitwardenSshAcceptanceChecks.Run(root,args[1]); return; }
 if(args.Contains("--command-profile")) { CommandPanelChecks.ProfileLayout(root); return; }
 if(args.Contains("--command-knowledge")) { CommandKnowledgeChecks.Run(root); return; }

@@ -60,9 +60,9 @@ internal static class BitwardenChecks
         if(use.IsEnabled || use.IsVisible || Named<StackPanel>(picker,"BitwardenSearchSection").IsVisible || !master.IsKeyboardFocusWithin || master.PasswordChar!='●')throw new Exception("Locked picker did not show only the unlock step with protected input");
         var help=Named<Expander>(picker,"BitwardenSetupHelp"); help.IsExpanded=true; RedesignChecks.Frames(3);
         var technical=Named<Expander>(picker,"BitwardenTerminalInstructions");
-        if(technical.IsExpanded || !help.GetVisualDescendants().OfType<TextBlock>().Any(t=>t.Text==AppText.T("1. Zainstaluj Bitwarden CLI")))throw new Exception("First-time setup did not start with plain numbered steps");
+        if(technical.IsExpanded || !help.GetVisualDescendants().OfType<TextBlock>().Any(t=>t.Text==AppText.T("1. Wybierz usługę sejfu")))throw new Exception("First-time setup did not start with plain numbered steps");
         technical.IsExpanded=true; RedesignChecks.Frames(2);
-        if(!technical.GetVisualDescendants().OfType<TextBlock>().Any(t=>t.Text?.Contains("bw config server")==true))throw new Exception("Detailed offline CLI instructions missing"); technical.IsExpanded=false; help.IsExpanded=false;
+        if(!technical.GetVisualDescendants().OfType<TextBlock>().Any(t=>t.Text?.Contains(language=="pl"?"Bitwarden USA":"Bitwarden US")==true))throw new Exception("Detailed offline GUI setup instructions missing"); technical.IsExpanded=false; help.IsExpanded=false;
         picker.CaptureRenderedFrame()!.Save(Path.Combine(root,"vault-locked-"+language+".png"));
         Mode("failure"); Click(picker,"BitwardenRetry"); Completed();
         if(!error.IsVisible || error.Text!.Contains(Secret) || Named<Button>(picker,"BitwardenUnlock").IsEnabled)throw new Exception("Failed status check left a misleading unlock action");

@@ -61,7 +61,8 @@ internal static partial class Dialogs
         row.Children.Add(Button("Anuluj",()=>dialog.Close())); row.Children.Add(Button("OK",()=>dialog.Close(box.Text??""))); dialog.Opened+=(_,_)=>box.Focus(); dialog.KeyDown+=(_,e)=> { if(e.Key==Avalonia.Input.Key.Escape)dialog.Close(); if(e.Key==Avalonia.Input.Key.Enter)dialog.Close(box.Text??""); };
         if(ct.IsCancellationRequested)return null;
         using var cancelled=ct.Register(()=>Avalonia.Threading.Dispatcher.UIThread.Post(()=>dialog.Close()));
-        return await dialog.ShowDialog<string?>(owner);
+        try { return await dialog.ShowDialog<string?>(owner); }
+        finally { if(secret)box.Text=""; }
     }
     public static Task<ServerProfile?> Edit(Window owner,ServerProfile? profile,IEnumerable<string> folders,IEnumerable<string>? knownTags=null,IReadOnlyDictionary<string,string>? tagColors=null) => ProfileEditorDialog.Show(owner,profile,folders,knownTags,tagColors);
 }

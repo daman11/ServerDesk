@@ -22,7 +22,7 @@ Architecture: amd64
 Maintainer: ServerDesk Project
 Section: net
 Priority: optional
-Depends: libc6 (>= 2.35), libfontconfig1, libx11-6, libxcb1, libxext6, libxrender1, libice6, libsm6, libxrandr2, libxi6, libxcursor1, libssl3 | libssl3t64, libicu76 | libicu74 | libicu72 | libicu70
+Depends: libc6 (>= 2.35), libstdc++6, libgcc-s1, libfontconfig1, libx11-6, libxcb1, libxext6, libxrender1, libice6, libsm6, libxrandr2, libxi6, libxcursor1, libssl3 | libssl3t64, libicu76 | libicu74 | libicu72 | libicu70
 Recommends: libsecret-tools, iputils-ping, freerdp3-x11 | freerdp2-x11
 Description: Server administration workspace (public beta)
  SSH, SFTP, monitoring, VNC, serial sessions and Network Tools in Avalonia.
@@ -31,5 +31,6 @@ EOF
 find "$package" -type d -exec chmod 755 {} +
 find "$package" -type f -exec chmod 644 {} +
 chmod 755 "$package/opt/serverdesk/ServerDesk.App" "$package/usr/bin/serverdesk"
+chmod 755 "$package/opt/serverdesk/components/bitwarden/bw"
 dpkg-deb --root-owner-group --build "$package" "artifacts/serverdesk_${version}_amd64.deb"
 tar -czf "artifacts/ServerDesk-$version-linux-x64.tar.gz" -C "$package/opt/serverdesk" .

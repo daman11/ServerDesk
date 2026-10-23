@@ -11,7 +11,7 @@ public static class PluginCatalog
     public static IReadOnlyList<PluginDefinition> BuiltIn { get; }=Array.AsReadOnly<PluginDefinition>([
         new(LinuxMonitoring,"Monitoring Linux","Parametry serwera i pasek metryk. Korzysta z osobnego połączenia SSH.","chart-no-axes-combined"),
         new(Commands,"Komendy","Ściągawka, mini poradniki, przełączniki narzędzi i własne szablony.","square-terminal"),
-        new(Bitwarden,"Bitwarden / Vaultwarden","Hasła i klucze SSH z sejfu oraz przypisania do połączeń. Wymaga oficjalnego Bitwarden CLI.","key")
+        new(Bitwarden,"Bitwarden / Vaultwarden","Hasła i klucze SSH z sejfu. Dołączony klient i konfiguracja w aplikacji.","key")
     ]);
     public static bool IsKnown(string id)=>BuiltIn.Any(p=>p.Id==id);
     public static bool IsEnabled(ApplicationPreferences preferences,string id)=>IsKnown(id)&&!preferences.DisabledPlugins.Contains(id,StringComparer.Ordinal);

@@ -1,5 +1,6 @@
 # Verification and historical reviews
 
+- [0.49.0 Public Beta](release-verification-0.49.0.md) — bundled OSS component, GUI setup, account isolation and local TLS/2FA checks.
 - [0.48.0 Public Beta](release-verification-0.48.0.md) — guides, tool options, bounded documentation refresh and offline/plugin lifecycle.
 - [0.47.0 Public Beta](release-verification-0.47.0.md) — native vault SSH keys and disposable OpenSSH acceptance.
 

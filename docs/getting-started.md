@@ -1,5 +1,7 @@
 # ServerDesk 0.47.0 — pierwsze kroki
 
+**Nowość 0.49.0:** Bitwarden / Vaultwarden ma dołączony klient OSS oraz konfigurację serwera, logowanie, 2FA i synchronizację w GUI. Nie trzeba wskazywać pliku bw. [Konfiguracja](bitwarden.md).
+
 **Nowe w lokalnym wydaniu 0.47.0:** [Bitwarden / Vaultwarden](bitwarden.md): klucze SSH Key (RSA/Ed25519) używane z pamięci przez terminal i SFTP oraz prostszy wybór wpisu sejfu. W edytorze SSH wybierz **Klucz SSH z sejfu**, podaj login i przypisz klucz. Wymaga oficjalnego CLI, jawnego adresu sejfu i wcześniejszego logowania CLI. Ta lokalna paczka nie została jeszcze opublikowana na GitHub.
 
 **Nowe w 0.45.1:** opcjonalny skrót na pulpicie oraz powiadomienie Aktualizuj / Pomiń tę wersję / Przypomnij przy następnym uruchomieniu. Domyślnie sprawdzamy wersję przy starcie; zapisane wyłączenie pozostaje zachowane. [Instrukcja testu z 0.45.0](updates.md).

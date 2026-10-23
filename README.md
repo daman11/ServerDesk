@@ -1,4 +1,4 @@
-# ServerDesk — 0.48.0 Public Beta
+# ServerDesk — 0.49.0 Public Beta
 
 Native Windows/Linux workspace for SSH, SFTP, RDP, VNC and serial connections. Built with C#, .NET 10 and Avalonia 12. Free and open source under the [MIT license](LICENSE).
 
@@ -8,15 +8,15 @@ Native Windows/Linux workspace for SSH, SFTP, RDP, VNC and serial connections. B
 
 Latest published download: **[ServerDesk 0.46.0 Public Beta](https://github.com/daman11/ServerDesk/releases/tag/v0.46.0)** — [Windows installer](https://github.com/daman11/ServerDesk/releases/download/v0.46.0/ServerDesk-0.46.0-win-x64-Setup.exe), portable and Linux packages, source and SHA-256 checksums.
 
-The local 0.48.0 release expands **Commands** with 14 offline PL/EN mini guides, 168 option/syntax descriptions for 22 tools and on-demand official documentation refresh. Topics cover SSH keys, network configuration, logs, services and diagnostics; refreshed publisher text is cached separately from reviewed templates. No dependencies or schema changes. This local release has not been published to GitHub. [Release notes](docs/releases/release-0.48.0.md), [verification and limits](docs/reports/release-verification-0.48.0.md), [Commands guide](docs/commands.md).
+The local 0.49.0 release bundles official Bitwarden CLI OSS and adds vault server/account setup, sign-in, verification codes, sync and sign-out in the application GUI. No manual executable selection is required. Existing password/SSH-key bindings and advanced external clients remain supported. Separate GPL notices and corresponding OSS source are included. This local release has not been published to GitHub. [Release notes](docs/releases/release-0.49.0.md), [verification](docs/reports/release-verification-0.49.0.md), [vault setup](docs/bitwarden.md).
 
 | System | Package | Start |
 |---|---|---|
-| Windows x64 | `ServerDesk-0.48.0-win-x64-Setup.exe` | Run Setup; current-user installation and Start menu shortcut |
-| Windows x64 portable | `ServerDesk-0.48.0-win-x64.zip` | Extract everything; run `ServerDesk.App.exe` |
-| Linux x64 DEB | `serverdesk_0.48.0_amd64.deb` | `sudo apt install ./serverdesk_0.48.0_amd64.deb` |
-| Linux x64 archive | `ServerDesk-0.48.0-linux-x64.tar.gz` | Extract into a new directory; run `./ServerDesk.App` |
-| Source | `ServerDesk-0.48.0-source.zip` | .NET 10 SDK required |
+| Windows x64 | `ServerDesk-0.49.0-win-x64-Setup.exe` | Run Setup; current-user installation and Start menu shortcut |
+| Windows x64 portable | `ServerDesk-0.49.0-win-x64.zip` | Extract everything; run `ServerDesk.App.exe` |
+| Linux x64 DEB | `serverdesk_0.49.0_amd64.deb` | `sudo apt install ./serverdesk_0.49.0_amd64.deb` |
+| Linux x64 archive | `ServerDesk-0.49.0-linux-x64.tar.gz` | Extract into a new directory; run `./ServerDesk.App` |
+| Source | `ServerDesk-0.49.0-source.zip` | .NET 10 SDK required |
 
 The binary packages include .NET. Linux additionally needs its system X11/fontconfig libraries, Secret Service for remembered passwords and an installed X11 FreeRDP client (`xfreerdp3` or `xfreerdp`) for in-tab RDP. Linux verification used Ubuntu/WSLg; other desktop/distribution combinations are experimental. ARM/macOS packages are not provided.
 

@@ -19,13 +19,18 @@ public sealed partial class MainWindow
         bitwardenOptions=preferences.Bitwarden;
         if(enabled)bitwardenLifetime=CancellationTokenSource.CreateLinkedTokenSource(lifetime.Token);
     }
-    internal async Task<BitwardenChoice?> ChooseBitwardenAsync(Window owner,ServerProfile? profile,BitwardenReference? reference,bool bindingOnly=false)
+    internal async Task<BitwardenChoice?> ChooseBitwardenAsync(Window owner,ServerProfile? profile,BitwardenReference? reference,bool bindingOnly=false,bool accountOnly=false)
     {
         if(!IsPluginEnabled(PluginCatalog.Bitwarden) || bitwardenLifetime is not {} scope || scope.IsCancellationRequested || closing || closePending)return null;
-        var task=Dialogs.Bitwarden(owner,()=>BitwardenFactory(bitwardenOptions),profile,reference,bindingOnly,scope.Token);
+        var task=Dialogs.Bitwarden(owner,()=>BitwardenFactory(bitwardenOptions),profile,reference,bindingOnly,scope.Token,bitwardenOptions,accountOnly);
         bitwardenWork.Add(task);
         try { var result=await task; if(!scope.IsCancellationRequested && IsPluginEnabled(PluginCatalog.Bitwarden))return result; result?.Dispose(); return null; }
         finally { bitwardenWork.Remove(task); }
+    }
+    internal async Task ConfigureBitwardenAccountAsync(Window owner)
+    {
+        if(!IsPluginEnabled(PluginCatalog.Bitwarden)) { await Dialogs.Message(owner,L.T("Bitwarden / Vaultwarden"),L.T("Włącz plugin Bitwarden / Vaultwarden i zapisz ustawienia.")); return; }
+        using var choice=await ChooseBitwardenAsync(owner,null,null,accountOnly:true);
     }
     private async Task<BitwardenChoice?> VaultSshKeyAsync(ServerProfile profile)
     {

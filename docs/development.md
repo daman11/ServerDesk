@@ -122,3 +122,6 @@ Plugins 0.39.0: UiSmoke ROOT --plugins covers persisted/runtime states, data pre
 ## Commands knowledge regression
 
 Generate bundled knowledge offline with scripts/generate-command-knowledge.py. CommandKnowledgeTests and ServerDesk.UiSmoke --command-knowledge cover PL/EN, compact/light/dark layouts, exact flags, copy-only examples, synthetic HTTP/cache/cancel and plugin drain. --command-docs-live explicitly checks fixed public official sources with fixture storage; it is excluded from offline CI. See [Commands](commands.md).
+
+
+From 0.49.0, full publish stages pinned Bitwarden OSS via scripts/prepare-bitwarden.ps1. Development outputs used for sign-in also need that script with -Destination artifacts/your-build and matching -Runtime. Downloads are cached under .tools at build time. Python 3 reproduces the OSS source archive (WSL Python on Windows). Use scripts/test-bitwarden-component.py OUTPUT RUNTIME to verify hashes/notices/source. Headless --bitwarden-managed uses no real vault; --bitwarden-native uses the prepared component and disposable TLS identity requests.

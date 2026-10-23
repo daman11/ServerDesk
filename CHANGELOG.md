@@ -2,6 +2,11 @@
 
 ## Unreleased
 
+## 0.49.0 — Public Beta — 2026-10-23
+
+- Bundle the official Bitwarden CLI OSS for Windows/Linux x64 with pinned archive/binary/source hashes, exact GPL notices and corresponding OSS source. Keep ServerDesk code MIT and the component a separate process; exclude upstream commercial modules. Validate payload hashes, source contents and executable permissions during packaging.
+- Add GUI US/EU/Vaultwarden server/email setup, Save and connect, masked master-password sign-in and 2FA/new-device challenges, explicit sync and owned-profile sign-out. Preserve legacy external CLI settings and existing password/SSH-key bindings. Isolate account profiles, enforce HTTPS, bound and cancel owned processes, never put login secrets in arguments/logs/settings, and retain core sessions when disabling the plugin. Add account/GUI and real bundled-client loopback TLS regressions.
+
 ## 0.48.0 — Public Beta — 2026-10-22
 
 - Expand the Commands plugin with 14 offline PL/EN mini guides, 22 tool references and 168 option/syntax descriptions. Cover SSH keys, network configuration ownership and files, logs, services, Docker and disk diagnostics. Add searchable platform-filtered views, case-sensitive short-flag lookup, copy-only steps and scoped command references without modifying previews.

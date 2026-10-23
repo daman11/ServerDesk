@@ -41,3 +41,6 @@ Lucide pochodzi z przypiętego commitu `70562c1ee1c4fdcf736fe97bc893fb8511927934
 Od 0.23.0 każda paczka zawiera `DEPENDENCIES.json`, `THIRD-PARTY-NOTICES.md` i pełne teksty w `licenses/`, także notices natywnych Skia/HarfBuzz/ANGLE, licencję Inter OFL oraz rzeczywistego runtime .NET. Teksty brakujące w NuGet pobrano z repozytoriów upstream; źródła i SHA-256 zapisano w `third-party/licenses/manifest.json`. Generator zatrzymuje pakowanie przy brakującej licencji. Sprawdzono metadane i teksty; nie jest to certyfikacja prawna ani gwarancja kompletności metadanych upstream.
 
 Instalator Windows: [NSIS 3.13](https://nsis.sourceforge.io/Download), kompresja zlib, [warunki upstream](https://nsis.sourceforge.io/Docs/AppendixI.html). Wyłącznie narzędzie pakowania; pełne notices w `third-party/licenses/nsis-COPYING.txt`. Nie dodano zależności runtime aplikacji.
+
+
+Bitwarden CLI OSS 2026.10.0 jest dołączony jako osobny proces GPL v3, bez komercyjnego poddrzewa. Kod ServerDesk pozostaje MIT. Manifest przypina archiwa i pliki Windows/Linux x64 oraz źródła OSS; paczki zawierają pełne notices i SOURCE.tar.gz. [Pochodzenie i źródła](../third-party/bitwarden/README.md). Komponent nie jest pakietem NuGet; audyt NuGet nie obejmuje zależności w jego binarium. Linux wymaga też libstdc++6 i libgcc-s1.

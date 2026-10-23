@@ -61,7 +61,8 @@ public sealed record ApplicationPreferences
     {
         PluginCatalog.Validate(DisabledPlugins);
         if(Bitwarden==null)throw new ArgumentException(L.T("Niepoprawne ustawienia pluginów."));
-        Bitwarden.Validate();
+        try { Bitwarden.Validate(); }
+        catch(ArgumentException ex) { throw new ArgumentException(ex.Message,nameof(Bitwarden)); }
         if(!AppText.IsSupported(Language))throw new ArgumentException(AppText.T("Nieobsługiwany język aplikacji."));
         if(!InterfaceFonts.Contains(InterfaceFontFamily))throw new ArgumentException(L.T("Nieobsługiwany krój czcionki interfejsu."),nameof(InterfaceFontFamily));
         if(ControlCornerRadius is <0 or >12)throw new ArgumentException(L.T("Zaokrąglenie kontrolek musi mieć od 0 do 12 px."),nameof(ControlCornerRadius));

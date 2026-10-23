@@ -23,6 +23,12 @@ try {
     foreach($symbol in (Get-ChildItem -LiteralPath $staging -Recurse -File -Filter '*.pdb')){Remove-Item -LiteralPath $symbol.FullName -Force}
     if($Runtime -eq 'win-x64'){ & ./scripts/test-windows-manifest.ps1 -Executable "$staging/ServerDesk.App.exe" }
     foreach($file in @('README.md','LICENSE','CHANGELOG.md','SECURITY.md','CONTRIBUTING.md','AGENTS.md')){Copy-Item -LiteralPath $file -Destination $staging}
+    & ./scripts/prepare-bitwarden.ps1 -Runtime $Runtime -Destination $staging
+    # Preserve repository-relative links from the offline guides to component provenance.
+    New-Item -ItemType Directory -Force "$staging/third-party/bitwarden" | Out-Null
+    foreach($file in @('README.md','manifest.json','LICENSE.txt','LICENSE_GPL.txt')){
+        Copy-Item -LiteralPath "third-party/bitwarden/$file" -Destination "$staging/third-party/bitwarden"
+    }
     # Keep linked guides and historical reports usable from the offline payload.
     Copy-Item -LiteralPath 'docs' -Destination "$staging/docs" -Recurse
     & ./scripts/generate-notices.ps1 -Output $staging -Runtime $Runtime

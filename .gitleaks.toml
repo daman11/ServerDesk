@@ -34,3 +34,11 @@ condition = "AND"
 paths = ['''^src/ServerDesk.App/ProfileEditorDialog\.cs$''']
 regexTarget = "line"
 regexes = ['''^\s*var vncAuth=new ComboBox \{ Name="VncAuthentication",ItemsSource=new\[\]\{L.T\("Hasło VNC"\),L.T\("Bez uwierzytelniania"\)\},SelectedIndex=\(int\)original.Vnc.Authentication,HorizontalAlignment=HorizontalAlignment.Stretch \};\s*$''']
+
+[[allowlists]]
+description = "Exact unit-test coverage prose in the 0.49.0 report, not a credential"
+targetRules = ["generic-api-key"]
+condition = "AND"
+paths = ['''^docs/reports/release-verification-0\.49\.0\.md$''']
+regexTarget = "match"
+regexes = ['''^credentials, missing/corrupt $''']

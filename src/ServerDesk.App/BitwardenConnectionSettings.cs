@@ -13,6 +13,7 @@ internal sealed class BitwardenConnectionSettings:StackPanel
     private readonly TextBox server=new() { Name="BitwardenServerAddress",MaxLength=2048,PlaceholderText="https://vault.example.com" };
     private readonly TextBox email=new() { Name="BitwardenEmail",MaxLength=254,PlaceholderText="user@example.com" };
     private readonly CheckBox external=new() { Name="BitwardenExternalClient",Content=L.T("Użyj zewnętrznego klienta (zaawansowane)") };
+    private readonly CheckBox startup=new() { Name="BitwardenUnlockOnStartup",Content=L.T("Odblokuj sejf przy uruchamianiu ServerDesk") };
     private readonly TextBox executable=new() { Name="BitwardenExecutable",MaxLength=4096 };
     private readonly TextBox directory=new() { Name="BitwardenDataDirectory",MaxLength=4096 };
     private readonly StackPanel address=new() { Spacing=5 },legacy=new() { Spacing=7 };
@@ -34,8 +35,10 @@ internal sealed class BitwardenConnectionSettings:StackPanel
         var advanced=new Expander { Name="BitwardenAdvanced",Header=L.T("Zewnętrzny klient i zgodność ze starszą konfiguracją"),HorizontalAlignment=HorizontalAlignment.Stretch,HorizontalContentAlignment=HorizontalAlignment.Stretch,Content=legacy,IsExpanded=value.Executable.Length>0,Classes={"network-options"} };
         Children.Add(advanced);
         Children.Add(DesignSystem.Hint(L.T("Dołączony klient używa osobnego profilu ServerDesk dla wybranego serwera i e-maila. Nie zmienia konta w aplikacji ani rozszerzeniu Bitwarden.")));
+        startup.IsChecked=value.UnlockOnStartup; Children.Add(startup);
         void Update() { address.IsVisible=service.SelectedIndex==2; paths.IsVisible=external.IsChecked==true; service.IsEnabled=email.IsEnabled=server.IsEnabled=external.IsChecked!=true; }
         service.SelectionChanged+=(_,_)=> { Update(); Changed?.Invoke(); }; external.IsCheckedChanged+=(_,_)=> { Update(); Changed?.Invoke(); };
+        startup.IsCheckedChanged+=(_,_)=>Changed?.Invoke();
         foreach(var box in new[]{server,email,executable,directory})box.TextChanged+=(_,_)=>Changed?.Invoke();
         Apply(value); Update();
     }
@@ -48,11 +51,12 @@ internal sealed class BitwardenConnectionSettings:StackPanel
         return new(external.IsChecked==true?executable.Text?.Trim()??"":"",
             external.IsChecked==true?directory.Text?.Trim()??"":"",
             external.IsChecked==true?externalServer:service.SelectedIndex switch { 0=>"",1=>"https://vault.bitwarden.eu",_=>server.Text?.Trim()??"" },
-            external.IsChecked==true?externalEmail:email.Text?.Trim()??"");
+            external.IsChecked==true?externalEmail:email.Text?.Trim()??"",startup.IsChecked==true);
     }
     internal void Apply(BitwardenCliOptions value)
     {
         externalServer=value.Server; externalEmail=value.Email;
+        startup.IsChecked=value.UnlockOnStartup;
         executable.Text=value.Executable; directory.Text=value.DataDirectory; external.IsChecked=value.Executable.Length>0; email.Text=value.Email;
         var url=value.EffectiveServer;
         service.SelectedIndex=url=="https://vault.bitwarden.com"?0:url=="https://vault.bitwarden.eu"?1:2; server.Text=url;

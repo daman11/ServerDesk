@@ -55,6 +55,7 @@ internal static class BitwardenManagedChecks
     private static void Wait(Task task)=>RedesignChecks.Wait(task);
     internal static void Run(string root)
     {
+        BitwardenWorkspaceChecks.Run(root);
         foreach(var language in new[]{"pl","en"})
         {
             AppText.SetLanguage(language); var repo=new ProfileRepository(new(Path.Combine(root,language+"-"+Guid.NewGuid().ToString("N")))); Wait(repo.InitializeAsync());

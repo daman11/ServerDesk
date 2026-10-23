@@ -1,5 +1,6 @@
 using System.Security.Cryptography;
 using System.Text;
+using System.Text.Json;
 using System.Text.RegularExpressions;
 using ServerDesk.Core;
 
@@ -33,12 +34,23 @@ public sealed partial class BitwardenCli
     {
         if(!CanConfigureAccount)return;
         using var json=await JsonAsync(["status"],null,ct);
-        if(Text(json.RootElement,"status",32)=="unauthenticated")
+        await ConfigureAccountAsync(json.RootElement,ct);
+    }
+    public async Task<BitwardenAccount> PreparedStatusAsync(CancellationToken ct)
+    {
+        if(!CanConfigureAccount)return await StatusAsync(ct);
+        using var json=await JsonAsync(["status"],null,ct);
+        await ConfigureAccountAsync(json.RootElement,ct);
+        return ReadAccount(json.RootElement);
+    }
+    private async Task ConfigureAccountAsync(JsonElement root,CancellationToken ct)
+    {
+        if(Text(root,"status",32)=="unauthenticated")
         {
             var bytes=await runner.RunAsync(["config","server",ConfiguredServer!,"--nointeraction"],null,null,ct);
             CryptographicOperations.ZeroMemory(bytes);
         }
-        else if(BitwardenReference.CanonicalServer(Text(json.RootElement,"serverUrl",2048))!=ConfiguredServer)
+        else if(BitwardenReference.CanonicalServer(Text(root,"serverUrl",2048))!=ConfiguredServer)
             throw new BitwardenException(BitwardenFailure.AccountChanged);
     }
     public async Task LoginAsync(BitwardenLogin login,Func<BitwardenChallenge,CancellationToken,Task<string>> challenge,CancellationToken ct,BitwardenReference? expected=null)
@@ -51,10 +63,18 @@ public sealed partial class BitwardenCli
         using(var status=await JsonAsync(["status"],null,linked.Token))
             if(Text(status.RootElement,"status",32)!="unauthenticated")throw new BitwardenException(BitwardenFailure.AccountChanged);
         var bytes=await accountRunner.LoginAsync(login,challenge,linked.Token);
-        try { linked.Token.ThrowIfCancellationRequested(); }
+        try
+        {
+            linked.Token.ThrowIfCancellationRequested();
+            var token=Encoding.UTF8.GetString(bytes).Trim();
+            if(token.Length is <16 or >4096 || token.Any(c=>!(char.IsAsciiLetterOrDigit(c)||c is '+' or '/' or '=' or '-' or '_')))throw new BitwardenException(BitwardenFailure.InvalidResponse);
+            session=token;
+            var actual=await StatusAsync(linked.Token);
+            if(actual.State!="unlocked" || actual.Server!=accountRunner.Server || expected!=null && (actual.Id!=expected.AccountId || actual.Server!=expected.Server))throw new BitwardenException(BitwardenFailure.AccountChanged);
+            account=actual;
+        }
+        catch { Lock(); throw; }
         finally { CryptographicOperations.ZeroMemory(bytes); }
-        // Never trust the login response as account identity or retain its session text.
-        await UnlockAsync(login.MasterPassword,linked.Token,expected);
     }
     public async Task LogoutAccountAsync(CancellationToken ct)
     {
@@ -65,6 +85,7 @@ public sealed partial class BitwardenCli
     }
     public async Task SyncAsync(CancellationToken ct)
     {
+        metadata.Clear();
         await CheckAccountAsync(null,ct); using var linked=CancellationTokenSource.CreateLinkedTokenSource(ct,lifetime.Token);
         var bytes=await runner.RunAsync(["sync","--nointeraction"],session,null,linked.Token);
         CryptographicOperations.ZeroMemory(bytes);

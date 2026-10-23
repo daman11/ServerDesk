@@ -47,6 +47,11 @@ internal static class BitwardenChecks
     private static void Click(Control root,string name)=>Named<Button>(root,name).RaiseEvent(new RoutedEventArgs(Button.ClickEvent));
     private static void Wait(Task task)=>RedesignChecks.Wait(task);
     private static T Result<T>(Task<T> task) { Wait(task); return task.Result; }
+    private static void UnlockIfNeeded(Window picker)
+    {
+        SshAcceptanceChecks.Until(()=>Named<Button>(picker,"BitwardenUnlock").IsEnabled || Named<TextBlock>(picker,"BitwardenState").Text==AppText.T("Sejf odblokowany") && !Named<ProgressBar>(picker,"BitwardenProgress").IsVisible,"Vault did not become ready");
+        if(Named<Button>(picker,"BitwardenUnlock").IsEnabled) { Named<TextBox>(picker,"BitwardenMasterPassword").Text="master-fixture"; Click(picker,"BitwardenUnlock"); }
+    }
     private static void PickerUsability(Window picker,string fixture,string root,string language)
     {
         var master=Named<TextBox>(picker,"BitwardenMasterPassword"); var search=Named<TextBox>(picker,"BitwardenSearch");
@@ -113,15 +118,14 @@ internal static class BitwardenChecks
         var profile=new ServerProfile { Name="Key fixture",Host="fixture.invalid",Username="fixture-user",Authentication=Authentication.VaultSshKey };
         var reads=vault.Reads; var writes=vault.Writes;
         var choose=main.ChooseBitwardenAsync(main,profile,null,true); RedesignChecks.Frames(3); var picker=main.OwnedWindows.Single();
-        SshAcceptanceChecks.Until(()=>Named<Button>(picker,"BitwardenUnlock").IsEnabled,"Key binding status did not finish");
-        Named<TextBox>(picker,"BitwardenMasterPassword").Text="master-fixture"; Click(picker,"BitwardenUnlock"); SshAcceptanceChecks.Until(()=>Named<Button>(picker,"BitwardenUse").IsEnabled,"SSH key search did not finish");
+        UnlockIfNeeded(picker); SshAcceptanceChecks.Until(()=>Named<Button>(picker,"BitwardenUse").IsEnabled,"SSH key search did not finish");
         if(Named<ListBox>(picker,"BitwardenEntries").ItemCount!=1 || Named<ListBox>(picker,"BitwardenEntries").SelectedItem is not BitwardenEntry { Reference.Kind:BitwardenItemKind.SshKey })throw new Exception("Key mode mixed Login passwords with SSH Key items");
         picker.CaptureRenderedFrame()!.Save(Path.Combine(root,"vault-ssh-key-"+language+".png")); Click(picker,"BitwardenUse"); using var binding=Result(choose)!;
         if(binding.Reference?.Kind!=BitwardenItemKind.SshKey || binding.Password!=null || binding.TakeSshKey()!=null)throw new Exception("Binding retrieved SSH private material instead of metadata");
         profile=profile with { Bitwarden=binding.Reference }; Wait(repo.SaveAsync(profile));
         var obtain=main.ChooseBitwardenAsync(main,profile,profile.Bitwarden); RedesignChecks.Frames(3); picker=main.OwnedWindows.Single();
         if(picker.GetVisualDescendants().OfType<Button>().Any(b=>b.Name=="BitwardenManual"))throw new Exception("SSH key mode offered an invalid password fallback");
-        SshAcceptanceChecks.Until(()=>Named<Button>(picker,"BitwardenUnlock").IsEnabled,"SSH key status did not finish"); Named<TextBox>(picker,"BitwardenMasterPassword").Text="master-fixture"; Click(picker,"BitwardenUnlock"); SshAcceptanceChecks.Until(()=>Named<Button>(picker,"BitwardenUse").IsEnabled,"SSH key picker did not unlock"); Click(picker,"BitwardenUse");
+        UnlockIfNeeded(picker); SshAcceptanceChecks.Until(()=>Named<Button>(picker,"BitwardenUse").IsEnabled,"SSH key picker did not unlock"); Click(picker,"BitwardenUse");
         using var choice=Result(obtain)!; using var material=choice.TakeSshKey()??throw new Exception("SSH key selection did not return owned material");
         if(choice.Password!=null || material.Algorithm!="RSA" || material.IsDisposed || vault.Reads!=reads || vault.Writes!=writes)throw new Exception("SSH private material passed through password or system-credential handling");
         var edit=Dialogs.Edit(main,profile,[]); RedesignChecks.Frames(4); var editor=main.OwnedWindows.Single();
@@ -144,7 +148,7 @@ internal static class BitwardenChecks
         try
         {
             var exe=Path.Combine(AppContext.BaseDirectory,OperatingSystem.IsWindows()?"ServerDesk.UiSmoke.exe":"ServerDesk.UiSmoke");
-            var options=new BitwardenCliOptions(exe);
+            var options=new BitwardenCliOptions(exe,UnlockOnStartup:false);
             using(var service=BitwardenCli.Create(options))
             {
                 Environment.SetEnvironmentVariable("BW_SESSION","inherited-session-canary"); Environment.SetEnvironmentVariable("BITWARDENCLI_DEBUG","true"); Environment.SetEnvironmentVariable("NODE_OPTIONS","--untrusted-fixture-option");
@@ -194,25 +198,23 @@ internal static class BitwardenChecks
                 editor.GetVisualDescendants().OfType<Button>().Single(b=>Equals(b.Tag,"Zapisz")).RaiseEvent(new RoutedEventArgs(Button.ClickEvent));
                 if(Result(editing)?.Bitwarden!=null || Result(repo.ListAsync()).Single().Bitwarden!=linked.Bitwarden)throw new Exception("Removing an editor binding changed data before the profile save");
                 var obtain=main.ChooseBitwardenAsync(main,linked,linked.Bitwarden); RedesignChecks.Frames(3); picker=main.OwnedWindows.Single();
-                SshAcceptanceChecks.Until(()=>Named<Button>(picker,"BitwardenUnlock").IsEnabled,"Bound picker status did not finish");
-                Named<TextBox>(picker,"BitwardenMasterPassword").Text="master-fixture"; Click(picker,"BitwardenUnlock"); SshAcceptanceChecks.Until(()=>Named<Button>(picker,"BitwardenUse").IsEnabled,"Bound picker did not unlock"); Click(picker,"BitwardenUse");
+                UnlockIfNeeded(picker); SshAcceptanceChecks.Until(()=>Named<Button>(picker,"BitwardenUse").IsEnabled,"Bound picker did not unlock"); Click(picker,"BitwardenUse");
                 if(Result(obtain)?.Password!=Secret || vault.Writes!=0)throw new Exception("Bound entry was not retrieved for this session only");
                 var mismatch=main.ChooseBitwardenAsync(main,linked with { Username="different-fixture" },linked.Bitwarden); RedesignChecks.Frames(3); picker=main.OwnedWindows.Single();
-                SshAcceptanceChecks.Until(()=>Named<Button>(picker,"BitwardenUnlock").IsEnabled,"Mismatch picker status did not finish");
-                Named<TextBox>(picker,"BitwardenMasterPassword").Text="master-fixture"; Click(picker,"BitwardenUnlock"); SshAcceptanceChecks.Until(()=>Named<Button>(picker,"BitwardenUse").IsEnabled,"Mismatch picker did not unlock"); Click(picker,"BitwardenUse");
+                UnlockIfNeeded(picker); SshAcceptanceChecks.Until(()=>Named<Button>(picker,"BitwardenUse").IsEnabled,"Mismatch picker did not unlock"); Click(picker,"BitwardenUse");
                 SshAcceptanceChecks.Until(()=>picker.OwnedWindows.Any(),"Different username did not require confirmation");
                 var mismatchConfirm=picker.OwnedWindows.Single(); mismatchConfirm.GetVisualDescendants().OfType<Button>().Single(b=>Equals(b.Tag,"Anuluj")).RaiseEvent(new RoutedEventArgs(Button.ClickEvent));
                 SshAcceptanceChecks.Until(()=>Named<Button>(picker,"BitwardenUse").IsEnabled,"Declined username confirmation did not return to the picker");
                 if(mismatch.IsCompleted || !Named<Button>(picker,"BitwardenUse").IsKeyboardFocusWithin)throw new Exception("Declined username confirmation accepted a password or lost keyboard focus");
                 Click(picker,"BitwardenManual"); if(Result(mismatch) is not { Manual:true,Password:null })throw new Exception("Bound picker did not preserve the session-only manual fallback");
                 var credentials=Dialogs.Credentials(main,false,profile:profile); RedesignChecks.Frames(4); var credentialDialog=main.OwnedWindows.Single(); Click(credentialDialog,"CredentialBitwarden"); RedesignChecks.Frames(3); picker=credentialDialog.OwnedWindows.Single();
-                SshAcceptanceChecks.Until(()=>Named<Button>(picker,"BitwardenUnlock").IsEnabled,"One-time picker status did not finish");
-                Named<TextBox>(picker,"BitwardenMasterPassword").Text="master-fixture"; Click(picker,"BitwardenUnlock"); SshAcceptanceChecks.Until(()=>Named<Button>(picker,"BitwardenFind").IsEnabled,"One-time picker did not unlock"); Click(picker,"BitwardenFind"); SshAcceptanceChecks.Until(()=>Named<Button>(picker,"BitwardenUse").IsEnabled,"One-time search did not finish"); Click(picker,"BitwardenUse");
+                UnlockIfNeeded(picker); SshAcceptanceChecks.Until(()=>Named<Button>(picker,"BitwardenFind").IsEnabled,"One-time picker did not unlock"); Click(picker,"BitwardenFind"); SshAcceptanceChecks.Until(()=>Named<Button>(picker,"BitwardenUse").IsEnabled,"One-time search did not finish"); Click(picker,"BitwardenUse");
                 SshAcceptanceChecks.Until(()=>Named<TextBox>(credentialDialog,"CredentialPassword").Text==Secret,"One-time password did not fill credentials");
                 if(credentialDialog.GetVisualDescendants().OfType<CheckBox>().Single().IsChecked==true || vault.Writes!=0)throw new Exception("One-time selection opted into saving");
                 credentialDialog.GetVisualDescendants().OfType<Button>().Single(b=>Equals(b.Tag,"Anuluj")).RaiseEvent(new RoutedEventArgs(Button.ClickEvent)); Wait(credentials);
                 // Cancel/drain work without changing the existing terminal, profile or binding.
                 File.WriteAllText(Path.Combine(fixture,"mode"),"delay"); var pending=main.ChooseBitwardenAsync(main,linked,linked.Bitwarden); RedesignChecks.Frames(3);
+                picker=main.OwnedWindows.Single(); Click(picker,"BitwardenUse"); RedesignChecks.Frames(3);
                 Wait(main.ApplyPluginsAsync(settings.Preferences with { DisabledPlugins=new([PluginCatalog.Bitwarden]) })); Wait(pending);
                 if(pending.Result!=null || main.OwnedWindows.Any() || !ReferenceEquals(emulator,pane.Children.OfType<Iciclecreek.Terminal.TerminalControl>().Single().Terminal) || Result(repo.ListAsync()).Single().Bitwarden!=linked.Bitwarden)throw new Exception("Disabling vault plugin changed core session/data or returned a stale secret");
                 if(Result(main.ChooseBitwardenAsync(main,linked,linked.Bitwarden))!=null)throw new Exception("Disabled plugin opened a picker");

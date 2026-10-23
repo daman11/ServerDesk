@@ -18,7 +18,7 @@ public sealed record BitwardenReference(Guid ItemId,Guid AccountId,string Server
     }
 }
 
-public sealed record BitwardenCliOptions(string Executable="",string DataDirectory="",string Server="",string Email="")
+public sealed record BitwardenCliOptions(string Executable="",string DataDirectory="",string Server="",string Email="",bool UnlockOnStartup=true)
 {
     [System.Text.Json.Serialization.JsonIgnore] public bool UsesBundledClient=>Executable.Length==0;
     [System.Text.Json.Serialization.JsonIgnore] public string EffectiveServer=>Server.Length==0?"https://vault.bitwarden.com":BitwardenReference.CanonicalServer(Server);

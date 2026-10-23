@@ -127,6 +127,7 @@ public sealed partial class MainWindow : Window
         await RestoreSessionSnapshotAsync();
         if(preferences.WorkspaceOnStartup!=WorkspaceStartup.Remember)SetWorkspaceMode((WorkspaceMode)((int)preferences.WorkspaceOnStartup-1));
         workspaceReady=true;
+        _=Safe(UnlockBitwardenAtStartupAsync);
         if(preferences.CheckUpdatesOnStartup)_ = CheckUpdatesAtStartupAsync();
     }
     private Task EditAsync(ServerProfile? profile)=>EditProfileAsync(profile,profile??new ServerProfile { Folder=BrowserCreationFolder() });

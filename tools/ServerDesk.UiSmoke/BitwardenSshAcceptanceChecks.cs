@@ -40,8 +40,8 @@ internal static class BitwardenSshAcceptanceChecks
     private static void Unlock(MainWindow main)
     {
         SshAcceptanceChecks.Until(()=>main.OwnedWindows.Any(),"Vault-key connection did not open a picker"); var picker=main.OwnedWindows.Single();
-        SshAcceptanceChecks.Until(()=>Named<Button>(picker,"BitwardenUnlock").IsEnabled,"Vault-key picker status did not complete");
-        Named<TextBox>(picker,"BitwardenMasterPassword").Text="fixture-master"; Click(picker,"BitwardenUnlock");
+        SshAcceptanceChecks.Until(()=>Named<Button>(picker,"BitwardenUnlock").IsEnabled || Named<Button>(picker,"BitwardenUse").IsEnabled,"Vault-key picker status did not complete");
+        if(Named<Button>(picker,"BitwardenUnlock").IsEnabled) { Named<TextBox>(picker,"BitwardenMasterPassword").Text="fixture-master"; Click(picker,"BitwardenUnlock"); }
         SshAcceptanceChecks.Until(()=>Named<Button>(picker,"BitwardenUse").IsEnabled,"Vault-key picker did not unlock"); Click(picker,"BitwardenUse");
     }
     internal static void Run(string root,string fixtureDirectory)

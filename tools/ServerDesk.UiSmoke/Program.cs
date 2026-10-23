@@ -93,6 +93,7 @@ if(args.Contains("--commands")) { CommandPanelChecks.Run(root); return; }
 if(args.Contains("--terminal-focus")) { TerminalFocusChecks.Run(root); return; }
 if(args.Contains("--bitwarden")) { BitwardenChecks.Run(root); return; }
 if(args.Contains("--bitwarden-managed")) { BitwardenManagedChecks.Run(root); return; }
+if(args.Contains("--bitwarden-workspace")) { BitwardenWorkspaceChecks.Run(root); return; }
 if(args.Contains("--vault-ssh")) { BitwardenSshAcceptanceChecks.Run(root,args[1]); return; }
 if(args.Contains("--command-profile")) { CommandPanelChecks.ProfileLayout(root); return; }
 if(args.Contains("--command-knowledge")) { CommandKnowledgeChecks.Run(root); return; }

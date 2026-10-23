@@ -30,7 +30,7 @@ internal static partial class Dialogs
         return new Expander { Name="BitwardenSetupHelp",Header=DeskIcons.Labelled("help",L.T("Pierwsza konfiguracja sejfu")),Content=steps,HorizontalAlignment=HorizontalAlignment.Stretch,HorizontalContentAlignment=HorizontalAlignment.Stretch,Classes={"network-options"} };
     }
 
-    internal static async Task<BitwardenChoice?> Bitwarden(Window owner,Func<BitwardenCli> create,ServerProfile? profile,BitwardenReference? reference,bool bindingOnly,CancellationToken ct,BitwardenCliOptions? options=null,bool accountOnly=false)
+    internal static async Task<BitwardenChoice?> Bitwarden(Window owner,Func<BitwardenCli> create,ServerProfile? profile,BitwardenReference? reference,bool bindingOnly,CancellationToken ct,BitwardenCliOptions? options=null,bool accountOnly=false,bool retainClient=false,bool unlockOnly=false)
     {
         if(ct.IsCancellationRequested)return null;
         var keyMode=profile is { Protocol:Protocol.SSH,Authentication:Authentication.VaultSshKey };
@@ -39,7 +39,7 @@ internal static partial class Dialogs
         BitwardenCli? client=null; Task work=Task.CompletedTask; var busy=false; var closed=false; var statusChecked=false; var needsSetup=false; var loginRequired=false; Control? focusAfter=null;
         // Reserve space for the overlaid dialog scrollbar, including in wide cards.
         var stack=new StackPanel { Spacing=14,Margin=new Thickness(0,0,12,0) };
-        stack.Children.Add(DesignSystem.PageHeading("key","Bitwarden / Vaultwarden",L.T(accountOnly?"Zaloguj konto, zsynchronizuj sejf lub wyloguj się.":keyMode?"Wybierz wpis SSH Key. Login serwera pozostaje zapisany w połączeniu.":bindingOnly?"Przypisz zapisane hasło do połączenia.":"Użyj hasła zapisanego w swoim sejfie.")));
+        stack.Children.Add(DesignSystem.PageHeading("key","Bitwarden / Vaultwarden",L.T(unlockOnly?"Odblokuj sejf na czas pracy z ServerDesk. Możesz pominąć ten krok i wrócić do niego później.":accountOnly?"Zaloguj konto, zsynchronizuj sejf lub wyloguj się.":keyMode?"Wybierz wpis SSH Key. Login serwera pozostaje zapisany w połączeniu.":bindingOnly?"Przypisz zapisane hasło do połączenia.":"Użyj hasła zapisanego w swoim sejfie.")));
         if(profile!=null)stack.Children.Add(DesignSystem.Hint(profile.Protocol+" · "+profile.Endpoint+(profile.Username.Length>0?" · "+profile.Username:"")));
 
         var state=DesignSystem.Label(L.T("1. Odblokuj sejf")); state.Name="BitwardenState"; state.TextWrapping=TextWrapping.Wrap;
@@ -65,7 +65,8 @@ internal static partial class Dialogs
         access.Children.Add(loginFields);
         var sync=Button("Synchronizuj sejf",()=>{}); sync.Name="BitwardenSync";
         var logout=Button("Wyloguj konto sejfu",()=>{}); logout.Name="BitwardenLogout";
-        var accountActions=new WrapPanel { Orientation=Orientation.Horizontal,Children={sync,logout} }; access.Children.Add(accountActions);
+        var lockVault=Button("Zablokuj sejf",()=>{}); lockVault.Name="BitwardenLock";
+        var accountActions=new WrapPanel { Orientation=Orientation.Horizontal,Children={sync,lockVault,logout} }; access.Children.Add(accountActions);
         stack.Children.Add(DesignSystem.Card(access,new Thickness(14)));
 
         var search=new TextBox { Name="BitwardenSearch",Text=profile?.Host??"",MaxLength=200,PlaceholderText=L.T("Nazwa wpisu lub adres — co najmniej 2 znaki") };
@@ -110,7 +111,7 @@ internal static partial class Dialogs
                 Grid.SetColumn(row.Children[1],compact?0:1); Grid.SetRow(row.Children[1],compact?1:0);
             }
         };
-        var cancel=Button(accountOnly?"Zamknij":"Anuluj",()=>dialog.Close()); actions.Children.Add(cancel);
+        var cancel=Button(unlockOnly?"Pomiń":accountOnly?"Zamknij":"Anuluj",()=>dialog.Close()); actions.Children.Add(cancel);
         if(!bindingOnly && reference!=null && !keyMode) { var manual=Button("Podaj hasło ręcznie",()=>dialog.Close(new BitwardenChoice(null,"",null,true))); manual.Name="BitwardenManual"; actions.Children.Add(manual); }
         var useTitle=bindingOnly?(keyMode?"Przypisz klucz":"Przypisz wpis"):(keyMode?"Użyj klucza":"Użyj hasła");
         var use=Button(useTitle,()=>{}); use.Name="BitwardenUse"; use.Content=DeskIcons.Labelled("key",L.T(useTitle)); use.Classes.Add("primary"); actions.Children.Add(use);
@@ -124,9 +125,9 @@ internal static partial class Dialogs
             retry.IsVisible=!unlocked; retry.IsEnabled=!busy; progress.IsVisible=busy;
             status.IsVisible=busy || !unlocked && statusChecked && !warning.IsVisible;
             loginFields.IsVisible=loginRequired&&!unlocked; loginFields.IsEnabled=!busy; login.IsEnabled=!busy;
-            accountActions.IsVisible=client?.CanConfigureAccount==true && statusChecked && !loginRequired; sync.IsVisible=unlocked; sync.IsEnabled=logout.IsEnabled=!busy;
+            accountActions.IsVisible=statusChecked && !loginRequired && (unlocked || client?.CanConfigureAccount==true); sync.IsVisible=unlocked && client?.CanConfigureAccount==true; logout.IsVisible=client?.CanConfigureAccount==true; lockVault.IsVisible=unlocked; sync.IsEnabled=logout.IsEnabled=lockVault.IsEnabled=!busy;
             entries.IsVisible=unlocked && reference==null&&!accountOnly; purpose.IsVisible=unlocked; use.IsVisible=unlocked&&!accountOnly;
-            if(accountOnly && unlocked)purpose.Text=L.T("Konto sejfu jest gotowe. Przy kolejnym użyciu poprosimy o jego odblokowanie. Możesz zamknąć to okno.");
+            if(accountOnly && unlocked)purpose.Text=L.T("Sejf pozostaje odblokowany do zamknięcia ServerDesk lub wybrania Zablokuj sejf. Możesz zamknąć to okno.");
             searchRow.IsEnabled=list.IsEnabled=ready; find.IsEnabled=ready && ValidSearch(); clear.IsVisible=!string.IsNullOrEmpty(search.Text);
             use.IsEnabled=ready&&(reference!=null||list.SelectedItem is BitwardenEntry);
         }
@@ -167,16 +168,18 @@ internal static partial class Dialogs
                         else ApplicationDiagnostics.Report("BitwardenPicker",ex);
                     }
                 }
-                finally { busy=false; if(!closed) { Refresh(); focusAfter?.Focus(); focusAfter=null; } }
+                finally { busy=false; if(!closed) { Refresh(); focusAfter?.Focus(); focusAfter=null; if(unlockOnly && client?.IsUnlocked==true)dialog.Close(); } }
             }
         }
         async Task CheckStatus()
         {
-            statusChecked=false; loginRequired=false; await client!.PrepareAccountAsync(scope.Token);
-            var account=await client!.StatusAsync(scope.Token);
+            statusChecked=false; loginRequired=false;
+            var account=client!.UnlockedAccount??await client.PreparedStatusAsync(scope.Token);
+            if(reference!=null && (account.Id!=reference.AccountId || account.Server!=reference.Server)) { client.Lock(); throw new BitwardenException(BitwardenFailure.AccountChanged); }
             if(closed || scope.IsCancellationRequested)return;
             statusChecked=true; server.Text=account.Server; server.IsVisible=true;
-            status.Text=L.T("Podaj hasło, którym odblokowujesz swój sejf."); focusAfter=master;
+            status.Text=L.T(client.IsUnlocked?"Sejf odblokowany do zamknięcia ServerDesk.":"Podaj hasło, którym odblokowujesz swój sejf."); focusAfter=client.IsUnlocked?(accountOnly?cancel:reference==null?search:use):master;
+            if(client.IsUnlocked && !accountOnly && reference==null && ValidSearch())await Search(preferCached:true);
         }
         async Task<string> Challenge(BitwardenChallenge kind,CancellationToken token)
         {
@@ -199,21 +202,22 @@ internal static partial class Dialogs
         });
         loginPassword.KeyDown+=(_,e)=> { if(e.Key==Key.Enter && login.IsEnabled) { e.Handled=true; login.RaiseEvent(new Avalonia.Interactivity.RoutedEventArgs(Avalonia.Controls.Button.ClickEvent)); } };
         sync.Click+=(_,_)=>Run("Synchronizowanie sejfu…",async()=> { await client!.SyncAsync(scope.Token); if(!accountOnly && reference==null && ValidSearch())await Search(); });
+        lockVault.Click+=(_,_)=>Run("Blokowanie sejfu…",async()=> { client!.Lock(); ForgetResults(); await CheckStatus(); });
         logout.Click+=(_,_)=>Run("Wylogowywanie konta sejfu…",async()=>
         {
             if(!await Confirm(dialog,L.T("Wyloguj konto sejfu"),L.T("Wylogowanie dotyczy wyłącznie profilu ServerDesk. Przypisania połączeń pozostaną zapisane."),scope.Token))return;
             await client!.LogoutAccountAsync(scope.Token); ForgetResults(); await CheckStatus();
         });
-        async Task Search()
+        async Task Search(bool preferCached=false)
         {
             ForgetResults(); status.Text=empty.Text=L.T("Wyszukiwanie wpisów…");
-            var matches=await client!.SearchAsync(search.Text??"",scope.Token,keyMode?BitwardenItemKind.SshKey:BitwardenItemKind.Login);
+            var matches=await client!.SearchAsync(search.Text??"",scope.Token,keyMode?BitwardenItemKind.SshKey:BitwardenItemKind.Login,preferCached);
             if(closed || scope.IsCancellationRequested)return;
             list.ItemsSource=matches; list.IsVisible=matches.Count>0; empty.IsVisible=matches.Count==0; list.SelectedIndex=matches.Count>0?0:-1;
             list.Height=Math.Clamp(matches.Count*60,60,160);
             empty.Text=L.T("Brak pasujących wpisów. Zmień nazwę lub adres i wyszukaj ponownie.");
             count.Text=matches.Count==100?L.T("Pokazano 100 wpisów. Możesz zawęzić wyszukiwanie."):L.F($"Znalezione wpisy: {matches.Count}"); count.IsVisible=true;
-            status.Text=L.T("Sejf odblokowany na czas tego okna."); focusAfter=search;
+            status.Text=L.T("Sejf odblokowany do zamknięcia ServerDesk."); focusAfter=search;
         }
         retry.Click+=(_,_)=>Run("Sprawdzanie stanu Bitwarden CLI…",CheckStatus);
         unlock.Click+=(_,_) =>
@@ -226,12 +230,12 @@ internal static partial class Dialogs
                 finally { password=""; }
                 if(closed || scope.IsCancellationRequested)return;
                 help.IsExpanded=false;
-                status.Text=L.T("Sejf odblokowany na czas tego okna."); focusAfter=accountOnly?cancel:reference==null?search:use;
+                status.Text=L.T("Sejf odblokowany do zamknięcia ServerDesk."); focusAfter=accountOnly?cancel:reference==null?search:use;
                 if(!accountOnly && reference==null && ValidSearch())await Search();
                 else empty.Text=L.T("Wpisz co najmniej 2 znaki nazwy wpisu lub adresu.");
             });
         };
-        find.Click+=(_,_)=> { if(find.IsEnabled)Run("Wyszukiwanie wpisów…",Search); };
+        find.Click+=(_,_)=> { if(find.IsEnabled)Run("Wyszukiwanie wpisów…",()=>Search()); };
         use.Click+=(_,_) =>
         {
             if(!use.IsEnabled)return;
@@ -278,11 +282,11 @@ internal static partial class Dialogs
         list.KeyDown+=(_,e)=> { if(e.Key==Key.Enter && e.KeyModifiers==KeyModifiers.None && use.IsEnabled) { e.Handled=true; use.RaiseEvent(new Avalonia.Interactivity.RoutedEventArgs(Avalonia.Controls.Button.ClickEvent)); } };
         master.KeyDown+=(_,e)=> { if(e.Key==Key.Enter && unlock.IsEnabled) { e.Handled=true; unlock.RaiseEvent(new Avalonia.Interactivity.RoutedEventArgs(Avalonia.Controls.Button.ClickEvent)); } };
         dialog.KeyDown+=(_,e)=> { if(e.Key==Key.F && e.KeyModifiers==KeyModifiers.Control && search.IsEnabled && entries.IsVisible) { e.Handled=true; search.Focus(); } };
-        dialog.Closed+=(_,_)=> { closed=true; scope.Cancel(); master.Text=loginPassword.Text=""; list.ItemsSource=null; client?.Lock(); };
+        dialog.Closed+=(_,_)=> { closed=true; scope.Cancel(); master.Text=loginPassword.Text=""; list.ItemsSource=null; if(!retainClient)client?.Lock(); };
         dialog.Opened+=(_,_)=>Run("Sprawdzanie stanu Bitwarden CLI…",CheckStatus);
         using var cancelled=ct.Register(()=>Avalonia.Threading.Dispatcher.UIThread.Post(()=> { if(!closed)dialog.Close(); }));
         Refresh();
         try { return await dialog.ShowDialog<BitwardenChoice?>(owner); }
-        finally { scope.Cancel(); try { await work; } finally { master.Text=""; list.ItemsSource=null; client?.Dispose(); } }
+        finally { scope.Cancel(); try { await work; } finally { master.Text=""; list.ItemsSource=null; if(!retainClient)client?.Dispose(); } }
     }
 }

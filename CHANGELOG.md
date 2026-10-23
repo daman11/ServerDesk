@@ -2,6 +2,12 @@
 
 ## Unreleased
 
+## 0.50.0 — Public Beta — 2026-10-23
+
+- Keep one in-memory vault unlock for the lifetime of ServerDesk, shared by serialized password/SSH-key pickers. Prompt configured accounts at startup, with Skip and a saved opt-out. Add Lock vault; clear unlock/search metadata on application exit, plugin disable, sign-out or account/profile changes, while preserving active core sessions. No master password or session key is persisted by ServerDesk.
+- Reopen unlocked bound pickers without starting CLI commands, reuse only recent bounded search metadata, and keep explicit searches fresh. Combine preparation/status and reuse the validated login session token to avoid redundant CLI startup/unlock calls. Preserve exact-ID password/key fetching, live account checks before/after secret reads, pinned executable verification, cancellation and no-secret logging.
+- Move the green connection check to the leading slot before the color stripe and server icon; keep protocol, names, addresses and tags aligned.
+
 ## 0.49.1 — Public Beta — 2026-10-23
 
 - Keep protocol badges at the right edge of connection rows. Move the connected check beside the server icon in a reserved slot, preserve name/tag alignment, and place favorites before the protocol. Connecting or disconnecting no longer shifts SSH/RDP labels.

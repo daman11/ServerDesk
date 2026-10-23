@@ -1,4 +1,11 @@
 {
+  "Odblokuj sejf na czas pracy z ServerDesk. Możesz pominąć ten krok i wrócić do niego później.": "Unlock your vault for this ServerDesk session. You can skip this step and return to it later.",
+  "Pomiń": "Skip",
+  "Odblokuj sejf przy uruchamianiu ServerDesk": "Unlock vault when ServerDesk starts",
+  "Zablokuj sejf": "Lock vault",
+  "Blokowanie sejfu…": "Locking vault…",
+  "Sejf odblokowany do zamknięcia ServerDesk.": "Vault unlocked until ServerDesk closes.",
+  "Sejf pozostaje odblokowany do zamknięcia ServerDesk lub wybrania Zablokuj sejf. Możesz zamknąć to okno.": "Your vault stays unlocked until ServerDesk closes or you select Lock vault. You can close this dialog.",
   "Własny serwer": "Custom server",
   "Użyj zewnętrznego klienta (zaawansowane)": "Use an external client (advanced)",
   "Dołączony klient Bitwarden OSS: {0}": "Bundled Bitwarden OSS client: {0}",

@@ -8,6 +8,9 @@ public sealed partial class MainWindow
 {
     private BitwardenCliOptions bitwardenOptions=new();
     private CancellationTokenSource? bitwardenLifetime;
+    private BitwardenCli? bitwardenClient;
+    private readonly SemaphoreSlim bitwardenPickerGate=new(1);
+    private bool bitwardenStartupAttempted;
     private readonly HashSet<Task> bitwardenWork=[];
     internal Func<BitwardenCliOptions,BitwardenCli> BitwardenFactory { get; set; }=BitwardenCli.Create;
     internal async Task ApplyBitwardenPluginAsync(bool enabled)
@@ -15,17 +18,36 @@ public sealed partial class MainWindow
         var old=bitwardenLifetime; bitwardenLifetime=null; old?.Cancel();
         try { await Task.WhenAll(bitwardenWork.ToArray()); }
         catch(OperationCanceledException) { }
-        finally { old?.Dispose(); }
+        finally { old?.Dispose(); bitwardenClient?.Dispose(); bitwardenClient=null; }
         bitwardenOptions=preferences.Bitwarden;
         if(enabled)bitwardenLifetime=CancellationTokenSource.CreateLinkedTokenSource(lifetime.Token);
     }
-    internal async Task<BitwardenChoice?> ChooseBitwardenAsync(Window owner,ServerProfile? profile,BitwardenReference? reference,bool bindingOnly=false,bool accountOnly=false)
+    internal async Task<BitwardenChoice?> ChooseBitwardenAsync(Window owner,ServerProfile? profile,BitwardenReference? reference,bool bindingOnly=false,bool accountOnly=false,bool unlockOnly=false)
     {
         if(!IsPluginEnabled(PluginCatalog.Bitwarden) || bitwardenLifetime is not {} scope || scope.IsCancellationRequested || closing || closePending)return null;
-        var task=Dialogs.Bitwarden(owner,()=>BitwardenFactory(bitwardenOptions),profile,reference,bindingOnly,scope.Token,bitwardenOptions,accountOnly);
+        var task=Show();
         bitwardenWork.Add(task);
         try { var result=await task; if(!scope.IsCancellationRequested && IsPluginEnabled(PluginCatalog.Bitwarden))return result; result?.Dispose(); return null; }
         finally { bitwardenWork.Remove(task); }
+        async Task<BitwardenChoice?> Show()
+        {
+            try { await bitwardenPickerGate.WaitAsync(scope.Token); }
+            catch(OperationCanceledException) when(scope.IsCancellationRequested) { return null; }
+            try
+            {
+                if(!owner.IsVisible || scope.IsCancellationRequested || closing || closePending)return null;
+                return await Dialogs.Bitwarden(owner,()=>bitwardenClient??=BitwardenFactory(bitwardenOptions),profile,reference,bindingOnly,scope.Token,bitwardenOptions,accountOnly,retainClient:true,unlockOnly:unlockOnly);
+            }
+            finally { bitwardenPickerGate.Release(); }
+        }
+    }
+    internal async Task UnlockBitwardenAtStartupAsync()
+    {
+        if(bitwardenStartupAttempted || !preferences.Bitwarden.UnlockOnStartup || !IsPluginEnabled(PluginCatalog.Bitwarden) ||
+            bitwardenOptions is { Executable:"",Email:"",Server:"" } && !vm.AllServers.Any(p=>p.Bitwarden!=null || p.Authentication==Authentication.VaultSshKey) &&
+            !Directory.Exists(BitwardenRuntime.ProfileDirectory(Path.GetDirectoryName(repository.DatabasePath)!,bitwardenOptions)))return;
+        bitwardenStartupAttempted=true;
+        using var choice=await ChooseBitwardenAsync(this,null,null,accountOnly:true,unlockOnly:true);
     }
     internal async Task ConfigureBitwardenAccountAsync(Window owner)
     {

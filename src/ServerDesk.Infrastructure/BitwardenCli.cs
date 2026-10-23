@@ -40,31 +40,34 @@ public interface IBitwardenCommandRunner
     Task<byte[]> RunAsync(IReadOnlyList<string> arguments,string? session,string? masterPassword,CancellationToken ct);
 }
 
-/// <summary>One short-lived picker session. No plaintext persistence or HTTP listener.</summary>
+/// <summary>One workspace-owned unlock session. No plaintext persistence or HTTP listener.</summary>
 public sealed partial class BitwardenCli(IBitwardenCommandRunner runner):IDisposable
 {
     private readonly CancellationTokenSource lifetime=new();
     private string? session;
     private BitwardenAccount? account;
+    private readonly Dictionary<(BitwardenItemKind Kind,string Query),(long Created,IReadOnlyList<BitwardenEntry> Entries)> metadata=[];
     private int disposed;
     public bool IsUnlocked=>session!=null && !lifetime.IsCancellationRequested;
+    public BitwardenAccount? UnlockedAccount=>IsUnlocked && account!=null?account with { State="unlocked" }:null;
     public static BitwardenCli Create(BitwardenCliOptions options)=>new(new BitwardenProcessRunner(options));
     public async Task<BitwardenAccount> StatusAsync(CancellationToken ct)
     {
         var result=await JsonAsync(["status"],null,ct);
-        using(result)
+        using(result)return ReadAccount(result.RootElement);
+    }
+    private static BitwardenAccount ReadAccount(JsonElement root)
+    {
+        try
         {
-            try
-            {
-                var root=result.RootElement; var state=Text(root,"status",32);
-                if(state=="unauthenticated")throw new BitwardenException(BitwardenFailure.LoginRequired);
-                if(state is not ("locked" or "unlocked") || !Guid.TryParse(Text(root,"userId",64),out var id) || id==Guid.Empty)throw new BitwardenException(BitwardenFailure.InvalidResponse);
-                var server=Text(root,"serverUrl",2048,true);
-                if(server.Length==0)throw new BitwardenException(BitwardenFailure.ServerNotIdentified);
-                return new(id,BitwardenReference.CanonicalServer(server),state);
-            }
-            catch(Exception ex) when(ex is JsonException or InvalidOperationException or ArgumentException) { throw new BitwardenException(BitwardenFailure.InvalidResponse); }
+            var state=Text(root,"status",32);
+            if(state=="unauthenticated")throw new BitwardenException(BitwardenFailure.LoginRequired);
+            if(state is not ("locked" or "unlocked") || !Guid.TryParse(Text(root,"userId",64),out var id) || id==Guid.Empty)throw new BitwardenException(BitwardenFailure.InvalidResponse);
+            var server=Text(root,"serverUrl",2048,true);
+            if(server.Length==0)throw new BitwardenException(BitwardenFailure.ServerNotIdentified);
+            return new(id,BitwardenReference.CanonicalServer(server),state);
         }
+        catch(Exception ex) when(ex is JsonException or InvalidOperationException or ArgumentException) { throw new BitwardenException(BitwardenFailure.InvalidResponse); }
     }
     public async Task UnlockAsync(string masterPassword,CancellationToken ct,BitwardenReference? expectedReference=null)
     {
@@ -84,11 +87,13 @@ public sealed partial class BitwardenCli(IBitwardenCommandRunner runner):IDispos
         catch { Lock(); throw; }
         finally { CryptographicOperations.ZeroMemory(bytes); }
     }
-    public async Task<IReadOnlyList<BitwardenEntry>> SearchAsync(string query,CancellationToken ct,BitwardenItemKind kind=BitwardenItemKind.Login)
+    public async Task<IReadOnlyList<BitwardenEntry>> SearchAsync(string query,CancellationToken ct,BitwardenItemKind kind=BitwardenItemKind.Login,bool preferCachedMetadata=false)
     {
         if(!Enum.IsDefined(kind))throw new BitwardenException(BitwardenFailure.InvalidResponse);
         if(query==null || query.Trim().Length is <2 or >200 || query.TrimStart().StartsWith('-') || query.Any(char.IsControl))throw new ArgumentException(L.T("Wpisz co najmniej 2 znaki nazwy wpisu lub adresu."));
         await CheckAccountAsync(null,ct);
+        var cacheKey=(kind,query.Trim());
+        if(preferCachedMetadata && metadata.TryGetValue(cacheKey,out var cached) && Environment.TickCount64-cached.Created<30000)return cached.Entries;
         using var json=await JsonAsync(["list","items","--search",query.Trim()],null,ct);
         try
         {
@@ -103,7 +108,9 @@ public sealed partial class BitwardenCli(IBitwardenCommandRunner runner):IDispos
                 var reference=new BitwardenReference(id,account!.Id,account.Server,name,kind); reference.Validate();
                 if(result.Count<100)result.Add(new(reference,user,fingerprint));
             }
-            return result;
+            if(metadata.Count>=8)metadata.Clear();
+            var entries=result.AsReadOnly(); metadata[cacheKey]=(Environment.TickCount64,entries);
+            return entries;
         }
         catch(Exception ex) when(ex is JsonException or InvalidOperationException or ArgumentException or KeyNotFoundException) { throw new BitwardenException(BitwardenFailure.InvalidResponse); }
     }
@@ -143,7 +150,10 @@ public sealed partial class BitwardenCli(IBitwardenCommandRunner runner):IDispos
     private async Task CheckAccountAsync(BitwardenReference? reference,CancellationToken ct)
     {
         if(!IsUnlocked || account==null)throw new BitwardenException(BitwardenFailure.Locked);
-        var actual=await StatusAsync(ct);
+        BitwardenAccount actual;
+        try { actual=await StatusAsync(ct); }
+        catch(BitwardenException ex) when(ex.Reason is BitwardenFailure.LoginRequired or BitwardenFailure.ServerNotIdentified or BitwardenFailure.InvalidResponse)
+        { Lock(); throw; }
         if(actual.Id!=account.Id || actual.Server!=account.Server || reference!=null && (reference.AccountId!=actual.Id || reference.Server!=actual.Server))
         { Lock(); throw new BitwardenException(BitwardenFailure.AccountChanged); }
         if(actual.State!="unlocked") { Lock(); throw new BitwardenException(BitwardenFailure.Locked); }
@@ -166,7 +176,7 @@ public sealed partial class BitwardenCli(IBitwardenCommandRunner runner):IDispos
         return value;
     }
     // Do not run `bw lock/logout`: this may be a CLI profile shared with the user.
-    public void Lock() { session=null; account=null; }
+    public void Lock() { session=null; account=null; metadata.Clear(); }
     public void Dispose() { if(Interlocked.Exchange(ref disposed,1)!=0)return; lifetime.Cancel(); Lock(); lifetime.Dispose(); }
 }
 

@@ -38,11 +38,12 @@ public sealed partial class MainWindow
         value.Validate(); await pluginGate.WaitAsync(lifetime.Token);
         try
         {
-            var changed=plugins.Where(p=>!appliedPlugins.TryGetValue(p.Id,out var enabled)||enabled!=PluginCatalog.IsEnabled(value,p.Id)||p.Id==PluginCatalog.Bitwarden && bitwardenOptions!=value.Bitwarden).ToArray();
+            var changed=plugins.Where(p=>!appliedPlugins.TryGetValue(p.Id,out var enabled)||enabled!=PluginCatalog.IsEnabled(value,p.Id)||p.Id==PluginCatalog.Bitwarden && bitwardenOptions with { UnlockOnStartup=value.Bitwarden.UnlockOnStartup }!=value.Bitwarden).ToArray();
             preferences=preferences with { DisabledPlugins=value.DisabledPlugins,Bitwarden=value.Bitwarden };
             disabledPlugins.Clear(); disabledPlugins.UnionWith(value.DisabledPlugins);
             RefreshPluginPresentation();
             await Task.WhenAll(changed.Select(async p=> { var enabled=IsPluginEnabled(p.Id); await p.ApplyAsync(this,enabled); appliedPlugins[p.Id]=enabled; }));
+            bitwardenOptions=value.Bitwarden;
             UpdateStatus();
         }
         finally { pluginGate.Release(); }

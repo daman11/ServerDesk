@@ -1,6 +1,6 @@
 # Dokumentacja / Documentation
 
-Bieżące wydanie: [0.49.1 Public Beta](releases/release-0.49.1.md) — stałe położenie oznaczeń protokołów, dołączony Bitwarden OSS i logowanie do sejfu z GUI, klucze SSH oraz poradniki komend. [Pobierz z GitHub](https://github.com/daman11/ServerDesk/releases/tag/v0.49.1). [Weryfikacja i ograniczenia](reports/release-verification-0.49.1.md).
+Bieżące wydanie lokalne: [0.50.0 Public Beta](releases/release-0.50.0.md) — jedno odblokowanie sejfu na czas pracy programu, odblokowanie przy starcie, ręczna blokada i znacznik połączenia po lewej. [Weryfikacja](reports/release-verification-0.50.0.md). [Ostatnie opublikowane wydanie 0.49.1](https://github.com/daman11/ServerDesk/releases/tag/v0.49.1).
 
 | Temat / Topic | Dokument |
 |---|---|

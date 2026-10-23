@@ -32,6 +32,7 @@ public sealed class BitwardenTests
                 "unlock"=>masterPassword=="synthetic-master"?"SESSION_CANARY_abcdefghijklmnop==":throw new BitwardenException(BitwardenFailure.CommandFailed),
                 "list"=>ListOverride??"["+ItemJson()+"]",
                 "get"=>ItemOverride??ItemJson(),
+                "sync"=>"synced",
                 _=>throw new Exception("Unexpected vault mutation")
             };
             if(args[0] is "list" or "get")Assert.Equal("SESSION_CANARY_abcdefghijklmnop==",session);
@@ -58,6 +59,34 @@ public sealed class BitwardenTests
         var error=await Assert.ThrowsAsync<BitwardenException>(()=>client.UnlockAsync("synthetic-master",default,wrong)); Assert.Equal(BitwardenFailure.AccountChanged,error.Reason); Assert.DoesNotContain(runner.Calls,a=>a[0]=="unlock");
         await client.UnlockAsync("synthetic-master",default,Reference); runner.Server="https://different.example.invalid";
         error=await Assert.ThrowsAsync<BitwardenException>(()=>client.GetPasswordAsync(Reference,default)); Assert.Equal(BitwardenFailure.AccountChanged,error.Reason); Assert.False(client.IsUnlocked); Assert.DoesNotContain(runner.Calls,a=>a[0]=="get");
+    }
+    [Fact] public async Task Metadata_cache_reuses_only_search_metadata_and_explicit_refresh_stays_fresh()
+    {
+        var runner=new Runner(); using var client=new BitwardenCli(runner); await client.UnlockAsync("synthetic-master",default);
+        var first=Assert.Single(await client.SearchAsync("server",default)); var count=runner.Calls.Count(c=>c[0]=="list");
+        Assert.Equal(first,Assert.Single(await client.SearchAsync("server",default,preferCachedMetadata:true)));
+        Assert.Equal(count,runner.Calls.Count(c=>c[0]=="list")); Assert.DoesNotContain(runner.Calls,c=>c[0]=="get");
+        runner.ListOverride="[]";
+        Assert.Empty(await client.SearchAsync("server",default)); Assert.Equal(count+1,runner.Calls.Count(c=>c[0]=="list"));
+        Assert.DoesNotContain(Password,JsonSerializer.Serialize(client.UnlockedAccount));
+    }
+    [Fact] public async Task Cached_search_still_checks_account_before_returning_any_metadata()
+    {
+        var runner=new Runner(); using var client=new BitwardenCli(runner); await client.UnlockAsync("synthetic-master",default);
+        await client.SearchAsync("server",default); runner.User=Guid.NewGuid();
+        Assert.Equal(BitwardenFailure.AccountChanged,(await Assert.ThrowsAsync<BitwardenException>(()=>client.SearchAsync("server",default,preferCachedMetadata:true))).Reason);
+        Assert.False(client.IsUnlocked);
+    }
+    [Fact] public async Task Sync_lock_and_logout_invalidate_cached_search_metadata()
+    {
+        var runner=new Runner(); using var client=new BitwardenCli(runner); await client.UnlockAsync("synthetic-master",default);
+        await client.SearchAsync("server",default); await client.SyncAsync(default); runner.ListOverride="[]";
+        Assert.Empty(await client.SearchAsync("server",default,preferCachedMetadata:true));
+        client.Lock(); runner.ListOverride="["+Runner.ItemJson()+"]"; await client.UnlockAsync("synthetic-master",default);
+        Assert.Single(await client.SearchAsync("server",default,preferCachedMetadata:true));
+        runner.State="unauthenticated";
+        Assert.Equal(BitwardenFailure.LoginRequired,(await Assert.ThrowsAsync<BitwardenException>(()=>client.SearchAsync("server",default,preferCachedMetadata:true))).Reason);
+        Assert.False(client.IsUnlocked);
     }
     [Fact] public async Task Logged_out_accounts_and_failed_unlocks_are_safe_and_do_not_include_raw_output()
     {

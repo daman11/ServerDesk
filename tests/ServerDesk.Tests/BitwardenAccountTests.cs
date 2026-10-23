@@ -18,6 +18,8 @@ public sealed class BitwardenAccountTests
         internal List<byte[]> Buffers=[];
         internal List<string[]> Calls=[];
         internal bool Block;
+        internal string LoginToken=Token;
+        internal Action? AfterLogin;
         private byte[] Bytes(string text) { var bytes=Encoding.UTF8.GetBytes(text); Buffers.Add(bytes); return bytes; }
         public Task<byte[]> RunAsync(IReadOnlyList<string> args,string? session,string? password,CancellationToken ct)
         {
@@ -38,7 +40,7 @@ public sealed class BitwardenAccountTests
             Calls.Add(["login"]); Assert.Equal(Master,login.MasterPassword);
             if(Block)await Task.Delay(Timeout.Infinite,ct);
             Assert.Equal(Otp,await challenge(BitwardenChallenge.AuthenticatorCode,ct));
-            ct.ThrowIfCancellationRequested(); State="locked"; return Bytes(Token);
+            ct.ThrowIfCancellationRequested(); State="locked"; AfterLogin?.Invoke(); return Bytes(LoginToken);
         }
     }
     [Fact] public void Managed_options_are_backward_compatible_and_reject_insecure_remote_authentication()
@@ -68,10 +70,27 @@ public sealed class BitwardenAccountTests
         await client.PrepareAccountAsync(default); Assert.True(client.CanConfigureAccount);
         await client.LoginAsync(new("fixture@example.invalid",Master),(_,_)=>Task.FromResult(Otp),default);
         Assert.True(client.IsUnlocked); await client.SyncAsync(default);
+        Assert.DoesNotContain(runner.Calls,c=>c[0]=="unlock");
         await client.LogoutAccountAsync(default); Assert.False(client.IsUnlocked);
         Assert.Contains(runner.Calls,c=>c[0]=="config"&&c[2]==runner.Server);
         Assert.All(runner.Buffers,b=>Assert.All(b,value=>Assert.Equal(0,value)));
         Assert.DoesNotContain(Master,new BitwardenLogin("fixture@example.invalid",Master).ToString());
+    }
+    [Fact] public async Task Prepared_status_uses_one_command_for_an_existing_owned_account()
+    {
+        var runner=new Runner { State="locked" }; using var client=new BitwardenCli(runner);
+        Assert.Equal(runner.User,(await client.PreparedStatusAsync(default)).Id);
+        Assert.Equal("status",Assert.Single(runner.Calls)[0]);
+    }
+    [Theory][InlineData(false)][InlineData(true)]
+    public async Task Login_response_is_not_trusted_without_account_verification(bool corruptToken)
+    {
+        var runner=new Runner(); using var client=new BitwardenCli(runner);
+        if(corruptToken)runner.LoginToken="invalid-token";
+        else runner.AfterLogin=()=>runner.Actual="https://other.example.invalid";
+        await Assert.ThrowsAsync<BitwardenException>(()=>client.LoginAsync(new("fixture@example.invalid",Master),(_,_)=>Task.FromResult(Otp),default));
+        Assert.False(client.IsUnlocked); Assert.Null(client.UnlockedAccount);
+        Assert.All(runner.Buffers,b=>Assert.All(b,value=>Assert.Equal(0,value)));
     }
     [Fact] public async Task Authenticated_wrong_server_is_never_reconfigured_and_shared_profiles_are_not_logged_out()
     {

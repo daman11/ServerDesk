@@ -1,4 +1,11 @@
 {
+  "Odblokuj sejf na czas pracy z ServerDesk. Możesz pominąć ten krok i wrócić do niego później.": "Odblokuj sejf na czas pracy z ServerDesk. Możesz pominąć ten krok i wrócić do niego później.",
+  "Pomiń": "Pomiń",
+  "Odblokuj sejf przy uruchamianiu ServerDesk": "Odblokuj sejf przy uruchamianiu ServerDesk",
+  "Zablokuj sejf": "Zablokuj sejf",
+  "Blokowanie sejfu…": "Blokowanie sejfu…",
+  "Sejf odblokowany do zamknięcia ServerDesk.": "Sejf odblokowany do zamknięcia ServerDesk.",
+  "Sejf pozostaje odblokowany do zamknięcia ServerDesk lub wybrania Zablokuj sejf. Możesz zamknąć to okno.": "Sejf pozostaje odblokowany do zamknięcia ServerDesk lub wybrania Zablokuj sejf. Możesz zamknąć to okno.",
   "Własny serwer": "Własny serwer",
   "Użyj zewnętrznego klienta (zaawansowane)": "Użyj zewnętrznego klienta (zaawansowane)",
   "Dołączony klient Bitwarden OSS: {0}": "Dołączony klient Bitwarden OSS: {0}",

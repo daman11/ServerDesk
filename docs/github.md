@@ -41,11 +41,11 @@ Po pierwszym pushu sprawdź wynik zakładki Actions. Lokalny test nie zastępuje
 
 Dependabot przygotowuje propozycje zmian NuGet i GitHub Actions co tydzień. Zmiany zależności wymagają przeglądu, aktualizacji lockfile i testów; nie są automatycznie scalane.
 
-Przed publikacją można powtórzyć skan historii przez `gitleaks git --redact --log-opts="--all" .`. Konfiguracja `.gitleaks.toml` zachowuje domyślne reguły i ma dwa wąskie wyjątki: dokładną publiczną stałą hasła jednorazowego fixture SNMP oraz konkretną linię konstruktora UI błędnie rozpoznaną jako klucz API. Nie wyłącza katalogów ani reguł skanowania. Raporty skanu zapisuj w ignorowanym `artifacts/`.
+Przed publikacją można powtórzyć skan historii przez `gitleaks git --redact --log-opts="--all" .`. Konfiguracja `.gitleaks.toml` zachowuje domyślne reguły i ma wąskie wyjątki dla konkretnych linii fixture oraz tekstów błędnie rozpoznanych jako sekret. Nie wyłącza katalogów ani reguł skanowania. Raporty skanu zapisuj w ignorowanym `artifacts/`.
 
 ## Kolejne wydania
 
-Numer aplikacji jest w `Directory.Build.props`. Bieżące wydanie to **0.48.0 Public Beta**; późniejsze commity robocze mogą pozostawać przy tej wersji, a istniejące paczki i tag opisują swój zamrożony commit. Małe zmiany kończą się lokalnym commitem, celowanymi sprawdzeniami i — jeśli dotyczą aplikacji — buildem deweloperskim do testowania z folderu. Nie wymagają bumpa, instalatora ani nowego taga. Zmiany samych narzędzi i dokumentacji nie wymagają nowego EXE.
+Numer aplikacji jest w `Directory.Build.props`. Bieżące wydanie to **0.49.1 Public Beta**; późniejsze commity robocze mogą pozostawać przy tej wersji, a istniejące paczki i tag opisują swój zamrożony commit. Małe zmiany kończą się lokalnym commitem, celowanymi sprawdzeniami i — jeśli dotyczą aplikacji — buildem deweloperskim do testowania z folderu. Nie wymagają bumpa, instalatora ani nowego taga. Zmiany samych narzędzi i dokumentacji nie wymagają nowego EXE.
 
 Pełne testy i lokalne wydanie wykonuj dla większych etapów lub na wyraźne zlecenie wydania, według [procedury](releasing.md). Wtedy zmień wersję, zaktualizuj CHANGELOG i przewodniki, sprawdź paczki z końcowego commita, utwórz nowy anotowany tag i zakończ przez `scripts/check-release-state.ps1 -RequireCurrentRelease`. Do roboczego odczytu stanu używaj skryptu bez tego przełącznika; różnice względem ostatniego wydania są wtedy oczekiwane. Istniejące tagi i paczki pozostają niezmienne. [Checklista RC](rc-checklist.md) rozdziela lokalne dowody od otwartej akceptacji. Publikacja na GitHub wymaga osobnego polecenia użytkownika.
 

@@ -1,6 +1,6 @@
 # Dokumentacja / Documentation
 
-Bieżące wydanie lokalne: [0.49.0 Public Beta](releases/release-0.49.0.md) — dołączony Bitwarden OSS, konfiguracja i logowanie do sejfu z GUI. Publikacja GitHub jest osobnym krokiem. [Weryfikacja i ograniczenia](reports/release-verification-0.49.0.md).
+Bieżące wydanie: [0.49.1 Public Beta](releases/release-0.49.1.md) — stałe położenie oznaczeń protokołów, dołączony Bitwarden OSS i logowanie do sejfu z GUI, klucze SSH oraz poradniki komend. [Pobierz z GitHub](https://github.com/daman11/ServerDesk/releases/tag/v0.49.1). [Weryfikacja i ograniczenia](reports/release-verification-0.49.1.md).
 
 | Temat / Topic | Dokument |
 |---|---|

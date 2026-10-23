@@ -2,6 +2,11 @@
 
 ## Unreleased
 
+## 0.49.1 — Public Beta — 2026-10-23
+
+- Keep protocol badges at the right edge of connection rows. Move the connected check beside the server icon in a reserved slot, preserve name/tag alignment, and place favorites before the protocol. Connecting or disconnecting no longer shifts SSH/RDP labels.
+- Publish the accumulated 0.47–0.49 features: vault SSH keys, offline command guides/options with on-demand official documentation, and bundled Bitwarden OSS with GUI account setup. Exclude local Codex attachments from Git; scan history, exported source and distribution contents before publication. The maintainer requested no repeat of the full functional test matrix for this patch.
+
 ## 0.49.0 — Public Beta — 2026-10-23
 
 - Bundle the official Bitwarden CLI OSS for Windows/Linux x64 with pinned archive/binary/source hashes, exact GPL notices and corresponding OSS source. Keep ServerDesk code MIT and the component a separate process; exclude upstream commercial modules. Validate payload hashes, source contents and executable permissions during packaging.

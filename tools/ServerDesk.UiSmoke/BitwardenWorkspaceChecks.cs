@@ -18,13 +18,15 @@ internal static class BitwardenWorkspaceChecks
         public Task SaveAsync(Guid id,string value,CancellationToken ct=default)=>throw new Exception("Unexpected core credential write");
         public Task DeleteAsync(Guid id,CancellationToken ct=default)=>throw new Exception("Unexpected core credential delete");
     }
-    private sealed class Runner:IBitwardenAccountCommandRunner
+    private sealed class Runner:IBitwardenAccountCommandRunner,IBitwardenProfileSnapshotRunner
     {
         public bool OwnsProfile=>true;
         public string Server=>"https://workspace.fixture.invalid";
         internal readonly List<string> Calls=[];
         internal readonly List<byte[]> Buffers=[];
         internal bool Block;
+        public Task<string?> ProfileSnapshotAsync(string session,Guid accountId,CancellationToken ct)
+        { ct.ThrowIfCancellationRequested(); return Task.FromResult<string?>("unchanged-synthetic-profile"); }
         public async Task<byte[]> RunAsync(IReadOnlyList<string> args,string? session,string? password,CancellationToken ct)
         {
             ct.ThrowIfCancellationRequested(); Calls.Add(args[0]);
@@ -76,7 +78,7 @@ internal static class BitwardenWorkspaceChecks
             if(runner.Calls.Count!=before)throw new Exception("Reopening an unlocked bound picker launched CLI work");
             picker.CaptureRenderedFrame()!.Save(Path.Combine(root,"vault-workspace-ready-"+language+".png"));
             Click(picker,"BitwardenUse"); Wait(obtain); using var chosen=obtain.Result!;
-            if(chosen.Password!=Secret || !runner.Calls.Skip(before).SequenceEqual(new[]{"status","get","status"}))throw new Exception("Bound fetch lost exact-ID/account checks");
+            if(chosen.Password!=Secret || !runner.Calls.Skip(before).SequenceEqual(new[]{"get"}))throw new Exception("Unchanged owned profile did not use one exact-ID fetch");
             var reopen=main.ChooseBitwardenAsync(main,profile,null,true); picker=Picker(main); Until(()=>Named<Button>(picker,"BitwardenUse").IsEnabled,"Search picker did not reopen");
             if(runner.Calls.Count(c=>c=="list")!=1)throw new Exception("Reopening repeated a recent metadata search"); Cancel(picker); Wait(reopen);
             var account=main.ConfigureBitwardenAccountAsync(main); picker=Picker(main); Until(()=>Named<Button>(picker,"BitwardenLock").IsVisible,"Manual lock missing");

@@ -46,6 +46,8 @@ public sealed partial class BitwardenCli(IBitwardenCommandRunner runner):IDispos
     private readonly CancellationTokenSource lifetime=new();
     private string? session;
     private BitwardenAccount? account;
+    private sealed record ProfileProof(Guid AccountId,string Server,string Digest);
+    private ProfileProof? profileProof;
     private readonly Dictionary<(BitwardenItemKind Kind,string Query),(long Created,IReadOnlyList<BitwardenEntry> Entries)> metadata=[];
     private int disposed;
     public bool IsUnlocked=>session!=null && !lifetime.IsCancellationRequested;
@@ -53,8 +55,17 @@ public sealed partial class BitwardenCli(IBitwardenCommandRunner runner):IDispos
     public static BitwardenCli Create(BitwardenCliOptions options)=>new(new BitwardenProcessRunner(options));
     public async Task<BitwardenAccount> StatusAsync(CancellationToken ct)
     {
+        profileProof=null;
+        var before=await ProfileSnapshotAsync(ct);
         var result=await JsonAsync(["status"],null,ct);
-        using(result)return ReadAccount(result.RootElement);
+        using(result)
+        {
+            var actual=ReadAccount(result.RootElement);
+            var after=await ProfileSnapshotAsync(ct);
+            if(IsUnlocked && actual.State=="unlocked" && before!=null && before==after)
+                profileProof=new(actual.Id,actual.Server,after);
+            return actual;
+        }
     }
     private static BitwardenAccount ReadAccount(JsonElement root)
     {
@@ -150,6 +161,13 @@ public sealed partial class BitwardenCli(IBitwardenCommandRunner runner):IDispos
     private async Task CheckAccountAsync(BitwardenReference? reference,CancellationToken ct)
     {
         if(!IsUnlocked || account==null)throw new BitwardenException(BitwardenFailure.Locked);
+        if(reference!=null && (reference.AccountId!=account.Id || reference.Server!=account.Server))
+        { Lock(); throw new BitwardenException(BitwardenFailure.AccountChanged); }
+        // Only the pinned, isolated CLI profile supports this proof. Hash the store
+        // including its authenticated auto-unlock key, never trust timestamps.
+        // Shared/external profiles and every changed/unreadable store use status.
+        var snapshot=await ProfileSnapshotAsync(ct); ct.ThrowIfCancellationRequested();
+        if(snapshot!=null && profileProof is {} proof && proof.AccountId==account.Id && proof.Server==account.Server && proof.Digest==snapshot)return;
         BitwardenAccount actual;
         try { actual=await StatusAsync(ct); }
         catch(BitwardenException ex) when(ex.Reason is BitwardenFailure.LoginRequired or BitwardenFailure.ServerNotIdentified or BitwardenFailure.InvalidResponse)
@@ -158,6 +176,9 @@ public sealed partial class BitwardenCli(IBitwardenCommandRunner runner):IDispos
         { Lock(); throw new BitwardenException(BitwardenFailure.AccountChanged); }
         if(actual.State!="unlocked") { Lock(); throw new BitwardenException(BitwardenFailure.Locked); }
     }
+    private Task<string?> ProfileSnapshotAsync(CancellationToken ct)
+        =>runner is IBitwardenProfileSnapshotRunner snapshot && session!=null && account!=null?
+            snapshot.ProfileSnapshotAsync(session,account.Id,ct):Task.FromResult<string?>(null);
     private async Task<JsonDocument> JsonAsync(string[] args,string? password,CancellationToken ct)
     {
         using var linked=CancellationTokenSource.CreateLinkedTokenSource(ct,lifetime.Token);
@@ -176,7 +197,7 @@ public sealed partial class BitwardenCli(IBitwardenCommandRunner runner):IDispos
         return value;
     }
     // Do not run `bw lock/logout`: this may be a CLI profile shared with the user.
-    public void Lock() { session=null; account=null; metadata.Clear(); }
+    public void Lock() { session=null; account=null; profileProof=null; metadata.Clear(); }
     public void Dispose() { if(Interlocked.Exchange(ref disposed,1)!=0)return; lifetime.Cancel(); Lock(); lifetime.Dispose(); }
 }
 

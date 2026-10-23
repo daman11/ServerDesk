@@ -1,5 +1,7 @@
 # Verification and historical reviews
 
+- [Vault read performance, 2026-10-23](vault-read-performance-2026-10-23.md) — bounded profile verification, one-process reads, startup measurements and acceptance limits.
+
 - [0.50.0 Public Beta](release-verification-0.50.0.md) — workspace unlock lifetime, startup/manual lock, fewer CLI calls and leading connection status.
 - [0.49.1 Public Beta](release-verification-0.49.1.md) — focused connection-row layout evidence and publication secret/content checks; no full functional matrix repeated.
 - [0.49.0 Public Beta](release-verification-0.49.0.md) — bundled OSS component, GUI setup, account isolation and local TLS/2FA checks.

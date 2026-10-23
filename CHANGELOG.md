@@ -2,6 +2,8 @@
 
 ## Unreleased
 
+- Reduce unlocked password/SSH-key reads from three CLI processes to one for an unchanged bundled-client profile. Prove freshness from bounded local store hashes and the authenticated auto-unlock key, accounting for the CLI rewrapping that key on every read. Revalidate changed stores with CLI status; retain both checks for external, unsupported or unreadable profiles. Keep exact-ID retrieval, pinned binary verification, cancellation and existing unlock/secret lifetimes; add account-switch, key-tamper and CLI-rewrap regressions.
+
 ## 0.50.0 — Public Beta — 2026-10-23
 
 - Keep one in-memory vault unlock for the lifetime of ServerDesk, shared by serialized password/SSH-key pickers. Prompt configured accounts at startup, with Skip and a saved opt-out. Add Lock vault; clear unlock/search metadata on application exit, plugin disable, sign-out or account/profile changes, while preserving active core sessions. No master password or session key is persisted by ServerDesk.

@@ -83,6 +83,10 @@ jobs:
             dotnet artifacts/ci-harness/ServerDesk.UiSmoke.dll artifacts/ci-linux-desktop --linux-desktop
             if ($LASTEXITCODE -ne 0) { throw 'Linux desktop smoke failed' }
           }
+      - name: Connection presence on large trees
+        run: |
+          dotnet artifacts/ci-harness/ServerDesk.UiSmoke.dll artifacts/ci-connection-presence --connection-presence
+          if ($LASTEXITCODE -ne 0) { throw 'Connection presence acceptance failed' }
       - name: Error containment and bounded logging
         run: |
           dotnet artifacts/ci-harness/ServerDesk.UiSmoke.dll artifacts/ci-error-logging --error-logging

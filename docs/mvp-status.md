@@ -1,4 +1,8 @@
-# Pierwotne MVP — wydanie lokalne 0.49.0
+# Pierwotne MVP — wydanie lokalne 0.50.0 i zmiany robocze
+
+Krok roboczy z 2026-10-25 poprawia płynność dużej listy połączeń: zmiana samego stanu sesji, przełączanie kart i dokowanie nie przebudowują drzewa. Filtrowanie, sortowanie i zmiany danych nadal je odświeżają. Sprawdzono 5000 profili i 1000 symulowanych zmian w PL/EN, zachowanie przewinięcia, zaznaczenia, menu i znaczników rozwijanych później folderów. [Zakres i granice](reports/browser-presence-2026-10-25.md). Nie zastępuje to wielogodzinnych pomiarów ani rzeczywistej macierzy protokołów.
+
+0.50.0 zachowuje odblokowanie sejfu na czas pracy aplikacji, dodaje okno przy starcie i ręczną blokadę oraz przenosi zielony znacznik przed ikonę serwera. Kolejna poprawka robocza ogranicza pobieranie wpisu z niezmienionego własnego sejfu do jednego uruchomienia CLI. [Wydanie lokalne](reports/release-verification-0.50.0.md), [pomiary i ograniczenia poprawki sejfu](reports/vault-read-performance-2026-10-23.md).
 
 0.49.0 dodaje kompletny pakiet Bitwarden OSS i konfigurację/logowanie sejfu w GUI. Rzeczywiste konto i pozostałe próby sprzętowe nadal wymagają akceptacji. [Konfiguracja](bitwarden.md), [weryfikacja](reports/release-verification-0.49.0.md).
 

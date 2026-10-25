@@ -1,5 +1,7 @@
 # Verification and historical reviews
 
+- [Connection presence and large trees, 2026-10-25](browser-presence-2026-10-25.md) — in-place status updates, tab switching, stable browser context and bounded PL/EN regression.
+
 - [Vault read performance, 2026-10-23](vault-read-performance-2026-10-23.md) — bounded profile verification, one-process reads, startup measurements and acceptance limits.
 
 - [0.50.0 Public Beta](release-verification-0.50.0.md) — workspace unlock lifetime, startup/manual lock, fewer CLI calls and leading connection status.

@@ -2,6 +2,8 @@
 
 ## Unreleased
 
+- Update connection indicators in place instead of rebuilding the server tree when session presence changes. Tab selection/docking no longer recreate the browser. Keep protocol positions, selection, scrolling and open menus stable; seed lazily presented rows from current status and discard each replaced tree's state map. Add a bounded 5000-profile/1000-update PL/EN UI regression and CI coverage.
+
 - Reduce unlocked password/SSH-key reads from three CLI processes to one for an unchanged bundled-client profile. Prove freshness from bounded local store hashes and the authenticated auto-unlock key, accounting for the CLI rewrapping that key on every read. Revalidate changed stores with CLI status; retain both checks for external, unsupported or unreadable profiles. Keep exact-ID retrieval, pinned binary verification, cancellation and existing unlock/secret lifetimes; add account-switch, key-tamper and CLI-rewrap regressions.
 
 ## 0.50.0 — Public Beta — 2026-10-23

@@ -36,7 +36,6 @@ public sealed partial class MainWindow
     private bool treePending;
     private bool rebuildingTree;
     private bool syncingBrowserSelection;
-    private string connectedKey="";
     private readonly HashSet<string> collapsed=[];
     private void BuildWorkspace()
     {
@@ -118,7 +117,8 @@ public sealed partial class MainWindow
         if(section=="recent")profiles=profiles.Where(p=>p.LastConnected!=null);
         profiles=ProfileOrdering.Sort(profiles,vm.SortMode,vm.SortDescending).ToArray();
         if(selected!=null && !profiles.Any(p=>p.Id==selected)) { selected=null; vm.SelectedServer=null; servers.SelectedItem=null; }
-        var connectedIds=sessions.Where(s=>s.IsConnected || s.IsRdpLoggedIn).Select(s=>s.Profile.Id).ToHashSet();
+        UpdateBrowserConnectionStates();
+        var presence=new Dictionary<Guid,BrowserConnectionState>(); browserConnectionStates=presence;
         var sortMode=vm.SortMode; var badges=preferences.ShowProtocolBadges;
         // Tree items keep their identity and drag handlers; construct expensive row
         // visuals only when Avalonia presents them, rather than inside closed folders.
@@ -127,7 +127,8 @@ public sealed partial class MainWindow
             if(p==null)return null;
             var detail=sortMode==ProfileSort.Host?SortAddress(p):sortMode==ProfileSort.LastConnected?p.LastConnected?.ToLocalTime().ToString("g")??"—":null;
             if(preferences.ShowConnectionAddresses && sortMode!=ProfileSort.Host)detail=detail==null?SortAddress(p):SortAddress(p)+" · "+detail;
-            var row=Row(ProfileIcons.Resolve(p),p.Name,p.Favorite,connectedIds.Contains(p.Id),badges?p.Protocol.ToString():null,p,detail:detail);
+            var row=(Grid)Row(ProfileIcons.Resolve(p),p.Name,p.Favorite,false,badges?p.Protocol.ToString():null,p,detail:detail);
+            BindBrowserConnectionState(row,p.Id,detail,presence);
             return WithConnectionTags(row,p);
         });
         var counts=new Dictionary<string,int>(); foreach(var item in profiles) { var path=item.Folder; while(path.Length>0) { counts[path]=counts.GetValueOrDefault(path)+1; var split=path.LastIndexOf('/'); path=split<0?"":path[..split]; } }
@@ -229,7 +230,7 @@ public sealed partial class MainWindow
         var detail=active?.ConnectionStatus.TrimStart('●','○',' '); connectionStatus.Text=active==null?vm.Status:$"{active.Profile.Protocol} · {(detail!.Contains(active.Profile.Host)?"":active.Profile.Host+":"+active.Profile.Port+" · ")}{detail.Replace(active.Profile.Protocol+" · ","")}"; ToolTip.SetTip(connectionStatus,connectionStatus.Text);
         if(ActivePane is NetworkToolPane tool) { connectionStatus.Text=tool.DisplayName+" · "+tool.StatusText; ToolTip.SetTip(connectionStatus,connectionStatus.Text); }
         if(ActivePane is HelpPane) { connectionStatus.Text=L.T("Pomoc")+" · "+L.T("Dokumentacja offline"); ToolTip.SetTip(connectionStatus,connectionStatus.Text); }
-        var live=string.Join(",",sessions.Where(s=>s.IsConnected || s.IsRdpLoggedIn).Select(s=>s.Profile.Id)); if(live!=connectedKey) { connectedKey=live; QueueTree(); }
+        UpdateBrowserConnectionStates();
         transferStatus.Text=L.F($"Transfery: {sessions.Sum(s=>s.ActiveTransfers)}"); if(section=="transfers")UpdateTransferOverview();
     }
     private void HandleKeys(object? sender,KeyEventArgs e)

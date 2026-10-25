@@ -254,7 +254,7 @@ public sealed partial class MainWindow
             var location=dockState.Location(pane.WorkspaceId); var visible=location==SessionDock.Floating || dockState.VisibleDocks.Contains(location) && dockState.Selected(location)==pane.WorkspaceId;
             pane.IsVisible=visible; pane.IsActive=visible && (location!=SessionDock.Floating || floatingDocks.TryGetValue(pane.WorkspaceId,out var floating) && floating.Window.WindowState!=WindowState.Minimized);
         }
-        UpdateActivity(); UpdateStatus(); QueueTree();
+        UpdateActivity(); UpdateStatus();
     }
     internal void DockSession(WorkspacePane pane,SessionDock target,Guid? before=null)
     {

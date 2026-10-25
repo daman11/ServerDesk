@@ -126,6 +126,7 @@ if(args.Contains("--network-tools")) { NetworkToolsChecks.Run(root); return; }
 if(args.Contains("--app-polish")) { AppPolishChecks.Run(root); return; }
 if(args.Contains("--sorting")) { SortingChecks.Run(root); return; }
 if(args.Contains("--connection-browser")) { ConnectionBrowserChecks.Run(root); return; }
+if(args.Contains("--connection-presence")) { ConnectionPresenceChecks.Run(root); return; }
 if(args.Contains("--connection-row-layout")) { TreeAppearanceChecks.ConnectionStatusLayout(root); return; }
 if(args.Contains("--browser-context-menu")) { BrowserContextMenuChecks.Run(root); return; }
 if(args.Contains("--error-logging")) { ErrorLoggingChecks.Run(root); return; }

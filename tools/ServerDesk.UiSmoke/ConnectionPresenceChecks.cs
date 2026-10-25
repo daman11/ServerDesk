@@ -39,7 +39,8 @@ internal static class ConnectionPresenceChecks
             RedesignChecks.Wait(repo.ImportAsync(json));
             RedesignChecks.Wait(repo.SetSettingAsync("collapsedFolders",JsonSerializer.Serialize(Enumerable.Range(0,100).Select(i=>"DC"+i))));
             var vm=new MainViewModel(repo); var main=new MainWindow(vm,repo,new NoCredentials(),new(repo),new ExternalRdpClient());
-            main.Show(); RedesignChecks.Frames(25); Field<DispatcherTimer>(main,"statusTimer").Stop();
+            main.Show(); SshAcceptanceChecks.Until(()=>Field<Task?>(main,"initialization")!=null,"Browser initialization did not start");
+            RedesignChecks.Wait(Field<Task>(main,"initialization")); RedesignChecks.Frames(3); Field<DispatcherTimer>(main,"statusTimer").Stop();
             var imported=vm.AllServers.ToDictionary(p=>p.Name); profiles=profiles.Select(p=>imported[p.Name]).ToList();
             var tree=Field<TreeView>(main,"tree");
             TreeViewItem Folder(string name)=>Nodes(tree.Items).Single(n=>n.Tag as string==name);

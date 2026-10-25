@@ -1,4 +1,4 @@
-# ServerDesk — 0.50.0 Public Beta
+# ServerDesk — 0.51.0 Public Beta
 
 Native Windows/Linux workspace for SSH, SFTP, RDP, VNC and serial connections. Built with C#, .NET 10 and Avalonia 12. Free and open source under the [MIT license](LICENSE).
 
@@ -8,15 +8,15 @@ Native Windows/Linux workspace for SSH, SFTP, RDP, VNC and serial connections. B
 
 Latest published download: **[ServerDesk 0.49.1 Public Beta](https://github.com/daman11/ServerDesk/releases/tag/v0.49.1)** — [Windows installer](https://github.com/daman11/ServerDesk/releases/download/v0.49.1/ServerDesk-0.49.1-win-x64-Setup.exe), portable and Linux packages, source and SHA-256 checksums.
 
-Local 0.50.0 keeps one in-memory vault unlock across pickers, adds startup unlock and manual Lock vault, reduces redundant CLI calls and moves connected checks to the leading edge of server rows. Closing ServerDesk or changing the account clears the unlock. This local release is not yet published. [Release notes](docs/releases/release-0.50.0.md), [verification](docs/reports/release-verification-0.50.0.md), [vault setup](docs/bitwarden.md).
+Local 0.51.0 adds saved-tab reveal in the connection list, expand/collapse all folders, long-filename SFTP downloads and source-change checks before publishing transferred files. It also includes faster vault reads and in-place connection indicators from the development cycle. This local release is not yet published. [Release notes](docs/releases/release-0.51.0.md), [verification](docs/reports/release-verification-0.51.0.md), [vault setup](docs/bitwarden.md).
 
 | System | Package | Start |
 |---|---|---|
-| Windows x64 | `ServerDesk-0.50.0-win-x64-Setup.exe` | Run Setup; current-user installation and Start menu shortcut |
-| Windows x64 portable | `ServerDesk-0.50.0-win-x64.zip` | Extract everything; run `ServerDesk.App.exe` |
-| Linux x64 DEB | `serverdesk_0.50.0_amd64.deb` | `sudo apt install ./serverdesk_0.50.0_amd64.deb` |
-| Linux x64 archive | `ServerDesk-0.50.0-linux-x64.tar.gz` | Extract into a new directory; run `./ServerDesk.App` |
-| Source | `ServerDesk-0.50.0-source.zip` | .NET 10 SDK required |
+| Windows x64 | `ServerDesk-0.51.0-win-x64-Setup.exe` | Run Setup; current-user installation and Start menu shortcut |
+| Windows x64 portable | `ServerDesk-0.51.0-win-x64.zip` | Extract everything; run `ServerDesk.App.exe` |
+| Linux x64 DEB | `serverdesk_0.51.0_amd64.deb` | `sudo apt install ./serverdesk_0.51.0_amd64.deb` |
+| Linux x64 archive | `ServerDesk-0.51.0-linux-x64.tar.gz` | Extract into a new directory; run `./ServerDesk.App` |
+| Source | `ServerDesk-0.51.0-source.zip` | .NET 10 SDK required |
 
 The binary packages include .NET. Linux additionally needs its system X11/fontconfig libraries, Secret Service for remembered passwords and an installed X11 FreeRDP client (`xfreerdp3` or `xfreerdp`) for in-tab RDP. Linux verification used Ubuntu/WSLg; other desktop/distribution combinations are experimental. ARM/macOS packages are not provided.
 

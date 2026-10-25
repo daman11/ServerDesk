@@ -263,6 +263,9 @@ public sealed partial class MainWindow
         void AddAction(string source,Func<Task> run,string? glyph=null) { var label=L.T(source); commands[label]=run; icons[label]=glyph??DeskIcons.ForAction(source); }
         AddAction("Narzędzia sieciowe",()=>SelectSectionAsync("network")); AddAction("Nowe połączenie",()=>EditAsync(null)); AddAction("Szybkie połączenie",QuickAsync); AddAction("Znajdź połączenie · Ctrl+Shift+O",FindConnectionAsync);
         AddAction("Otwarte sesje · Ctrl+Shift+L",()=>SwitchSessionAsync()); AddAction("Nowy folder",FolderAsync); AddAction("Import konfiguracji",ImportAsync); AddAction("Eksport konfiguracji",ExportAsync);
+        if(ActiveSession is {} current && CanRevealConnection(current))AddAction("Pokaż serwer na liście",()=>RevealConnectionAsync(current.Profile.Id));
+        if(section=="connections" && BrowserFolders().Any())
+        { AddAction("Rozwiń wszystkie foldery",()=> { SetBrowserFoldersExpanded(true); return Task.CompletedTask; }); AddAction("Zwiń wszystkie foldery",()=> { SetBrowserFoldersExpanded(false); return Task.CompletedTask; }); }
         AddAction("Ustawienia",SettingsAsync); AddAction("Historia połączeń",()=>HistoryAsync()); AddAction("Pokaż / ukryj panel połączeń",()=> { ToggleSidebar(); return Task.CompletedTask; });
         AddAction("Pomoc",HelpAsync);
         if(IsPluginEnabled(PluginCatalog.Commands))AddAction("Komendy · Ctrl+Shift+K",OpenCommandsPanelAsync);

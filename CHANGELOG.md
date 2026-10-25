@@ -2,6 +2,13 @@
 
 ## Unreleased
 
+## 0.51.0 — Public Beta — 2026-10-25
+
+- Add Show server in connection list to saved session tab menus and the action palette. Reveal clears browser filters, shows the sidebar, expands ancestors and selects the saved UUID; quick and deleted profiles stay disabled and are never recreated.
+- Add Expand all folders and Collapse all folders to the connection-area menu and palette. Persist ordinary folder state, preserve temporary search expansion and move hidden child selection to its visible root after collapse.
+- Use short sibling temporary filenames for SFTP downloads, supporting valid long destination names without appending a suffix beyond the filesystem component limit.
+- Check upload source size/write time and download source size/write time/type before publishing the completed temporary file. Detected changes preserve the old destination, clean owned partials and allow an explicit retry. Metadata checks do not detect every same-size/same-timestamp mutation or eliminate filesystem races.
+
 - Update connection indicators in place instead of rebuilding the server tree when session presence changes. Tab selection/docking no longer recreate the browser. Keep protocol positions, selection, scrolling and open menus stable; seed lazily presented rows from current status and discard each replaced tree's state map. Add a bounded 5000-profile/1000-update PL/EN UI regression and CI coverage.
 
 - Reduce unlocked password/SSH-key reads from three CLI processes to one for an unchanged bundled-client profile. Prove freshness from bounded local store hashes and the authenticated auto-unlock key, accounting for the CLI rewrapping that key on every read. Revalidate changed stores with CLI status; retain both checks for external, unsupported or unreadable profiles. Keep exact-ID retrieval, pinned binary verification, cancellation and existing unlock/secret lifetimes; add account-switch, key-tamper and CLI-rewrap regressions.

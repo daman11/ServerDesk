@@ -49,7 +49,7 @@ internal static class BrowserContextMenuChecks
         var sidebar=Named<DockPanel>(main,"ConnectionSidebar"); var area=sidebar.ContextMenu!;
         main.AddHandler(InputElement.PointerPressedEvent,(_,e)=>gesture+=" down="+e.Source?.GetType().Name+"/"+e.Pointer.Captured?.GetType().Name+"/"+e.ClickCount,RoutingStrategies.Bubble,true);
         main.AddHandler(InputElement.PointerReleasedEvent,(_,e)=>gesture+=" up="+e.Source?.GetType().Name+"/"+e.Pointer.Captured?.GetType().Name,RoutingStrategies.Bubble,true);
-        var expected=new[]{"Nowe połączenie","Szybkie połączenie","Nowy folder","Import konfiguracji","Eksport konfiguracji","Wyczyść filtry"};
+        var expected=new[]{"Nowe połączenie","Szybkie połączenie","Nowy folder","Import konfiguracji","Eksport konfiguracji","Rozwiń wszystkie foldery","Zwiń wszystkie foldery","Wyczyść filtry"};
         void OpenArea()
         {
             RightClick(main,sidebar,new Point(30,sidebar.Bounds.Height-18));

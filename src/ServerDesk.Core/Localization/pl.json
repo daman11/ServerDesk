@@ -2009,5 +2009,10 @@
   "Serwer sejfu musi używać HTTPS i zaufanego certyfikatu.": "Serwer sejfu musi używać HTTPS i zaufanego certyfikatu.",
   "Hasła i klucze SSH z sejfu. Dołączony klient i konfiguracja w aplikacji.": "Hasła i klucze SSH z sejfu. Dołączony klient i konfiguracja w aplikacji.",
   "Dołączony klient sejfu działa jako osobny proces GPL v3. Licencje i odpowiadające źródła OSS są w components/bitwarden. Kod ServerDesk pozostaje MIT.": "Dołączony klient sejfu działa jako osobny proces GPL v3. Licencje i odpowiadające źródła OSS są w components/bitwarden. Kod ServerDesk pozostaje MIT.",
-  "Zaloguj konto, zsynchronizuj sejf lub wyloguj się.": "Zaloguj konto, zsynchronizuj sejf lub wyloguj się."
+  "Zaloguj konto, zsynchronizuj sejf lub wyloguj się.": "Zaloguj konto, zsynchronizuj sejf lub wyloguj się.",
+  "Rozwiń wszystkie foldery": "Rozwiń wszystkie foldery",
+  "Zwiń wszystkie foldery": "Zwiń wszystkie foldery",
+  "Pokaż serwer na liście": "Pokaż serwer na liście",
+  "Źródło wysyłanego pliku zmieniło się podczas transferu. Plik docelowy pozostał bez zmian. Poczekaj na zakończenie zapisu źródła i ponów zadanie.": "Źródło wysyłanego pliku zmieniło się podczas transferu. Plik docelowy pozostał bez zmian. Poczekaj na zakończenie zapisu źródła i ponów zadanie.",
+  "Źródło pobieranego pliku zmieniło się podczas transferu. Plik docelowy pozostał bez zmian. Poczekaj na zakończenie zapisu źródła i ponów zadanie.": "Źródło pobieranego pliku zmieniło się podczas transferu. Plik docelowy pozostał bez zmian. Poczekaj na zakończenie zapisu źródła i ponów zadanie."
 }

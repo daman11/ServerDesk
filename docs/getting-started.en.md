@@ -1,8 +1,12 @@
-# ServerDesk 0.47.0 — getting started
+# ServerDesk 0.51.0 — getting started
+
+**New in 0.51.0:** right-click a saved session tab and choose **Show server in connection list**. This shows the sidebar, clears browser filters and expands the server's ancestors. The action palette offers the same command; quick/deleted profiles are never saved or recreated. The Connections area menu offers **Expand all folders** and **Collapse all folders**. Ordinary state survives restart; search expansion remains temporary.
+
+**SFTP 0.51.0:** downloads use a short sibling `.serverdesk-UUID.part` file, so a valid long destination name does not become invalid after appending a suffix. Detected source size/write-time changes stop destination replacement; wait for the source to finish saving and use **Retry**. This compares metadata, not a snapshot or a content checksum: unchanged size/timestamps and coarse server clocks can hide changes.
 
 **New in 0.49.0:** Bitwarden / Vaultwarden includes its OSS client, GUI server setup, sign-in, 2FA and sync. No bw file selection is needed. [Setup](bitwarden.md).
 
-**New in the local 0.47.0 release:** [Bitwarden / Vaultwarden](bitwarden.md): SSH Key items (RSA/Ed25519) used from memory by the terminal and SFTP, plus simpler vault selection. In the SSH editor select **SSH key from vault**, enter the server username and bind a key. Requires the official CLI, an explicit vault URL and prior CLI login. This local package has not been published to GitHub.
+**Vault keys since 0.47.0:** [Bitwarden / Vaultwarden](bitwarden.md) supports SSH Key items (RSA/Ed25519) used from memory by the terminal and SFTP. In the SSH editor select **SSH key from vault**, enter the server username and bind a key. Current complete packages include the client and GUI setup/sign-in; advanced external CLI configuration remains optional.
 
 **New in 0.45.1:** optional desktop shortcut and Update / Skip this version / Remind me at next startup. Startup checks default on; saved opt-outs remain effective. [Testing from 0.45.0](updates.md).
 

@@ -107,6 +107,7 @@ public sealed partial class SftpSession(SftpClient client) : IDisposable,IAsyncD
         if(new FileInfo(local).LinkTarget!=null)throw new IOException(L.T("Źródło transferu zmieniło typ. Odśwież listę i wybierz je ponownie."));
         await ValidateTransferTargetAsync(remote,false,ct);
         using var file = File.OpenRead(local); var clock = Stopwatch.StartNew(); var length=file.Length;
+        var source=new FileInfo(local); source.Refresh(); var sourceWriteTime=source.LastWriteTimeUtc;
         if(!overwrite && await client.ExistsAsync(remote,ct)) throw new IOException(L.T("Zdalny plik już istnieje — nadpisanie nie zostało potwierdzone."));
         var temporary=RemotePath.Join(RemotePath.Parent(remote),".serverdesk-"+Guid.NewGuid().ToString("N")+".part");
         var attempted=false; var published=false;
@@ -120,6 +121,9 @@ public sealed partial class SftpSession(SftpClient client) : IDisposable,IAsyncD
             try { attempted=true; await client.UploadFileAsync(input, temporary, false, report, ct); }
             finally { transferFailure=null; client.ErrorOccurred-=failure; }
             ct.ThrowIfCancellationRequested();
+            source.Refresh();
+            if(!source.Exists || source.LinkTarget!=null || source.Length!=length || file.Length!=length || source.LastWriteTimeUtc!=sourceWriteTime)
+                throw new IOException(L.T("Źródło wysyłanego pliku zmieniło się podczas transferu. Plik docelowy pozostał bez zmian. Poczekaj na zakończenie zapisu źródła i ponów zadanie."));
             if(file.Position!=length || (await client.GetAttributesAsync(temporary,ct)).Size!=length)
                 throw new IOException(L.T("Rozmiar wysłanego pliku nie zgadza się ze źródłem. Plik docelowy pozostał bez zmian."));
             // OpenSSH POSIX rename replaces atomically. Other servers may refuse the extension;
@@ -157,9 +161,9 @@ public sealed partial class SftpSession(SftpClient client) : IDisposable,IAsyncD
     public Task DownloadAsync(string remote, string local, bool overwrite, IProgress<TransferProgress> progress, CancellationToken ct) => RunTransferAsync(async () =>
     {
         if(new FileInfo(local).LinkTarget!=null)throw InvalidTransferTarget();
-        var length=(await client.GetAttributesAsync(remote,ct)).Size; var clock=Stopwatch.StartNew();
+        var source=await client.GetAttributesAsync(remote,ct); var length=source.Size; var sourceWriteTime=source.LastWriteTimeUtc; var clock=Stopwatch.StartNew();
         // Download to a sibling file, publish only after a complete successful transfer.
-        var temporary = local + ".serverdesk-" + Guid.NewGuid().ToString("N") + ".part";
+        var temporary = Path.Combine(Path.GetDirectoryName(Path.GetFullPath(local))!,".serverdesk-"+Guid.NewGuid().ToString("N")+".part");
         var created=false; var published=false;
         try
         {
@@ -188,6 +192,9 @@ public sealed partial class SftpSession(SftpClient client) : IDisposable,IAsyncD
                 ct.ThrowIfCancellationRequested();
                 if(file.Length!=length)throw new IOException(L.T("Rozmiar pobranego pliku zmienił się podczas transferu. Plik docelowy pozostał bez zmian."));
             }
+            var current=await client.GetAttributesAsync(remote,ct);
+            if(current.Size!=length || current.LastWriteTimeUtc!=sourceWriteTime || current.IsDirectory!=source.IsDirectory || current.IsSymbolicLink!=source.IsSymbolicLink)
+                throw new IOException(L.T("Źródło pobieranego pliku zmieniło się podczas transferu. Plik docelowy pozostał bez zmian. Poczekaj na zakończenie zapisu źródła i ponów zadanie."));
             ct.ThrowIfCancellationRequested(); File.Move(temporary,local,overwrite); published=true;
         }
         finally

@@ -1,4 +1,6 @@
-# Pierwotne MVP — wydanie lokalne 0.50.0 i zmiany robocze
+# Pierwotne MVP — wydanie lokalne 0.51.0
+
+0.51.0 realizuje cztery zadania codziennej pracy: pokazanie serwera aktywnej karty na liście, rozwijanie/zwijanie wszystkich folderów, pobieranie plików z długimi nazwami oraz wykrywanie zmian metadanych źródła przed podmianą celu transferu. Zawiera też wcześniejsze poprawki wydajności sejfu i znaczników połączeń. [Wydanie](releases/release-0.51.0.md), [weryfikacja i ograniczenia](reports/release-verification-0.51.0.md). Pełna akceptacja sprzętu i macierzy 1.0 pozostaje otwarta.
 
 Krok roboczy z 2026-10-25 poprawia płynność dużej listy połączeń: zmiana samego stanu sesji, przełączanie kart i dokowanie nie przebudowują drzewa. Filtrowanie, sortowanie i zmiany danych nadal je odświeżają. Sprawdzono 5000 profili i 1000 symulowanych zmian w PL/EN, zachowanie przewinięcia, zaznaczenia, menu i znaczników rozwijanych później folderów. [Zakres i granice](reports/browser-presence-2026-10-25.md). Nie zastępuje to wielogodzinnych pomiarów ani rzeczywistej macierzy protokołów.
 

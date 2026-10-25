@@ -119,6 +119,8 @@ Ten dokument ustala plan; nie zalicza tych przyszłych prób. Aktualizacja sameg
 
 ## 2. Rdzeń MVP — do domknięcia akceptacji
 
+- [x] 0.51.0: krótkie pliki tymczasowe SFTP dla długich nazw oraz kontrola rozmiaru/daty źródła przed podmianą celu. Własny OpenSSH, PL/EN, zachowanie poprzednich celów, sprzątanie i SHA-256 po retry. Kontrola metadanych nie zamyka wszystkich równoległych zmian, quota ani WAN. [Zakres wydania](reports/release-verification-0.51.0.md).
+- [x] 0.51.0: wskazanie serwera zapisanej karty na liście, z wyczyszczeniem filtrów i rozwinięciem przodków; szybkie/usunięte wpisy pozostają bez zmian. Rozwijanie/zwijanie wszystkich folderów z zapamiętaniem zwykłego stanu i tymczasowym stanem wyszukiwania; 32 poziomy w PL/EN.
 - [x] 0.43.0: limit bezczynności transferu i odczytu katalogu SFTP, produkcyjna kontrola cichego SSH, pomijanie zajętego kanału Komend bez fałszywego rozłączenia, zachowanie kontekstu SFTP przy reconnect i jawne retry z SHA-256. Cztery równoległe SSH/16 reconnect i zamykanie cichego łącza sprawdzone na własnym OpenSSH Windows/Linux. Nie zalicza fizycznego suspend/resume, wszystkich serwerów ani wielogodzinnej pracy.
 - [x] Regresja kolejki SFTP: zatrzymane odświeżanie listy nie zajmuje slotów kopiowania; błąd odświeżania zachowuje sukces transferu; anulowanie zadania oczekującego i ponowienie po utracie SSH do pierwotnego celu sprawdzone na własnym OpenSSH.
 - [x] Ręczne odzyskiwanie wykrytego zerwania połączenia przeglądania SFTP przez Odśwież/F5 bez resetu terminala, historii i filtrów; odmowa zmienionego klucza hosta i anulowanie przy zamknięciu sprawdzone na własnym OpenSSH.

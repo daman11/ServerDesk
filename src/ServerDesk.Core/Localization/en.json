@@ -2009,5 +2009,10 @@
   "Serwer sejfu musi używać HTTPS i zaufanego certyfikatu.": "The vault server must use HTTPS and a trusted certificate.",
   "Hasła i klucze SSH z sejfu. Dołączony klient i konfiguracja w aplikacji.": "Vault passwords and SSH keys. Bundled client and in-app setup.",
   "Dołączony klient sejfu działa jako osobny proces GPL v3. Licencje i odpowiadające źródła OSS są w components/bitwarden. Kod ServerDesk pozostaje MIT.": "The bundled vault client runs as a separate GPL v3 process. Licenses and corresponding OSS source are in components/bitwarden. ServerDesk code remains MIT.",
-  "Zaloguj konto, zsynchronizuj sejf lub wyloguj się.": "Sign in, sync your vault or sign out."
+  "Zaloguj konto, zsynchronizuj sejf lub wyloguj się.": "Sign in, sync your vault or sign out.",
+  "Rozwiń wszystkie foldery": "Expand all folders",
+  "Zwiń wszystkie foldery": "Collapse all folders",
+  "Pokaż serwer na liście": "Show server in connection list",
+  "Źródło wysyłanego pliku zmieniło się podczas transferu. Plik docelowy pozostał bez zmian. Poczekaj na zakończenie zapisu źródła i ponów zadanie.": "The upload source changed during transfer. The destination file was left unchanged. Wait for the source to finish saving and retry the task.",
+  "Źródło pobieranego pliku zmieniło się podczas transferu. Plik docelowy pozostał bez zmian. Poczekaj na zakończenie zapisu źródła i ponów zadanie.": "The download source changed during transfer. The destination file was left unchanged. Wait for the source to finish saving and retry the task."
 }

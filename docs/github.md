@@ -45,7 +45,7 @@ Przed publikacją można powtórzyć skan historii przez `gitleaks git --redact 
 
 ## Kolejne wydania
 
-Numer aplikacji jest w `Directory.Build.props`. Bieżące wydanie to **0.50.0 Public Beta**; późniejsze commity robocze mogą pozostawać przy tej wersji, a istniejące paczki i tag opisują swój zamrożony commit. Małe zmiany kończą się lokalnym commitem, celowanymi sprawdzeniami i — jeśli dotyczą aplikacji — buildem deweloperskim do testowania z folderu. Nie wymagają bumpa, instalatora ani nowego taga. Zmiany samych narzędzi i dokumentacji nie wymagają nowego EXE.
+Numer aplikacji jest w `Directory.Build.props`. Bieżące wydanie to **0.51.0 Public Beta**; późniejsze commity robocze mogą pozostawać przy tej wersji, a istniejące paczki i tag opisują swój zamrożony commit. Małe zmiany kończą się lokalnym commitem, celowanymi sprawdzeniami i — jeśli dotyczą aplikacji — buildem deweloperskim do testowania z folderu. Nie wymagają bumpa, instalatora ani nowego taga. Zmiany samych narzędzi i dokumentacji nie wymagają nowego EXE.
 
 Pełne testy i lokalne wydanie wykonuj dla większych etapów lub na wyraźne zlecenie wydania, według [procedury](releasing.md). Wtedy zmień wersję, zaktualizuj CHANGELOG i przewodniki, sprawdź paczki z końcowego commita, utwórz nowy anotowany tag i zakończ przez `scripts/check-release-state.ps1 -RequireCurrentRelease`. Do roboczego odczytu stanu używaj skryptu bez tego przełącznika; różnice względem ostatniego wydania są wtedy oczekiwane. Istniejące tagi i paczki pozostają niezmienne. [Checklista RC](rc-checklist.md) rozdziela lokalne dowody od otwartej akceptacji. Publikacja na GitHub wymaga osobnego polecenia użytkownika.
 

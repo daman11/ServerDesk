@@ -1,6 +1,6 @@
 # Dokumentacja / Documentation
 
-Bieżące wydanie lokalne: [0.50.0 Public Beta](releases/release-0.50.0.md) — jedno odblokowanie sejfu na czas pracy programu, odblokowanie przy starcie, ręczna blokada i znacznik połączenia po lewej. [Weryfikacja](reports/release-verification-0.50.0.md). [Ostatnie opublikowane wydanie 0.49.1](https://github.com/daman11/ServerDesk/releases/tag/v0.49.1).
+Bieżące wydanie lokalne: [0.51.0 Public Beta](releases/release-0.51.0.md) — nawigacja po serwerach, długie nazwy SFTP, ochrona zmienionego źródła i poprawki wydajności. [Weryfikacja](reports/release-verification-0.51.0.md). [Ostatnie opublikowane wydanie 0.49.1](https://github.com/daman11/ServerDesk/releases/tag/v0.49.1).
 
 | Temat / Topic | Dokument |
 |---|---|

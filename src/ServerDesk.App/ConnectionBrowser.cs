@@ -35,14 +35,17 @@ public sealed partial class MainWindow
     private void BuildBrowserContextMenu()
     {
         var clear=Menu("Wyczyść filtry",()=> { ClearBrowserFilters(); return Task.CompletedTask; });
+        var expand=Menu("Rozwiń wszystkie foldery",()=> { SetBrowserFoldersExpanded(true); return Task.CompletedTask; });
+        var collapse=Menu("Zwiń wszystkie foldery",()=> { SetBrowserFoldersExpanded(false); return Task.CompletedTask; });
         var menu=new ContextMenu { Name="ConnectionAreaMenu",ItemsSource=new Control[]{
             Menu("Nowe połączenie",()=>CreateProfileAsync(new ServerProfile())),
             Menu("Szybkie połączenie",QuickAsync),Menu("Nowy folder",FolderAsync),new Separator(),
-            Menu("Import konfiguracji",ImportAsync),Menu("Eksport konfiguracji",ExportAsync),new Separator(),clear} };
+            Menu("Import konfiguracji",ImportAsync),Menu("Eksport konfiguracji",ExportAsync),new Separator(),expand,collapse,new Separator(),clear} };
         bool Available()=>section is "connections" or "favorite" or "recent";
-        menu.Opening+=(_,e)=> { e.Cancel=!Available(); clear.IsEnabled=HasBrowserFilter; };
+        void State() { clear.IsEnabled=HasBrowserFilter; expand.IsEnabled=collapse.IsEnabled=section=="connections" && BrowserFolders().Any(); }
+        menu.Opening+=(_,e)=> { e.Cancel=!Available(); State(); };
         // Programmatic Open() can bypass Opening; keep state current there too.
-        menu.Opened+=(_,_)=> { if(!Available())menu.Close(); else clear.IsEnabled=HasBrowserFilter; };
+        menu.Opened+=(_,_)=> { if(!Available())menu.Close(); else State(); };
         sidebar.Name="ConnectionSidebar"; sidebar.ContextMenu=menu;
     }
     private void BuildBrowserFilters()

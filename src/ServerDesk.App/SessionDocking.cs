@@ -242,8 +242,14 @@ public sealed partial class MainWindow
         }
         finally { refreshingTabs=false; }
     }
-    private MenuItem[] DockMenu(WorkspacePane pane)=>WorkspaceState.DockedGroups.Select(dock=>Menu(DockAction(dock),()=> { DockSession(pane,dock); return Task.CompletedTask; })).Concat(new[]{
-        Menu("Odłącz do osobnego okna",()=> { DockSession(pane,SessionDock.Floating); return Task.CompletedTask; }),Menu("Zamknij sesję",()=>CloseWorkspacePaneAsync(pane)) }).ToArray();
+    private MenuItem[] DockMenu(WorkspacePane pane)
+    {
+        var reveal=Menu("Pokaż serwer na liście",()=>pane is SessionPane session?RevealConnectionAsync(session.Profile.Id):Task.CompletedTask);
+        reveal.IsEnabled=CanRevealConnection(pane);
+        reveal.AttachedToVisualTree+=(_,_)=>reveal.IsEnabled=CanRevealConnection(pane);
+        return WorkspaceState.DockedGroups.Select(dock=>Menu(DockAction(dock),()=> { DockSession(pane,dock); return Task.CompletedTask; })).Concat(new[]{
+            reveal,Menu("Odłącz do osobnego okna",()=> { DockSession(pane,SessionDock.Floating); return Task.CompletedTask; }),Menu("Zamknij sesję",()=>CloseWorkspacePaneAsync(pane)) }).ToArray();
+    }
     private static string DockAction(SessionDock dock)=>dock switch { SessionDock.Primary=>"Dokuj do panelu 1",SessionDock.Secondary=>"Dokuj do panelu 2",SessionDock.Tertiary=>"Dokuj do panelu 3",_=>"Dokuj do panelu 4" };
     private void ActivateSession()
     {

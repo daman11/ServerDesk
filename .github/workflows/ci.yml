@@ -87,6 +87,12 @@ jobs:
         run: |
           dotnet artifacts/ci-harness/ServerDesk.UiSmoke.dll artifacts/ci-connection-presence --connection-presence
           if ($LASTEXITCODE -ne 0) { throw 'Connection presence acceptance failed' }
+      - name: Connection browser navigation
+        run: |
+          dotnet artifacts/ci-harness/ServerDesk.UiSmoke.dll artifacts/ci-browser-navigation --browser-navigation
+          if ($LASTEXITCODE -ne 0) { throw 'Browser navigation acceptance failed' }
+          dotnet artifacts/ci-harness/ServerDesk.UiSmoke.dll artifacts/ci-browser-context --browser-context-menu
+          if ($LASTEXITCODE -ne 0) { throw 'Browser context menu acceptance failed' }
       - name: Error containment and bounded logging
         run: |
           dotnet artifacts/ci-harness/ServerDesk.UiSmoke.dll artifacts/ci-error-logging --error-logging

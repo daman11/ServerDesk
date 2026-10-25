@@ -1,8 +1,12 @@
-# ServerDesk 0.47.0 — pierwsze kroki
+# ServerDesk 0.51.0 — pierwsze kroki
+
+**Nowe w 0.51.0:** kliknij kartę zapisanej sesji prawym przyciskiem i wybierz **Pokaż serwer na liście**. Program pokaże panel połączeń, wyczyści filtry i rozwinie foldery tego serwera. Funkcja jest też w palecie akcji; nie zapisuje szybkich połączeń ani nie odtwarza usuniętych wpisów. W menu obszaru Połączenia są **Rozwiń wszystkie foldery** i **Zwiń wszystkie foldery**. Zwykły stan jest zapamiętywany, a stan wyników wyszukiwania pozostaje tymczasowy.
+
+**SFTP 0.51.0:** pobieranie korzysta z krótkiego pliku `.serverdesk-UUID.part` w katalogu docelowym, dzięki czemu poprawna długa nazwa nie staje się za długa po dodaniu sufiksu. Wykryta zmiana rozmiaru lub daty modyfikacji źródła przerywa podmianę celu; poczekaj na zakończenie zapisu i użyj **Ponów**. To kontrola metadanych, nie migawka ani suma treści: ta sama długość i data lub zgrubny zegar serwera mogą ukryć zmianę.
 
 **Nowość 0.49.0:** Bitwarden / Vaultwarden ma dołączony klient OSS oraz konfigurację serwera, logowanie, 2FA i synchronizację w GUI. Nie trzeba wskazywać pliku bw. [Konfiguracja](bitwarden.md).
 
-**Nowe w lokalnym wydaniu 0.47.0:** [Bitwarden / Vaultwarden](bitwarden.md): klucze SSH Key (RSA/Ed25519) używane z pamięci przez terminal i SFTP oraz prostszy wybór wpisu sejfu. W edytorze SSH wybierz **Klucz SSH z sejfu**, podaj login i przypisz klucz. Wymaga oficjalnego CLI, jawnego adresu sejfu i wcześniejszego logowania CLI. Ta lokalna paczka nie została jeszcze opublikowana na GitHub.
+**Klucze sejfu od 0.47.0:** [Bitwarden / Vaultwarden](bitwarden.md) obsługuje wpisy SSH Key (RSA/Ed25519) używane z pamięci przez terminal i SFTP. W edytorze SSH wybierz **Klucz SSH z sejfu**, podaj login i przypisz klucz. Aktualna pełna paczka zawiera klienta i umożliwia konfigurację/logowanie w GUI; zaawansowana konfiguracja zewnętrznego CLI pozostaje opcjonalna.
 
 **Nowe w 0.45.1:** opcjonalny skrót na pulpicie oraz powiadomienie Aktualizuj / Pomiń tę wersję / Przypomnij przy następnym uruchomieniu. Domyślnie sprawdzamy wersję przy starcie; zapisane wyłączenie pozostaje zachowane. [Instrukcja testu z 0.45.0](updates.md).
 

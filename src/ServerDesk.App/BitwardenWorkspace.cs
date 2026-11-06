@@ -12,6 +12,7 @@ public sealed partial class MainWindow
     private readonly SemaphoreSlim bitwardenPickerGate=new(1);
     private bool bitwardenStartupAttempted;
     private readonly HashSet<Task> bitwardenWork=[];
+    private Button? bitwardenShortcut;
     internal Func<BitwardenCliOptions,BitwardenCli> BitwardenFactory { get; set; }=BitwardenCli.Create;
     internal async Task ApplyBitwardenPluginAsync(bool enabled)
     {
@@ -21,6 +22,7 @@ public sealed partial class MainWindow
         finally { old?.Dispose(); bitwardenClient?.Dispose(); bitwardenClient=null; }
         bitwardenOptions=preferences.Bitwarden;
         if(enabled)bitwardenLifetime=CancellationTokenSource.CreateLinkedTokenSource(lifetime.Token);
+        RefreshBitwardenShortcut();
     }
     internal async Task<BitwardenChoice?> ChooseBitwardenAsync(Window owner,ServerProfile? profile,BitwardenReference? reference,bool bindingOnly=false,bool accountOnly=false,bool unlockOnly=false)
     {
@@ -36,10 +38,32 @@ public sealed partial class MainWindow
             try
             {
                 if(!owner.IsVisible || scope.IsCancellationRequested || closing || closePending)return null;
-                return await Dialogs.Bitwarden(owner,()=>bitwardenClient??=BitwardenFactory(bitwardenOptions),profile,reference,bindingOnly,scope.Token,bitwardenOptions,accountOnly,retainClient:true,unlockOnly:unlockOnly);
+                bool? startupPreference=null;
+                var choice=await Dialogs.Bitwarden(owner,()=>bitwardenClient??=BitwardenFactory(bitwardenOptions),profile,reference,bindingOnly,scope.Token,bitwardenOptions,accountOnly,retainClient:true,unlockOnly:unlockOnly,startupPreference:value=>startupPreference=value);
+                try
+                {
+                    if(startupPreference is {} enabled && !scope.IsCancellationRequested && !closing && !closePending)
+                    {
+                        var settings=await repository.ApplicationSettingsAsync(scope.Token);
+                        await repository.SaveApplicationSettingsAsync(settings with { Preferences=settings.Preferences with { Bitwarden=settings.Preferences.Bitwarden with { UnlockOnStartup=enabled } } },scope.Token);
+                        preferences=preferences with { Bitwarden=preferences.Bitwarden with { UnlockOnStartup=enabled } };
+                        bitwardenOptions=bitwardenOptions with { UnlockOnStartup=enabled };
+                    }
+                    return choice;
+                }
+                catch { choice?.Dispose(); throw; }
+                finally { RefreshBitwardenShortcut(); }
             }
             finally { bitwardenPickerGate.Release(); }
         }
+    }
+    private void RefreshBitwardenShortcut()
+    {
+        if(bitwardenShortcut==null)return;
+        bitwardenShortcut.IsVisible=IsPluginEnabled(PluginCatalog.Bitwarden);
+        var label=L.T(bitwardenClient?.IsUnlocked==true?"Sejf odblokowany — zarządzaj sejfem":"Odblokuj sejf Bitwarden / Vaultwarden");
+        Avalonia.Automation.AutomationProperties.SetName(bitwardenShortcut,label);
+        ToolTip.SetTip(bitwardenShortcut,label);
     }
     internal async Task UnlockBitwardenAtStartupAsync()
     {

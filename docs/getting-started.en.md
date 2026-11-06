@@ -63,6 +63,12 @@ For TAR.GZ: `mkdir serverdesk-0.47.0`, then `tar -xzf ServerDesk-0.47.0-linux-x6
 
 In SSH terminals, **Ctrl+Shift+C** copies a selection (sends nothing without one), **Ctrl+Shift+V** pastes and **Ctrl+C** interrupts the remote process. Escape reaches the remote terminal, including vim's edit-mode exit. The remote PTY follows the panel size when resizing the window. See [terminal changes](releases/release-0.28.0.md).
 
+An unencrypted local SSH key skips the passphrase dialog. Encrypted keys still require the key's passphrase; missing or malformed files produce a separate local error.
+
+You can also paste multiline SSH text with **Shift+Insert**, right-click without a selection, or **Session options → Paste**. Pasting normalizes Windows/Linux line endings and preserves literal backslashes, spaces and quotes. Review a command before pressing Enter; a final newline copied to the clipboard is still part of the pasted text.
+
+Use the **key icon in the top toolbar** to unlock or manage Bitwarden/Vaultwarden. In its dialog, **Do not show this window at startup** is remembered when the dialog closes; the plugin settings retain the equivalent startup preference.
+
 VNC traffic is not encrypted. Use a VPN or an existing secure tunnel; do not expose VNC directly to the Internet.
 
 The welcome dashboard shows up to three recently used connections. Clicking one follows normal sign-in; opening the app never connects automatically. In Settings, **Ctrl+F** finds an option across categories; **Escape** in the search field clears the filter. Searching preserves your draft and Cancel rolls back the appearance preview.

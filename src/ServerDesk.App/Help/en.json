@@ -16,6 +16,12 @@
         ]
       },
       {
+        "Title": "Startup prompt and quick access",
+        "Paragraphs": [
+          "Select Do not show this window at startup. The choice is saved when the dialog closes, including Skip and a successful unlock. Use the key icon in the top toolbar to unlock or manage your vault later. Turning off only the startup prompt preserves the current unlock. The icon is hidden when the plugin is disabled."
+        ]
+      },
+      {
         "Title": "One-time selection and bindings",
         "Paragraphs": [
           "When connecting, choose Password from Bitwarden / Vaultwarden. Enter the master password in the masked field, unlock the vault, search by item name or address (at least 2 characters), select a result and choose Use password. Search shows up to 100 Login items.",
@@ -64,6 +70,7 @@
   {
     "Id": "ssh", "Icon": "ssh", "Title": "SSH and the terminal", "Summary": "Sign-in, host keys, clipboard and reconnecting.", "Keywords": "terminal ssh password key host fingerprint authentication haslo klucz polaczenie",
     "Sections": [
+      { "Title": "Local keys and multiline paste", "Paragraphs": ["An unencrypted local key skips the passphrase dialog. Encrypted keys require the key's passphrase; missing or malformed files produce a separate local error.", "Ctrl+Shift+V, Shift+Insert, right-click without a selection and Session options → Paste support multiline SSH text with Windows or Linux line endings. Continuation characters, spaces and quotes remain part of the command. Review it before Enter; a final newline copied to the clipboard is pasted too."] },
       { "Title": "Connecting securely", "Paragraphs": ["Set the SSH address, port, username and authentication method in the profile. Check the host-key fingerprint on the first connection. A changed key blocks the connection; do not remove trust until you understand why it changed.", "Remembering a password is optional. If the system vault is unavailable, you can use a password for the current session only. Terminal contents are not instructions to ServerDesk: commands you enter run in the remote shell."] },
       { "Title": "Working and recovering from a lost connection", "Paragraphs": ["Ctrl+Shift+C — copy selected text.\nCtrl+Shift+V — paste into the terminal.\nCtrl+C — shell shortcut, such as interrupting a command.", "Set the terminal appearance, font, cursor and scrollback under Settings → Terminal.", "After a connection is lost, use Reconnect in the same tab. Read the error reason: TCP refusal, DNS failure, timeout and authentication rejection describe different problems. An authentication rejection alone does not prove that the password is wrong."] }
     ]

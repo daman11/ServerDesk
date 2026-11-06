@@ -16,7 +16,7 @@ public sealed class BitwardenSshKeyTests
 {
     private static readonly Guid Account=Guid.Parse("ba9257b9-a57c-42d3-8709-b2d4d4984559"),Item=Guid.Parse("024606e6-7a83-45d0-a7e8-828a5a21174d");
     private static BitwardenReference Reference=>new(Item,Account,"https://fixture.invalid","Fixture key",BitwardenItemKind.SshKey);
-    private static string Key(string format)
+    internal static string Key(string format)
     {
         if(format=="ed25519")
         {

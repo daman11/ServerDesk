@@ -49,6 +49,9 @@ public sealed partial class MainWindow
         titleActions.Children.Add(DeskIcons.Button("sidebar","Panel połączeń · Ctrl+B",ToggleSidebar));
         titleActions.Children.Add(DeskIcons.Button("plus","Nowe połączenie · Ctrl+Shift+N",()=>_ = Safe(()=>EditAsync(null))));
         titleActions.Children.Add(DeskIcons.Button("search","Otwarte sesje · Ctrl+Shift+L",()=>_ = Safe(()=>SwitchSessionAsync())));
+        bitwardenShortcut=DeskIcons.Button("key","Odblokuj sejf Bitwarden / Vaultwarden",()=>_ = Safe(()=>ConfigureBitwardenAccountAsync(this)));
+        bitwardenShortcut.Name="BitwardenShortcut"; titleActions.Children.Add(bitwardenShortcut);
+        RefreshBitwardenShortcut();
         var docking=new Button { Content=DeskIcons.Labelled("layers",L.T("Układ")),Tag="Układ",Classes={"icon","chrome"} };
         docking.ContextMenu=new ContextMenu { ItemsSource=new[]{Menu("Jeden panel",()=> { SetWorkspaceMode(WorkspaceMode.Single); return Task.CompletedTask; }),Menu("Panele obok siebie",()=> { SetWorkspaceMode(WorkspaceMode.Columns); return Task.CompletedTask; }),Menu("Panele jeden nad drugim",()=> { SetWorkspaceMode(WorkspaceMode.Rows); return Task.CompletedTask; }),Menu("Trzy panele (1 + 2)",()=> { SetWorkspaceMode(WorkspaceMode.Three); return Task.CompletedTask; }),Menu("Cztery panele (2 × 2)",()=> { SetWorkspaceMode(WorkspaceMode.Grid); return Task.CompletedTask; }),Menu("Wyrównaj wielkość paneli",()=> { EqualizeWorkspace(); return Task.CompletedTask; }),Menu("Przywróć wszystkie odpięte sesje",()=> { foreach(var pane in Panes.Where(p=>dockState.Location(p.WorkspaceId)==SessionDock.Floating).ToArray())DockSession(pane,SessionDock.Primary); return Task.CompletedTask; })} };
         docking.Click+=(_,_)=>docking.ContextMenu.Open(docking); titleActions.Children.Add(docking);

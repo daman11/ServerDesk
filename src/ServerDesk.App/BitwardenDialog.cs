@@ -30,7 +30,7 @@ internal static partial class Dialogs
         return new Expander { Name="BitwardenSetupHelp",Header=DeskIcons.Labelled("help",L.T("Pierwsza konfiguracja sejfu")),Content=steps,HorizontalAlignment=HorizontalAlignment.Stretch,HorizontalContentAlignment=HorizontalAlignment.Stretch,Classes={"network-options"} };
     }
 
-    internal static async Task<BitwardenChoice?> Bitwarden(Window owner,Func<BitwardenCli> create,ServerProfile? profile,BitwardenReference? reference,bool bindingOnly,CancellationToken ct,BitwardenCliOptions? options=null,bool accountOnly=false,bool retainClient=false,bool unlockOnly=false)
+    internal static async Task<BitwardenChoice?> Bitwarden(Window owner,Func<BitwardenCli> create,ServerProfile? profile,BitwardenReference? reference,bool bindingOnly,CancellationToken ct,BitwardenCliOptions? options=null,bool accountOnly=false,bool retainClient=false,bool unlockOnly=false,Action<bool>? startupPreference=null)
     {
         if(ct.IsCancellationRequested)return null;
         var keyMode=profile is { Protocol:Protocol.SSH,Authentication:Authentication.VaultSshKey };
@@ -98,6 +98,9 @@ internal static partial class Dialogs
         stack.Children.Add(entries); stack.Children.Add(selectedCard); stack.Children.Add(purpose);
 
         var help=BitwardenSetupGuide(); stack.Children.Add(help);
+        var skipStartup=new CheckBox { Name="BitwardenSkipStartup",Content=L.T("Nie pokazuj tego okna przy uruchamianiu"),IsChecked=!options.UnlockOnStartup,IsVisible=accountOnly && startupPreference!=null };
+        stack.Children.Add(skipStartup);
+        if(skipStartup.IsVisible)stack.Children.Add(DesignSystem.Hint(L.T("Ustawienie zostanie zapisane po zamknięciu okna. Sejf możesz odblokować ikoną klucza na górnym pasku.")));
         var actions=new StackPanel { Orientation=Orientation.Horizontal,HorizontalAlignment=HorizontalAlignment.Right,Spacing=8 }; stack.Children.Add(actions);
         var dialog=Window("Bitwarden / Vaultwarden",stack); dialog.Name="BitwardenPicker"; dialog.Width=720;
         dialog.SizeChanged+=(_,_) =>
@@ -286,7 +289,13 @@ internal static partial class Dialogs
         dialog.Opened+=(_,_)=>Run("Sprawdzanie stanu Bitwarden CLI…",CheckStatus);
         using var cancelled=ct.Register(()=>Avalonia.Threading.Dispatcher.UIThread.Post(()=> { if(!closed)dialog.Close(); }));
         Refresh();
-        try { return await dialog.ShowDialog<BitwardenChoice?>(owner); }
+        try
+        {
+            var result=await dialog.ShowDialog<BitwardenChoice?>(owner);
+            var showAtStartup=skipStartup.IsChecked!=true;
+            if(skipStartup.IsVisible && !ct.IsCancellationRequested && showAtStartup!=options.UnlockOnStartup)startupPreference?.Invoke(showAtStartup);
+            return result;
+        }
         finally { scope.Cancel(); try { await work; } finally { master.Text=""; list.ItemsSource=null; if(!retainClient)client?.Dispose(); } }
     }
 }

@@ -2,6 +2,10 @@
 
 ## Unreleased
 
+- Add a remembered startup opt-out in the vault dialog and a key shortcut in the main toolbar for unlocking/managing Bitwarden or Vaultwarden later. Preserve the current unlock when changing only this preference.
+- Ask for a local SSH key passphrase only when the key is encrypted. Validate unencrypted keys before reading credentials; keep missing/malformed key diagnostics local and recognize encrypted PKCS#8 envelopes.
+- Normalize CRLF/LF/CR in SSH multiline clipboard pastes, preserve literal backslashes and use the remote terminal's bracketed-paste mode. Apply the same path to Ctrl+Shift+V, Shift+Insert, right-click paste and the session menu.
+
 ## 0.51.0 — Public Beta — 2026-10-25
 
 - Add Show server in connection list to saved session tab menus and the action palette. Reveal clears browser filters, shows the sidebar, expands ancestors and selects the saved UUID; quick and deleted profiles stay disabled and are never recreated.

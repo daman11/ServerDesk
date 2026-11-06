@@ -101,7 +101,7 @@ internal static class BitwardenWorkspaceChecks
             var second=main.ChooseBitwardenAsync(main,profile,null); RedesignChecks.Frames(2);
             if(main.OwnedWindows.Count!=1 || clients.Count!=2)throw new Exception("Concurrent requests created multiple vault dialogs/clients");
             Wait(main.ApplyPluginsAsync(prefs with { DisabledPlugins=new([PluginCatalog.Bitwarden]) })); Wait(first); Wait(second);
-            if(main.OwnedWindows.Any() || clients.Any(c=>c.IsUnlocked) || main.OpenSessions.Count!=0)throw new Exception("Plugin disable failed to drain its work independently");
+            if(main.OwnedWindows.Any() || clients.Any(c=>c.IsUnlocked) || main.OpenSessions.Count!=0 || Named<Button>(main,"BitwardenShortcut").IsVisible)throw new Exception("Plugin disable failed to drain its work independently or hide its shortcut");
             Wait(main.ApplyPluginsAsync(prefs)); var pending=main.ConfigureBitwardenAccountAsync(main); picker=Picker(main); Until(()=>Named<Button>(picker,"BitwardenUnlock").IsEnabled,"Reenabled account not ready");
             runner.Block=true; Named<TextBox>(picker,"BitwardenMasterPassword").Text=Master; Click(picker,"BitwardenUnlock");
             Wait(main.ApplyPluginsAsync(prefs with { DisabledPlugins=new([PluginCatalog.Bitwarden]) })); Wait(pending); runner.Block=false;
@@ -110,13 +110,19 @@ internal static class BitwardenWorkspaceChecks
             if(runner.Buffers.Any(bytes=>bytes.Any(b=>b!=0)))throw new Exception("Workspace retained CLI output buffers");
             Wait(repo.SaveApplicationSettingsAsync(repo.ApplicationSettingsAsync().Result with { Preferences=prefs }));
             // A new process/window starts locked; Skip does not schedule another prompt.
-            main=Open(); main.Show(); startup=Picker(main); Until(()=>Named<Button>(startup,"BitwardenUnlock").IsEnabled,"Restart did not request unlock"); Cancel(startup); Wait(main.UnlockBitwardenAtStartupAsync());
+            main=Open(); main.Show(); startup=Picker(main); Until(()=>Named<Button>(startup,"BitwardenUnlock").IsEnabled,"Restart did not request unlock");
+            Named<CheckBox>(startup,"BitwardenSkipStartup").IsChecked=true; Cancel(startup);
+            Until(()=>!repo.PreferencesAsync().Result.Bitwarden.UnlockOnStartup,"Startup checkbox did not persist after Skip");
+            Wait(main.UnlockBitwardenAtStartupAsync());
             if(main.OwnedWindows.Any())throw new Exception("Skipped startup unlock prompted a second time"); main.Close(); Until(()=>!main.IsVisible,"Skipped startup window did not close");
-            Wait(repo.SaveApplicationSettingsAsync(repo.ApplicationSettingsAsync().Result with { Preferences=prefs with { Bitwarden=options with { UnlockOnStartup=false } } }));
             var count=clients.Count; main=Open(); main.Show(); RedesignChecks.Frames(12);
             if(main.OwnedWindows.Any() || clients.Count!=count)throw new Exception("Startup opt-out launched the vault");
-            var finalUnlock=main.ConfigureBitwardenAccountAsync(main); picker=Picker(main); Until(()=>Named<Button>(picker,"BitwardenUnlock").IsEnabled,"Final account did not become ready");
-            Named<TextBox>(picker,"BitwardenMasterPassword").Text=Master; Click(picker,"BitwardenUnlock"); Until(()=>clients.Last().IsUnlocked && !Named<ProgressBar>(picker,"BitwardenProgress").IsVisible,"Final workspace unlock failed"); Cancel(picker); Wait(finalUnlock);
+            if(!Named<Button>(main,"BitwardenShortcut").IsVisible)throw new Exception("Main vault shortcut missing after startup opt-out");
+            Click(main,"BitwardenShortcut"); picker=Picker(main); Until(()=>Named<Button>(picker,"BitwardenUnlock").IsEnabled,"Vault shortcut did not open unlock");
+            if(Named<CheckBox>(picker,"BitwardenSkipStartup").IsChecked!=true)throw new Exception("Quick unlock lost the saved startup preference");
+            Named<TextBox>(picker,"BitwardenMasterPassword").Text=Master; Click(picker,"BitwardenUnlock"); Until(()=>clients.Last().IsUnlocked && !Named<ProgressBar>(picker,"BitwardenProgress").IsVisible,"Final workspace unlock failed");
+            Named<CheckBox>(picker,"BitwardenSkipStartup").IsChecked=false; Cancel(picker);
+            Until(()=>repo.PreferencesAsync().Result.Bitwarden.UnlockOnStartup && ToolTip.GetTip(Named<Button>(main,"BitwardenShortcut")) as string==AppText.T("Sejf odblokowany — zarządzaj sejfem"),"Quick unlock did not save startup re-enable or refresh the shortcut");
             main.Close(); Until(()=>!main.IsVisible,"Opt-out window did not close"); if(clients.Any(c=>c.IsUnlocked))throw new Exception("Closing the application retained its workspace unlock");
             // Default-US accounts may have been configured without saving an email.
             Wait(repo.SaveApplicationSettingsAsync(repo.ApplicationSettingsAsync().Result with { Preferences=prefs with { Bitwarden=new() } }));

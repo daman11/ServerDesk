@@ -2013,6 +2013,10 @@
   "Rozwiń wszystkie foldery": "Expand all folders",
   "Zwiń wszystkie foldery": "Collapse all folders",
   "Pokaż serwer na liście": "Show server in connection list",
+  "Nie pokazuj tego okna przy uruchamianiu": "Do not show this window at startup",
+  "Ustawienie zostanie zapisane po zamknięciu okna. Sejf możesz odblokować ikoną klucza na górnym pasku.": "This preference will be saved when you close the window. Use the key icon in the top bar to unlock your vault.",
+  "Sejf odblokowany — zarządzaj sejfem": "Vault unlocked — manage vault",
+  "Odblokuj sejf Bitwarden / Vaultwarden": "Unlock Bitwarden / Vaultwarden vault",
   "Źródło wysyłanego pliku zmieniło się podczas transferu. Plik docelowy pozostał bez zmian. Poczekaj na zakończenie zapisu źródła i ponów zadanie.": "The upload source changed during transfer. The destination file was left unchanged. Wait for the source to finish saving and retry the task.",
   "Źródło pobieranego pliku zmieniło się podczas transferu. Plik docelowy pozostał bez zmian. Poczekaj na zakończenie zapisu źródła i ponów zadanie.": "The download source changed during transfer. The destination file was left unchanged. Wait for the source to finish saving and retry the task."
 }

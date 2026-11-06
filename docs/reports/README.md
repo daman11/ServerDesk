@@ -1,5 +1,7 @@
 # Verification and historical reviews
 
+- [Vault startup, SSH key prompts and multiline paste, 2026-11-06](vault-ssh-usability-2026-11-06.md) — focused PL/EN UI checks, local-key diagnostics and real loopback Bash continuation checks.
+
 - [0.51.0 Public Beta](release-verification-0.51.0.md) — browser navigation, long SFTP filenames, source integrity and release gates.
 - [Connection presence and large trees, 2026-10-25](browser-presence-2026-10-25.md) — in-place status updates, tab switching, stable browser context and bounded PL/EN regression.
 

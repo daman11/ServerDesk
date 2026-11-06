@@ -2013,6 +2013,10 @@
   "Rozwiń wszystkie foldery": "Rozwiń wszystkie foldery",
   "Zwiń wszystkie foldery": "Zwiń wszystkie foldery",
   "Pokaż serwer na liście": "Pokaż serwer na liście",
+  "Nie pokazuj tego okna przy uruchamianiu": "Nie pokazuj tego okna przy uruchamianiu",
+  "Ustawienie zostanie zapisane po zamknięciu okna. Sejf możesz odblokować ikoną klucza na górnym pasku.": "Ustawienie zostanie zapisane po zamknięciu okna. Sejf możesz odblokować ikoną klucza na górnym pasku.",
+  "Sejf odblokowany — zarządzaj sejfem": "Sejf odblokowany — zarządzaj sejfem",
+  "Odblokuj sejf Bitwarden / Vaultwarden": "Odblokuj sejf Bitwarden / Vaultwarden",
   "Źródło wysyłanego pliku zmieniło się podczas transferu. Plik docelowy pozostał bez zmian. Poczekaj na zakończenie zapisu źródła i ponów zadanie.": "Źródło wysyłanego pliku zmieniło się podczas transferu. Plik docelowy pozostał bez zmian. Poczekaj na zakończenie zapisu źródła i ponów zadanie.",
   "Źródło pobieranego pliku zmieniło się podczas transferu. Plik docelowy pozostał bez zmian. Poczekaj na zakończenie zapisu źródła i ponów zadanie.": "Źródło pobieranego pliku zmieniło się podczas transferu. Plik docelowy pozostał bez zmian. Poczekaj na zakończenie zapisu źródła i ponów zadanie."
 }

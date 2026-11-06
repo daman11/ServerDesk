@@ -7,6 +7,43 @@ namespace ServerDesk.Infrastructure;
 public sealed class SshConnectionFactory(ProfileRepository repository)
 {
     public Func<HostKeyChallenge, CancellationToken, Task<bool>>? ConfirmHostKey { get; set; }
+    private static PrivateKeyFile OpenPrivateKey(string path,string secret)
+    {
+        try
+        {
+            if(string.IsNullOrWhiteSpace(path))throw new FileNotFoundException();
+            using var input=File.OpenRead(path);
+            if(string.IsNullOrEmpty(secret))
+            {
+                // SSH.NET's PKCS#8 parser attempts decryption with an empty
+                // password instead of reporting a missing passphrase. Detect
+                // this explicit envelope before asking the shared parser.
+                Span<byte> header=stackalloc byte[256];
+                bool encrypted;
+                try { var count=input.Read(header); encrypted=header[..count].IndexOf("-----BEGIN ENCRYPTED PRIVATE KEY-----"u8)>=0; }
+                finally { System.Security.Cryptography.CryptographicOperations.ZeroMemory(header); }
+                if(encrypted)throw new SshPassPhraseNullOrEmptyException("The private key requires a passphrase.");
+                input.Position=0;
+            }
+            return new PrivateKeyFile(input,secret);
+        }
+        catch(Exception ex) when(ex is SshException or System.Security.Cryptography.CryptographicException or Org.BouncyCastle.Crypto.CryptoException or IOException or UnauthorizedAccessException or ArgumentException or NotSupportedException)
+        {
+            var reason=ex switch {
+                FileNotFoundException or DirectoryNotFoundException=>SshPrivateKeyFailure.Missing,
+                UnauthorizedAccessException=>SshPrivateKeyFailure.AccessDenied,
+                SshPassPhraseNullOrEmptyException=>SshPrivateKeyFailure.PassphraseRequired,
+                IOException=>SshPrivateKeyFailure.ReadFailure,
+                _=>SshPrivateKeyFailure.InvalidOrPassphrase };
+            throw new SshPrivateKeyException(reason,ex);
+        }
+    }
+    public static Task<bool> PrivateKeyNeedsPassphraseAsync(string path,CancellationToken ct=default)=>Task.Run(()=>
+    {
+        ct.ThrowIfCancellationRequested();
+        try { using var key=OpenPrivateKey(path,""); ct.ThrowIfCancellationRequested(); return false; }
+        catch(SshPrivateKeyException ex) when(ex.Reason==SshPrivateKeyFailure.PassphraseRequired) { ct.ThrowIfCancellationRequested(); return true; }
+    },ct);
     private ConnectionInfo Info(ServerProfile profile,string secret,SshKeyMaterial? vaultKey,out PrivateKeyFile? key)
     {
         profile.Validate(); key = null;
@@ -19,21 +56,7 @@ public sealed class SshConnectionFactory(ProfileRepository repository)
         }
         else if (profile.Authentication == Authentication.PrivateKey)
         {
-            try
-            {
-                if(string.IsNullOrWhiteSpace(profile.PrivateKeyPath))throw new FileNotFoundException();
-                key = string.IsNullOrEmpty(secret) ? new PrivateKeyFile(profile.PrivateKeyPath) : new PrivateKeyFile(profile.PrivateKeyPath, secret);
-            }
-            catch(Exception ex) when(ex is SshException or System.Security.Cryptography.CryptographicException or IOException or UnauthorizedAccessException or ArgumentException or NotSupportedException)
-            {
-                var reason=ex switch {
-                    FileNotFoundException or DirectoryNotFoundException=>SshPrivateKeyFailure.Missing,
-                    UnauthorizedAccessException=>SshPrivateKeyFailure.AccessDenied,
-                    SshPassPhraseNullOrEmptyException=>SshPrivateKeyFailure.PassphraseRequired,
-                    IOException=>SshPrivateKeyFailure.ReadFailure,
-                    _=>SshPrivateKeyFailure.InvalidOrPassphrase };
-                throw new SshPrivateKeyException(reason,ex);
-            }
+            key=OpenPrivateKey(profile.PrivateKeyPath,secret);
             auth = new PrivateKeyAuthenticationMethod(profile.Username, key);
         }
         else auth = new PasswordAuthenticationMethod(profile.Username, secret);

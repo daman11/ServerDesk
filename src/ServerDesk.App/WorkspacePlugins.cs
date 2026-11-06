@@ -50,6 +50,7 @@ public sealed partial class MainWindow
     }
     private void RefreshPluginPresentation()
     {
+        RefreshBitwardenShortcut();
         var commands=IsPluginEnabled(PluginCatalog.Commands);
         if(commandsMenu!=null)commandsMenu.IsVisible=commands;
         if(activityButtons.TryGetValue("commands",out var activity))activity.IsVisible=commands;

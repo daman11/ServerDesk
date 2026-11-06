@@ -16,6 +16,12 @@
         ]
       },
       {
+        "Title": "Okno przy starcie i szybki dostęp",
+        "Paragraphs": [
+          "Zaznacz Nie pokazuj tego okna przy uruchamianiu. Wybór zostanie zapisany po zamknięciu okna, także przy Pomiń i po udanym odblokowaniu. Ikona klucza na górnym pasku pozwala odblokować sejf lub nim zarządzać później. Wyłączenie samego okna startowego zachowuje aktualne odblokowanie. Przy wyłączonym pluginie ikona jest ukryta."
+        ]
+      },
+      {
         "Title": "Wybór jednorazowy i przypisania",
         "Paragraphs": [
           "Przy łączeniu wybierz Hasło z Bitwarden / Vaultwarden. Wpisz hasło główne w zamaskowanym polu, odblokuj sejf, wyszukaj wpis po nazwie lub adresie (minimum 2 znaki), zaznacz go i wybierz Użyj hasła. Wyszukiwanie pokazuje maksymalnie 100 wpisów typu Login.",
@@ -64,6 +70,7 @@
   {
     "Id": "ssh", "Icon": "ssh", "Title": "SSH i terminal", "Summary": "Logowanie, klucze hosta, schowek i ponowne łączenie.", "Keywords": "terminal ssh password key host fingerprint authentication haslo klucz polaczenie",
     "Sections": [
+      { "Title": "Klucz z pliku i wieloliniowe wklejanie", "Paragraphs": ["Przy lokalnym kluczu bez hasła nie pojawia się formularz passphrase. Zaszyfrowany klucz wymaga hasła klucza; brak lub uszkodzenie pliku jest osobnym błędem.", "Ctrl+Shift+V, Shift+Insert, prawy klik bez zaznaczenia i Opcje sesji → Wklej obsługują wieloliniowy tekst SSH z końcami linii Windows lub Linux. Znaki kontynuacji, spacje i cudzysłowy pozostają częścią polecenia. Przed Enterem sprawdź treść; końcowy nowy wiersz ze schowka również jest wklejany."] },
       { "Title": "Bezpieczne połączenie", "Paragraphs": ["W profilu SSH ustaw adres, port i login oraz wymagany sposób uwierzytelniania. Przy pierwszym połączeniu sprawdź odcisk klucza hosta. Zmieniony klucz blokuje połączenie; nie usuwaj zaufania bez ustalenia przyczyny zmiany.", "Zapamiętanie hasła jest opcjonalne. Przy niedostępnym magazynie systemowym można użyć hasła tylko w bieżącej sesji. Treść terminala nie jest instrukcją dla ServerDesk — wpisane polecenia wykonuje zdalna powłoka."] },
       { "Title": "Praca i utrata sieci", "Paragraphs": ["Ctrl+Shift+C — kopiuj zaznaczony tekst.\nCtrl+Shift+V — wklej do terminala.\nCtrl+C — skrót powłoki, np. przerwanie polecenia.", "Wygląd, czcionkę, kursor i historię terminala ustawisz w Ustawienia → Terminal.", "Po utracie połączenia użyj Połącz ponownie w tej samej karcie. Sprawdź opis błędu: odrzucenie TCP, DNS, timeout i błąd uwierzytelniania oznaczają różne problemy. Samo odrzucenie uwierzytelniania nie dowodzi, że hasło jest błędne."] }
     ]

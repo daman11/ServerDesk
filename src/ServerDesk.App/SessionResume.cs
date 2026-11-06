@@ -112,6 +112,8 @@ public sealed partial class MainWindow
         if(profile.Protocol==Protocol.Serial || profile.Protocol==Protocol.VNC && profile.Vnc.Authentication==VncAuthentication.None)return "";
         if(profile.Protocol==Protocol.RDP && !OperatingSystem.IsLinux() && (!OperatingSystem.IsWindows() || profile.Rdp.DisplayMode!=RdpDisplayMode.Embedded))return "";
         if(profile.Protocol==Protocol.RDP && OperatingSystem.IsLinux() && string.IsNullOrWhiteSpace(profile.Username))throw new ArgumentException(L.T("Wpisz login w profilu serwera, aby połączyć RDP w zakładce."));
+        if(profile.Protocol==Protocol.SSH && profile.Authentication==Authentication.PrivateKey &&
+            !await SshConnectionFactory.PrivateKeyNeedsPassphraseAsync(profile.PrivateKeyPath,lifetime.Token))return "";
         string secret; string? notice=null;
         if(profile.Bitwarden is {} reference)
         {

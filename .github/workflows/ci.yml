@@ -83,6 +83,12 @@ jobs:
             dotnet artifacts/ci-harness/ServerDesk.UiSmoke.dll artifacts/ci-linux-desktop --linux-desktop
             if ($LASTEXITCODE -ne 0) { throw 'Linux desktop smoke failed' }
           }
+      - name: SSH key prompts and multiline clipboard
+        run: |
+          foreach ($scenario in @('key-credentials', 'terminal-paste')) {
+            dotnet artifacts/ci-harness/ServerDesk.UiSmoke.dll "artifacts/ci-$scenario" "--$scenario"
+            if ($LASTEXITCODE -ne 0) { throw "SSH usability smoke failed: $scenario" }
+          }
       - name: Connection presence on large trees
         run: |
           dotnet artifacts/ci-harness/ServerDesk.UiSmoke.dll artifacts/ci-connection-presence --connection-presence

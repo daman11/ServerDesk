@@ -63,6 +63,10 @@ Archiwum: `mkdir serverdesk-0.47.0`, następnie `tar -xzf ServerDesk-0.47.0-linu
 
 W terminalu SSH: **Ctrl+Shift+C** kopiuje zaznaczenie (bez zaznaczenia nic nie wysyła), **Ctrl+Shift+V** wkleja, a **Ctrl+C** przerywa zdalny proces. Escape działa jako klawisz zdalnego terminala, m.in. do wyjścia z trybu edycji vim. Rozmiar PTY podąża za panelem, także podczas zmiany wielkości okna. [Zmiany terminala](releases/release-0.28.0.md).
 
+Przy lokalnym kluczu SSH bez hasła formularz passphrase jest pomijany. Zaszyfrowany klucz wymaga hasła klucza; brak lub uszkodzenie pliku jest osobnym błędem.
+
+Wieloliniowy tekst do SSH wkleisz też przez **Shift+Insert**, prawy klik bez zaznaczenia albo **Opcje sesji → Wklej**. Wklejanie ujednolica końce linii Windows/Linux i zachowuje backslashe, spacje i cudzysłowy. Sprawdź polecenie przed Enterem; końcowy nowy wiersz skopiowany do schowka nadal należy do wklejanego tekstu.
+
 VNC nie szyfruje transmisji: używaj VPN lub istniejącego bezpiecznego tunelu. Nie wystawiaj VNC bezpośrednio do Internetu.
 
 Ekran startowy pokazuje do trzech ostatnio używanych połączeń. Kliknięcie uruchamia zwykłe logowanie; samo otwarcie aplikacji nie łączy automatycznie. W ustawieniach użyj **Ctrl+F**, aby znaleźć opcję w dowolnej kategorii; **Escape** w polu czyści filtr. Wpisane zmiany pozostają zachowane przy wyszukiwaniu, a Anuluj cofa podgląd.

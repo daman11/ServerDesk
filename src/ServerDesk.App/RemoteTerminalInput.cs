@@ -1,9 +1,8 @@
 using Avalonia.Input;
 using Avalonia.Interactivity;
 using Avalonia.VisualTree;
-using Avalonia.Controls;
-using Avalonia.Input.Platform;
 using Iciclecreek.Terminal;
+using ServerDesk.Infrastructure;
 
 namespace ServerDesk.App;
 
@@ -12,25 +11,9 @@ internal sealed partial class SessionPane
     internal async Task PasteRemoteTerminalAsync()
     {
         if(Profile.Protocol!=Core.Protocol.SSH) { await terminal.PasteAsync(); return; }
-        if(!terminal.IsLive || disposed!=0)return;
-        // Selection replacement and announced MIME transfers belong to the
-        // emulator, which owns their editing state and redemption tokens.
-        if(terminal.Terminal.PasteNotificationMode || terminal.Terminal.Selection.HasSelection)
-        { await terminal.PasteAsync(); return; }
-        var scope=connectionLifetime; var connection=session;
-        var clipboard=TopLevel.GetTopLevel(terminal)?.Clipboard;
-        if(clipboard==null)return;
-        var text=await clipboard.TryGetTextAsync();
-        if(string.IsNullOrEmpty(text) || !ReferenceEquals(scope,connectionLifetime) || scope.IsCancellationRequested ||
-            !ReferenceEquals(connection,session) || disposed!=0 || !terminal.IsLive || !terminal.IsEffectivelyVisible)return;
-        // The emulator's paste path sends CRLF verbatim. In an SSH shell that
-        // can turn one continuation into two line breaks. Preserve literal
-        // backslashes and spaces; only translate terminal newline conventions.
-        if(terminal.Terminal.Selection.HasSelection || terminal.Terminal.PasteNotificationMode)return;
-        text=text.Replace("\r\n","\n",StringComparison.Ordinal).Replace('\r','\n');
-        var bracketed=terminal.Terminal.BracketedPasteMode;
-        var input=bracketed?"\u001b[200~"+text+"\u001b[201~":text.Replace('\n','\r');
-        await terminal.SendInputAsync(input,scope.Token);
+        if(!terminal.IsLive || disposed!=0 || !terminal.IsEffectivelyVisible || connectionLifetime.IsCancellationRequested)return;
+        if(terminal.Terminal.PasteNotificationMode) { await terminal.PasteAsync(); return; }
+        await TerminalClipboardPaste.RunAsync(terminal.PasteAsync,connectionLifetime.Token);
     }
     private void FocusTerminalInput()
     {

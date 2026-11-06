@@ -58,7 +58,7 @@ public sealed class SshTerminalSession : IPtyConnection
     // SSH has no local process; EOF on ReaderStream reports session termination to the emulator.
     public event EventHandler<PtyExitedEventArgs>? ProcessExited { add { } remove { } }
     public Stream ReaderStream { get; }
-    public Stream WriterStream => shell;
+    public Stream WriterStream { get; }
     public bool SupportsCancellableRead => true;
     public int Pid => 0;
     public int ExitCode => Volatile.Read(ref exitCode);
@@ -67,6 +67,7 @@ public sealed class SshTerminalSession : IPtyConnection
         this.client = client;
         connectionInfo=client.ConnectionInfo;
         shell = client.CreateShellStream("xterm-256color", 120, 36, 0, 0, 65536);
+        WriterStream=TerminalClipboardPaste.WrapWriter(shell);
         resize=new((cols,rows)=> { if(client.IsConnected)shell.ChangeWindowSize((uint)cols,(uint)rows,0,0); },OnResizeError);
         client.ErrorOccurred += OnTransportError;
         ReaderStream = new ChannelReadStream(output.Reader);

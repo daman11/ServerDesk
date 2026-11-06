@@ -28,16 +28,18 @@ internal static class RemoteTerminalPasteChecks
     }
     private sealed class RecordingConnection:IPtyConnection
     {
+        private readonly MemoryStream written=new();
         public Stream ReaderStream { get; }=new ParkedReader();
-        public Stream WriterStream { get; }=new MemoryStream();
+        public Stream WriterStream { get; }
+        internal RecordingConnection()=>WriterStream=TerminalClipboardPaste.WrapWriter(written);
         public bool SupportsCancellableRead=>true;
         public int Pid=>0; public int ExitCode=>0;
         public event EventHandler<PtyExitedEventArgs>? ProcessExited { add { } remove { } }
         public bool WaitForExit(int milliseconds)=>false;
         public void Resize(int columns,int rows) { } public void Kill()=>Dispose();
-        public void Dispose() { ReaderStream.Dispose(); WriterStream.Dispose(); }
-        internal string Written=>Encoding.UTF8.GetString(((MemoryStream)WriterStream).ToArray());
-        internal void Clear()=>((MemoryStream)WriterStream).SetLength(0);
+        public void Dispose() { ReaderStream.Dispose(); WriterStream.Dispose(); written.Dispose(); }
+        internal string Written=>Encoding.UTF8.GetString(written.ToArray());
+        internal void Clear()=>written.SetLength(0);
     }
     private static void Wait(Task work)=>RedesignChecks.Wait(work);
     internal static void Run(string root)
@@ -61,6 +63,18 @@ internal static class RemoteTerminalPasteChecks
         }
         terminal.Terminal.Write("\x1b[?2004h");
         var small="printf '%s\\n' \\\n  'żółć'"; Wait(clipboard.SetTextAsync(small.Replace("\n","\r\n")));
+        foreach(var bracketed in new[]{true,false})
+        {
+            terminal.Terminal.Write(bracketed?"\x1b[?2004h":"\x1b[?2004l");
+            terminal.Terminal.Write("selection fixture\r\n");
+            terminal.Terminal.Selection.StartSelection(0,0); terminal.Terminal.Selection.UpdateSelection(2,0); terminal.Terminal.Selection.EndSelection();
+            if(!terminal.Terminal.Selection.HasSelection)throw new Exception("Selection paste fixture did not select text");
+            connection.Clear(); Wait(pane.PasteRemoteTerminalAsync());
+            var expected=bracketed?"\x1b[200~"+small+"\x1b[201~":small.Replace('\n','\r');
+            if(connection.Written!=expected)throw new Exception("Existing selection bypassed multiline newline normalization");
+            terminal.Terminal.Selection.ClearSelection();
+        }
+        terminal.Terminal.Write("\x1b[?2004h");
         var input=terminal.GetVisualDescendants().OfType<TerminalView>().Single(); input.Focus(); RedesignChecks.Frames(2);
         foreach(var shiftInsert in new[]{false,true})
         {
@@ -103,13 +117,19 @@ internal static class RemoteTerminalPasteChecks
             {
                 terminal.Terminal.Write("\x1b[2J\x1b[H");
                 SshAcceptanceChecks.Send(terminal,"bind 'set enable-bracketed-paste "+(bracketed?"on":"off")+"'; printf 'SD_PASTE_READY\\n'\r");
-                SshAcceptanceChecks.Until(()=>SshAcceptanceChecks.Text(terminal).Contains("SD_PASTE_READY\n") && terminal.Terminal.BracketedPasteMode==bracketed,"Disposable Bash did not configure paste mode");
+                SshAcceptanceChecks.Until(()=>SshAcceptanceChecks.Text(terminal).Contains("SD_PASTE_READY\n") && terminal.Terminal.BracketedPasteMode==bracketed && terminal.Terminal.Buffer.X>0,"Disposable Bash did not configure paste mode");
+                var view=terminal.GetVisualDescendants().OfType<TerminalView>().Single(); view.Focus(); RedesignChecks.Frames(2);
+                const string replaced="discard-this-input"; var column=terminal.Terminal.Buffer.X;
+                window.KeyTextInput(replaced);
+                SshAcceptanceChecks.Until(()=>terminal.Terminal.Buffer.X==column+replaced.Length,"Disposable Bash did not echo replacement fixture");
+                window.KeyPress(Key.Home,RawInputModifiers.Shift,PhysicalKey.Home,""); window.KeyRelease(Key.Home,RawInputModifiers.Shift,PhysicalKey.Home,"");
+                if(terminal.Terminal.Selection.GetSelectionText()!=replaced)throw new Exception("Keyboard selection did not select exactly the replacement fixture");
                 Wait(window.Clipboard!.SetTextAsync(command.Replace("\n","\r\n",StringComparison.Ordinal))); Wait(pane.PasteRemoteTerminalAsync());
                 if(SshAcceptanceChecks.Text(terminal).Contains(hash))throw new Exception("Pasting unexpectedly executed a command without Enter");
                 SshAcceptanceChecks.Send(terminal,"\r");
                 SshAcceptanceChecks.Until(()=>SshAcceptanceChecks.Text(terminal).Contains(hash),"Long SSH continuation command produced missing or changed arguments");
                 window.CaptureRenderedFrame()!.Save(Path.Combine(root,bracketed?"ssh-bracketed.png":"ssh-legacy.png"));
-                Console.WriteLine("PASS actual OpenSSH/Bash "+(bracketed?"bracketed":"legacy")+": 1200 UTF-8 continuation lines pasted as CRLF, exact SHA-256 and execution only after Enter");
+                Console.WriteLine("PASS actual OpenSSH/Bash "+(bracketed?"bracketed":"legacy")+": keyboard selection replaced, 1200 UTF-8 continuation lines pasted as CRLF, exact SHA-256 and execution only after Enter");
             }
         }
         finally { Wait(pane.CloseAsync()); window.Close(); main.Close(); RedesignChecks.Frames(6); }

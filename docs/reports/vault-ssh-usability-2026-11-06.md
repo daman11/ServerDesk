@@ -21,15 +21,22 @@ component changes. A local Windows development build is used for review.
   one path. Remote mouse tracking is respected. No Enter is appended; a newline
   already present in the copied text remains part of that text.
 
-The emulator retains ownership of replacing existing selections and the separate
-announced MIME-paste protocol. Those delegated paths are not claimed as verified
-newline normalization. Serial and RDP clipboard behavior is unchanged.
+The emulator retains selection replacement and framing; newline normalization
+runs at the SSH writer boundary only inside an explicit clipboard scope.
+Ordinary typing/command dispatch remains verbatim. A delayed paste whose
+connection was cancelled cannot write to a replacement connection. Temporary
+normalization buffers are cleared after writing. The separate announced MIME
+protocol is delegated unchanged; Serial and RDP clipboard behavior is unchanged.
 
 ## Focused evidence
 
 - 37 selected unit tests passed: local key passphrase detection, SSH error
   messages and localization. Coverage includes RSA PEM, unencrypted PKCS#8 and
   Ed25519/OpenSSH, encrypted PKCS#8, missing/malformed keys and cancellation.
+- Seven additional stream-scope tests passed: selection-deletion prefix and
+  bracketed/legacy framing, unchanged ordinary input, concurrent typing,
+  restoration after failure, cancelled old-connection input, synchronous writes
+  and retained ownership of the underlying stream.
 - PL/EN key-credential UI checks pass: ordinary and forced unencrypted-key
   requests access no credential store and open no prompt; encrypted keys request
   a masked passphrase, while malformed keys do not open a password dialog.
@@ -39,13 +46,14 @@ newline normalization. Serial and RDP clipboard behavior is unchanged.
   Existing session/account/cancellation/serialization guards remain covered.
 - A synthetic PTY records 2400 continuation lines with CRLF, LF and CR input,
   Unicode and literal backslashes, both bracketed and legacy framing, actual
-  keyboard shortcuts and right click. Remote TUI mouse tracking is respected.
+  keyboard shortcuts, right click and an existing selection. Remote TUI mouse tracking is respected.
   The clipboard is not rewritten and a disconnected terminal receives no data.
 - Focused terminal-focus and embedded-Help regression checks passed, including
   tab/split/SFTP focus isolation and the updated PL/EN instructions.
 - Actual disposable OpenSSH/Bash checks pass for both bracketed and legacy paste:
-  1200 UTF-8 continuation lines copied as CRLF produce the exact expected
-  SHA-256. With no final newline, execution occurs only after explicit Enter.
+  keyboard-selected input is replaced by 1200 UTF-8 continuation lines copied as
+  CRLF, producing the exact expected SHA-256. With no final newline, execution
+  occurs only after explicit Enter.
   The disposable encrypted OpenSSH fixture key is correctly identified.
 
 Initial test runs identified and corrected encrypted-PKCS#8 error classification

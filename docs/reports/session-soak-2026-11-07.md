@@ -50,12 +50,14 @@ counted as a successful duration run.
 
 ## Full run
 
-The four-hour/100-cycle run is pending. It must be launched from the clean
-committed source and a matching stopped harness, and its eventual result must
-come from result.json plus the coordinator exit result. RUNNING is not PASS.
+The four-hour/100-cycle run started on 2026-11-07 at 11:42 UTC (12:42 Warsaw)
+from clean commit e3c74a2a2981d37a924b05dd2278e8a4d8ac0895 and its frozen
+matching harness. Eight sessions reached steady state at 11:42:49 UTC.
+The final result is pending and must come from result.json plus the coordinator
+exit result. RUNNING is not PASS.
 Do not mark the complete stability stage closed on the basis of calibration.
 
-The planned retained report is
+The retained report is
 artifacts/reports/session-soak-2026-11-07-windows-4h-01. Its eventual status must be
 read from the files, not inferred from this preparation report.
 

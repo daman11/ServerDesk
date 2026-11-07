@@ -501,7 +501,7 @@ internal sealed partial class SessionPane : WorkspacePane
             if(disk.Percent>=85) { var token=disk.Percent>=95?"Danger":"Warning"; DesignSystem.Resource(label,TextBlock.ForegroundProperty,token); DesignSystem.Resource(bar,ProgressBar.ForegroundProperty,token); }
             diskRows.Children.Add(new StackPanel { Spacing=DesignTokens.Small,Children={label,stats,bar} });
         }
-        disks.IsVisible=snapshot.DiskDetails.Count==0; disks.Text=snapshot.Disks.Length>0?snapshot.Disks:L.T("Dane dysków niedostępne");
+        disks.IsVisible=snapshot.DiskDetails.Count==0; disks.Text=L.T("Dane dysków niedostępne");
         networkRows.Children.Clear();
         foreach(var nic in snapshot.NetworkDetails.Interfaces)
         {

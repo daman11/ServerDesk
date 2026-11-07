@@ -1,4 +1,6 @@
 using System.Globalization;
+using System.Net;
+using System.Net.Sockets;
 using System.Text.Json;
 
 namespace ServerDesk.Infrastructure;
@@ -12,7 +14,7 @@ public sealed record DiskInfo(string Device,string FileSystem,string MountPoint,
         {
             var fields=line.Split((char[]?)null,7,StringSplitOptions.RemoveEmptyEntries);
             if(fields.Length!=7 || !long.TryParse(fields[2],NumberStyles.None,CultureInfo.InvariantCulture,out var total) || !long.TryParse(fields[3],NumberStyles.None,CultureInfo.InvariantCulture,out var used) || !long.TryParse(fields[4],NumberStyles.None,CultureInfo.InvariantCulture,out var available) || !double.TryParse(fields[5].TrimEnd('%'),NumberStyles.AllowDecimalPoint,CultureInfo.InvariantCulture,out var percent))continue;
-            if(total>long.MaxValue/1024 || used>long.MaxValue/1024 || available>long.MaxValue/1024)continue;
+            if(total>long.MaxValue/1024 || used>long.MaxValue/1024 || available>long.MaxValue/1024 || !double.IsFinite(percent))continue;
             result.Add(new(fields[0],fields[1],fields[6].Trim(),total*1024,used*1024,available*1024,Math.Clamp(percent,0,100)));
         }
         return result;
@@ -58,9 +60,17 @@ public sealed record NetworkDetails(IReadOnlyList<NetworkInterfaceInfo> Interfac
                 if(element.TryGetProperty("addr_info",out var addresses)&&addresses.ValueKind==JsonValueKind.Array)foreach(var a in addresses.EnumerateArray())
                 {
                     if(a.ValueKind!=JsonValueKind.Object)continue;
-                    var address=Field(a,"local"); if(address.Length==0)continue;
-                    if(a.TryGetProperty("prefixlen",out var p)&&p.ValueKind==JsonValueKind.Number&&p.TryGetInt32(out var prefix))address+="/"+prefix;
-                    if(Field(a,"family")=="inet")v4.Add(address); else if(Field(a,"family")=="inet6")v6.Add(address);
+                    var address=Field(a,"local"); if(!IPAddress.TryParse(address,out var parsed))continue;
+                    var family=Field(a,"family"); var maximum=family switch { "inet" when parsed.AddressFamily==AddressFamily.InterNetwork=>32,"inet6" when parsed.AddressFamily==AddressFamily.InterNetworkV6=>128,_=>-1 };
+                    if(maximum<0)continue;
+                    if(a.TryGetProperty("prefixlen",out var p))
+                    {
+                        // An absent prefix is unknown; an explicitly malformed
+                        // one invalidates this entry instead of becoming a bare IP.
+                        if(p.ValueKind!=JsonValueKind.Number || !p.TryGetInt32(out var prefix) || prefix<0 || prefix>maximum)continue;
+                        address+="/"+prefix;
+                    }
+                    if(family=="inet")v4.Add(address); else v6.Add(address);
                 }
                 interfaces.Add(new(Field(element,"ifname"),Field(element,"operstate"),Field(element,"address"),string.Join(", ",v4),string.Join(", ",v6)));
             }
@@ -74,7 +84,10 @@ public sealed record NetworkDetails(IReadOnlyList<NetworkInterfaceInfo> Interfac
             {
                 using var document=JsonDocument.Parse(json);
                 if(document.RootElement.ValueKind==JsonValueKind.Array)foreach(var route in document.RootElement.EnumerateArray())
-                    if(route.ValueKind==JsonValueKind.Object && Field(route,"gateway") is { Length:>0 } gateway)gateways.Add(gateway+" · "+Field(route,"dev"));
+                    if(route.ValueKind==JsonValueKind.Object && Field(route,"gateway") is { Length:>0 } gateway && IPAddress.TryParse(gateway,out _))
+                    {
+                        var device=Field(route,"dev"); gateways.Add(device.Length>0?gateway+" · "+device:gateway);
+                    }
             }
             catch(JsonException) { }
             if(gateways.Count==before)gateways.AddRange(NetworkTextParser.Gateways(fallback));

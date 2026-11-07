@@ -122,6 +122,7 @@ if(args.Contains("--trusted-hosts-network")) { TrustedHostsChecks.Network(root,a
 if(args.Contains("--terminal-search")) { TerminalSearchChecks.Run(root); return; }
 if(args.Contains("--terminal-search-network")) { TerminalSearchChecks.Network(root,args[1],args[2]); return; }
 if(args.Contains("--ssh-responsiveness")) { SshResponsivenessChecks.Run(root,args[1],args[2]); return; }
+if(args.Contains("--monitoring-validation")) { MonitoringValidationChecks.Run(root); return; }
 if(args.Contains("--monitoring-acceptance")) { MonitoringAcceptanceChecks.Run(root,args[1],args[2]); return; }
 if(args.Contains("--session-lifecycle")) { SessionLifecycleChecks.Run(root); if(args.Length>=4)SessionLifetimeNetworkChecks.Run(root,args[1],args[2]); return; }
 if(args.Contains("--session-endurance")) { SessionLifetimeNetworkChecks.Endurance(root,args[1],args[2],int.Parse(args[Array.IndexOf(args,"--session-endurance")+1])); return; }

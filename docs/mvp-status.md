@@ -1,5 +1,7 @@
 # Pierwotne MVP — wydanie lokalne 0.51.0
 
+Krok roboczy z 2026-11-07 wzmacnia monitoring Linuxa: odrzuca niepoprawne procenty dysków, adresy IP i prefiksy, zachowuje poprawne bramy z odczytu tekstowego oraz pozostałe metryki przy częściowych danych. Poprawna kolejna próbka przywraca widok. [61 testów, kontrola UI PL/EN i ograniczenia](reports/monitoring-validation-2026-11-07.md).
+
 Krok roboczy z 2026-11-07 poprawia diagnostykę Network Tools: błędy mają bezpieczne wpisy w logach i identyfikatory, komunikaty rozróżniają lokalny zapis od sieci, a ich pełną treść można skopiować. Odmowa zapisu historii nie ukrywa udanego wyniku. [Celowane testy PL/EN i ograniczenia](reports/network-diagnostics-2026-11-07.md).
 
 Krok roboczy z 2026-11-07 rozwija odzyskiwanie danych: 33 celowane testy i kontrola UI PL/EN obejmują odtworzone odnośniki haseł, własnych komend i kolekcji z osobnym kontrolowanym magazynem. Komunikaty wskazują odblokowanie i konieczność odtworzenia także chronionej treści; sama kopia SQLite nadal jej nie zawiera. [Dowody i ograniczenia](reports/restore-consistency-2026-11-07.md). Rzeczywiste portfele systemowe i pozostała akceptacja 1.0 pozostają otwarte.

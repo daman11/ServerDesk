@@ -1,5 +1,7 @@
 # Verification and historical reviews
 
+- [Monitoring data validation, 2026-11-07](monitoring-validation-2026-11-07.md) — finite disk percentages, validated JSON addresses/gateways, preserved partial metrics and focused PL/EN presentation recovery.
+
 - [Network Tools error diagnostics, 2026-11-07](network-diagnostics-2026-11-07.md) — safe correlated log events, local/network guidance, copyable full status and focused PL/EN failure/retry checks.
 
 - [Database restoration and protected content, 2026-11-07](restore-consistency-2026-11-07.md) — isolated reference/payload recovery tests and conditional PL/EN recovery guidance.

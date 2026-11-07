@@ -1,5 +1,7 @@
 # Pierwotne MVP — wydanie lokalne 0.51.0
 
+Poprawka robocza z 2026-11-07 ponownie dopasowuje osadzony obraz Windows RDP po przeniesieniu między monitorami i zmianie DPI. Kontrola geometrii rzeczywistej kontrolki, dwa monitory 100% i symulowane 150/200% przeszły; potwierdzenie z zalogowanym pulpitem pozostaje otwarte. [Zakres i dowody](reports/rdp-viewport-2026-11-07.md).
+
 Krok roboczy z 2026-11-07 wzmacnia monitoring Linuxa: odrzuca niepoprawne procenty dysków, adresy IP i prefiksy, zachowuje poprawne bramy z odczytu tekstowego oraz pozostałe metryki przy częściowych danych. Poprawna kolejna próbka przywraca widok. [61 testów, kontrola UI PL/EN i ograniczenia](reports/monitoring-validation-2026-11-07.md).
 
 Krok roboczy z 2026-11-07 poprawia diagnostykę Network Tools: błędy mają bezpieczne wpisy w logach i identyfikatory, komunikaty rozróżniają lokalny zapis od sieci, a ich pełną treść można skopiować. Odmowa zapisu historii nie ukrywa udanego wyniku. [Celowane testy PL/EN i ograniczenia](reports/network-diagnostics-2026-11-07.md).

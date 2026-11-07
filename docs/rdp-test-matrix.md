@@ -1,5 +1,7 @@
 # Macierz RDP, klawiatury, schowka, D&D i DPI
 
+Krok roboczy z 2026-11-07 poprawia dopasowanie osadzonego obrazu Windows RDP po zmianie monitora/DPI. [Raport](reports/rdp-viewport-2026-11-07.md): rzeczywista kontrolka, przeniesienie własnego okna między dwoma monitorami 100%, syntetyczne 150/200%, geometria i zachowane HWND bez logowania. Nie zalicza fizycznych mieszanych DPI ani obrazu/wejścia aktywnej sesji RDP; te próby pozostają otwarte.
+
 ## Uzupełnienie 19 października 2026 — krok roboczy po 0.43.0
 
 Kolejny etap dodaje Windows **Pliki z RDP**: Ctrl+C w zdalnym Eksploratorze → podgląd wspólnego schowka → przeciągnięcie uchwytu do lokalnego folderu. To mostek przez schowek, nie ciągły gest wychodzący ze zdalnego Eksploratora. [Raport lokalny](reports/rdp-clipboard-export-2026-10-19.md). Maintener ograniczył ten etap do implementacji i testów lokalnych; C08, pełne C06/C12, fizyczne AltGr/IME, Linux/mysz oraz sieć pozostają do wykonania z działającymi VM. Nie oznaczać ich jako LIVE na podstawie lokalnego COM ani wyniku konsoli VMware.

@@ -164,6 +164,7 @@ Ten dokument ustala plan; nie zalicza tych przyszłych prób. Aktualizacja sameg
 
 ## 5. Systemy, sprzęt i UX — do domknięcia
 
+- [x] Krok roboczy z 2026-11-07: dopasowanie obrazu Windows RDP do rzeczywistego obszaru natywnej kontrolki po zmianie monitora, DPI, rozmiaru i rodzica. 12 testów przeliczeń, rzeczywista kontrolka na dwóch monitorach 100%, syntetyczne 150/200%, lokalny fallback i zwalnianie HWND. [Granice](reports/rdp-viewport-2026-11-07.md): bez logowania; aktywna sesja i fizyczne mieszane DPI nadal wymagają potwierdzenia.
 - [x] Jawna [macierz środowisk i checklista natywnej akceptacji](platform-support.md), w tym podana konfiguracja Kali 2026.3/KDE Plasma 6.7.4/Wayland/100%; odczytowy preflight Linux bez ingerencji w portfel użytkownika.
 - [x] Dialogi reagują na zmiany ekranów/DPI i odzyskują pierwotne limity po powrocie na większy ekran. Automatyczna próba PL/EN, pięciu motywów, tekstu 16, symulacji 100/150/200/100%, klawiatury i zwalniania zamkniętych okien; [zakres](reports/platform-ux-2026-10-16.md).
 - [x] Ograniczona 10-minutowa próba Windows: osiem rzeczywistych sesji na własnym OpenSSH, 36 reconnect, SFTP/dokowanie i zapis CPU/pamięci/uchwytów/wątków oraz stanu po zamknięciu. Nie zastępuje wielogodzinnego soak ani próby Linux.

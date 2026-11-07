@@ -26,6 +26,7 @@ internal sealed partial class WindowsRdpHost : NativeControlHost, IDisposable
     internal event Action? Reconnected;
     internal event Action? ViewportChanged;
     private TopLevel? scalingRoot;
+    private (PixelRect Area,double Scale)? viewportMonitor;
     private readonly DispatcherTimer repaintTimer=new() { Interval=TimeSpan.FromSeconds(5) };
     internal WindowsRdpHost() { repaintTimer.Tick+=(_,_)=> { if(IsLoggedIn)RefreshDisplay(); }; }
     private delegate void ReconnectHandler(int reason,int attempt,ref int continuation);
@@ -33,19 +34,42 @@ internal sealed partial class WindowsRdpHost : NativeControlHost, IDisposable
     {
         base.OnAttachedToVisualTree(e); scalingRoot=TopLevel.GetTopLevel(this);
         if(scalingRoot!=null)scalingRoot.ScalingChanged+=ScalingChanged;
-        if(scalingRoot is Window root)root.Activated+=WindowActivated;
+        if(scalingRoot is Window root)
+        {
+            root.Activated+=WindowActivated; root.PositionChanged+=WindowPositionChanged;
+            root.Screens.Changed+=ScreensChanged; root.PropertyChanged+=RootPropertyChanged;
+            RememberViewportMonitor(root);
+        }
         if(IsLoggedIn)repaintTimer.Start();
-        ViewportChanged?.Invoke();
+        InvalidateViewport();
     }
     protected override void OnDetachedFromVisualTree(VisualTreeAttachmentEventArgs e)
     {
         if(scalingRoot!=null)scalingRoot.ScalingChanged-=ScalingChanged;
-        if(scalingRoot is Window root)root.Activated-=WindowActivated;
+        if(scalingRoot is Window root)
+        { root.Activated-=WindowActivated; root.PositionChanged-=WindowPositionChanged; root.Screens.Changed-=ScreensChanged; root.PropertyChanged-=RootPropertyChanged; }
         repaintTimer.Stop();
-        scalingRoot=null; base.OnDetachedFromVisualTree(e);
+        scalingRoot=null; viewportMonitor=null; base.OnDetachedFromVisualTree(e);
     }
-    private void WindowActivated(object? sender,EventArgs e) { if(IsLoggedIn)RefreshDisplay(); }
-    private void ScalingChanged(object? sender,EventArgs e) { TryUpdateNativeControlPosition(); ViewportChanged?.Invoke(); }
+    private void WindowActivated(object? sender,EventArgs e)
+    { if(IsLoggedIn) { lastViewport=null; ViewportChanged?.Invoke(); RefreshDisplay(); } }
+    private void ScalingChanged(object? sender,EventArgs e) { TryUpdateNativeControlPosition(); InvalidateViewport(); }
+    private bool RememberViewportMonitor(Window root)
+    {
+        var screen=root.Screens.ScreenFromWindow(root); if(screen==null)return false;
+        var next=(screen.WorkingArea,screen.Scaling); var changed=viewportMonitor!=next; viewportMonitor=next; return changed;
+    }
+    private void WindowPositionChanged(object? sender,PixelPointEventArgs e)
+    { if(sender is Window root && RememberViewportMonitor(root))InvalidateViewport(); }
+    private void ScreensChanged(object? sender,EventArgs e)=>InvalidateViewport();
+    private void RootPropertyChanged(object? sender,AvaloniaPropertyChangedEventArgs e)
+    { if(e.Property==Window.WindowStateProperty && scalingRoot is Window { WindowState:not WindowState.Minimized })InvalidateViewport(); }
+    private void InvalidateViewport()
+    {
+        // Display transitions can need a fresh application even when their final
+        // pixel dimensions match the last request. Let the pane wait for layout.
+        lastViewport=null; LastDisplaySettings=null; ViewportChanged?.Invoke();
+    }
     internal bool IsRunning { get; private set; }
     private volatile bool isLoggedIn;
     internal bool IsLoggedIn { get=>isLoggedIn; private set=>isLoggedIn=value; }
@@ -71,10 +95,15 @@ internal sealed partial class WindowsRdpHost : NativeControlHost, IDisposable
             try { control=Marshal.GetObjectForIUnknown(unknown); } finally { Marshal.Release(unknown); }
             Subscribe(3,(Action)(()=> { IsLoggedIn=true; IsReconnecting=false; repaintTimer.Start(); LoginComplete?.Invoke(); }));
             Subscribe(4,(Action<int>)(reason=> { repaintTimer.Stop(); IsRunning=IsLoggedIn=IsReconnecting=false; Disconnected?.Invoke(reason); }));
-            Subscribe(12,(Action<int,int>)((width,height)=>RemoteDesktopSize=(width,height)));
+            Subscribe(12,(Action<int,int>)((width,height)=>
+            {
+                RemoteDesktopSize=(width,height); lastViewport=null; ViewportChanged?.Invoke();
+                // Keep LastDisplaySettings: an acknowledgement must not start a
+                // loop of identical server display requests.
+            }));
             Subscribe(23,(Action<int>)(_=>FocusReleased?.Invoke()));
             Subscribe(17,(ReconnectHandler)((int reason,int attempt,ref int continuation)=> { repaintTimer.Stop(); IsLoggedIn=false; IsReconnecting=true; continuation=0; Reconnecting?.Invoke(attempt); }));
-            Subscribe(33,(Action)(()=> { IsLoggedIn=true; IsReconnecting=false; LastDisplaySettings=null; repaintTimer.Start(); Reconnected?.Invoke(); }));
+            Subscribe(33,(Action)(()=> { IsLoggedIn=true; IsReconnecting=false; InvalidateViewport(); repaintTimer.Start(); Reconnected?.Invoke(); }));
             RegisterFileDrop();ready.TrySetResult();
             return new PlatformHandle(window,"HWND");
         }
@@ -112,7 +141,8 @@ internal sealed partial class WindowsRdpHost : NativeControlHost, IDisposable
             Put(advanced,"keepAliveInterval",10000); Put(advanced,"overallConnectionTimeout",30); Put(advanced,"singleConnectionTimeout",15);
             Put(advanced,"HotKeyFocusReleaseLeft",0x25); Put(advanced,"HotKeyFocusReleaseRight",0x27);
             var secured=Get("SecuredSettings2"); try { Put(secured,"KeyboardHookMode",(int)profile.Rdp.KeyboardMode); } finally { Marshal.ReleaseComObject(secured); }
-            Put(advanced,"SmartSizing",profile.Rdp.DynamicResolution); Put(advanced,"ClearTextPassword",password);
+            smartSizing=profile.Rdp.DynamicResolution; lastViewport=null;
+            Put(advanced,"SmartSizing",smartSizing); Put(advanced,"ClearTextPassword",password);
             IsRunning=true; IsLoggedIn=IsReconnecting=false; LastDisplaySettings=null;
             try { Call("Connect"); } catch { IsRunning=false; throw; }
         }
@@ -158,7 +188,14 @@ internal sealed partial class WindowsRdpHost : NativeControlHost, IDisposable
         if(window!=0) { DestroyWindow(window); window=0; }
         if(parking!=0) { DestroyWindow(parking); parking=0; }
     }
-    public void Dispose() { if(disposed)return; if(scalingRoot!=null)scalingRoot.ScalingChanged-=ScalingChanged; if(scalingRoot is Window root)root.Activated-=WindowActivated; scalingRoot=null; Disconnect(); disposed=true; Release(); }
+    public void Dispose()
+    {
+        if(disposed)return;
+        if(scalingRoot!=null)scalingRoot.ScalingChanged-=ScalingChanged;
+        if(scalingRoot is Window root)
+        { root.Activated-=WindowActivated; root.PositionChanged-=WindowPositionChanged; root.Screens.Changed-=ScreensChanged; root.PropertyChanged-=RootPropertyChanged; }
+        scalingRoot=null; viewportMonitor=null; Disconnect(); disposed=true; Release();
+    }
 
     [DefaultDllImportSearchPaths(DllImportSearchPath.System32)]
     [DllImport("atl.dll")] [return:MarshalAs(UnmanagedType.Bool)] private static extern bool AtlAxWinInit();

@@ -42,6 +42,13 @@ if(args.Contains("--native-desktop"))
     if(OperatingSystem.IsWindows())ui.SetApartmentState(ApartmentState.STA);
     ui.Start(); ui.Join(); if(error!=null)throw error; return;
 }
+if(args.Contains("--native-rdp-viewport"))
+{
+    if(!OperatingSystem.IsWindows())throw new PlatformNotSupportedException();
+    Exception? error=null;
+    var ui=new Thread(()=> { try { AppBuilder.Configure<App>().UsePlatformDetect().WithInterFont().SetupWithoutStarting(); NativeRdpViewportChecks.Run(root); } catch(Exception ex) { error=ex; } });
+    ui.SetApartmentState(ApartmentState.STA); ui.Start(); ui.Join(); if(error!=null)throw error; return;
+}
 if(args.Contains("--native-rdp"))
 {
     if(!OperatingSystem.IsWindows())throw new PlatformNotSupportedException();

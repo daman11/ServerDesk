@@ -98,10 +98,10 @@ internal sealed partial class SessionPane
         try
         {
             await Task.Delay(300,delay.Token);
-            if(embeddedRdp is { IsLoggedIn:true } host && Profile.Rdp.DynamicResolution && host.IsEffectivelyVisible)
+            if(embeddedRdp is {} host && host.IsEffectivelyVisible)
             {
-                var scale=TopLevel.GetTopLevel(host)?.RenderScaling??1;
-                if(host.Bounds.Width>0 && host.Bounds.Height>0)host.ResizeDesktop(ServerDesk.Core.RdpDisplaySettings.FromViewport(host.Bounds.Width,host.Bounds.Height,scale),force);
+                var settings=host.SynchronizeViewport(force);
+                if(host.IsLoggedIn && Profile.Rdp.DynamicResolution && settings!=null)host.ResizeDesktop(settings,force);
             }
         }
         catch(OperationCanceledException) when(delay.IsCancellationRequested) { }

@@ -1,5 +1,7 @@
 # Verification and historical reviews
 
+- [Windows RDP viewport fitting, 2026-11-07](rdp-viewport-2026-11-07.md) — native pixel/object bounds, fitting after monitor/DPI changes, actual 100% monitor move and synthetic DPI checks; live-session confirmation remains open.
+
 - [Monitoring data validation, 2026-11-07](monitoring-validation-2026-11-07.md) — finite disk percentages, validated JSON addresses/gateways, preserved partial metrics and focused PL/EN presentation recovery.
 
 - [Network Tools error diagnostics, 2026-11-07](network-diagnostics-2026-11-07.md) — safe correlated log events, local/network guidance, copyable full status and focused PL/EN failure/retry checks.

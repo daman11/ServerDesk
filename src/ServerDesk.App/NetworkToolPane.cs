@@ -1,4 +1,5 @@
 using System.Collections.ObjectModel;
+using System.Runtime.CompilerServices;
 using Avalonia;
 using Avalonia.Automation;
 using Avalonia.Controls;
@@ -28,7 +29,8 @@ internal sealed partial class NetworkToolPane : WorkspacePane
     private readonly NetworkToolsStore store;
     private readonly NetworkToolsService service;
     private readonly TextBox target=new() { Name="NetworkTarget" };
-    private readonly TextBlock status=DesignSystem.Label(L.T("Gotowy"),true,12),summary=DesignSystem.Label("",true,12);
+    private readonly SelectableTextBlock status=new() { Name="NetworkStatus",Text=L.T("Gotowy"),TextWrapping=TextWrapping.Wrap };
+    private readonly TextBlock summary=DesignSystem.Label("",true,12);
     private readonly ProgressBar progress=new() { Maximum=100,Height=3,IsVisible=false };
     private readonly ObservableCollection<NetworkRow> rows=[];
     private readonly ListBox resultList=new() { Name="NetworkResults" };
@@ -67,7 +69,7 @@ internal sealed partial class NetworkToolPane : WorkspacePane
         AutomationProperties.SetName(saved,L.T("Zapisany host")); saved.SelectionChanged+=(_,_)=> { if(saved.SelectedItem is HostChoice choice)UseHost(choice.Host); };
         Grid.SetColumn(saved,1); targetRow.Children.Add(saved); targetRow.SizeChanged+=(_,_)=> { var narrow=targetRow.Bounds.Width<520; saved.IsVisible=!narrow; targetRow.ColumnDefinitions[1].Width=narrow?new GridLength(0):GridLength.Auto; };
         start=Dialogs.Button("Start",()=>_=StartAsync()); stop=Dialogs.Button("Stop",Stop); restart=Dialogs.Button("Restart",()=>_=RestartAsync());
-        copy=Dialogs.Button("Kopiuj wyniki",()=>_=GuardAsync(CopyAsync)); export=Dialogs.Button("Eksportuj wyniki",()=>_=GuardAsync(ExportAsync)); start.Classes.Add("primary"); stop.IsEnabled=false; copy.IsEnabled=export.IsEnabled=false;
+        copy=Dialogs.Button("Kopiuj wyniki",()=>_=GuardAsync(CopyAsync,"Results.Copy")); export=Dialogs.Button("Eksportuj wyniki",()=>_=GuardAsync(ExportAsync,"Results.Export")); start.Classes.Add("primary"); stop.IsEnabled=false; copy.IsEnabled=export.IsEnabled=false;
         exportFormat.ItemsSource=tool==NetworkToolKind.Tls?new[]{"TXT","CSV","JSON","PEM"}:tool==NetworkToolKind.Http?new[]{"TXT","CSV","JSON","Response"}:new[]{"TXT","CSV","JSON"}; exportFormat.SelectedIndex=0;
         exportFormat.ItemTemplate=OptionTemplate();
         var actions=new WrapPanel { Orientation=Orientation.Horizontal,Children={start,stop,restart,copy,export,exportFormat} }; foreach(var action in actions.Children)action.Margin=new Thickness(0,2,6,2);
@@ -80,7 +82,9 @@ internal sealed partial class NetworkToolPane : WorkspacePane
         var headerScroll=new ScrollViewer { Content=header,MaxHeight=280,HorizontalScrollBarVisibility=ScrollBarVisibility.Disabled };
         var moduleHeader=new Border { Name="NetworkModuleHeader",Child=headerScroll,BorderThickness=new Thickness(0,0,0,1) }; DesignSystem.Resource(moduleHeader,Border.BackgroundProperty,"BackgroundSecondary"); DesignSystem.Resource(moduleHeader,Border.BorderBrushProperty,"BorderStrong"); Children.Add(moduleHeader);
         var actionSurface=new Border { Child=actions,Margin=new Thickness(16,2) }; Grid.SetRow(actionSurface,1); Children.Add(actionSurface);
-        chart.IsVisible=false; summary.TextWrapping=TextWrapping.Wrap; summary.MaxLines=3; summary.TextTrimming=TextTrimming.CharacterEllipsis; status.TextWrapping=TextWrapping.Wrap; status.MaxLines=2;
+        chart.IsVisible=false; summary.TextWrapping=TextWrapping.Wrap; summary.MaxLines=3; summary.TextTrimming=TextTrimming.CharacterEllipsis;
+        DesignSystem.Resource(status,TextBlock.FontSizeProperty,"FontCaption"); DesignSystem.Resource(status,TextBlock.ForegroundProperty,"ForegroundSecondary");
+        AutomationProperties.SetName(status,L.T("Stan narzędzia"));
         SizeChanged+=(_,_)=> { headerScroll.MaxHeight=Math.Max(100,Bounds.Height*.42); chart.IsVisible=tool==NetworkToolKind.Ping && rows.Count>0 && Bounds.Height>=450; };
         var live=new StackPanel { Spacing=5,Margin=new Thickness(16,0,16,8),Children={summary,chart,progress} }; Grid.SetRow(live,2); Children.Add(live);
         var results=BuildTable();
@@ -101,10 +105,12 @@ internal sealed partial class NetworkToolPane : WorkspacePane
             Grid.SetRow(views,3); Children.Add(views);
         }
         else { Grid.SetRow(results,3); Children.Add(results); }
-        status.Margin=new Thickness(16,6); Grid.SetRow(status,4); Children.Add(status);
+        var statusScroll=new ScrollViewer { Name="NetworkStatusScroll",Content=status,MaxHeight=96,Margin=new Thickness(16,6),HorizontalScrollBarVisibility=ScrollBarVisibility.Disabled,VerticalScrollBarVisibility=ScrollBarVisibility.Auto };
+        status.PropertyChanged+=(_,e)=> { if(e.Property==TextBlock.TextProperty)statusScroll.Offset=default; };
+        Grid.SetRow(statusScroll,4); Children.Add(statusScroll);
         AddHandler(KeyDownEvent,(_,e)=> { if(e.Key==Key.Escape && (IsRunning || subnetDelay!=null || !restarting.IsCompleted)) { Stop(); e.Handled=true; } else if(e.Key==Key.Enter && e.KeyModifiers.HasFlag(KeyModifiers.Control)) { _=StartAsync(); e.Handled=true; } else if(e.Key==Key.F5) { _=RestartAsync(); e.Handled=true; } },RoutingStrategies.Tunnel);
         target.TextChanged+=(_,_)=> { clearTarget.IsVisible=!string.IsNullOrEmpty(target.Text); UpdateCaption(); if(Tool==NetworkToolKind.Subnet && !applying)_=GuardAsync(RecalculateAsync); };
-        Loaded+=(_,_)=>_=GuardAsync(RefreshSavedAsync);
+        Loaded+=(_,_)=>_=GuardAsync(RefreshSavedAsync,"History.Refresh");
     }
     private sealed record HostChoice(string Name,string Host) { public override string ToString()=>Name+" · "+Host; }
     private string HostTarget(string host)
@@ -180,7 +186,7 @@ internal sealed partial class NetworkToolPane : WorkspacePane
         if(disposed)return Task.CompletedTask;
         if(history)subnetDelay?.Cancel();
         if(IsRunning)return running;
-        NetworkRequest request; try { request=ReadRequest(); request.Validate(); } catch(Exception ex) { status.Text=NetworkToolsService.Explain(ex); DesignSystem.Resource(status,TextBlock.ForegroundProperty,"Danger"); return Task.CompletedTask; }
+        NetworkRequest request; try { request=ReadRequest(); request.Validate(); } catch(Exception ex) { ReportFailure(ex,"Validation",local:false); return Task.CompletedTask; }
         operation=CancellationTokenSource.CreateLinkedTokenSource(lifetime.Token); IsRunning=true; running=ExecuteAsync(request,ReadSecrets(),operation,history); return running;
     }
     private async Task ExecuteAsync(NetworkRequest request,NetworkSecrets secrets,CancellationTokenSource cancellation,bool history)
@@ -190,23 +196,23 @@ internal sealed partial class NetworkToolPane : WorkspacePane
         if(Tool!=NetworkToolKind.Subnet)foreach(var control in requestControls)control.IsEnabled=false;
         try
         {
-            var persistenceIssue=false;
-            async Task OptionalPersistence(Func<Task> action)
+            string? persistenceErrorId=null;
+            async Task OptionalPersistence(Func<Task> action,string operation)
             {
                 try { await action(); }
                 catch(OperationCanceledException) when(cancellation.IsCancellationRequested || lifetime.IsCancellationRequested) { throw; }
-                catch(Exception ex) { persistenceIssue=true; ApplicationDiagnostics.Report("NetworkTools.OptionalPersistence",ex,Serilog.Events.LogEventLevel.Warning); }
+                catch(Exception ex) { var id=ApplicationDiagnostics.Report($"NetworkTools.{Tool}.{operation}",ex,Serilog.Events.LogEventLevel.Warning); persistenceErrorId??=id; }
             }
             var reporter=new UiProgress(this);
-            var result=await Task.Run(async()=> { if(history)await OptionalPersistence(()=>store.AddHistoryAsync(request,cancellation.Token)).ConfigureAwait(false); return await service.RunAsync(request,secrets,reporter,cancellation.Token).ConfigureAwait(false); },cancellation.Token);
+            var result=await Task.Run(async()=> { if(history)await OptionalPersistence(()=>store.AddHistoryAsync(request,cancellation.Token),"History.Append").ConfigureAwait(false); return await service.RunAsync(request,secrets,reporter,cancellation.Token).ConfigureAwait(false); },cancellation.Token);
             if(disposed)return; summary.Text=result.Summary+(dropped>0?"\n"+L.F($"Zachowano ostatnie 2000 wyników; pominięte starsze: {dropped}. Eksport obejmuje zachowane wyniki."):""); response.Text=result.Body; responseHeaders.Text=result.Headers; pem=result.Pem; status.Text=L.T("Zakończono");
-            if(request.Tool==NetworkToolKind.Dns && request.Resolvers.Length>0)await OptionalPersistence(()=>store.RememberAsync("resolvers",request.Resolvers,lifetime.Token));
-            if(request.Tool==NetworkToolKind.Snmp)await OptionalPersistence(()=>store.RememberAsync("oids",request.Oid,lifetime.Token));
-            await OptionalPersistence(RefreshSavedAsync);
-            if(!disposed && persistenceIssue) { status.Text=L.T("Diagnostyka zakończona. Wyniki zachowano, ale nie udało się zapisać lub odczytać historii i ustawień lokalnych."); DesignSystem.Resource(status,TextBlock.ForegroundProperty,"Warning"); }
+            if(request.Tool==NetworkToolKind.Dns && request.Resolvers.Length>0)await OptionalPersistence(()=>store.RememberAsync("resolvers",request.Resolvers,lifetime.Token),"Preferences.Resolvers.Save");
+            if(request.Tool==NetworkToolKind.Snmp)await OptionalPersistence(()=>store.RememberAsync("oids",request.Oid,lifetime.Token),"Preferences.Oids.Save");
+            await OptionalPersistence(RefreshSavedAsync,"History.Refresh");
+            if(!disposed && persistenceErrorId!=null) { status.Text=WithErrorId(L.T("Diagnostyka zakończona. Wyniki zachowano, ale nie udało się zapisać lub odczytać historii i ustawień lokalnych."),persistenceErrorId); DesignSystem.Resource(status,TextBlock.ForegroundProperty,"Warning"); }
         }
         catch(OperationCanceledException) { if(!disposed)status.Text=cancellation.IsCancellationRequested?L.T("Zatrzymano"):L.T("Przekroczono czas oczekiwania."); }
-        catch(Exception ex) { if(!disposed) { status.Text=NetworkToolsService.Explain(ex); DesignSystem.Resource(status,TextBlock.ForegroundProperty,"Danger"); } }
+        catch(Exception ex) { ReportFailure(ex,"Run",local:false); }
         finally
         {
             if(!disposed) { IsRunning=false; start.IsEnabled=true; stop.IsEnabled=subnetDelay is { IsCancellationRequested:false }; progress.IsVisible=false; foreach(var control in requestControls)control.IsEnabled=true; if(rows.Count==0)emptyResults.Text=L.T("Brak wyników. Sprawdź komunikat poniżej i parametry narzędzia."); }
@@ -233,16 +239,16 @@ internal sealed partial class NetworkToolPane : WorkspacePane
         catch(OperationCanceledException) { }
         finally { if(ReferenceEquals(subnetDelay,delay)) { subnetDelay=null; if(!disposed && !IsRunning)stop.IsEnabled=false; } delay.Dispose(); }
     }
-    private Task GuardAsync(Func<Task> action)
+    private Task GuardAsync(Func<Task> action,[CallerMemberName] string operation="Action")
     {
         if(disposed)return Task.CompletedTask;
-        var task=GuardCoreAsync(action);
+        var task=GuardCoreAsync(action,operation);
         if(!task.IsCompleted) { actions.Add(task); _=ForgetAsync(task); }
         return task;
     }
     private async Task ForgetAsync(Task task) { await task; actions.Remove(task); }
-    private async Task GuardCoreAsync(Func<Task> action)
-    { try { await action(); } catch(OperationCanceledException) { } catch(Exception ex) { if(!disposed) { status.Text=NetworkToolsService.Explain(ex); DesignSystem.Resource(status,TextBlock.ForegroundProperty,"Danger"); } } }
+    private async Task GuardCoreAsync(Func<Task> action,string operation)
+    { try { await action(); } catch(OperationCanceledException) { } catch(Exception ex) { ReportFailure(ex,operation,local:true); } }
     private async Task CopyAsync()
     {
         if(TopLevel.GetTopLevel(this)?.Clipboard is not {} clipboard)return;
@@ -252,7 +258,7 @@ internal sealed partial class NetworkToolPane : WorkspacePane
     private Task ExportAsync()
     {
         if(disposed || !exporting.IsCompleted)return Task.CompletedTask;
-        return exporting=GuardAsync(ExportCoreAsync);
+        return exporting=GuardAsync(ExportCoreAsync,"Results.Export");
     }
     private async Task ExportCoreAsync()
     {

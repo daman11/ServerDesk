@@ -2015,6 +2015,7 @@
   "Pokaż serwer na liście": "Show server in connection list",
   "Magazyn systemowy nie udostępnił treści własnych komend. Odblokuj go i ponów odczyt. Przy odtwarzaniu kopii SQLite przywróć także chronione dane — baza zawiera tylko odnośniki. Wbudowane komendy nadal działają.": "The OS credential store did not provide your custom command content. Unlock it and retry. When restoring a SQLite backup, restore the protected data too; the database contains references only. Built-in commands remain available.",
   "Magazyn systemowy nie udostępnił treści tej kolekcji. Odblokuj go i ponów odczyt. Przy odtwarzaniu kopii SQLite przywróć także chronione dane — baza zawiera tylko odnośnik. Pozostałe kolekcje pozostawiono bez zmian.": "The OS credential store did not provide this collection's content. Unlock it and retry. When restoring a SQLite backup, restore the protected data too; the database contains a reference only. Other collections were left unchanged.",
+  "Stan narzędzia": "Tool status",
   "Nie pokazuj tego okna przy uruchamianiu": "Do not show this window at startup",
   "Ustawienie zostanie zapisane po zamknięciu okna. Sejf możesz odblokować ikoną klucza na górnym pasku.": "This preference will be saved when you close the window. Use the key icon in the top bar to unlock your vault.",
   "Sejf odblokowany — zarządzaj sejfem": "Vault unlocked — manage vault",

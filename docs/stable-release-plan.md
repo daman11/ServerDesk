@@ -153,6 +153,7 @@ Ten dokument ustala plan; nie zalicza tych przyszłych prób. Aktualizacja sameg
 
 ## 4. Dodatkowe moduły — do domknięcia akceptacji
 
+- [x] Krok roboczy z 2026-11-07: bezpieczne logowanie błędów wykonania i lokalnych akcji Network Tools, zgodne identyfikatory w komunikatach, rozróżnienie bazy/eksportu od sieci oraz kopiowanie pełnej treści. PL/EN, kontrolowana odmowa zapisu, ponowienie, anulowanie i późny błąd zamkniętej karty. [Zakres i granice](reports/network-diagnostics-2026-11-07.md). Pozostałe rzeczywiste urządzenia/łącza i pełny przegląd bezpieczeństwa pozostają otwarte.
 - [x] 0.39.1: zachowanie uszkodzonych indeksów historii/kolekcji bez cichego resetu; walidacja payloadów kolekcji, pól null i zapamiętanych DNS/OID/WoL przed zastosowaniem.
 - [x] 0.39.1: awaria opcjonalnego zapisu historii/preferencji nie blokuje diagnostyki i nie usuwa jej wyników; ostrzeżenie PL/EN. [Dziesięć zadań i granice prób](reports/release-verification-0.39.1.md).
 - [x] 0.40.0: Stop/Escape anuluje oczekujące obliczenie podsieci; ręczny Start usuwa stare przeliczenie z kolejki. Zamknięcie karty czeka na jej operacje i chroni przed spóźnionym wczytaniem kolekcji; wielokrotne Restart/Stop i anulowanie HTTP sprawdzane na własnym loopback. [Zakres i ograniczenia](reports/network-cancellation-2026-10-17.md).

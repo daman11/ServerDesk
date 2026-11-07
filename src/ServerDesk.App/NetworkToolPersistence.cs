@@ -21,18 +21,18 @@ internal sealed partial class NetworkToolPane
         items.Children.Add(historyChoice);
         var historyActions=new WrapPanel { Orientation=Orientation.Horizontal };
         var runHistory=Dialogs.Button("Uruchom z historii",()=> { if(historyChoice.SelectedItem is HistoryChoice choice) { ApplyRequest(choice.Entry.Request); _=StartAsync(); } }); runHistory.IsEnabled=false; historyActions.Children.Add(runHistory);
-        var deleteHistory=Dialogs.Button("Usuń wpis historii",()=>_=GuardAsync(async()=> { if(historyChoice.SelectedItem is HistoryChoice choice)await store.DeleteHistoryAsync(choice.Entry.Id,lifetime.Token); await RefreshSavedAsync(); })); deleteHistory.IsEnabled=false; historyActions.Children.Add(deleteHistory);
+        var deleteHistory=Dialogs.Button("Usuń wpis historii",()=>_=GuardAsync(async()=> { if(historyChoice.SelectedItem is HistoryChoice choice)await store.DeleteHistoryAsync(choice.Entry.Id,lifetime.Token); await RefreshSavedAsync(); },"History.Delete")); deleteHistory.IsEnabled=false; historyActions.Children.Add(deleteHistory);
         historyChoice.SelectionChanged+=(_,_)=>runHistory.IsEnabled=deleteHistory.IsEnabled=historyChoice.SelectedItem!=null;
-        clearHistory=Dialogs.Button("Wyczyść historię narzędzi",()=>_=GuardAsync(async()=> { await store.ClearHistoryAsync(lifetime.Token); await RefreshSavedAsync(); })); clearHistory.IsEnabled=false; historyActions.Children.Add(clearHistory); items.Children.Add(historyActions);
+        clearHistory=Dialogs.Button("Wyczyść historię narzędzi",()=>_=GuardAsync(async()=> { await store.ClearHistoryAsync(lifetime.Token); await RefreshSavedAsync(); },"History.Clear")); clearHistory.IsEnabled=false; historyActions.Children.Add(clearHistory); items.Children.Add(historyActions);
         items.Children.Add(collectionChoice);
         var actions=new WrapPanel { Orientation=Orientation.Horizontal };
         actions.Children.Add(Dialogs.Button("Zapisz kolekcję",()=>_=GuardAsync(async()=>
         {
             var request=ReadRequest(); request.Validate(); var name=await Dialogs.Prompt(TopLevel.GetTopLevel(this) as Window??owner,L.T("Nazwa kolekcji"),ct:lifetime.Token); if(name==null)return;
             lifetime.Token.ThrowIfCancellationRequested(); await store.SaveCollectionAsync(name,request,ReadSecrets(),lifetime.Token); await RefreshSavedAsync(); if(!disposed)status.Text=L.T("Kolekcję zapisano w bezpiecznym magazynie systemowym.");
-        })));
-        var loadCollection=Dialogs.Button("Wczytaj kolekcję",()=>_=GuardAsync(async()=> { if(collectionChoice.SelectedItem is CollectionChoice choice) { var saved=await store.LoadCollectionAsync(choice.Entry.Id,lifetime.Token); lifetime.Token.ThrowIfCancellationRequested(); ApplyRequest(saved.Request,saved.Secrets); } })); loadCollection.IsEnabled=false; actions.Children.Add(loadCollection);
-        var deleteCollection=Dialogs.Button("Usuń kolekcję",()=>_=GuardAsync(async()=> { if(collectionChoice.SelectedItem is CollectionChoice choice)await store.DeleteCollectionAsync(choice.Entry.Id,lifetime.Token); await RefreshSavedAsync(); })); deleteCollection.IsEnabled=false; actions.Children.Add(deleteCollection); items.Children.Add(actions);
+        },"Collection.Save")));
+        var loadCollection=Dialogs.Button("Wczytaj kolekcję",()=>_=GuardAsync(async()=> { if(collectionChoice.SelectedItem is CollectionChoice choice) { var saved=await store.LoadCollectionAsync(choice.Entry.Id,lifetime.Token); lifetime.Token.ThrowIfCancellationRequested(); ApplyRequest(saved.Request,saved.Secrets); } },"Collection.Load")); loadCollection.IsEnabled=false; actions.Children.Add(loadCollection);
+        var deleteCollection=Dialogs.Button("Usuń kolekcję",()=>_=GuardAsync(async()=> { if(collectionChoice.SelectedItem is CollectionChoice choice)await store.DeleteCollectionAsync(choice.Entry.Id,lifetime.Token); await RefreshSavedAsync(); },"Collection.Delete")); deleteCollection.IsEnabled=false; actions.Children.Add(deleteCollection); items.Children.Add(actions);
         collectionChoice.SelectionChanged+=(_,_)=>loadCollection.IsEnabled=deleteCollection.IsEnabled=collectionChoice.SelectedItem!=null;
         if(Tool==NetworkToolKind.Wake)
         {

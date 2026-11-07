@@ -12,6 +12,12 @@ Menu kontekstowe zapisanego serwera zawiera **Narzędzia sieciowe** z dziewięci
 
 Podczas operacji sieciowej pola celu/parametrów i wybór historii są zablokowane, aby wyniki nie mieszały się z nowym celem. Użyj Stop, zmień parametry i Start lub Restart. Kalkulator pozostaje edytowalny i przelicza automatycznie. Po zaznaczeniu wiersza rozwiń **Szczegóły zaznaczonego wyniku**, aby odczytać i skopiować całą treść. Wybór zapisanego hosta działa tak samo jak menu kontekstowe; w WoL zachowuje wpisany MAC i uzupełnia jedynie docelowy IPv4.
 
+## Komunikaty i logi
+
+Przy błędzie wykonania, odczytu/zapisu historii lub kolekcji albo eksportu karta pokazuje **Identyfikator błędu**. Zaznacz komunikat i skopiuj go wraz z identyfikatorem. Dłuższą treść można przewinąć; nie jest obcinana do dwóch linii. Wybierz **Ustawienia → Bezpieczeństwo → Logi i diagnostyka → Otwórz logi** i wyszukaj ten identyfikator, aby odczytać szczegóły lub pobrać log.
+
+Błąd lokalnej bazy lub eksportu jest opisany jako problem zapisu/odczytu, a błąd diagnostyki sieciowej zachowuje wskazówki właściwe dla narzędzia. Jeśli nie uda się jedynie zapisać historii lub ustawień, wynik diagnostyki pozostaje dostępny z ostrzeżeniem. Błędne parametry, zwykłe anulowanie i timeout obsługiwany przez ścieżkę anulowania nie tworzą wpisów błędu. Nowy kontekst logowania zawiera nazwę narzędzia i operacji, bez celu, nazw kolekcji, treści żądania ani poświadczeń. [Zakres testów i ograniczenia](reports/network-diagnostics-2026-11-07.md).
+
 ## Narzędzia
 
 | Narzędzie | Zakres |

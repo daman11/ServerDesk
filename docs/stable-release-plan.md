@@ -1,5 +1,7 @@
 # Droga do ServerDesk 1.0
 
+Krok z 2026-11-07: gotowe jest [izolowane stanowisko testu długotrwałego](session-soak.md) z ośmioma SSH, reconnect/close/open, SFTP, monitoringiem i pomiarami zasobów. [Kalibracja](reports/session-soak-2026-11-07.md) przeszła; pełny wynik czterech godzin i 100 cykli pozostaje otwarty do zakończenia właściwego przebiegu. Test headless nie zastępuje natywnego desktopu ani fizycznego sprzętu.
+
 Aktualny krok RDP: [eksport plików przez schowek i lokalny uchwyt przeciągania](reports/rdp-clipboard-export-2026-10-19.md). Po decyzji maintenera wykonujemy implementację i testy lokalne, bez uruchamiania VM. Pełna akceptacja RDP w etapie C pozostaje otwarta, w tym fizyczne wejście i awarie rzeczywistego transportu.
 
 Akceptacja VMware z 2026-10-19 obejmuje udostępnione Windows 11 Test i Ubuntu 26 Test. Rzeczywiste środowiska, wyniki, przerwania i otwarte próby opisuje [raport MVP w VM](reports/vm-mvp-2026-10-19.md). Jest to etap roboczy po 0.43.0, bez nowego RC; nie zastępuje sprzętu, pełnej macierzy RDP ani czterogodzinnej próby.

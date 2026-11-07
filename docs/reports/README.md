@@ -1,5 +1,7 @@
 # Verification and historical reviews
 
+- [Controlled session-soak preparation, 2026-11-07](session-soak-2026-11-07.md) — isolated workload, predefined retention budgets, short calibration and pending four-hour acceptance.
+
 - [Vault startup, SSH key prompts and multiline paste, 2026-11-06](vault-ssh-usability-2026-11-06.md) — focused PL/EN UI checks, local-key diagnostics and real loopback Bash continuation checks.
 
 - [0.51.0 Public Beta](release-verification-0.51.0.md) — browser navigation, long SFTP filenames, source integrity and release gates.

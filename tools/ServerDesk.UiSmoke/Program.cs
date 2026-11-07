@@ -33,7 +33,7 @@ if(Environment.GetEnvironmentVariable("SERVERDESK_EDITOR_TEST_ROOT") is {} edito
 
 var root=Path.GetFullPath(args.Length>0?args[0]:"artifacts/ui-smoke");
 Directory.CreateDirectory(root); Log.Logger=new LoggerConfiguration().WriteTo.File(Path.Combine(root,"ui-diagnostics.log")).CreateLogger();
-var dataRoot=Path.Combine(root,"data-"+Guid.NewGuid().ToString("N"));
+var dataRoot=args.Contains("--session-soak")?SessionSoakChecks.BootstrapDataRoot():Path.Combine(root,"data-"+Guid.NewGuid().ToString("N"));
 Environment.SetEnvironmentVariable("SERVERDESK_DATA_HOME",dataRoot);
 if(args.Contains("--native-desktop"))
 {
@@ -124,6 +124,7 @@ if(args.Contains("--ssh-responsiveness")) { SshResponsivenessChecks.Run(root,arg
 if(args.Contains("--monitoring-acceptance")) { MonitoringAcceptanceChecks.Run(root,args[1],args[2]); return; }
 if(args.Contains("--session-lifecycle")) { SessionLifecycleChecks.Run(root); if(args.Length>=4)SessionLifetimeNetworkChecks.Run(root,args[1],args[2]); return; }
 if(args.Contains("--session-endurance")) { SessionLifetimeNetworkChecks.Endurance(root,args[1],args[2],int.Parse(args[Array.IndexOf(args,"--session-endurance")+1])); return; }
+if(args.Contains("--session-soak")) { var at=Array.IndexOf(args,"--session-soak"); var seconds=int.Parse(args[at+1]); SessionSoakChecks.Run(root,args[1],args[2],new(seconds,int.Parse(args[at+2]),Math.Min(15,Math.Max(1,seconds/12)))); return; }
 if(args.Contains("--session-workflow")) { SessionWorkflowChecks.Run(root); return; }
 if(args.Contains("--transfer-overview")) { TransferOverviewChecks.Layout(root); return; }
 if(args.Contains("--network-tools")) { NetworkToolsChecks.Run(root); return; }

@@ -14,6 +14,7 @@ Bieżące wydanie lokalne: [0.51.0 Public Beta](releases/release-0.51.0.md) — 
 | Repozytorium i GitHub | [Git workflow and first upload](github.md) |
 | Aktualizacje programu | [GitHub Releases, instalacja i model zaufania](updates.md) |
 | Pliki robocze i miejsce na dysku | [Artifact retention and cleanup](artifacts.md) |
+| Test długotrwały sesji | [Izolowane osiem sesji SSH, cykle i pomiary](session-soak.md) |
 | Wydania | [Release procedure](releasing.md), [Release notes](releases/README.md), [Verification reports](reports/README.md) |
 | Przygotowanie wersji stabilnej | [Kolejność prac i warunki gotowości 1.0](stable-release-plan.md), [Checklista konkretnego RC](rc-checklist.md) |
 | Zakres projektu | [Droga do 1.0](stable-release-plan.md), [Stan MVP](mvp-status.md), [Roadmap](roadmap.md), [UI](ui-redesign.md), [Icons](icons.md) |

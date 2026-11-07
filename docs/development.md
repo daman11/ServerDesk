@@ -1,5 +1,7 @@
 # Rozwój i testy
 
+Test długotrwały: [izolowane stanowisko ośmiu sesji SSH](session-soak.md) uruchamia reconnect/close/open, SFTP, monitoring i zapis zasobów bez używania danych użytkownika. Krótka kalibracja i pełne cztery godziny mają osobne wyniki. [Stan przygotowań](reports/session-soak-2026-11-07.md).
+
 SFTP po 0.43.0: `ROOT --sftp-clipboard` sprawdza tekstowe kopiowanie nazw/ścieżek/katalogu i klawiaturę w obu panelach, dostępność offline, brak użycia niezatwierdzonego lub filtrowanego widoku oraz ponowne włączenie akcji po rzeczywistym filtrowaniu w tle. Korzysta wyłącznie z pamięciowych list i headless clipboard, bez serwerów czy portfela. `FileClipboardTests` obejmuje separatory Windows/POSIX, Unicode, duplikaty, dowiązania i limit tekstu. [Zakres](reports/sftp-clipboard-2026-10-19.md).
 
 Diagnostyka po 0.43.0: UiSmoke `ROOT --error-logging` sprawdza w PL/EN równoczesne błędy, zgodność ID okna i logu, ponowienie, anulowanie, zadanie kończące się po zamknięciu właściciela oraz bezpieczne stosy. Własne pliki z małym limitem wymuszają rotację, retencję i zapis przez dwa logger-y. Scenariusz jest w przyszłym CI Windows/Linux; nie używa osobistych baz, portfela ani serwerów. `ExceptionDiagnosticsTests` sprawdza też wadliwy getter stosu i nadmiarowe dane. [Zakres i wyniki](reports/error-logging-2026-10-19.md).

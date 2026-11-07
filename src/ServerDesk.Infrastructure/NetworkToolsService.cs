@@ -39,6 +39,7 @@ public sealed partial class NetworkToolsService(IIcmpProbe? icmp=null)
         HttpRequestException=>L.T("Zapytanie HTTP nie powiodło się. Sprawdź URL, połączenie i certyfikat HTTPS."),
         DnsClient.DnsResponseException=>L.T("Resolver DNS nie odpowiedział poprawnie. Sprawdź adres, port, timeout i dostępność DNS."),
         System.Text.Json.JsonException=>L.T("Niepoprawna składnia JSON w treści zapytania."),
+        ProtectedContentUnavailableException=>error.Message,
         InvalidDataException=>error.Message,
         _=>L.T("Operacja sieciowa nie powiodła się. Sprawdź parametry i dostępność usługi.") };
     private static async Task<IPAddress> ResolveAsync(NetworkRequest r,CancellationToken ct)

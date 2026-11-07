@@ -33,7 +33,7 @@ public sealed class CommandStore(ProfileRepository repository,ICredentialStore c
         using var bytes=new MemoryStream();
         foreach(var id in Parts(pointer))
         {
-            var text=await credentials.GetAsync(id,ct).ConfigureAwait(false)??throw new InvalidOperationException(L.T("Odblokuj systemowy magazyn poświadczeń, aby otworzyć własne komendy."));
+            var text=await credentials.GetAsync(id,ct).ConfigureAwait(false)??throw new ProtectedContentUnavailableException(L.T("Magazyn systemowy nie udostępnił treści własnych komend. Odblokuj go i ponów odczyt. Przy odtwarzaniu kopii SQLite przywróć także chronione dane — baza zawiera tylko odnośniki. Wbudowane komendy nadal działają."));
             if(text.Length>50000)throw new InvalidDataException("Invalid command vault part.");
             var part=Convert.FromBase64String(text); if(bytes.Length+part.Length>CommandValidation.MaxDocumentBytes)throw new InvalidDataException("Command vault too large."); bytes.Write(part);
         }

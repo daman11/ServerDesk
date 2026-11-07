@@ -43,6 +43,14 @@ Przed migracją istniejącej bazy ze schematu 0/1/2/3 do 4 aplikacja musi utworz
 4. Po sprawdzeniu i ponownym zamknięciu wszystkich instancji można przywrócić bazę w docelowym katalogu. Przenieś dotychczasowy plik i jego WAL/SHM do zabezpieczonego katalogu zamiast usuwać je. Umieść sprawdzoną kopię jako `serverdesk.db`.
 5. Sprawdź tożsamości serwerów. Stara kopia przywraca także wcześniejsze zaufanie SSH i wcześniejsze cele profili. Przywrócenie metadanych nie oznacza przywrócenia poświadczeń; w razie potrzeby podaj je ponownie. DPAPI jest związane z kontem i komputerem, Linux korzysta z osobnego systemowego keyringu.
 
+### Hasła, własne komendy i kolekcje po odtworzeniu
+
+Kopia przywraca odnośniki do chronionych danych, bez ich historycznych wersji. Jeśli po wykonaniu kopii zmienisz hasło tego samego połączenia, stara baza nadal wskaże ten sam wpis magazynu z nowszym hasłem. Zmiana tożsamości serwera tworzy inne powiązanie; odtworzony profil nie powinien używać hasła nowego celu.
+
+Edycja biblioteki komend lub usunięcie kolekcji może usunąć chronioną treść wskazywaną przez starszą kopię. Sama poprawna baza SQLite jej nie odtworzy. W takiej sytuacji Komendy i Network Tools wyjaśniają potrzebę odblokowania magazynu i przywrócenia również chronionych danych. Najpierw odblokuj właściwy magazyn i ponów odczyt; w Komendach wybierz **Opcje komend (…) → Ponów odczyt biblioteki**. Brak odpowiedzi magazynu nie przesądza o usunięciu wpisu — w Linux może oznaczać również niedostępny Secret Service lub brak narzędzia `secret-tool`.
+
+Gdy własnej biblioteki nie można wczytać, wbudowana ściągawka pozostaje dostępna, a jej niedostępna część nie jest automatycznie zastępowana pustą biblioteką. Pozostałe kolekcje zachowują swoje dane. Zabezpiecz istniejący katalog danych i magazyn przed ręcznym odzyskiwaniem; nie kasuj odnośników jako próby naprawy. [Celowane próby odtworzenia i ich ograniczenia](reports/restore-consistency-2026-11-07.md) nie zastępują kopii chronionego magazynu ani akceptacji na rzeczywistym koncie użytkownika.
+
 Jeśli baza jest uszkodzona, zajęta, niedostępna lub pochodzi z nowszego programu, komunikat startowy wyjaśnia problem. Po jego zamknięciu aplikacja kończy pracę bez zwykłego zapisu układu i preferencji. Nie usuwa bazy ani nie zastępuje jej automatycznie pustą.
 
 English: Close every app instance, preserve the original data directory and its database/WAL/SHM files together, then test a completed snapshot as `serverdesk.db` in a separate empty data directory using `SERVERDESK_DATA_HOME`. Never mix a restored database with another database's WAL. Database snapshots exclude credentials and encrypted command/collection contents in the OS credential store. Recheck restored profiles and SSH trust before connecting.

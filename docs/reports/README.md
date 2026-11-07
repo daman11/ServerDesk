@@ -1,6 +1,8 @@
 # Verification and historical reviews
 
-- [Controlled session-soak preparation, 2026-11-07](session-soak-2026-11-07.md) — isolated workload, predefined retention budgets, short calibration and pending four-hour acceptance.
+- [Database restoration and protected content, 2026-11-07](restore-consistency-2026-11-07.md) — isolated reference/payload recovery tests and conditional PL/EN recovery guidance.
+
+- [Four-hour Windows headless session soak, 2026-11-07](session-soak-2026-11-07.md) — PASS: eight SSH sessions, 100 cycles, 20 verified SFTP roundtrips and post-cleanup resource gates; native desktop/hardware acceptance remains open.
 
 - [Vault startup, SSH key prompts and multiline paste, 2026-11-06](vault-ssh-usability-2026-11-06.md) — focused PL/EN UI checks, local-key diagnostics and real loopback Bash continuation checks.
 

@@ -186,7 +186,7 @@ internal sealed partial class CommandPanel : Border,IDisposable
     private async Task ReloadLibraryAsync()
     {
         try { library=await store.ReadLibraryAsync(lifetime.Token); libraryLocked=false; notice.Text=""; }
-        catch(Exception ex) when(ex is not OperationCanceledException) { ApplicationDiagnostics.Report("Commands.ReadLibrary",ex,Serilog.Events.LogEventLevel.Warning); libraryLocked=true; notice.Text=L.T("Własna biblioteka jest zablokowana lub uszkodzona. Wbudowana ściągawka pozostaje dostępna."); }
+        catch(Exception ex) when(ex is not OperationCanceledException) { ApplicationDiagnostics.Report("Commands.ReadLibrary",ex,Serilog.Events.LogEventLevel.Warning); libraryLocked=true; notice.Text=ex is ProtectedContentUnavailableException?ex.Message:L.T("Własna biblioteka jest zablokowana lub uszkodzona. Wbudowana ściągawka pozostaje dostępna."); }
         if(ready)RefreshList();
     }
     private void ApplyPreferences(CommandPanelPreferences p)

@@ -75,7 +75,8 @@ public sealed class NetworkToolsStore(ProfileRepository repository,ICredentialSt
     public async Task<SavedNetworkRequest> LoadCollectionAsync(Guid id,CancellationToken ct=default)
     {
         var entry=(await CollectionsAsync(ct).ConfigureAwait(false)).SingleOrDefault(row=>row.Id==id)??throw new ArgumentException(L.T("Kolekcja nie istnieje."));
-        var json=await credentials.GetAsync(id,ct).ConfigureAwait(false); if(json==null || System.Text.Encoding.UTF8.GetByteCount(json)>48000)throw new InvalidDataException(L.T("Nie można odczytać kolekcji z bezpiecznego magazynu systemowego."));
+        var json=await credentials.GetAsync(id,ct).ConfigureAwait(false)??throw new ProtectedContentUnavailableException(L.T("Magazyn systemowy nie udostępnił treści tej kolekcji. Odblokuj go i ponów odczyt. Przy odtwarzaniu kopii SQLite przywróć także chronione dane — baza zawiera tylko odnośnik. Pozostałe kolekcje pozostawiono bez zmian."));
+        if(System.Text.Encoding.UTF8.GetByteCount(json)>48000)throw new InvalidDataException(L.T("Nie można odczytać kolekcji z bezpiecznego magazynu systemowego."));
         try
         {
             var saved=JsonSerializer.Deserialize<SavedNetworkRequest>(json)??throw new JsonException();

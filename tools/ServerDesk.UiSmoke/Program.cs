@@ -91,6 +91,7 @@ if(args.Contains("--themes-editor")) { ThemeEditorChecks.Run(root); return; }
 if(args.Contains("--welcome-accent")) { WelcomeAccentChecks.Run(root); return; }
 if(args.Contains("--help")) { HelpChecks.Run(root); return; }
 if(args.Contains("--four-panels")) { FourPanelChecks.Run(root); return; }
+if(args.Contains("--backup-recovery")) { CommandPanelChecks.BackupRecovery(root); return; }
 if(args.Contains("--commands")) { CommandPanelChecks.Run(root); return; }
 if(args.Contains("--terminal-focus")) { TerminalFocusChecks.Run(root); return; }
 if(args.Contains("--terminal-paste")) { RemoteTerminalPasteChecks.Run(root); return; }

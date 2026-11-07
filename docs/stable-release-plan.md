@@ -1,6 +1,6 @@
 # Droga do ServerDesk 1.0
 
-Krok z 2026-11-07: gotowe jest [izolowane stanowisko testu długotrwałego](session-soak.md) z ośmioma SSH, reconnect/close/open, SFTP, monitoringiem i pomiarami zasobów. [Kalibracja](reports/session-soak-2026-11-07.md) przeszła; pełny wynik czterech godzin i 100 cykli pozostaje otwarty do zakończenia właściwego przebiegu. Test headless nie zastępuje natywnego desktopu ani fizycznego sprzętu.
+Krok z 2026-11-07: [czterogodzinny test Windows/headless](reports/session-soak-2026-11-07.md) przeszedł: osiem SSH, 100 cykli, SFTP, monitoring i limity zasobów po sprzątaniu. Test headless nie zastępuje natywnego desktopu ani fizycznego sprzętu. [Stanowisko i procedura](session-soak.md).
 
 Aktualny krok RDP: [eksport plików przez schowek i lokalny uchwyt przeciągania](reports/rdp-clipboard-export-2026-10-19.md). Po decyzji maintenera wykonujemy implementację i testy lokalne, bez uruchamiania VM. Pełna akceptacja RDP w etapie C pozostaje otwarta, w tym fizyczne wejście i awarie rzeczywistego transportu.
 
@@ -97,6 +97,7 @@ Ten dokument ustala plan; nie zalicza tych przyszłych prób. Aktualizacja sameg
 
 ## 1. Dane i odzyskiwanie — w toku
 
+- [x] Krok roboczy z 2026-11-07: odtworzenie powiązań profili SSH/RDP/VNC, własnych Komend i kolekcji z kontrolowanym osobnym magazynem. Brak starego wpisu/chunku zachowuje odnośniki i pozostałe dane; jawny błąd odczytu zachowuje przyczynę, a ponowienie działa. Komunikaty PL/EN wyjaśniają odblokowanie oraz brak chronionych treści w SQLite. [Zakres, 33 celowane testy i ograniczenia](reports/restore-consistency-2026-11-07.md). Rzeczywiste odtworzenie DPAPI/Secret Service/KWallet i pełna przenośna kopia sekretów pozostają otwarte.
 - [x] Krok roboczy po 0.44.0: kontrola kopii obejmuje wymagane tabele/kolumny i wszystkie zapisane profile, z walidacją tożsamości, JSON/modelu i budżetem 32 MiB na rekord. Kontrola pozostawia kopię bez zmian; nie odczytuje sekretów i nie zalicza pełnego odtworzenia pozostałych magazynów. [Zakres i granice](reports/backup-content-2026-10-21.md).
 - [x] 0.43.0: atomowa edycja tożsamości profilu z rotacją lokalnego powiązania hasła, zachowanie hasła przy odmowie zapisu/usunięcia w SQLite, ostrzeżenie po niepotwierdzonym sprzątaniu i kontrola nieaktualnego edytora. Eksport/import/duplikat nie przenoszą powiązania. Schemat 4 z kopią chroni przed starszym klientem ignorującym to pole.
 - [x] 0.43.0: kontrola równoległych zapisów Komend i transakcyjne indeksy/historia Network Tools między oknami; błąd/anulowanie po części chunków zachowuje poprzednią bibliotekę. Rzeczywista blokada pisarza SQLite, odmowa katalogu Unix i ponowienie na własnych danych. [Zakres](reports/release-verification-0.43.0.md).

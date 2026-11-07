@@ -39,7 +39,7 @@ public sealed class CommandStoreTests : IDisposable
     {
         var repo=new ProfileRepository(new AppPaths(root)); await repo.InitializeAsync(); var vault=new Vault(); var store=new CommandStore(repo,vault);
         await store.SaveLibraryAsync(new() { Commands=[CommandEngineTests.Snippet()] }); var pointer=await repo.SettingAsync("commands.vault.v1"); vault.Data.Clear();
-        await Assert.ThrowsAsync<InvalidOperationException>(()=>store.ReadLibraryAsync()); Assert.Equal(pointer,await repo.SettingAsync("commands.vault.v1"));
+        await Assert.ThrowsAsync<ProtectedContentUnavailableException>(()=>store.ReadLibraryAsync()); Assert.Equal(pointer,await repo.SettingAsync("commands.vault.v1"));
         await repo.SetSettingAsync("commands.state.v1","{\"preferences\":{\"system\":\"unsupported\"}}"); await Assert.ThrowsAsync<InvalidDataException>(()=>store.ReadStateAsync());
     }
     [Fact] public void Import_is_bounded_validated_and_does_not_bind_new_commands_to_foreign_hosts()

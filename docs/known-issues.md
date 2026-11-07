@@ -1,5 +1,6 @@
 # ServerDesk Public Beta — known issues
 
+- **RDP fitting (0.51.1):** the Windows control reapplies viewport geometry/local fitting after monitor/DPI changes. Native control bounds and offline fallback were checked; an authenticated bitmap on physical mixed-DPI monitors still needs live acceptance. Explicitly disabled Dynamic resolution/scaling stays disabled. SQLite restoration still excludes separately protected passwords and plugin content.
 - **SFTP source checks (0.51.0):** size/write-time checks preserve the previous destination when a source change is detected. They are not a filesystem snapshot, content verification or a race-proof guarantee; same-size/same-timestamp writes can escape detection. Retry is explicit. Short `.serverdesk-UUID.part` download files are siblings of the destination. The local disposable OpenSSH checks do not certify other servers/WAN/quota behavior.
 - **Commands knowledge (0.48.0):** the offline guide/option tables are reviewed bundled summaries, not every switch of every version. Refresh downloads separate official text, usually English, which may describe a newer tool than your server. Long pages are excerpted; use Open website for full originals. Publisher availability/layout can change. No startup download or remote modification of executable templates. [Usage and limits](commands.md).
 

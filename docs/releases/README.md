@@ -1,5 +1,6 @@
 # Release notes
 
+- [0.51.1 Public Beta](release-0.51.1.md) — RDP viewport fitting, vault/SSH usability, protected-content recovery, error diagnostics and monitoring validation.
 - [0.51.0 Public Beta](release-0.51.0.md) — saved-tab reveal, folder expansion, long SFTP filenames, source-change guards and accumulated performance improvements.
 - [0.50.0 Public Beta](release-0.50.0.md) — one vault unlock per workspace, startup prompt/manual lock and leading connection status.
 - [0.49.1 Public Beta](release-0.49.1.md) — fixed connection protocol positions and publication of accumulated vault/Commands features.

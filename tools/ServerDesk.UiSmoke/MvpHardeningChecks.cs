@@ -19,6 +19,11 @@ internal static class MvpHardeningChecks
         public Task DeleteAsync(Guid id,CancellationToken ct=default) { values.Remove(id); return Task.CompletedTask; }
     }
     private static void Verify(bool valid,string reason) { if(!valid)throw new Exception(reason); }
+    private static bool DiagnosticStatus(string actual,string message)
+    {
+        var prefix=AppText.T(message)+"\n"+AppText.T("Identyfikator błędu: {0}").Split('{')[0];
+        return actual.StartsWith(prefix,StringComparison.Ordinal) && Guid.TryParseExact(actual[prefix.Length..],"N",out _);
+    }
     internal static void Run(string root)
     {
         foreach(var language in new[]{"pl","en"})
@@ -48,7 +53,7 @@ internal static class MvpHardeningChecks
             }
             RedesignChecks.Wait(network.StartAsync()); RedesignChecks.Frames(5);
             var results=network.GetVisualDescendants().OfType<ListBox>().Single(c=>c.Name=="NetworkResults");
-            Verify(results.ItemCount>0 && network.StatusText==AppText.T("Diagnostyka zakończona. Wyniki zachowano, ale nie udało się zapisać lub odczytać historii i ustawień lokalnych."),"History write failure discarded diagnostic success: "+results.ItemCount+" / "+network.StatusText);
+            Verify(results.ItemCount>0 && DiagnosticStatus(network.StatusText,"Diagnostyka zakończona. Wyniki zachowano, ale nie udało się zapisać lub odczytać historii i ustawień lokalnych."),"History write failure discarded diagnostic success: "+results.ItemCount+" / "+network.StatusText);
             networkWindow.CaptureRenderedFrame()!.Save(Path.Combine(root,"history-warning-"+language+".png"));
             foreach(var format in new[]{"TXT","CSV","JSON","PEM","Response"})
             {
@@ -64,7 +69,7 @@ internal static class MvpHardeningChecks
             network.Dispose(); RedesignChecks.Wait(network.Shutdown); networkWindow.Close();
             RedesignChecks.Wait(repo.SetSettingAsync("networkTools.wolFavorites","[\"{\\\"Name\\\":null,\\\"Mac\\\":null}\"]"));
             var wake=new NetworkToolPane(owner,NetworkToolKind.Wake,networkStore,new NetworkToolsService(),[],""); var wakeWindow=new Window { Width=900,Height=700,Content=wake }; wakeWindow.Show(); RedesignChecks.Frames(10);
-            Verify(wake.StatusText==AppText.T("Nie można odczytać zapisanych danych narzędzi sieciowych. Oryginalne dane zachowano."),"Invalid WoL favorite did not show preservation guidance"); wake.Dispose(); RedesignChecks.Wait(wake.Shutdown); wakeWindow.Close();
+            Verify(DiagnosticStatus(wake.StatusText,"Nie można odczytać zapisanych danych narzędzi sieciowych. Oryginalne dane zachowano."),"Invalid WoL favorite did not show preservation guidance"); wake.Dispose(); RedesignChecks.Wait(wake.Shutdown); wakeWindow.Close();
 
             var editing=Dialogs.Edit(owner,new ServerProfile { Name="RDP fixture",Host="example.test",Protocol=Protocol.RDP,Port=3389,Rdp=new() { Fullscreen=true } },[]); RedesignChecks.Frames(); var editor=owner.OwnedWindows.Single(); PolishChecks.Page(editor,3);
             var fullscreen=editor.GetVisualDescendants().OfType<CheckBox>().Single(c=>c.Name=="RdpExternalFullscreen"); var mode=editor.GetVisualDescendants().OfType<ComboBox>().Single(c=>c.Name=="RdpDisplayMode");

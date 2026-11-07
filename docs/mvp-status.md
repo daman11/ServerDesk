@@ -1,4 +1,6 @@
-# Pierwotne MVP — wydanie lokalne 0.51.0
+# Pierwotne MVP — wydanie 0.51.1
+
+0.51.1 Public Beta zbiera opisane poniżej poprawki RDP, sejfu, kluczy i schowka SSH, odzyskiwania, diagnostyki oraz monitoringu. [Wydanie](releases/release-0.51.1.md), [weryfikacja i ograniczenia](reports/release-verification-0.51.1.md). Pozostałe bramki stabilnego 1.0 pozostają otwarte.
 
 Poprawka robocza z 2026-11-07 ponownie dopasowuje osadzony obraz Windows RDP po przeniesieniu między monitorami i zmianie DPI. Kontrola geometrii rzeczywistej kontrolki, dwa monitory 100% i symulowane 150/200% przeszły; potwierdzenie z zalogowanym pulpitem pozostaje otwarte. [Zakres i dowody](reports/rdp-viewport-2026-11-07.md).
 

@@ -2,6 +2,14 @@
 
 ## Unreleased
 
+## 0.51.1 — Public Beta — 2026-11-07
+
+- Refit the embedded Windows RDP ActiveX object and local SmartSizing after monitor/DPI/layout changes. Use the actual native client pixels for remote display requests, keep local fitting after rejected updates and preserve explicitly disabled scaling. Guard detached/minimized hosts and avoid display-request feedback from remote-size notifications.
+- Improve protected-content recovery guidance for custom Commands and Network Tools collections without replacing their stored references. Explain that SQLite snapshots exclude separately protected contents, including when the system store is temporarily unavailable.
+- Add safe correlated Network Tools log events, distinguish local persistence/export failures from network errors, preserve successful results after optional history failures and make full status messages selectable/copyable.
+- Reject nonfinite disk percentages, invalid JSON IP families/prefixes and malformed gateways in Linux monitoring. Preserve valid text route fallback and other metrics; restore disk presentation on a subsequent valid sample.
+- Add isolated restoration, monitoring, logging and native RDP viewport regressions. Record the bounded four-hour Windows/headless SSH soak separately from native desktop and live RDP acceptance.
+
 - Add a remembered startup opt-out in the vault dialog and a key shortcut in the main toolbar for unlocking/managing Bitwarden or Vaultwarden later. Preserve the current unlock when changing only this preference.
 - Ask for a local SSH key passphrase only when the key is encrypted. Validate unencrypted keys before reading credentials; keep missing/malformed key diagnostics local and recognize encrypted PKCS#8 envelopes.
 - Normalize CRLF/LF/CR in SSH multiline clipboard pastes, preserve literal backslashes and use the remote terminal's bracketed-paste mode. Apply the same path to Ctrl+Shift+V, Shift+Insert, right-click paste and the session menu.

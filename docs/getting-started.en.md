@@ -1,4 +1,6 @@
-# ServerDesk 0.51.0 — getting started
+# ServerDesk 0.51.1 — getting started
+
+**New in 0.51.1:** embedded Windows RDP fitting after monitor/DPI changes, a remembered vault startup opt-out and toolbar unlock shortcut, correct local SSH key prompts and selection-preserving multiline paste. Recovery guidance, Network Tools diagnostics and monitoring validation are also improved. [Release notes](releases/release-0.51.1.md).
 
 **New in 0.51.0:** right-click a saved session tab and choose **Show server in connection list**. This shows the sidebar, clears browser filters and expands the server's ancestors. The action palette offers the same command; quick/deleted profiles are never saved or recreated. The Connections area menu offers **Expand all folders** and **Collapse all folders**. Ordinary state survives restart; search expansion remains temporary.
 

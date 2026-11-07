@@ -1,5 +1,7 @@
 # Verification and historical reviews
 
+- [0.51.1 Public Beta](release-verification-0.51.1.md) — RDP viewport fitting, vault/SSH usability, protected-content recovery, diagnostics and monitoring validation.
+
 - [Windows RDP viewport fitting, 2026-11-07](rdp-viewport-2026-11-07.md) — native pixel/object bounds, fitting after monitor/DPI changes, actual 100% monitor move and synthetic DPI checks; live-session confirmation remains open.
 
 - [Monitoring data validation, 2026-11-07](monitoring-validation-2026-11-07.md) — finite disk percentages, validated JSON addresses/gateways, preserved partial metrics and focused PL/EN presentation recovery.

@@ -1,4 +1,6 @@
-# ServerDesk 0.51.0 — pierwsze kroki
+# ServerDesk 0.51.1 — pierwsze kroki
+
+**Nowe w 0.51.1:** poprawione dopasowanie obrazu RDP przy zmianie monitora/DPI, wyłączenie okna sejfu przy starcie i ikona klucza do późniejszego odblokowania, właściwe pytania o hasło lokalnego klucza SSH oraz wklejanie wieloliniowych komend. Rozwinięto też komunikaty odzyskiwania, logi Network Tools i walidację monitoringu. [Uwagi do wydania](releases/release-0.51.1.md).
 
 **Nowe w 0.51.0:** kliknij kartę zapisanej sesji prawym przyciskiem i wybierz **Pokaż serwer na liście**. Program pokaże panel połączeń, wyczyści filtry i rozwinie foldery tego serwera. Funkcja jest też w palecie akcji; nie zapisuje szybkich połączeń ani nie odtwarza usuniętych wpisów. W menu obszaru Połączenia są **Rozwiń wszystkie foldery** i **Zwiń wszystkie foldery**. Zwykły stan jest zapamiętywany, a stan wyników wyszukiwania pozostaje tymczasowy.
 

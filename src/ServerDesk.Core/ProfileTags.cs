@@ -8,6 +8,21 @@ public static class ProfileTags
     public static string[] Parse(string? text)=>(text??"").Split(Separators,StringSplitOptions.RemoveEmptyEntries|StringSplitOptions.TrimEntries)
         .Distinct(StringComparer.OrdinalIgnoreCase).ToArray();
     public static string Format(IEnumerable<string> tags)=>string.Join(", ",Parse(string.Join(",",tags)));
+    public static IReadOnlyList<ProfileTagChange> PlanChanges(IEnumerable<ServerProfile> profiles,string? additions,string? removals)
+    {
+        var add=Parse(additions); var remove=Parse(removals).ToHashSet(StringComparer.OrdinalIgnoreCase);
+        if(add.Any(remove.Contains))throw new ArgumentException(L.T("Ten sam tag nie może być jednocześnie dodawany i usuwany."));
+        var result=new List<ProfileTagChange>(); var ids=new HashSet<Guid>();
+        foreach(var profile in profiles)
+        {
+            if(profile.Id==Guid.Empty || !ids.Add(profile.Id))throw new ArgumentException(L.T("Niepoprawna lista zmian tagów."));
+            var before=Parse(profile.Tags);
+            var after=Parse(Format(before.Where(t=>!remove.Contains(t)).Concat(add)));
+            // Do not rewrite legacy formatting or spelling for a semantic no-op.
+            if(!before.SequenceEqual(after,StringComparer.Ordinal))result.Add(new(profile.Id,profile.Tags,Format(after)));
+        }
+        return result;
+    }
     public static Func<ServerProfile,bool> CompileFilter(IEnumerable<string> selected,TagFilterMode mode)
     {
         var wanted=selected.ToHashSet(StringComparer.OrdinalIgnoreCase);

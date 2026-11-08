@@ -37,12 +37,13 @@ public sealed partial class MainWindow
         var clear=Menu("Wyczyść filtry",()=> { ClearBrowserFilters(); return Task.CompletedTask; });
         var expand=Menu("Rozwiń wszystkie foldery",()=> { SetBrowserFoldersExpanded(true); return Task.CompletedTask; });
         var collapse=Menu("Zwiń wszystkie foldery",()=> { SetBrowserFoldersExpanded(false); return Task.CompletedTask; });
+        var tags=Menu("Edytuj tagi wielu połączeń",()=>EditConnectionTagsAsync(),"tags");
         var menu=new ContextMenu { Name="ConnectionAreaMenu",ItemsSource=new Control[]{
             Menu("Nowe połączenie",()=>CreateProfileAsync(new ServerProfile())),
             Menu("Szybkie połączenie",QuickAsync),Menu("Nowy folder",FolderAsync),new Separator(),
-            Menu("Import konfiguracji",ImportAsync),Menu("Eksport konfiguracji",ExportAsync),new Separator(),expand,collapse,new Separator(),clear} };
+            Menu("Import konfiguracji",ImportAsync),Menu("Eksport konfiguracji",ExportAsync),new Separator(),tags,expand,collapse,new Separator(),clear} };
         bool Available()=>section is "connections" or "favorite" or "recent";
-        void State() { clear.IsEnabled=HasBrowserFilter; expand.IsEnabled=collapse.IsEnabled=section=="connections" && BrowserFolders().Any(); }
+        void State() { clear.IsEnabled=HasBrowserFilter; expand.IsEnabled=collapse.IsEnabled=section=="connections" && BrowserFolders().Any(); tags.IsEnabled=Available() && vm.AllServers.Any(IsBrowserProfileVisible); }
         menu.Opening+=(_,e)=> { e.Cancel=!Available(); State(); };
         // Programmatic Open() can bypass Opening; keep state current there too.
         menu.Opened+=(_,_)=> { if(!Available())menu.Close(); else State(); };

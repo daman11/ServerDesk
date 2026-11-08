@@ -2023,5 +2023,17 @@
   "Źródło wysyłanego pliku zmieniło się podczas transferu. Plik docelowy pozostał bez zmian. Poczekaj na zakończenie zapisu źródła i ponów zadanie.": "The upload source changed during transfer. The destination file was left unchanged. Wait for the source to finish saving and retry the task.",
   "Źródło pobieranego pliku zmieniło się podczas transferu. Plik docelowy pozostał bez zmian. Poczekaj na zakończenie zapisu źródła i ponów zadanie.": "The download source changed during transfer. The destination file was left unchanged. Wait for the source to finish saving and retry the task.",
   "Kopiuj adres": "Copy address",
-  "Zawijaj wiersze": "Wrap lines"
+  "Zawijaj wiersze": "Wrap lines",
+  "Edytuj tagi wielu połączeń": "Edit tags for multiple connections",
+  "Wybierz połączenia i sprawdź podgląd przed zapisem. Lista uwzględnia bieżące filtry, także zwinięte foldery.": "Select connections and review the preview before saving. The list respects current filters and includes collapsed folders.",
+  "Tagi do dodania": "Tags to add",
+  "Tagi do usunięcia": "Tags to remove",
+  "Po zmianie: ": "After: ",
+  "Wybrane: {0} · Zmiany: {1} · Wyniki: {2} / {3}": "Selected: {0} · Changes: {1} · Results: {2} / {3}",
+  "Wybierz połączenia i wpisz tagi do dodania lub usunięcia.": "Select connections and enter tags to add or remove.",
+  "Zapis zmieni tylko tagi zaznaczonych połączeń. Kolory i pozostałe dane zostaną zachowane.": "Saving changes only the selected connections' tags. Colors and other data are preserved.",
+  "Ten sam tag nie może być jednocześnie dodawany i usuwany.": "The same tag cannot be added and removed at the same time.",
+  "Niepoprawna lista zmian tagów.": "Invalid tag change list.",
+  "Połączenie usunięto lub jego tagi zmieniły się od otwarcia podglądu. Nic nie zapisano. Zamknij okno i otwórz je ponownie.": "A connection was deleted or its tags changed after the preview opened. Nothing was saved. Close this window and open it again.",
+  "Zapisywanie zmian tagów…": "Saving tag changes…"
 }

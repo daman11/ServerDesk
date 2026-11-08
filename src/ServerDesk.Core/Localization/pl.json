@@ -2023,5 +2023,17 @@
   "Źródło wysyłanego pliku zmieniło się podczas transferu. Plik docelowy pozostał bez zmian. Poczekaj na zakończenie zapisu źródła i ponów zadanie.": "Źródło wysyłanego pliku zmieniło się podczas transferu. Plik docelowy pozostał bez zmian. Poczekaj na zakończenie zapisu źródła i ponów zadanie.",
   "Źródło pobieranego pliku zmieniło się podczas transferu. Plik docelowy pozostał bez zmian. Poczekaj na zakończenie zapisu źródła i ponów zadanie.": "Źródło pobieranego pliku zmieniło się podczas transferu. Plik docelowy pozostał bez zmian. Poczekaj na zakończenie zapisu źródła i ponów zadanie.",
   "Kopiuj adres": "Kopiuj adres",
-  "Zawijaj wiersze": "Zawijaj wiersze"
+  "Zawijaj wiersze": "Zawijaj wiersze",
+  "Edytuj tagi wielu połączeń": "Edytuj tagi wielu połączeń",
+  "Wybierz połączenia i sprawdź podgląd przed zapisem. Lista uwzględnia bieżące filtry, także zwinięte foldery.": "Wybierz połączenia i sprawdź podgląd przed zapisem. Lista uwzględnia bieżące filtry, także zwinięte foldery.",
+  "Tagi do dodania": "Tagi do dodania",
+  "Tagi do usunięcia": "Tagi do usunięcia",
+  "Po zmianie: ": "Po zmianie: ",
+  "Wybrane: {0} · Zmiany: {1} · Wyniki: {2} / {3}": "Wybrane: {0} · Zmiany: {1} · Wyniki: {2} / {3}",
+  "Wybierz połączenia i wpisz tagi do dodania lub usunięcia.": "Wybierz połączenia i wpisz tagi do dodania lub usunięcia.",
+  "Zapis zmieni tylko tagi zaznaczonych połączeń. Kolory i pozostałe dane zostaną zachowane.": "Zapis zmieni tylko tagi zaznaczonych połączeń. Kolory i pozostałe dane zostaną zachowane.",
+  "Ten sam tag nie może być jednocześnie dodawany i usuwany.": "Ten sam tag nie może być jednocześnie dodawany i usuwany.",
+  "Niepoprawna lista zmian tagów.": "Niepoprawna lista zmian tagów.",
+  "Połączenie usunięto lub jego tagi zmieniły się od otwarcia podglądu. Nic nie zapisano. Zamknij okno i otwórz je ponownie.": "Połączenie usunięto lub jego tagi zmieniły się od otwarcia podglądu. Nic nie zapisano. Zamknij okno i otwórz je ponownie.",
+  "Zapisywanie zmian tagów…": "Zapisywanie zmian tagów…"
 }

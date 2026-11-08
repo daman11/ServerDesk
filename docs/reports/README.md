@@ -1,5 +1,6 @@
 # Verification and historical reviews
 
+- [Batch connection tags, 2026-11-08](batch-tags-2026-11-08.md) — explicit filtered scope, before/after previews, atomic persistence, conflict/retry and targeted PL/EN checks.
 - [0.51.1 Public Beta](release-verification-0.51.1.md) — RDP viewport fitting, vault/SSH usability, protected-content recovery, diagnostics and monitoring validation.
 
 - [Windows RDP viewport fitting, 2026-11-07](rdp-viewport-2026-11-07.md) — native pixel/object bounds, fitting after monitor/DPI changes, actual 100% monitor move and synthetic DPI checks; live-session confirmation remains open.

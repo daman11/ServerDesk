@@ -14,7 +14,7 @@ internal sealed class HelpPane : WorkspacePane
 {
     private readonly HelpTopic[] topics=HelpContent.Read(L.Language);
     private readonly TextBox search=new() { Name="HelpSearch",MaxLength=200 };
-    private readonly ListBox contents=new() { Name="HelpTopics",Classes={"help-topics"} };
+    private readonly ListBox contents=new() { Name="HelpTopics",Focusable=true,Classes={"help-topics"} };
     private readonly ComboBox compactContents=new() { Name="HelpCompactTopics",HorizontalAlignment=HorizontalAlignment.Stretch,IsVisible=false };
     private readonly StackPanel article=new() { Name="HelpArticle",Spacing=24,MaxWidth=820,HorizontalAlignment=HorizontalAlignment.Stretch };
     private readonly ScrollViewer articleScroll=new() { Name="HelpArticleScroll",HorizontalScrollBarVisibility=ScrollBarVisibility.Disabled,VerticalScrollBarVisibility=ScrollBarVisibility.Auto };
@@ -55,11 +55,11 @@ internal sealed class HelpPane : WorkspacePane
         contents.SelectionChanged+=(_,_)=> { if(!updating && contents.SelectedItem is HelpTopic topic)Select(topic); };
         compactContents.SelectionChanged+=(_,_)=> { if(!updating && compactContents.SelectedItem is HelpTopic topic)Select(topic); };
         search.TextChanged+=(_,_)=> { clear.IsVisible=!string.IsNullOrEmpty(search.Text); Filter(); };
-        search.KeyDown+=(_,e)=>
+        search.AddHandler(KeyDownEvent,(_,e)=>
         {
             if(e.KeyModifiers==KeyModifiers.None && (e.Key is Key.Enter or Key.Down) && contents.ItemCount>0)
-            { if(contents.IsVisible)contents.Focus(); else compactContents.Focus(); e.Handled=true; }
-        };
+            { if(contents.IsEffectivelyVisible)contents.Focus(); else compactContents.Focus(); e.Handled=true; }
+        },Avalonia.Interactivity.RoutingStrategies.Tunnel);
         KeyDown+=(_,e)=>
         {
             if(e.Key==Key.F && e.KeyModifiers==KeyModifiers.Control) { FocusContent(); e.Handled=true; }

@@ -58,6 +58,23 @@ internal static class SftpNavigationChecks
                 SshAcceptanceChecks.Press(window,Key.L,RawInputModifiers.Control); if(!path.IsKeyboardFocusWithin)throw new Exception("Ctrl+L lost active panel");
                 window.CaptureRenderedFrame()!.Save(Path.Combine(root,$"navigation-{language}-{prefix}-{width}.png"));
             }
+            window.Width=1000; RedesignChecks.Frames();
+            foreach(var remote in new[]{false,true})
+            {
+                Field<ComboBox>(pane,"fileTarget").SelectedIndex=remote?1:0; RedesignChecks.Frames();
+                var filter=Field<TextBox>(pane,remote?"remoteFilter":"localFilter"); var list=Field<ListBox>(pane,remote?"remoteList":"localList");
+                filter.Text="fixture"; NavigationButton(pane,(remote?"Remote":"Local")+"ClearFilter").RaiseEvent(new RoutedEventArgs(Button.ClickEvent));
+                if(filter.Text!="" || !filter.IsKeyboardFocusWithin)throw new Exception("Clearing SFTP filter lost input focus");
+                // Enable the empty fixture list to exercise focus without a server.
+                list.IsEnabled=true;
+                foreach(var key in new[]{Key.Down,Key.Enter})
+                {
+                    filter.Focus(); SshAcceptanceChecks.Press(window,key,RawInputModifiers.None);
+                    if(!list.IsKeyboardFocusWithin || list.SelectedItem!=null)throw new Exception("Filter navigation did not focus the empty list without activating a file");
+                }
+                list.IsEnabled=false; filter.Focus(); SshAcceptanceChecks.Press(window,Key.Down,RawInputModifiers.None);
+                if(!filter.IsKeyboardFocusWithin)throw new Exception("Disabled file list stole filter focus");
+            }
             Wait(pane.CloseAsync()); window.Close(); main.Close(); RedesignChecks.Frames();
         }
         AppText.SetLanguage("pl"); Console.WriteLine("PASS SFTP navigation layout: separate local/remote controls, disabled without connection, Ctrl+L, PL/EN Graphite/Light font16 at 280/520/1000px");

@@ -34,7 +34,13 @@ internal sealed partial class SessionPane
                 FilterFiles();
             });
             fileSortDirections[remote]=direction; UpdateFileSortControls();
-            var clear=DeskIcons.Button("x",prefix+L.T(" wyczyść filtr"),()=> { fileTarget.SelectedIndex=remote?1:0; filter.Text=""; }); clear.IsEnabled=false;
+            var clear=DeskIcons.Button("x",prefix+L.T(" wyczyść filtr"),()=> { fileTarget.SelectedIndex=remote?1:0; filter.Text=""; filter.Focus(); }); clear.IsEnabled=false;
+            clear.Name=remote?"SftpRemoteClearFilter":"SftpLocalClearFilter";
+            filter.KeyDown+=(_,e)=>
+            {
+                if(e.KeyModifiers==KeyModifiers.None && e.Key is Key.Enter or Key.Down && list.IsEnabled)
+                { list.Focus(); e.Handled=true; }
+            };
             filter.TextChanged+=(_,_)=>clear.IsEnabled=!string.IsNullOrEmpty(filter.Text);
             var controls=new Grid { ColumnDefinitions=new ColumnDefinitions("*,Auto,Auto,Auto"),ColumnSpacing=4,Margin=new Thickness(4,0,4,4),ClipToBounds=true };
             controls.Children.Add(filter); Grid.SetColumn(clear,1); controls.Children.Add(clear); Grid.SetColumn(sort,2); controls.Children.Add(sort); Grid.SetColumn(direction,3); controls.Children.Add(direction);

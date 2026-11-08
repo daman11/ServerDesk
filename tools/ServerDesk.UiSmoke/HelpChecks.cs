@@ -59,6 +59,11 @@ internal static class HelpChecks
             {
                 main.PreviewPreferences(settings.Preferences with { AccentColor="#C85CA7" }); DesignSystem.Apply(theme); main.Width=width; main.Height=720; RedesignChecks.Frames();
                 if(picker.IsVisible!=(width==900) || Named<Border>(help,"HelpNavigation").IsVisible!=(width==1320))throw new Exception("Help topic navigation did not adapt");
+                foreach(var key in new[]{Key.Down,Key.Enter})
+                {
+                    search.Focus(); main.KeyPress(key,RawInputModifiers.None,key==Key.Down?PhysicalKey.ArrowDown:PhysicalKey.Enter,""); RedesignChecks.Frames(2);
+                    if(!(width==900?picker.IsKeyboardFocusWithin:list.IsKeyboardFocusWithin))throw new Exception($"Help search focus failed: {width}, {key}, focused={main.FocusManager?.GetFocusedElement()?.GetType().Name}");
+                }
                 foreach(var topic in HelpContent.Read(language))
                 {
                     list.SelectedItem=((HelpTopic[])list.ItemsSource!).Single(item=>item.Id==topic.Id); RedesignChecks.Frames(2);

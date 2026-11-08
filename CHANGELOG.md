@@ -2,6 +2,7 @@
 
 ## Unreleased
 
+- Copy a saved connection's host or Serial device from its context menu or Ctrl+C in the connection tree, without account details or credential access.
 - Keep typing focus after clearing SFTP filters, support Enter/Down to focus the active file list without opening an item, and focus visible Help topic navigation in compact panels.
 - Support backward log search with Shift+F3 and Shift+Enter, wrapping between the first and last result.
 - Add F3 to continue searching the log preview after a result receives focus; Escape in the search box clears the query and returns to the log without closing the dialog.

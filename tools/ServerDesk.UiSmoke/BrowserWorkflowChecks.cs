@@ -6,6 +6,7 @@ using Avalonia.Automation;
 using Avalonia.Controls;
 using Avalonia.Headless;
 using Avalonia.Input;
+using Avalonia.Input.Platform;
 using Avalonia.Interactivity;
 using Avalonia.LogicalTree;
 using Avalonia.VisualTree;
@@ -61,6 +62,21 @@ internal static class BrowserWorkflowChecks
             void Reload() { RedesignChecks.Wait(vm.LoadAsync()); RedesignChecks.Frames(); }
             try
             {
+                var clipboard=main.Clipboard!;
+                tree.SelectedItem=Profile(first.Id); Press(Key.C,KeyModifiers.Control); RedesignChecks.Frames(3);
+                if(clipboard.TryGetTextAsync().GetAwaiter().GetResult()!=first.Host)throw new Exception("Ctrl+C did not copy only the host");
+                var addressNode=Profile(first.Id); var addressMenu=addressNode.ContextMenu!; addressMenu.Open(addressNode); RedesignChecks.Frames(3);
+                var copyAddress=addressMenu.Items.OfType<MenuItem>().Single(item=>item.Tag as string=="Kopiuj adres");
+                if(copyAddress.Icon is not DeskIcon || copyAddress.InputGesture?.Key!=Key.C || copyAddress.Header as string!=AppText.T("Kopiuj adres"))throw new Exception("Copy address menu is missing its icon, translation or shortcut");
+                RedesignChecks.Wait(clipboard.SetTextAsync("clipboard sentinel")); copyAddress.RaiseEvent(new RoutedEventArgs(MenuItem.ClickEvent)); RedesignChecks.Frames(3); addressMenu.Close();
+                if(clipboard.TryGetTextAsync().GetAwaiter().GetResult()!=first.Host)throw new Exception("Menu did not copy the profile host");
+                foreach(var profile in new[]{first with { Host="2001:db8::1" },first with { Protocol=Protocol.Serial,Serial=new() { PortName="COM9" } }})
+                {
+                    RedesignChecks.Wait(Call(main,"CopyConnectionAddressAsync",profile));
+                    if(clipboard.TryGetTextAsync().GetAwaiter().GetResult()!=(profile.Protocol==Protocol.Serial?"COM9":"2001:db8::1"))throw new Exception("Copy address added account/port data or lost the Serial device");
+                }
+                tree.SelectedItem=Folder(first.Folder); Press(Key.C,KeyModifiers.Control); RedesignChecks.Frames(2);
+                if(clipboard.TryGetTextAsync().GetAwaiter().GetResult()!="COM9" || vault.Reads!=0 || vault.Deletes!=0)throw new Exception("Folder copy changed clipboard or read credentials");
                 // New actions inherit the actual selection, never a stale hidden folder.
                 tree.SelectedItem=Folder(first.Folder); var editing=Call(main,"EditAsync",(object?)null); var editor=Prompt();
                 if(Named<TextBox>(editor,"ProfileFolder").Text!=first.Folder)throw new Exception("New connection ignored selected folder");

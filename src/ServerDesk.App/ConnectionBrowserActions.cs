@@ -2,6 +2,7 @@ using Avalonia;
 using Avalonia.Automation;
 using Avalonia.Controls;
 using Avalonia.Input;
+using Avalonia.Input.Platform;
 using Avalonia.Layout;
 using Avalonia.Media;
 using Avalonia.Threading;
@@ -73,6 +74,11 @@ public sealed partial class MainWindow
         if(InFolder(vm.SelectedFolder,path))vm.SelectedFolder="Wszystkie";
         await vm.LoadAsync();
     }
+    private async Task CopyConnectionAddressAsync(ServerProfile profile)
+    {
+        var clipboard=Clipboard??throw new NotSupportedException();
+        await clipboard.SetTextAsync(profile.Protocol==Protocol.Serial?profile.Serial.PortName:profile.Host);
+    }
     private void HandleBrowserKeys(object? sender,KeyEventArgs e)
     {
         if(tree.IsEffectivelyVisible && (section is "connections" or "favorite" or "recent") && e.KeyModifiers==KeyModifiers.None &&
@@ -87,6 +93,7 @@ public sealed partial class MainWindow
                 (Key.F2,KeyModifiers.None)=>()=>EditAsync(p),
                 (Key.Delete,KeyModifiers.None)=>DeleteAsync,
                 (Key.D,KeyModifiers.Control)=>DuplicateAsync,
+                (Key.C,KeyModifiers.Control)=>()=>CopyConnectionAddressAsync(p),
                 _=>null
             };
             if(action==null)return;

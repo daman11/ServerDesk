@@ -33,6 +33,13 @@ internal static class ApplicationLogsChecks
             if(files.ItemCount!=2 || files.SelectedItem is not ApplicationLogEntry selected || selected.Name!=Path.GetFileName(current) || !preview.IsReadOnly || preview.Text?.EndsWith("  at Fixture.DeleteAsync()\n")!=true || preview.Text.Length>=content.Length || !export.IsEnabled)throw new Exception("Latest bounded log preview did not load");
             var query=Named<TextBox>(view,"ApplicationLogSearch"); query.Text="directorynotfoundexception"; Click(view,"ApplicationLogsFindNext"); RedesignChecks.Frames(3);
             if(!string.Equals(preview.SelectedText,query.Text,StringComparison.OrdinalIgnoreCase))throw new Exception("Log preview search did not select the error");
+            query.Text="Fixture"; preview.SelectionStart=preview.SelectionEnd=0; query.Focus();
+            dialog.KeyPress(Key.F3,RawInputModifiers.None,PhysicalKey.F3,""); RedesignChecks.Frames(2); var firstMatch=preview.SelectionStart;
+            dialog.KeyPress(Key.F3,RawInputModifiers.None,PhysicalKey.F3,""); RedesignChecks.Frames(2);
+            if(preview.SelectionStart<=firstMatch || !preview.IsKeyboardFocusWithin)throw new Exception("F3 did not continue search from the read-only preview");
+            dialog.KeyPress(Key.F,RawInputModifiers.Control,PhysicalKey.F,""); RedesignChecks.Frames(2);
+            dialog.KeyPress(Key.Escape,RawInputModifiers.None,PhysicalKey.Escape,""); RedesignChecks.Frames(2);
+            if(query.Text!="" || !preview.IsKeyboardFocusWithin || !dialog.IsVisible)throw new Exception("Escape did not clear search and return to the log without closing it");
             var destination=Path.Combine(paths.Data,"saved-copy.log"); view.ChooseExportDestination=_=>Task.FromResult<string?>(destination); Click(view,"ApplicationLogsExport"); Wait(view.Shutdown);
             if(File.ReadAllText(destination)!=content || File.ReadAllText(current)!=content)throw new Exception("Full export was truncated or changed the active log");
             view.ChooseExportDestination=_=>Task.FromResult<string?>(null); Click(view,"ApplicationLogsExport"); Wait(view.Shutdown); if(File.ReadAllText(destination)!=content)throw new Exception("Cancelled picker changed the saved copy");

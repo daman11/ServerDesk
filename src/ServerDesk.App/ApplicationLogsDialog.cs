@@ -54,6 +54,8 @@ internal sealed class ApplicationLogsView:Grid,IDisposable
         refresh=DeskIcons.Button("refresh","Odśwież logi",()=>_=RefreshAsync()); refresh.Name="ApplicationLogsRefresh";
         var selection=new Grid { ColumnDefinitions=new("*,Auto"),ColumnSpacing=8,Children={files,refresh} }; Grid.SetColumn(refresh,1); Grid.SetRow(selection,1); Children.Add(selection);
         var next=DeskIcons.Button("search","Znajdź następne",FindNext); next.Name="ApplicationLogsFindNext";
+        ToolTip.SetTip(next,L.T("Znajdź następne")+" · F3");
+        ToolTip.SetTip(search,"Ctrl+F · Enter / F3 · Esc");
         var find=new Grid { ColumnDefinitions=new("*,Auto"),ColumnSpacing=8,Children={search,next} }; Grid.SetColumn(next,1); Grid.SetRow(find,2); Children.Add(find);
         preview.SetValue(ScrollViewer.HorizontalScrollBarVisibilityProperty,Avalonia.Controls.Primitives.ScrollBarVisibility.Auto); preview.SetValue(ScrollViewer.VerticalScrollBarVisibilityProperty,Avalonia.Controls.Primitives.ScrollBarVisibility.Auto);
         preview.SizeChanged+=(_,_)=> { if(preview.IsKeyboardFocusWithin)Dispatcher.UIThread.Post(EnsureCaretVisible); };
@@ -68,6 +70,9 @@ internal sealed class ApplicationLogsView:Grid,IDisposable
         AddHandler(KeyDownEvent,(_,e)=>
         {
             if(e.Key==Key.F && e.KeyModifiers==KeyModifiers.Control) { search.Focus(); search.SelectAll(); e.Handled=true; }
+            else if(e.Key==Key.F3 && e.KeyModifiers==KeyModifiers.None) { FindNext(); e.Handled=true; }
+            else if(e.Key==Key.Escape && e.KeyModifiers==KeyModifiers.None && search.IsKeyboardFocusWithin)
+            { search.Text=""; preview.SelectionStart=preview.SelectionEnd=preview.CaretIndex; preview.Focus(); e.Handled=true; }
             else if(e.Key==Key.F5 && e.KeyModifiers==KeyModifiers.None) { _=RefreshAsync(); e.Handled=true; }
         },Avalonia.Interactivity.RoutingStrategies.Tunnel);
         LaunchFolder=directory=>TopLevel.GetTopLevel(this)?.Launcher.LaunchDirectoryInfoAsync(directory)??Task.FromResult(false);

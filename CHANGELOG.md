@@ -2,6 +2,8 @@
 
 ## Unreleased
 
+- Add F3 to continue searching the log preview after a result receives focus; Escape in the search box clears the query and returns to the log without closing the dialog.
+
 ## 0.51.1 — Public Beta — 2026-11-07
 
 - Refit the embedded Windows RDP ActiveX object and local SmartSizing after monitor/DPI/layout changes. Use the actual native client pixels for remote display requests, keep local fitting after rejected updates and preserve explicitly disabled scaling. Guard detached/minimized hosts and avoid display-request feedback from remote-size notifications.

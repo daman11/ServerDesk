@@ -21,7 +21,7 @@ internal static class ApplicationLogsChecks
             AppText.SetLanguage(language); DesignSystem.Apply(language=="pl"?"graphite":"light");
             var paths=new AppPaths(Path.Combine(root,language+" dane ąę "+Guid.NewGuid().ToString("N"))); var repo=new ProfileRepository(paths); Wait(repo.InitializeAsync()); var original=repo.ApplicationSettingsAsync().GetAwaiter().GetResult();
             Directory.CreateDirectory(paths.Logs); var older=Path.Combine(paths.Logs,"serverdesk-20261017.log"); File.WriteAllText(older,"Older fixture żółć\n");
-            var current=Path.Combine(paths.Logs,"serverdesk-20261018.log"); var content=string.Concat(Enumerable.Repeat("Fixture informational event\n",12000))+"[ERR] DirectoryNotFoundException fixture\n  at Fixture.DeleteAsync()\n"; File.WriteAllText(current,content);
+            var current=Path.Combine(paths.Logs,"serverdesk-20261018.log"); var content=string.Concat(Enumerable.Repeat("Fixture informational event\n",12000))+new string('x',600)+" żółć\n[ERR] DirectoryNotFoundException fixture\n  at Fixture.DeleteAsync()\n"; File.WriteAllText(current,content);
             File.SetLastWriteTimeUtc(older,new DateTime(2026,10,17,0,0,0,DateTimeKind.Utc)); File.SetLastWriteTimeUtc(current,new DateTime(2026,10,18,0,0,0,DateTimeKind.Utc));
             var owner=new Window { Width=1100,Height=800 }; owner.Show(); var editing=Dialogs.Settings(owner,repo,()=>Task.CompletedTask); RedesignChecks.Frames(8); var settings=owner.OwnedWindows.Single();
             settings.GetVisualDescendants().OfType<NumericUpDown>().Single(c=>AutomationProperties.GetName(c)==AppText.T("Rozmiar tekstu interfejsu")).Value=16;
@@ -33,6 +33,12 @@ internal static class ApplicationLogsChecks
             if(files.ItemCount!=2 || files.SelectedItem is not ApplicationLogEntry selected || selected.Name!=Path.GetFileName(current) || !preview.IsReadOnly || preview.Text?.EndsWith("  at Fixture.DeleteAsync()\n")!=true || preview.Text.Length>=content.Length || !export.IsEnabled)throw new Exception("Latest bounded log preview did not load");
             var query=Named<TextBox>(view,"ApplicationLogSearch"); query.Text="directorynotfoundexception"; Click(view,"ApplicationLogsFindNext"); RedesignChecks.Frames(3);
             if(!string.Equals(preview.SelectedText,query.Text,StringComparison.OrdinalIgnoreCase))throw new Exception("Log preview search did not select the error");
+            var wrap=Named<CheckBox>(view,"ApplicationLogsWrap"); var beforeWrap=preview.Text; var selectedBeforeWrap=preview.SelectedText;
+            wrap.IsChecked=true; dialog.Width=600; RedesignChecks.Frames(5);
+            var viewport=preview.GetVisualDescendants().OfType<ScrollViewer>().First();
+            if(viewport.Extent.Width>viewport.Viewport.Width+1 || preview.Text!=beforeWrap || preview.SelectedText!=selectedBeforeWrap)throw new Exception("Wrapping log lines overflowed or changed text/selection");
+            wrap.IsChecked=false; dialog.Width=920; RedesignChecks.Frames(3);
+            if(preview.TextWrapping!=Avalonia.Media.TextWrapping.NoWrap || preview.Text!=beforeWrap || preview.SelectedText!=selectedBeforeWrap)throw new Exception("Disabling log wrapping lost original formatting/selection");
             query.Text="Fixture"; preview.SelectionStart=preview.SelectionEnd=0; query.Focus();
             dialog.KeyPress(Key.F3,RawInputModifiers.None,PhysicalKey.F3,""); RedesignChecks.Frames(2); var firstMatch=preview.SelectionStart;
             dialog.KeyPress(Key.F3,RawInputModifiers.None,PhysicalKey.F3,""); RedesignChecks.Frames(2);

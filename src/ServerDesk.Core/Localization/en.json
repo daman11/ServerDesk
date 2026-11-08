@@ -2022,5 +2022,6 @@
   "Odblokuj sejf Bitwarden / Vaultwarden": "Unlock Bitwarden / Vaultwarden vault",
   "Źródło wysyłanego pliku zmieniło się podczas transferu. Plik docelowy pozostał bez zmian. Poczekaj na zakończenie zapisu źródła i ponów zadanie.": "The upload source changed during transfer. The destination file was left unchanged. Wait for the source to finish saving and retry the task.",
   "Źródło pobieranego pliku zmieniło się podczas transferu. Plik docelowy pozostał bez zmian. Poczekaj na zakończenie zapisu źródła i ponów zadanie.": "The download source changed during transfer. The destination file was left unchanged. Wait for the source to finish saving and retry the task.",
-  "Kopiuj adres": "Copy address"
+  "Kopiuj adres": "Copy address",
+  "Zawijaj wiersze": "Wrap lines"
 }

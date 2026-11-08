@@ -2,6 +2,7 @@
 
 ## Unreleased
 
+- Add optional line wrapping in the log preview while preserving text selection and full exported file contents.
 - Copy a saved connection's host or Serial device from its context menu or Ctrl+C in the connection tree, without account details or credential access.
 - Keep typing focus after clearing SFTP filters, support Enter/Down to focus the active file list without opening an item, and focus visible Help topic navigation in compact panels.
 - Support backward log search with Shift+F3 and Shift+Enter, wrapping between the first and last result.

@@ -63,7 +63,15 @@ internal sealed class ApplicationLogsView:Grid,IDisposable
         export=Dialogs.Button("Zapisz kopię logu",()=>_=Track(ExportAsync)); export.Name="ApplicationLogsExport";
         open=Dialogs.Button("Otwórz folder logów",()=>_=Track(OpenFolderAsync)); open.Name="ApplicationLogsOpenFolder";
         var close=Dialogs.Button("Zamknij",()=>CloseRequested()); close.Name="ApplicationLogsClose";
-        var actions=new WrapPanel { Orientation=Orientation.Horizontal,Children={open,export,close} }; foreach(var action in actions.Children)action.Margin=new Thickness(0,2,8,2);
+        var wrap=new CheckBox { Name="ApplicationLogsWrap",Content=L.T("Zawijaj wiersze") };
+        wrap.IsCheckedChanged+=(_,_)=>
+        {
+            var enabled=wrap.IsChecked==true;
+            preview.TextWrapping=enabled?TextWrapping.Wrap:TextWrapping.NoWrap;
+            preview.SetValue(ScrollViewer.HorizontalScrollBarVisibilityProperty,enabled?Avalonia.Controls.Primitives.ScrollBarVisibility.Disabled:Avalonia.Controls.Primitives.ScrollBarVisibility.Auto);
+            Dispatcher.UIThread.Post(EnsureCaretVisible);
+        };
+        var actions=new WrapPanel { Orientation=Orientation.Horizontal,Children={wrap,open,export,close} }; foreach(var action in actions.Children)action.Margin=new Thickness(0,2,8,2);
         var footer=new StackPanel { Spacing=6,Children={DesignSystem.Hint(L.T("Logi mogą zawierać ścieżki i identyfikatory profili. Przejrzyj plik przed udostępnieniem.")),actions} }; Grid.SetRow(footer,5); Children.Add(footer);
         files.SelectionChanged+=(_,_)=> { if(!refreshing)_=ReadSelectedAsync(); };
         search.KeyDown+=(_,e)=> { if(e.Key==Key.Enter && (e.KeyModifiers & ~KeyModifiers.Shift)==KeyModifiers.None) { Find(e.KeyModifiers.HasFlag(KeyModifiers.Shift)); e.Handled=true; } };

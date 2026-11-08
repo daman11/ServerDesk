@@ -37,6 +37,17 @@ internal static class ApplicationLogsChecks
             dialog.KeyPress(Key.F3,RawInputModifiers.None,PhysicalKey.F3,""); RedesignChecks.Frames(2); var firstMatch=preview.SelectionStart;
             dialog.KeyPress(Key.F3,RawInputModifiers.None,PhysicalKey.F3,""); RedesignChecks.Frames(2);
             if(preview.SelectionStart<=firstMatch || !preview.IsKeyboardFocusWithin)throw new Exception("F3 did not continue search from the read-only preview");
+            dialog.KeyPress(Key.F3,RawInputModifiers.Shift,PhysicalKey.F3,""); RedesignChecks.Frames(2);
+            if(preview.SelectionStart!=firstMatch)throw new Exception("Shift+F3 did not return to the previous match");
+            preview.SelectionStart=preview.SelectionEnd=0;
+            dialog.KeyPress(Key.F3,RawInputModifiers.Shift,PhysicalKey.F3,""); RedesignChecks.Frames(2);
+            var lastMatch=preview.Text!.LastIndexOf(query.Text,StringComparison.OrdinalIgnoreCase);
+            if(preview.SelectionStart!=lastMatch)throw new Exception("Backward log search did not wrap from the beginning");
+            query.Focus(); dialog.KeyPress(Key.Enter,RawInputModifiers.Shift,PhysicalKey.Enter,"\r"); RedesignChecks.Frames(2);
+            if(preview.SelectionStart>=lastMatch)throw new Exception("Shift+Enter did not search backward from the query");
+            preview.SelectionStart=preview.SelectionEnd=preview.Text.Length;
+            dialog.KeyPress(Key.F3,RawInputModifiers.None,PhysicalKey.F3,""); RedesignChecks.Frames(2);
+            if(preview.SelectionStart!=firstMatch)throw new Exception("Forward log search did not wrap from the end");
             dialog.KeyPress(Key.F,RawInputModifiers.Control,PhysicalKey.F,""); RedesignChecks.Frames(2);
             dialog.KeyPress(Key.Escape,RawInputModifiers.None,PhysicalKey.Escape,""); RedesignChecks.Frames(2);
             if(query.Text!="" || !preview.IsKeyboardFocusWithin || !dialog.IsVisible)throw new Exception("Escape did not clear search and return to the log without closing it");

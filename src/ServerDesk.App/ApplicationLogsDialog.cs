@@ -55,7 +55,7 @@ internal sealed class ApplicationLogsView:Grid,IDisposable
         var selection=new Grid { ColumnDefinitions=new("*,Auto"),ColumnSpacing=8,Children={files,refresh} }; Grid.SetColumn(refresh,1); Grid.SetRow(selection,1); Children.Add(selection);
         var next=DeskIcons.Button("search","Znajdź następne",FindNext); next.Name="ApplicationLogsFindNext";
         ToolTip.SetTip(next,L.T("Znajdź następne")+" · F3");
-        ToolTip.SetTip(search,"Ctrl+F · Enter / F3 · Esc");
+        ToolTip.SetTip(search,"Ctrl+F · Enter / F3 · Shift+Enter / Shift+F3 · Esc");
         var find=new Grid { ColumnDefinitions=new("*,Auto"),ColumnSpacing=8,Children={search,next} }; Grid.SetColumn(next,1); Grid.SetRow(find,2); Children.Add(find);
         preview.SetValue(ScrollViewer.HorizontalScrollBarVisibilityProperty,Avalonia.Controls.Primitives.ScrollBarVisibility.Auto); preview.SetValue(ScrollViewer.VerticalScrollBarVisibilityProperty,Avalonia.Controls.Primitives.ScrollBarVisibility.Auto);
         preview.SizeChanged+=(_,_)=> { if(preview.IsKeyboardFocusWithin)Dispatcher.UIThread.Post(EnsureCaretVisible); };
@@ -66,11 +66,11 @@ internal sealed class ApplicationLogsView:Grid,IDisposable
         var actions=new WrapPanel { Orientation=Orientation.Horizontal,Children={open,export,close} }; foreach(var action in actions.Children)action.Margin=new Thickness(0,2,8,2);
         var footer=new StackPanel { Spacing=6,Children={DesignSystem.Hint(L.T("Logi mogą zawierać ścieżki i identyfikatory profili. Przejrzyj plik przed udostępnieniem.")),actions} }; Grid.SetRow(footer,5); Children.Add(footer);
         files.SelectionChanged+=(_,_)=> { if(!refreshing)_=ReadSelectedAsync(); };
-        search.KeyDown+=(_,e)=> { if(e.Key==Key.Enter) { FindNext(); e.Handled=true; } };
+        search.KeyDown+=(_,e)=> { if(e.Key==Key.Enter && (e.KeyModifiers & ~KeyModifiers.Shift)==KeyModifiers.None) { Find(e.KeyModifiers.HasFlag(KeyModifiers.Shift)); e.Handled=true; } };
         AddHandler(KeyDownEvent,(_,e)=>
         {
             if(e.Key==Key.F && e.KeyModifiers==KeyModifiers.Control) { search.Focus(); search.SelectAll(); e.Handled=true; }
-            else if(e.Key==Key.F3 && e.KeyModifiers==KeyModifiers.None) { FindNext(); e.Handled=true; }
+            else if(e.Key==Key.F3 && (e.KeyModifiers & ~KeyModifiers.Shift)==KeyModifiers.None) { Find(e.KeyModifiers.HasFlag(KeyModifiers.Shift)); e.Handled=true; }
             else if(e.Key==Key.Escape && e.KeyModifiers==KeyModifiers.None && search.IsKeyboardFocusWithin)
             { search.Text=""; preview.SelectionStart=preview.SelectionEnd=preview.CaretIndex; preview.Focus(); e.Handled=true; }
             else if(e.Key==Key.F5 && e.KeyModifiers==KeyModifiers.None) { _=RefreshAsync(); e.Handled=true; }
@@ -153,11 +153,13 @@ internal sealed class ApplicationLogsView:Grid,IDisposable
         catch(Exception ex) { Report("folder",ex); SetStatus(L.T("Nie udało się otworzyć folderu logów. Skopiuj widoczną ścieżkę i otwórz ją w menedżerze plików."),true); }
         finally { opening=false; UpdateControls(); }
     }
-    private void FindNext()
+    private void FindNext()=>Find(false);
+    private void Find(bool previous)
     {
         if(loading || string.IsNullOrEmpty(search.Text) || string.IsNullOrEmpty(preview.Text))return;
-        var start=Math.Max(preview.SelectionStart,preview.SelectionEnd); var index=preview.Text.IndexOf(search.Text,Math.Min(start,preview.Text.Length),StringComparison.OrdinalIgnoreCase);
-        if(index<0)index=preview.Text.IndexOf(search.Text,StringComparison.OrdinalIgnoreCase);
+        var start=Math.Clamp(previous?Math.Min(preview.SelectionStart,preview.SelectionEnd):Math.Max(preview.SelectionStart,preview.SelectionEnd),0,preview.Text.Length);
+        var index=previous?(start>0?preview.Text.LastIndexOf(search.Text,start-1,start,StringComparison.OrdinalIgnoreCase):-1):preview.Text.IndexOf(search.Text,start,StringComparison.OrdinalIgnoreCase);
+        if(index<0)index=previous?preview.Text.LastIndexOf(search.Text,StringComparison.OrdinalIgnoreCase):preview.Text.IndexOf(search.Text,StringComparison.OrdinalIgnoreCase);
         if(index<0) { SetStatus(L.T("Nie znaleziono tekstu w bieżącym podglądzie.")); return; }
         preview.CaretIndex=index+search.Text.Length; preview.SelectionStart=index; preview.SelectionEnd=index+search.Text.Length; preview.Focus();
         Dispatcher.UIThread.Post(EnsureCaretVisible);

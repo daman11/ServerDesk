@@ -2,6 +2,8 @@
 
 ## Unreleased
 
+## 0.52.0 — Public Beta — 2026-11-14
+
 - Fix Linux DEB dependency resolution for ICU 77/78 and other intermediate supported ICU packages. Add isolated APT regression checks and packaging-only revisions without replacing frozen releases or changing installed application files.
 - Add batch connection-tag editing with explicit selection, current-filter scope, live before/after previews and PL/EN UI. Apply add/remove operations atomically, preserve other profile fields/colors/credential references and reject stale/deleted targets without partial saves.
 - Add optional line wrapping in the log preview while preserving text selection and full exported file contents.

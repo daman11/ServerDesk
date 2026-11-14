@@ -1,4 +1,6 @@
-# ServerDesk 0.51.1 — pierwsze kroki
+# ServerDesk 0.52.0 — pierwsze kroki
+
+**Nowe w 0.52.0:** zbiorcza edycja tagów z podglądem i zapisem całej partii, Kopiuj adres / Ctrl+C na liście połączeń, wygodniejsza nawigacja SFTP i Pomocy oraz zawijanie i skróty wyszukiwania w logach. Poprawiono zależności ICU instalatora Linuxa. [Uwagi do wydania](releases/release-0.52.0.md), [tagi wielu połączeń](connection-tags.md).
 
 **Nowe w 0.51.1:** poprawione dopasowanie obrazu RDP przy zmianie monitora/DPI, wyłączenie okna sejfu przy starcie i ikona klucza do późniejszego odblokowania, właściwe pytania o hasło lokalnego klucza SSH oraz wklejanie wieloliniowych komend. Rozwinięto też komunikaty odzyskiwania, logi Network Tools i walidację monitoringu. [Uwagi do wydania](releases/release-0.51.1.md).
 

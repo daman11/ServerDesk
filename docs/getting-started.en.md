@@ -1,4 +1,6 @@
-# ServerDesk 0.51.1 — getting started
+# ServerDesk 0.52.0 — getting started
+
+**New in 0.52.0:** reviewed atomic batch tag edits, Copy address / Ctrl+C in the connection tree, improved SFTP/Help keyboard focus, and log-preview wrapping and search shortcuts. Linux DEB metadata now accepts newer ICU providers. [Release notes](releases/release-0.52.0.md), [batch tag guide](connection-tags.md).
 
 **New in 0.51.1:** embedded Windows RDP fitting after monitor/DPI changes, a remembered vault startup opt-out and toolbar unlock shortcut, correct local SSH key prompts and selection-preserving multiline paste. Recovery guidance, Network Tools diagnostics and monitoring validation are also improved. [Release notes](releases/release-0.51.1.md).
 

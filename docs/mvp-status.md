@@ -1,4 +1,6 @@
-# Pierwotne MVP — wydanie 0.51.1
+# Pierwotne MVP — wydanie 0.52.0
+
+0.52.0 Public Beta dodaje zbiorcze tagi z podglądem i atomowym zapisem, poprawia codzienną obsługę list/filtrów, Pomocy i logów oraz naprawia zależności ICU paczki Linux. [Wydanie](releases/release-0.52.0.md), [weryfikacja i ograniczenia](reports/release-verification-0.52.0.md). Nadal nie zamyka pozostałych bramek stabilnego 1.0.
 
 0.51.1 Public Beta zbiera opisane poniżej poprawki RDP, sejfu, kluczy i schowka SSH, odzyskiwania, diagnostyki oraz monitoringu. [Wydanie](releases/release-0.51.1.md), [weryfikacja i ograniczenia](reports/release-verification-0.51.1.md). Pozostałe bramki stabilnego 1.0 pozostają otwarte.
 

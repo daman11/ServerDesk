@@ -1,4 +1,4 @@
-# ServerDesk — 0.51.1 Public Beta
+# ServerDesk — 0.52.0 Public Beta
 
 Native Windows/Linux workspace for SSH, SFTP, RDP, VNC and serial connections. Built with C#, .NET 10 and Avalonia 12. Free and open source under the [MIT license](LICENSE).
 
@@ -6,21 +6,21 @@ Native Windows/Linux workspace for SSH, SFTP, RDP, VNC and serial connections. B
 
 ## Downloads and installation
 
-Download: **[ServerDesk 0.51.1 Public Beta](https://github.com/daman11/ServerDesk/releases/tag/v0.51.1)** — [Windows installer](https://github.com/daman11/ServerDesk/releases/download/v0.51.1/ServerDesk-0.51.1-win-x64-Setup.exe), portable and Linux packages, source and SHA-256 checksums.
+Download: **[ServerDesk 0.52.0 Public Beta](https://github.com/daman11/ServerDesk/releases/tag/v0.52.0)** — [Windows installer](https://github.com/daman11/ServerDesk/releases/download/v0.52.0/ServerDesk-0.52.0-win-x64-Setup.exe), portable and Linux packages, source and SHA-256 checksums.
 
-0.51.1 improves embedded Windows RDP fitting after monitor/DPI changes, vault startup controls, local SSH key prompts and multiline SSH paste. It also improves protected-content recovery guidance, Network Tools error diagnostics and malformed Linux monitoring data handling. [Release notes](docs/releases/release-0.51.1.md), [verification](docs/reports/release-verification-0.51.1.md), [vault setup](docs/bitwarden.md).
+0.52.0 adds atomic batch connection-tag editing, copy-address actions, improved keyboard navigation in SFTP/Help and searchable logs with optional line wrapping. Linux DEB dependencies now accept ICU 77/78 and intermediate supported providers. [Release notes](docs/releases/release-0.52.0.md), [verification](docs/reports/release-verification-0.52.0.md), [batch tags](docs/connection-tags.md).
 
 | System | Package | Start |
 |---|---|---|
-| Windows x64 | `ServerDesk-0.51.1-win-x64-Setup.exe` | Run Setup; current-user installation and Start menu shortcut |
-| Windows x64 portable | `ServerDesk-0.51.1-win-x64.zip` | Extract everything; run `ServerDesk.App.exe` |
-| Linux x64 DEB | `serverdesk_0.51.1_amd64.deb` | `sudo apt install ./serverdesk_0.51.1_amd64.deb` |
-| Linux x64 archive | `ServerDesk-0.51.1-linux-x64.tar.gz` | Extract into a new directory; run `./ServerDesk.App` |
-| Source | `ServerDesk-0.51.1-source.zip` | .NET 10 SDK required |
+| Windows x64 | `ServerDesk-0.52.0-win-x64-Setup.exe` | Run Setup; current-user installation and Start menu shortcut |
+| Windows x64 portable | `ServerDesk-0.52.0-win-x64.zip` | Extract everything; run `ServerDesk.App.exe` |
+| Linux x64 DEB | `serverdesk_0.52.0_amd64.deb` | `sudo apt install ./serverdesk_0.52.0_amd64.deb` |
+| Linux x64 archive | `ServerDesk-0.52.0-linux-x64.tar.gz` | Extract into a new directory; run `./ServerDesk.App` |
+| Source | `ServerDesk-0.52.0-source.zip` | .NET 10 SDK required |
 
 The binary packages include .NET. Linux additionally needs its system X11/fontconfig libraries, Secret Service for remembered passwords and an installed X11 FreeRDP client (`xfreerdp3` or `xfreerdp`) for in-tab RDP. Linux verification used Ubuntu/WSLg; other desktop/distribution combinations are experimental. ARM/macOS packages are not provided.
 
-This beta is unsigned. Obtain it from the [official release](https://github.com/daman11/ServerDesk/releases/tag/v0.51.1) and compare its SHA-256 with `SHA256SUMS.txt`. A checksum beside the download does not independently authenticate the publisher.
+This beta is unsigned. Obtain it from the [official release](https://github.com/daman11/ServerDesk/releases/tag/v0.52.0) and compare its SHA-256 with `SHA256SUMS.txt`. A checksum beside the download does not independently authenticate the publisher.
 
 ## Features
 

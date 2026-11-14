@@ -46,7 +46,11 @@ internal static class NetworkCancellationChecks
             // assert that Escape cancels that exact task, not a past render's run.
             Verify(target.Focus(),"Subnet target could not receive keyboard focus"); var beforeEscape=runs;
             var pendingEscape=(Task)typeof(NetworkToolPane).GetMethod("RecalculateAsync",BindingFlags.NonPublic|BindingFlags.Instance)!.Invoke(subnet,null)!;
-            var escapeDelay=Field<CancellationTokenSource>(subnet,"subnetDelay"); window.KeyPress(Key.Escape,RawInputModifiers.None,PhysicalKey.Escape,null);
+            // Headless KeyPress renders before dispatching input, which can
+            // consume the entire debounce on a busy release-test host. Route
+            // Escape from the focused target without an intervening render.
+            var escapeDelay=Field<CancellationTokenSource>(subnet,"subnetDelay");
+            target.RaiseEvent(new KeyEventArgs { RoutedEvent=InputElement.KeyDownEvent,Key=Key.Escape,PhysicalKey=PhysicalKey.Escape });
             RedesignChecks.Wait(pendingEscape); RedesignChecks.Wait(subnet.Shutdown); RedesignChecks.Frames(16); Verify(escapeDelay.IsCancellationRequested && runs==beforeEscape,"Escape left a subnet calculation queued");
             for(var i=0;i<8;i++)target.Text=$"192.0.{i}.0/24";
             RedesignChecks.Frames(1); RedesignChecks.Wait(subnet.Shutdown); Verify(runs==beforeEscape+1,"Rapid subnet edits were not coalesced");

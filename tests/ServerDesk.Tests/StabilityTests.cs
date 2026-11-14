@@ -12,11 +12,18 @@ public sealed class StabilityTests : IDisposable
     {
         using var frame=new VncFramebuffer();
         using var ready=new ManualResetEventSlim(); using var release=new ManualResetEventSlim();
-        var writer=Task.Run(()=> { using var reference=frame.GrabFramebufferReference(new(2,2),ImmutableHashSet<MarcusW.VncClient.Screen>.Empty); ready.Set(); release.Wait(TimeSpan.FromSeconds(5)); });
-        Assert.True(ready.Wait(TimeSpan.FromSeconds(3))); var called=false;
-        var read=Task.Run(()=>frame.Read((_,_)=>called=true));
-        try { await read.WaitAsync(TimeSpan.FromMilliseconds(300)); Assert.False(called); }
-        finally { release.Set(); await writer; await read; }
+        // Dedicated workers isolate this contract from a busy CI thread pool.
+        // The writer must still hold the incomplete frame when Read returns;
+        // this tests nonblocking access rather than machine scheduling latency.
+        var writer=Task.Factory.StartNew(()=> { using var reference=frame.GrabFramebufferReference(new(2,2),ImmutableHashSet<MarcusW.VncClient.Screen>.Empty); ready.Set(); release.Wait(TimeSpan.FromSeconds(20)); },CancellationToken.None,TaskCreationOptions.LongRunning,TaskScheduler.Default);
+        Task read=Task.CompletedTask; var called=false;
+        try
+        {
+            Assert.True(ready.Wait(TimeSpan.FromSeconds(5)));
+            read=Task.Factory.StartNew(()=>frame.Read((_,_)=>called=true),CancellationToken.None,TaskCreationOptions.LongRunning,TaskScheduler.Default);
+            await read.WaitAsync(TimeSpan.FromSeconds(5)); Assert.False(called); Assert.False(writer.IsCompleted);
+        }
+        finally { release.Set(); await writer.WaitAsync(TimeSpan.FromSeconds(5)); await read.WaitAsync(TimeSpan.FromSeconds(5)); }
         frame.Read((_,pixels)=> { called=true; Assert.Equal(16,pixels.Length); }); Assert.True(called);
     }
     [Fact] public async Task Malformed_vnc_frame_is_reported_as_failure_not_normal_remote_close()

@@ -58,7 +58,11 @@ internal static class ErrorLoggingChecks
             if(sink.Events.Count!=before+2)throw new Exception("Expected cancellation logged as error");
             dialog.GetVisualDescendants().OfType<Button>().Single(b=>b.Tag as string=="Zamknij").RaiseEvent(new RoutedEventArgs(Button.ClickEvent)); RedesignChecks.Wait(first);
             var retry=main.Safe(()=>Task.FromException(Failure()),"Fixture.Retry"); RedesignChecks.Frames(); if(main.OwnedWindows.Count!=1)throw new Exception("A later failure could no longer show a dialog"); main.OwnedWindows.Single().Close(); RedesignChecks.Wait(retry);
-            var delayed=new TaskCompletionSource(TaskCreationOptions.RunContinuationsAsynchronously); var late=main.Safe(()=>delayed.Task,"Fixture.Late"); main.Close(); RedesignChecks.Frames();
+            var delayed=new TaskCompletionSource(TaskCreationOptions.RunContinuationsAsynchronously); var late=main.Safe(()=>delayed.Task,"Fixture.Late"); main.Close();
+            // Closing drains asynchronous settings writes. Wait for completion
+            // instead of assuming that a fixed number of frames is sufficient.
+            var closedDeadline=DateTime.UtcNow.AddSeconds(15);
+            while(main.IsVisible && DateTime.UtcNow<closedDeadline)RedesignChecks.Frames(1);
             if(main.IsVisible)throw new Exception("Owner did not close"); delayed.SetException(Failure()); RedesignChecks.Wait(late);
             if(main.OwnedWindows.Count!=0 || vault.Calls!=0)throw new Exception("Late failure reopened a closed window or accessed credentials");
         }

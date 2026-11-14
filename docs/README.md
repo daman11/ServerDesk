@@ -1,6 +1,6 @@
 # Dokumentacja / Documentation
 
-Bieżące wydanie: [0.51.1 Public Beta](releases/release-0.51.1.md) — skalowanie RDP między monitorami, obsługa sejfu i kluczy SSH, wklejanie komend oraz poprawki diagnostyki i monitoringu. [Weryfikacja](reports/release-verification-0.51.1.md). [Pobieranie na GitHub](https://github.com/daman11/ServerDesk/releases/tag/v0.51.1).
+Bieżące wydanie: [0.52.0 Public Beta](releases/release-0.52.0.md) — zbiorcze tagi, kopiowanie adresów, ergonomia SFTP/Pomocy i logów oraz poprawka zależności ICU na Linuxie. [Weryfikacja](reports/release-verification-0.52.0.md). [Pobieranie na GitHub](https://github.com/daman11/ServerDesk/releases/tag/v0.52.0).
 
 | Temat / Topic | Dokument |
 |---|---|

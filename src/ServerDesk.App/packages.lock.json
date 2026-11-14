@@ -42,9 +42,9 @@
       },
       "Iciclecreek.Avalonia.Terminal": {
         "type": "Direct",
-        "requested": "[4.0.8, )",
-        "resolved": "4.0.8",
-        "contentHash": "4HcdOzUQzDNAe3SBRoheWmxZJrzPL2mLrIKuYSBd1aVhmUcy6O3cPMkNllJVS5UKszosfql/m3vG7Dv0J0EFjA==",
+        "requested": "[4.1.0, )",
+        "resolved": "4.1.0",
+        "contentHash": "d15C3guNFJcoPpwlZWeaAVBX8I/mjqax1Q5Cae/0JRCjKiQGtQRTeWV5LgSZNgsdkrJUFIs/H6C2PUY/HA8VSg==",
         "dependencies": {
           "Avalonia": "12.0.4",
           "Avalonia.Skia": "12.0.4",
@@ -52,7 +52,7 @@
           "SkiaSharp.HarfBuzz": "3.119.4",
           "Unicode.net": "2.0.0",
           "Wcwidth": "4.0.1",
-          "XTerm.NET": "2.0.7"
+          "XTerm.NET": "3.0.0"
         }
       },
       "Microsoft.Extensions.DependencyInjection": {
@@ -481,8 +481,8 @@
       },
       "XTerm.NET": {
         "type": "Transitive",
-        "resolved": "2.0.7",
-        "contentHash": "w5U8BqBnnP7hgyyCGI5eul+2xREjglHRo0HOr4qCSOR8FPJSzLWLKkCodC1JKVlr7/fLXXq5J7lOeuF7Ej0e9A=="
+        "resolved": "3.0.0",
+        "contentHash": "I/TNfpQ7YYXJxFEFbV9/NjT9XXyh7rY2xcYEx3wt6xOYoXgYv5HggUFWNfsSshlywUwNbJoPe1Bzu6T8bb3nwg=="
       },
       "serverdesk.core": {
         "type": "Project"
@@ -497,7 +497,7 @@
           "Microsoft.Extensions.Logging.Abstractions": "[10.0.12, )",
           "Porta.Pty": "[2.2.3, )",
           "SSH.NET": "[2026.0.0, )",
-          "ServerDesk.Core": "[0.25.0, )",
+          "ServerDesk.Core": "[0.45.0, )",
           "System.IO.Ports": "[10.0.12, )",
           "System.Security.Cryptography.ProtectedData": "[10.0.12, )"
         }

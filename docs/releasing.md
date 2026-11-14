@@ -29,6 +29,13 @@ The source snapshot is built from an allowlist of directories and file types. It
 
 ## Installer behavior
 
+For a Linux packaging-only repair, `package-deb.sh` accepts `--revision N`,
+`--output-dir PATH` and `--deb-only`. Keep the application version unchanged when
+reusing unchanged published binaries; the Debian package version becomes
+`VERSION-N`. Use a separate fixes directory and verify against the original DEB
+with `scripts/test-deb-dependencies.py --previous`. This is not a new application
+release and does not replace a frozen package. See [ICU packaging](linux-package-dependencies.md).
+
 Per-user installation, no elevation, stable uninstall identity and optional launch on the finish page. The Shortcuts page offers an unchecked desktop shortcut for a fresh installation; `install-state.ini` preserves the selection during silent upgrades. `/DESKTOPSHORTCUT=0` or `=1` explicitly overrides it; place this before the final `/D=...`. `/NOREGISTER` suppresses registration and both shortcuts for isolated testing. Refuses to replace/remove a payload with locked EXE/DLL files; it does not force-close sessions or schedule replacement at reboot. Files are copied directly after that check: a disk failure can leave an incomplete install, so rerun Setup after correcting it. This is not a transactional MSI.
 
 Uninstall removes only owned application files and its matching registration/shortcut. Extra files in the install directory and all user data/credentials are preserved. ZIP/TAR upgrades use new directories. Backups and downgrade limits are explained in the guides.

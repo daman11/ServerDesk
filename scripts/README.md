@@ -9,7 +9,7 @@
 | Self-contained payload | `publish.ps1`, `publish.sh` |
 | Packaging | `package-windows.ps1`, `package-deb.sh` |
 | Release assembly | `assemble-release.ps1`, `generate-notices.ps1` |
-| Package acceptance | `test-installer-text.ps1`, `test-installer.ps1`, `test-release-content.ps1`, `test-linux-release.py` |
+| Package acceptance | `test-installer-text.ps1`, `test-installer.ps1`, `test-release-content.ps1`, `test-linux-release.py`, `test-deb-dependencies.py` |
 | Data failure acceptance | `tools/ServerDesk.DataProbe`, `test-data-disk-full.sh` (owned 8 MiB tmpfs in an isolated Linux lab) |
 | Optional integration lab | `prepare-*`, `start-test-*`, `stop-test-*`, `test-secret-service.sh`, `test-freerdp-cli.sh` |
 

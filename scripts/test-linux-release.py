@@ -18,6 +18,7 @@ expected = {p.relative_to(payload).as_posix(): p for p in payload.rglob("*") if 
 deb = root / f"artifacts/serverdesk_{version}_amd64.deb"
 assert subprocess.check_output(["dpkg-deb", "-f", str(deb), "Version"], text=True).strip() == version
 assert subprocess.check_output(["dpkg-deb", "-f", str(deb), "Architecture"], text=True).strip() == "amd64"
+subprocess.run([sys.executable, str(root / "scripts/test-deb-dependencies.py"), str(deb)], check=True)
 
 def check(archive, prefix):
     actual = {}

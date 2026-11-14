@@ -1,6 +1,7 @@
 # Local SDKs, downloaded dependencies and generated releases
 /.tools/
 /.codex-remote-attachments/
+/.codex-attachments/
 /artifacts/
 **/bin/
 **/obj/

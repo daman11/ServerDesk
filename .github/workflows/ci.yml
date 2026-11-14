@@ -47,6 +47,12 @@ jobs:
           sudo apt-get install -y --no-install-recommends fontconfig libice6 libsm6 libx11-6 libxext6 libxrender1 libxrandr2 libxi6 libxcursor1 libxcb-shape0 libxcb-render0 libxcb-xfixes0
       - name: Check repository content
         run: ./scripts/check-repository.ps1
+      - name: Check Debian package dependency resolution
+        if: runner.os == 'Linux'
+        shell: bash
+        run: |
+          bash -n scripts/package-deb.sh
+          python3 scripts/test-deb-dependencies.py --fixture
       - name: Restore locked dependencies
         run: dotnet restore ServerDesk.sln --locked-mode
       - name: Dependency audit gate

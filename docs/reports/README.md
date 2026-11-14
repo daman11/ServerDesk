@@ -1,5 +1,6 @@
 # Verification and historical reviews
 
+- [Linux ICU packaging repair, 2026-11-14](linux-icu-packaging-2026-11-14.md) — reproduced dependency failure, isolated APT matrix and unchanged 0.51.1 payload in Debian revision 0.51.1-1.
 - [Batch connection tags, 2026-11-08](batch-tags-2026-11-08.md) — explicit filtered scope, before/after previews, atomic persistence, conflict/retry and targeted PL/EN checks.
 - [0.51.1 Public Beta](release-verification-0.51.1.md) — RDP viewport fitting, vault/SSH usability, protected-content recovery, diagnostics and monitoring validation.
 

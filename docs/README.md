@@ -4,6 +4,7 @@ Bieżące wydanie: [0.51.1 Public Beta](releases/release-0.51.1.md) — skalowan
 
 | Temat / Topic | Dokument |
 |---|---|
+| Linux: instalacja DEB i ICU | [Naprawa zależności oraz sprawdzanie paczki](linux-package-dependencies.md) |
 | Zbiorcze tagi połączeń | [Wybór połączeń, podgląd i zapis całej partii / Batch editing](connection-tags.md) |
 | Bitwarden / Vaultwarden | [Konfiguracja GUI, przypisania i ochrona danych](bitwarden.md) |
 | Instalacja i pierwsze połączenie | [Instrukcja PL](getting-started.md), [English guide](getting-started.en.md) |

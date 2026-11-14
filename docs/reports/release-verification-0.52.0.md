@@ -58,6 +58,13 @@ and successful rechecks are retained separately.
 Linux CI APT setup now retries transient fetch failures three times. This does
 not suppress errors or replace dependency resolution checks.
 
+The first pushed preparation commit's Windows CI also timed out in the native
+PowerShell quoting fixture (1207 passed, one failed). The 10-second process budget
+was increased to 30 seconds, with bounded termination/drain; literal-output,
+stderr and exit-code assertions are unchanged. This tests quoting safety rather
+than cold shell startup latency. The exact runner delay was not established.
+Both complete local unit suites were repeated after this test-only change.
+
 ## Focused evidence
 
 - [Batch tags](batch-tags-2026-11-08.md): 31 selected cases plus PL/EN, rollback,

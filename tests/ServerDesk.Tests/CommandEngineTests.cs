@@ -99,8 +99,16 @@ public sealed class CommandEngineTests
         if(windows) { start.ArgumentList.Add("-NoProfile"); start.ArgumentList.Add("-NonInteractive"); start.ArgumentList.Add("-EncodedCommand"); start.ArgumentList.Add(Convert.ToBase64String(System.Text.Encoding.Unicode.GetBytes(script))); }
         else { start.ArgumentList.Add("-c"); start.ArgumentList.Add(script); }
         using var process=System.Diagnostics.Process.Start(start)!; var output=process.StandardOutput.ReadToEndAsync(); var errors=process.StandardError.ReadToEndAsync();
-        using var timeout=new CancellationTokenSource(TimeSpan.FromSeconds(10));
-        try { await process.WaitForExitAsync(timeout.Token); } catch(OperationCanceledException) { process.Kill(true); throw new TimeoutException(); }
+        // This verifies quoting, not cold PowerShell startup latency on a CI
+        // worker. Keep a bounded budget without weakening the literal-data checks.
+        using var timeout=new CancellationTokenSource(TimeSpan.FromSeconds(30));
+        try { await process.WaitForExitAsync(timeout.Token); }
+        catch(OperationCanceledException)
+        {
+            if(!process.HasExited)process.Kill(true);
+            await process.WaitForExitAsync().WaitAsync(TimeSpan.FromSeconds(5));
+            throw new TimeoutException("Native shell fixture did not exit within 30 seconds.");
+        }
         Assert.Equal(0,process.ExitCode); Assert.Equal("",await errors); Assert.Equal(value,await output);
     }
     [Theory]
